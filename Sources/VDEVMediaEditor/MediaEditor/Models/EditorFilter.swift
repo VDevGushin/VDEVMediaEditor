@@ -35,6 +35,12 @@ public struct EditorFilter: Equatable {
         var type: String
         var url: URL?
         var settings: StepSettings?
+        
+        public init(type: String, url: URL? = nil, settings: StepSettings? = nil) {
+            self.type = type
+            self.url = url
+            self.settings = settings
+        }
     }
     var id: String
     var name: String
