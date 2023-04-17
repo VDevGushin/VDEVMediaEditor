@@ -40,13 +40,21 @@ public class TemplatePack: ObservableObject {
     }
 
     public struct Variant {
-        struct Item {
-            struct FontPreset {
+        public struct Item {
+            public struct FontPreset {
                 let fontSize: CGFloat
                 let textStyle: CanvasTextStyle
                 let verticalAlignment: Int
                 let textAlignment: Int
                 let color: UIColor
+                
+                public init(fontSize: CGFloat, textStyle: CanvasTextStyle, verticalAlignment: Int, textAlignment: Int, color: UIColor) {
+                    self.fontSize = fontSize
+                    self.textStyle = textStyle
+                    self.verticalAlignment = verticalAlignment
+                    self.textAlignment = textAlignment
+                    self.color = color
+                }
             }
 
             let blendingMode: BlendingMode
@@ -61,11 +69,29 @@ public class TemplatePack: ObservableObject {
             let rect: CGRect
 
             let fontPreset: FontPreset?
+            
+            public init(blendingMode: BlendingMode, filters: [EditorFilter], isLocked: Bool, isMovable: Bool, text: String, placeholderText: String, url: URL?, rect: CGRect, fontPreset: FontPreset?) {
+                self.blendingMode = blendingMode
+                self.filters = filters
+                self.isLocked = isLocked
+                self.isMovable = isMovable
+                self.text = text
+                self.placeholderText = placeholderText
+                self.url = url
+                self.rect = rect
+                self.fontPreset = fontPreset
+            }
         }
 
         let items: [Item]
         let id: String
         let cover: URL?
+        
+        public init(items: [Item], id: String, cover: URL?) {
+            self.items = items
+            self.id = id
+            self.cover = cover
+        }
     }
 
     func makeVariantLayers(variantIdx: Int) -> [TemplatePack.Variant.Item] {
