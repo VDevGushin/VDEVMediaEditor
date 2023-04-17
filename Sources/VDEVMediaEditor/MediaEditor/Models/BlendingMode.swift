@@ -41,7 +41,7 @@ public enum BlendingMode: String {
     case sourceOver = "CISourceOverCompositing"
     case subtract = "CISubtractBlendMode"
 
-    static let normal = BlendingMode.sourceOver
+    public static let normal = BlendingMode.sourceOver
 }
 
 extension BlendingMode {
