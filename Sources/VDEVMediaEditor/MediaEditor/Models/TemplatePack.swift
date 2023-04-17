@@ -30,7 +30,7 @@ public class TemplatePack: ObservableObject {
 
     let variants: [Variant]
 
-    init(id: String, name: String, cover: URL?, isAttached: Bool, variants: [Variant]) {
+    public init(id: String, name: String, cover: URL?, isAttached: Bool, variants: [Variant]) {
         self.id = id
         self.name = name
         self.cover = cover
@@ -38,7 +38,7 @@ public class TemplatePack: ObservableObject {
         self.variants = variants
     }
 
-    struct Variant {
+    public struct Variant {
         struct Item {
             struct FontPreset {
                 let fontSize: CGFloat
