@@ -13,8 +13,14 @@ public struct CanvasTextStyle: CaseIterable, Equatable {
         var color: UIColor
         var offset: CGSize
         var blur: CGFloat
+        
+        public init(color: UIColor, offset: CGSize, blur: CGFloat) {
+            self.color = color
+            self.offset = offset
+            self.blur = blur
+        }
 
-        static let `default` = ShadowCfg(
+        public static let `default` = ShadowCfg(
             color: AppColors.black.uiColor.withAlphaComponent(0.2),
             offset: .init(width: 3, height: 3),
             blur: 12
