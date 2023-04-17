@@ -39,7 +39,10 @@ let package = Package(
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
                            "CombineExt",
                            "BackgroundRemoval"
-                          ]),
+                          ],
+            resources: [.process("MediaEditor/Resources/Assets"), .process("MediaEditor/Resources/Fonts")]
+        
+        ),
         
         
         .testTarget(
