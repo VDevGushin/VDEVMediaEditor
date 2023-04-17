@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 
 public struct PlaceholdersKeys {
-    let challengeTitle = "challenge.title"
+    public let challengeTitle = "challenge.title"
     fileprivate init() {}
 }
 

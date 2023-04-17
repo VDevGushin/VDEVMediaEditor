@@ -11,7 +11,7 @@ import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 /// Этот enum неразрывно связан с blending mode CIFilter'ов
-enum BlendingMode: String {
+public enum BlendingMode: String {
     case addition = "CIAdditionCompositing"
     case color = "CIColorBlendMode"
     case colorBurn = "CIColorBurnBlendMode"
@@ -45,13 +45,13 @@ enum BlendingMode: String {
 }
 
 extension BlendingMode {
-    var ciFilter: CIFilter {
+    public var ciFilter: CIFilter {
         return CIFilter(name: rawValue) ?? CIFilter.sourceOverCompositing()
     }
 }
 
 extension BlendingMode {
-    var swiftUI: BlendMode {
+    public var swiftUI: BlendMode {
         switch self {
         case .addition: return .normal
         case .color: return .color
