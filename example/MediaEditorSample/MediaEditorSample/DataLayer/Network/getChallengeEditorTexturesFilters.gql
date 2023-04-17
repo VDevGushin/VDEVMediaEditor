@@ -1,0 +1,14 @@
+query GetChallengeEditorTexturesFilters($baseChallengeId: ID!) {
+  baseChallenge(id: $baseChallengeId) {
+    appEditorTextures {
+      stepsFull {
+        type
+        url
+        settings
+      }
+      name
+      cover
+      id
+    }
+  }
+}

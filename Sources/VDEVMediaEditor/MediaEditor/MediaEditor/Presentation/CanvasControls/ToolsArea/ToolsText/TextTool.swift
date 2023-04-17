@@ -180,7 +180,7 @@ struct TextTool: View {
                     haptics(.light)
                     colorPressed()
                 } label: {
-                    Image("ColorSelectIcon")
+                    Image("TextEditingColorSelectIcon")
                         .resizable()
                         .frame(width: 40.0, height: 40.0)
                         .scaledToFit()

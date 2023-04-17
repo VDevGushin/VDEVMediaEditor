@@ -1,0 +1,53 @@
+query getChallengeEditorTemplates($baseChallengeId: ID!, $screenHeight: Int!, $screenWidth: Int!) {
+  baseChallenge(id: $baseChallengeId) {
+    appEditorTemplates {
+      id
+      cover
+      nameLocalized
+      isAttached
+      variants {
+        id
+        cover
+        clientConfig(screenHeight: $screenHeight, screenWidth: $screenWidth, is16by9: true) {
+          items {
+            filters {
+              id
+              name
+              cover
+              stepsFull {
+                id
+                index
+                type
+                settings
+                url
+                filterId
+              }
+            }
+            blendMode
+            imageUrl
+            type
+            settings
+            textLocalized
+            id
+            config
+            isMovable
+            isText
+            verticalAlign
+            defaultColor
+            fontPreset {
+              alignment
+              editorFont {
+                postScriptName
+              }
+              fontSize
+              hasAllCaps
+              hasShadow
+              letterSpacing
+              lineHeight
+            }
+          }
+        }
+      }
+    }
+  }
+}

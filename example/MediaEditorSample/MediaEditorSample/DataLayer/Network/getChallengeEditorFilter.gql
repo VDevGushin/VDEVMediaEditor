@@ -1,0 +1,13 @@
+query GetChallengeEditorFilter($baseChallengeId: ID!) {
+  baseChallenge(id: $baseChallengeId) {
+    appEditorFilters {
+      id
+      name
+      cover
+      stepsFull {
+        type
+        url
+      }
+    }
+  }
+}

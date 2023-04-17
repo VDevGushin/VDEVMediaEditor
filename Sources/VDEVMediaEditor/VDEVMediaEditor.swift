@@ -1,12 +1,18 @@
 
 import SwiftUIX
+import SwiftUI
 
 public struct VDEVMediaEditor {
     private let appModules: [Module]
     private let colorScheme: ColorScheme = .dark
-
-    public init(baseChallengeId: String, dataService: MediaEditorSourceService) {
-        appModules = [AppModule(baseChallengeId: baseChallengeId, dataService: dataService)]
+    
+    public init(config: VDEVMediaEditorConfig) {
+        
+        appModules = [
+            AppModule(baseChallengeId: config.baseChallengeId,
+                      dataService: config.networkService)
+        ]
+        
         appModules.bootstrap()
     }
     

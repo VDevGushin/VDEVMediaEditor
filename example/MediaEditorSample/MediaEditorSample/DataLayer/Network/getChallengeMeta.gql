@@ -1,0 +1,9 @@
+query GetChallengeMeta($baseChallengeId: ID!) {
+  baseChallenge(id: $baseChallengeId) {
+    titleLocalized
+    hasAttachedStickerPacks
+    appAttachedEditorTemplate {
+      isAttached
+    }
+  }
+}

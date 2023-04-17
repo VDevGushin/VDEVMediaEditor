@@ -1,0 +1,10 @@
+query GetChallengeStickerPacksFull($baseChallengeId: ID!) {
+  baseChallenge(id: $baseChallengeId) {
+    appStickerPacks {
+      titleLocalized
+      stickersFull {
+        uri
+      }
+    }
+  }
+}

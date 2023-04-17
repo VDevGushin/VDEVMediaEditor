@@ -1,0 +1,13 @@
+query GetChallengeEditorMasksFilters($baseChallengeId: ID!) {
+  baseChallenge(id: $baseChallengeId) {
+    appEditorMasks {
+      id
+      name
+      cover
+      stepsFull {
+        type
+        url
+      }
+    }
+  }
+}
