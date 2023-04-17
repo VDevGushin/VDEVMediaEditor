@@ -40,6 +40,13 @@ public struct EditorFilter: Equatable {
     var name: String
     var cover: URL?
     var steps: [Step]
+    
+    public init(id: String, name: String, cover: URL? = nil, steps: [Step]) {
+        self.id = id
+        self.name = name
+        self.cover = cover
+        self.steps = steps
+    }
 
     public static func == (lhs: EditorFilter, rhs: EditorFilter) -> Bool {
         lhs.id == rhs.id
