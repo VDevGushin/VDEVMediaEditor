@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct HeadWithTitle: View {
+    @Injected private var images: VDEVImageConfig
     let title: String
     let returnPressed: () -> ()
 
@@ -19,7 +21,7 @@ struct HeadWithTitle: View {
             } label: {
                 HStack(spacing: 15) {
                     
-                    Image("BackArrow")
+                    Image(uiImage: images.common.backArrow)
                         .frame(width: 30, height: 30)
                         .background(
                             BlurView(style: .systemChromeMaterialDark)

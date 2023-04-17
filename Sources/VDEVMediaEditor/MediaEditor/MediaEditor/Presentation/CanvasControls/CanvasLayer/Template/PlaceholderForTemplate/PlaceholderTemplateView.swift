@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct PlaceholderTemplateView: View {
     @StateObject private var vm: PlaceholderTemplateViewModel
     @Environment(\.guideLinesColor) private var guideLinesColor
+    @Injected private var images: VDEVImageConfig
 
     //для того, чтобы узнать манипулируем мы с картинкой или видосом
     @State private var isInManipulation: Bool = false
@@ -142,7 +144,7 @@ private extension PlaceholderTemplateView {
     @ViewBuilder
     private func addButton(withBackground: Bool = true, frame: CGSize = .init(width: 40, height: 40)) -> some View {
         if withBackground {
-            Image("AddMediaM")
+            Image(uiImage: images.common.addMediaM)
                 .resizable()
                 .frame(frame)
                 .scaledToFit()
@@ -151,7 +153,7 @@ private extension PlaceholderTemplateView {
                 .background(BlurView(style: .systemChromeMaterialLight))
                 .cornerRadius(8)
         } else {
-            Image("AddMediaM")
+            Image(uiImage: images.common.addMediaM)
                 .resizable()
                 .frame(frame)
                 .scaledToFit()
