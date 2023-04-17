@@ -10,11 +10,12 @@ import CollectionConcurrencyKit
 import SwiftUI
 import Combine
 
-struct PlaceholdersKeys {
+public struct PlaceholdersKeys {
     let challengeTitle = "challenge.title"
     fileprivate init() {}
 }
-let kPlaceholders = PlaceholdersKeys()
+
+public let kPlaceholders = PlaceholdersKeys()
 
 @MainActor
 public class TemplatePack: ObservableObject {
