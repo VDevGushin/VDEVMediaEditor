@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 import Kingfisher
 import PhotosUI
+import Resolver
 
 struct ToolsAreaView: View {
     enum Strings {
@@ -19,6 +20,7 @@ struct ToolsAreaView: View {
         static let addMedia = "ADD MEDIA"
     }
     
+    @Injected private var images: VDEVImageConfig
     @ObservedObject private var vm: CanvasEditorViewModel
 
     @State private var showPhoroPicker = false
@@ -215,7 +217,7 @@ struct ToolsAreaView: View {
                 .padding(.leading, 10)
             
             if !vm.data.isLimit {
-                ImageButton(imageName: "Add",
+                ImageButton(image: images.common.add,
                             title: Strings.addMedia,
                             fontSize: 9,
                             size: .init(width: 44, height: 44),

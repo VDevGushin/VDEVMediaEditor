@@ -20,7 +20,7 @@ enum PasteboardModel {
 }
 
 struct ToolSelectorHorizontalView: View {
-    
+    @Injected private var images: VDEVImageConfig
     @Injected private var pasteboardService: PasteboardService
     
     private let tools: [ToolItem]
@@ -50,7 +50,7 @@ struct ToolSelectorHorizontalView: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            ImageButton(imageName: "BackArrow",
+            ImageButton(image: images.common.backArrow,
                         size: .init(width: backButtonSize, height: backButtonSize),
                         tintColor: AppColors.white) {
                 onClose()
@@ -70,7 +70,7 @@ struct ToolSelectorHorizontalView: View {
     }
     
     @ViewBuilder func ToolRow(tool: ToolItem) -> some View {
-        ImageButton(imageName: tool.imageName,
+        ImageButton(image: tool.image,
                     title: tool.title,
                     fontSize: 12,
                     size: .init(width: buttonSize, height: buttonSize),
@@ -82,7 +82,7 @@ struct ToolSelectorHorizontalView: View {
     @ViewBuilder func PasteButton() -> some View {
         switch pasteboardService.tryPaste(canPasteOnlyImages: canPasteOnlyImages) {
         case .text(let text):
-            ImageButton(imageName: "TypePaste",
+            ImageButton(image: images.typed.typePaste,
                         title: Strings.paste,
                         fontSize: 12,
                         size: .init(width: buttonSize, height: buttonSize),
@@ -91,7 +91,7 @@ struct ToolSelectorHorizontalView: View {
                 onPasteImageFromGeneralPasteboard(.text(text))
             }
         case .image(let image):
-            ImageButton(imageName: "TypePaste",
+            ImageButton(image: images.typed.typePaste,
                         title: Strings.paste,
                         fontSize: 12,
                         size: .init(width: buttonSize, height: buttonSize),

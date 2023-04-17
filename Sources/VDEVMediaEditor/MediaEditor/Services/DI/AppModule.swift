@@ -11,10 +11,14 @@ import Resolver
 final class AppModule: Module {
     private let dataService: MediaEditorSourceService
     private let baseChallengeId: String
+    private let images: VDEVImageConfig
     
-    init(baseChallengeId: String, dataService: MediaEditorSourceService) {
+    init(baseChallengeId: String,
+         dataService: MediaEditorSourceService,
+         images: VDEVImageConfig) {
         self.dataService = dataService
         self.baseChallengeId = baseChallengeId
+        self.images = images
     }
     
     func bootstrap(with ioc: Resolver) {
@@ -25,6 +29,15 @@ final class AppModule: Module {
         ioc.register {
             self.dataService as MediaEditorSourceService
         }.scope(.application)
+        
+        ioc.register {
+            self.dataService as MediaEditorSourceService
+        }.scope(.application)
+        
+        ioc.register {
+            self.images as VDEVImageConfig
+        }.scope(.application)
+        
         
         ioc.register{ PasteboardService() }.scope(.application)
     }

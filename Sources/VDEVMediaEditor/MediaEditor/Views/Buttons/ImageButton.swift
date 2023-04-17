@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ImageButton: View {
-    let imageName: String
+    let image: UIImage
     let size: CGSize
     let tintColor: Color
     let action: () -> Void
@@ -15,14 +15,14 @@ struct ImageButton: View {
     let title: String?
     let resize: Bool
     
-    init(imageName: String,
+    init(image: UIImage,
          title: String? = nil,
          fontSize: CGFloat = 12,
          size: CGSize = .init(width: 44, height: 44),
          tintColor: Color = AppColors.white,
          resizeImage: Bool = false,
          action: @escaping () -> Void) {
-        self.imageName = imageName
+        self.image = image
         self.size = size
         self.action = action
         self.tintColor = tintColor
@@ -38,12 +38,12 @@ struct ImageButton: View {
         } label: {
             VStack(alignment: .center, spacing: 0) {
                 if resize {
-                    Image(imageName)
+                    Image(uiImage: image)
                         .resizable()
                         .frame(width: size.width, height: size.height)
                         .scaledToFit()
                 } else {
-                    Image(imageName)
+                    Image(uiImage: image)
                         .frame(width: size.width, height: size.height)
                 }
                 
@@ -56,16 +56,5 @@ struct ImageButton: View {
             }
             .clipShape(Rectangle())
         }
-    }
-}
-
-struct ImageButton_Previews: PreviewProvider {
-    static var previews: some View {
-        ImageButton(imageName: "BackArrow", size: .init(width: 35, height: 35), tintColor: AppColors.white, action: {
-            
-        })
-        .previewLayout(.sizeThatFits)
-        .padding()
-        .background(Color(.systemBackground))
     }
 }

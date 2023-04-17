@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Resolver
 
 extension ToolItem {
     enum Strings {
@@ -99,49 +100,27 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         }
     }
     
-    var imageName: String {
+    var image: UIImage {
+        let images = Resolver.resolve(VDEVImageConfig.self)
         switch self {
         case .template:
-            return "TypeTemplate"
+            return images.typed.typeTemplate
         case .text:
-            return "TypeText"
+            return images.typed.typeText
         case .stickers:
-            return "TypeStickers"
+            return images.typed.typeStickers
         case .photoPicker:
-            return "TypePhoto"
+            return images.typed.typePhoto
         case .videoPicker:
-            return "TypeVideo"
+            return images.typed.typeVideo
         case .camera:
-            return "TypeCamera"
+            return images.typed.typeCamera
         case .drawing:
-            return "TypeDraw"
+            return images.typed.typeDraw
         case .backgroundColor:
-            return ""
+            fatalError("No image")
         case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
-            return ""
-        }
-    }
-
-    var image: Image {
-        switch self {
-        case .template:
-            return Image(systemName: "square.stack.3d.down.right")
-        case .text:
-            return Image(systemName: "textformat.size")
-        case .stickers:
-            return Image(systemName: "seal.fill")
-        case .photoPicker:
-            return Image(systemName: "photo.on.rectangle")
-        case .videoPicker:
-            return Image(systemName: "film")
-        case .camera:
-            return Image(systemName: "camera.aperture")
-        case .drawing:
-            return Image(systemName: "pencil")
-        case .backgroundColor:
-            return Image(systemName: "paintbrush.fill")
-        case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
-            return Image("")
+            fatalError("No image")
         }
     }
 }

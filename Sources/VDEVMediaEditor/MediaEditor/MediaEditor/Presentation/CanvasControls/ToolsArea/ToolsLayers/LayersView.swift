@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Resolver
 
 extension LayersView {
     enum Strings {
@@ -17,11 +18,12 @@ extension LayersView {
 
 struct LayersView: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
+    @Injected private var images: VDEVImageConfig
     
     var body: some View {
         Group {
             if !vm.tools.openLayersList {
-                ImageButton(imageName: "Layers",
+                ImageButton(image: images.common.layers,
                             title: Strings.layers,
                             fontSize: 9,
                             size: .init(width: 44, height: 44),
@@ -34,7 +36,7 @@ struct LayersView: View {
                 VStack(alignment: .center) {
                     Layers()
                     
-                    ImageButton(imageName: "Close",
+                    ImageButton(image: images.common.close,
                                 title: Strings.close,
                                 fontSize: 9,
                                 size: .init(width: 44, height: 44),
@@ -75,7 +77,7 @@ struct LayersView: View {
                         }
                         
                         //Рисовалка заднего фона
-                        NoShadowRoundButton(imageName: "Bg",
+                        NoShadowRoundButton(image: images.common.bg,
                                             size: 40,
                                             backgroundColor: AppColors.layerButtonsLightBlack,
                                             tintColor: AppColors.white) {

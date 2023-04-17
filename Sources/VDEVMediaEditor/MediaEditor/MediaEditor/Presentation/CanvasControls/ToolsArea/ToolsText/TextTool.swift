@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreImage.CIFilterBuiltins
 import Combine
+import Resolver
 
 let kDefaultPlaceholder = "Write here"
 
@@ -39,7 +40,7 @@ struct TextTool: View {
 
     private var textViewPaddingRatio: CGFloat { (1 - labelContainerToCanvasWidthRatio) / 2 }
 
-    @MainActor
+    //@MainActor
     init(
         textItem: CanvasTextModel? = nil,
         backgroundColor: Color,

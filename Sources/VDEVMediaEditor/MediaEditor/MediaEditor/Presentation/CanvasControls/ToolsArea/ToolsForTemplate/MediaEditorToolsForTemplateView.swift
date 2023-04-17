@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct MediaEditorToolsForTemplateView: View {
     @ObservedObject private var vm: CanvasEditorToolsForTemplateViewModel
@@ -196,28 +197,13 @@ private struct EditVariants: View {
 }
 
 private struct ItemEditVariantsView: View {
+    @Injected private var images: VDEVImageConfig
+    
     enum Strings {
         static let filter = "FILTER"
         static let texture = "TEXTURE"
         static let adjustments = "ADJUSTMENTS"
         static let remove = "REMOVE"
-    }
-    
-    enum Images {
-        static let mask = "CurrentItemMask"
-        static let filter = "CurrentItemFilter"
-        static let texture = "CurrentItemTexture"
-        static let adjustments = "CurrentItemAdjustments"
-        static let crop = "CurrentItemCrop"
-        static let removeBack = "CurrentItemRMBack"
-        static let editText = "CurrentItemEditText"
-        static let dublicate = "CurrentIteDublicate"
-        static let reset = "CurrentItemReset"
-        static let remove = "CurrentItemRM"
-        static let up = "CurrentItemUp"
-        static let down = "CurrentItemDown"
-        static let bringToTop = "CurrentItemBringToTop"
-        static let bringToBottom = "CurrentItemBringToBottom"
     }
     
     private let buttonSize: CGFloat = 40
@@ -249,7 +235,7 @@ private struct ItemEditVariantsView: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            ImageButton(imageName: "BackArrow",
+            ImageButton(image: images.common.backArrow,
                         size: .init(width: backButtonSize,
                                     height: backButtonSize),
                         tintColor: AppColors.white) {
@@ -260,33 +246,33 @@ private struct ItemEditVariantsView: View {
                 HStack(alignment: .center, spacing: buttonSpacing) {
                     switch item.type {
                     case .image:
-                        ToolRow(image: Images.filter, title: Strings.filter) {
+                        ToolRow(image: images.currentItem.currentItemFilter, title: Strings.filter) {
                             onColorFilter(item)
                         }
                         
-                        ToolRow(image: Images.texture, title: Strings.texture) {
+                        ToolRow(image: images.currentItem.currentItemTexture, title: Strings.texture) {
                             onTextureFilter(item)
                         }
                         
-                        ToolRow(image: Images.adjustments, title: Strings.adjustments) { onAdjustments(item)
+                        ToolRow(image: images.currentItem.currentItemAdjustments, title: Strings.adjustments) { onAdjustments(item)
                         }
                         
-                        ToolRow(image: Images.remove, title: Strings.remove) {
+                        ToolRow(image: images.currentItem.currentItemRM, title: Strings.remove) {
                             onDelete(item)
                         }
                     case .video:
-                        ToolRow(image: Images.texture, title: Strings.texture) {
+                        ToolRow(image: images.currentItem.currentItemTexture, title: Strings.texture) {
                             onTextureFilter(item)
                         }
                         
-                        ToolRow(image: Images.filter, title: Strings.filter) {
+                        ToolRow(image: images.currentItem.currentItemFilter, title: Strings.filter) {
                             onColorFilter(item)
                         }
                         
-                        ToolRow(image: Images.adjustments, title: Strings.adjustments) { onAdjustments(item)
+                        ToolRow(image: images.currentItem.currentItemAdjustments, title: Strings.adjustments) { onAdjustments(item)
                         }
                         
-                        ToolRow(image: Images.remove, title: Strings.remove) {
+                        ToolRow(image: images.currentItem.currentItemRM, title: Strings.remove) {
                             onDelete(item)
                         }
                     default: EmptyView()
@@ -298,12 +284,12 @@ private struct ItemEditVariantsView: View {
     }
     
     @ViewBuilder
-    func ToolRow(image: String,
+    func ToolRow(image: UIImage,
                  title: String,
                  tintColor: Color = AppColors.whiteWithOpacity,
                  action: @escaping () -> Void) -> some View {
         
-        ImageButton(imageName: image,
+        ImageButton(image: image,
                     title: title,
                     fontSize: 12,
                     size: .init(width: buttonSize, height: buttonSize),

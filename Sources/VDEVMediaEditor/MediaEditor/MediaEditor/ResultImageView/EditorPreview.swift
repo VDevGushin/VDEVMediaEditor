@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import Resolver
 
 // MARK: - Modifier
 
@@ -63,7 +64,7 @@ extension EditorPreview {
 // MARK: - View
 struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
-    
+    @Injected private var images: VDEVImageConfig
     struct Strings {
         static let shareOrSave = "Share\nor save"
     }
@@ -122,7 +123,7 @@ struct EditorPreview: View {
             ZStack {
                 AppColors.black
                 
-                Image("BackGradient")
+                Image(uiImage: images.common.resultGradient)
                     .resizable()
                     .frame(maxHeight: .infinity, alignment: .top)
                     .frame(maxWidth: .infinity)

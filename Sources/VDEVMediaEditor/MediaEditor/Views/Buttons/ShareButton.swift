@@ -6,15 +6,17 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct ShareButton: View {
+    @Injected private var images: VDEVImageConfig
+    
     struct Strings {
         static let publish = "SHARE"
     }
     
     private let height: CGFloat = 40
     private let action: () -> Void
-    private let shareImage = "Share"
     
     init(action: @escaping () -> Void) {
         self.action = action
@@ -30,7 +32,7 @@ struct ShareButton: View {
                     .fill(AppColors.shareButtonsColors)
                 
                 HStack {
-                    Image(shareImage)
+                    Image(uiImage: images.common.share)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)
