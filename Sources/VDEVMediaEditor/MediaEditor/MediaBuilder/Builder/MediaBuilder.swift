@@ -57,6 +57,7 @@ final class MediaBuilder: NSObject, ObservableObject {
             }
             
             Log.d("Make combine assets from layers [count: \(layers.count)]")
+            
             let combinerAsset = await assetBuilder.execute()
             
             Log.d("Render media item from combine assets [count: \(combinerAsset.count)]")
