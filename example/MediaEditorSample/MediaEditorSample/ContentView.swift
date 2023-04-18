@@ -8,7 +8,6 @@
 import SwiftUI
 import VDEVMediaEditor
 
-
 struct ContentView: View {
     private let mediaEditorEntryPoint: VDEVMediaEditor
     
@@ -73,9 +72,9 @@ struct Images: VDEVImageConfig {
     struct TextEdit: VDEVMediaEditorButtonsTextEditingImages {
         var textEditingAlignCenter: UIImage = .init(named: "TextEditingAlignCenter")!
         
-        var textEditingAlignleft: UIImage = .init(named: "TextEditingAlignleft")!
+        var textEditingAlignLeft: UIImage = .init(named: "TextEditingAlignleft")!
         
-        var textEditingAlignright: UIImage = .init(named: "TextEditingAlignright")!
+        var textEditingAlignRight: UIImage = .init(named: "TextEditingAlignright")!
         
         var textEditingColorSelectIcon: UIImage = .init(named: "TextEditingColorSelectIcon")!
         
@@ -126,8 +125,6 @@ struct Images: VDEVImageConfig {
         var xmark: UIImage = .init(named: "Xmark")!
         
         var resultGradient: UIImage = .init(named: "BackGradient")!
-        
-        
     }
 }
 

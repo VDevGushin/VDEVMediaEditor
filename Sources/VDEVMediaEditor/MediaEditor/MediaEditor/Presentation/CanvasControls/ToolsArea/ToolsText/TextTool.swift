@@ -13,20 +13,22 @@ import Resolver
 let kDefaultPlaceholder = "Write here"
 
 struct TextTool: View {
-    @State private var text: String
-    @State private var placeholder: String
-    @State private var fontSize: CGFloat
-    @State private var textColor: UIColor
-    @State private var alignment: Alignment
-    @State private var textAlignment: NSTextAlignment
-    @State private var textStyle: CanvasTextStyle
-    @State private var needTextBG: Bool
+    @Injected private var images: VDEVImageConfig
+    
+    @State private var text: String = ""
+    @State private var placeholder: String = kDefaultPlaceholder
+    @State private var fontSize: CGFloat = 32
+    @State private var textColor: UIColor = AppColors.black.uiColor.contrast
+    @State private var alignment: Alignment = .center
+    @State private var textAlignment: NSTextAlignment = .center
+    @State private var textStyle: CanvasTextStyle = .basicText
+    @State private var needTextBG: Bool = false
     @State private var isEditing = true
     @State private var colorSelectorOpen = false
-    @State private var scale: CGFloat
-    @State private var rot: Angle
-    @State private var offset: CGSize
-    @State private var isEditable: Bool
+    @State private var scale: CGFloat = 1
+    @State private var rot: Angle = .zero
+    @State private var offset: CGSize = .zero
+    @State private var isEditable: Bool = true
     @State private var textFrameSize: CGSize = .zero
     @State private var sliderInManipulation: Bool = false
 
@@ -56,36 +58,20 @@ struct TextTool: View {
         self.doneAction = doneAction
         self.deleteAction = deleteAction
 
-        guard let item = textItem else {
-            self.text = ""
-            self.placeholder = kDefaultPlaceholder
-            self.fontSize = 32
-            self.textColor = UIColor(backgroundColor).contrast
-            self.alignment = .center
-            self.textAlignment = .center
-            self.textStyle = CanvasTextStyle.basicText
-            self.needTextBG = false
-            self.scale = 1
-            self.rot = .zero
-            self.offset = .zero
+        if let item = textItem {
+            self.text = item.text
+            self.placeholder = item.placeholder
+            self.fontSize = item.fontSize
+            self.textColor = item.color
+            self.alignment = item.alignment
+            self.textAlignment = item.textAlignment
+            self.textStyle = item.textStyle
+            self.needTextBG = item.needTextBG
+            self.scale = item.scale
+            self.rot = item.rotation
+            self.offset = item.offset
             self.isEditable = true
-            return
         }
-
-        self.text = item.text
-        self.placeholder = item.placeholder
-        self.fontSize = item.fontSize
-        self.textColor = item.color
-        self.alignment = item.alignment
-        self.textAlignment = item.textAlignment
-        self.textStyle = item.textStyle
-        self.needTextBG = item.needTextBG
-
-        self.scale = item.scale
-        self.rot = item.rotation
-        self.offset = item.offset
-
-        self.isEditable = true
     }
 
     var body: some View {
@@ -173,7 +159,7 @@ struct TextTool: View {
                         haptics(.light)
                         toggleAlignment()
                     } label: {
-                        Image(textAlignmentImageName())
+                        Image(uiImage: textAlignmentImage())
                     }
                 }
 
@@ -181,7 +167,7 @@ struct TextTool: View {
                     haptics(.light)
                     colorPressed()
                 } label: {
-                    Image("TextEditingColorSelectIcon")
+                    Image(uiImage: images.textEdit.textEditingColorSelectIcon)
                         .resizable()
                         .frame(width: 40.0, height: 40.0)
                         .scaledToFit()
@@ -191,7 +177,7 @@ struct TextTool: View {
                     haptics(.light)
                     textStylePressed()
                 } label: {
-                    Image("FontSelectIcon")
+                    Image(uiImage: images.common.fontSelect)
                         .resizable()
                         .frame(width: 40.0, height: 40.0)
                         .scaledToFit()
@@ -202,7 +188,7 @@ struct TextTool: View {
                         haptics(.light)
                         needTextBG.toggle()
                     } label: {
-                        Image("FontBGSelectIcon")
+                        Image(uiImage: images.common.fontBGSelect)
                             .resizable()
                             .frame(width: 40.0, height: 40.0)
                             .scaledToFit()
@@ -219,7 +205,7 @@ struct TextTool: View {
                 isEditable = false
                 donePressed()
             } label: {
-                Text("Done")
+                Text("DONE")
                     .font(.gramatika(size: 16))
             }
             .disabled(text.isEmpty && isEditable)
@@ -235,12 +221,12 @@ struct TextTool: View {
                     deletePressed()
                 } label: {
                     HStack {
-                        Image("TextEditingRemoveText")
+                        Image(uiImage: images.textEdit.textEditingRemoveText)
                             .resizable()
                             .frame(width: 35, height: 35)
                             .scaledToFit()
 
-                        Text("Delete").font(AppFonts.elmaTrioRegular(14))
+                        Text("DELETE").font(AppFonts.elmaTrioRegular(14))
                     }
                 }
                 .buttonStyle(BlurButtonStyle())
@@ -255,7 +241,7 @@ struct TextTool: View {
                     isEditing = true
                 }
             } label: {
-                Text("Close")
+                Text("CLOSE")
                     .font(.gramatika(size: 16))
             }
             .buttonStyle(BlurButtonStyle())
@@ -280,20 +266,20 @@ struct TextTool: View {
         }
     }
 
-    private func textAlignmentImageName() -> String {
+    private func textAlignmentImage() -> UIImage {
         if textAlignment == .center {
-            return "TextEditingAlignCenter"
+            return images.textEdit.textEditingAlignCenter
         }
 
         if textAlignment == .left {
-            return "TextEditingAlignleft"
+            return images.textEdit.textEditingAlignLeft
         }
 
         if textAlignment == .right {
-            return "TextEditingAlignright"
+            return images.textEdit.textEditingAlignRight
         }
 
-        return "TextEditingAlignCenter"
+        return images.textEdit.textEditingAlignCenter
     }
 
     private func colorPressed() {

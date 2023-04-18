@@ -70,8 +70,8 @@ public protocol VDEVMediaEditorButtonsCurrentItemImages {
 // MARK: - Text editing tools
 public protocol VDEVMediaEditorButtonsTextEditingImages {
     var textEditingAlignCenter: UIImage { get }
-    var textEditingAlignleft: UIImage { get }
-    var textEditingAlignright: UIImage { get }
+    var textEditingAlignLeft: UIImage { get }
+    var textEditingAlignRight: UIImage { get }
     var textEditingColorSelectIcon: UIImage { get }
     var textEditingRemoveText: UIImage { get }
 }

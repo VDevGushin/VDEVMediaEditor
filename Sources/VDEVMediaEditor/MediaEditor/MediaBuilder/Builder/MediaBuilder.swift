@@ -16,8 +16,8 @@ extension MediaBuilder {
         case error(Error)
     }
     
-    enum TestError: Error {
-        case test
+    enum MediaBuilderError: Error {
+        case selfIsNil
     }
 }
 
@@ -52,13 +52,17 @@ final class MediaBuilder: NSObject, ObservableObject {
         state = .inProgress("Инициализация генерации...")
         
         Task(priority: .high) { [weak self] in
+            guard let self = self else {
+                return  await self?.set(MediaBuilderError.selfIsNil)
+            }
+            
             Log.d("Make combine assets from layers [count: \(layers.count)]")
             let combinerAsset = await assetBuilder.execute()
             
             Log.d("Render media item from combine assets [count: \(combinerAsset.count)]")
             
             do  {
-                var result = try await combiner.combine(combinerAsset,
+                var result = try await self.combiner.combine(combinerAsset,
                                                         canvasSize: size,
                                                         scaleFactor: scale,
                                                         progressObserver: progressObserver)
@@ -72,9 +76,9 @@ final class MediaBuilder: NSObject, ObservableObject {
                                                        usedMusic: false,
                                                        usedStickers: layers.hasStickers)
                 
-                await self?.set(result)
+                await self.set(result)
             } catch {
-                await self?.set(error)
+                await self.set(error)
             }
         }
     }

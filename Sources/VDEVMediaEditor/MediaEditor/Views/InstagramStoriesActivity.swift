@@ -7,13 +7,16 @@
 
 import UIKit
 import AVKit
+import Resolver
 
 class InstagramStoriesActivity: UIActivity {
+    @Injected private var images: VDEVImageConfig
+    
     override class var activityCategory: UIActivity.Category { .share }
 
     override var activityType: UIActivity.ActivityType? { .init(rawValue: "com.instagram.shareStory") }
     override var activityTitle: String? { "Instagram Stories" }
-    override var activityImage: UIImage? { UIImage(named: "IGStories") }
+    override var activityImage: UIImage? { images.common.iGStories }
 
     let urlScheme = URL(string: "instagram-stories://share?source_application=com.w1d1.ru")!
 

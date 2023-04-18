@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct CloseButton: View {
-    private let imageName: String = "Xmark"
+    @Injected private var images: VDEVImageConfig
+    
     private let size: CGSize = .init(width: 35, height: 35)
     private let imageSize: CGSize = .init(width: 12, height: 12)
     private let action: () -> Void
@@ -24,7 +26,7 @@ struct CloseButton: View {
         } label: {
             ZStack {
                 AppColors.blackInvisible
-                Image(imageName)
+                Image(uiImage: images.common.xmark)
                     .resizable()
                     .scaledToFit()
                     .frame(imageSize)

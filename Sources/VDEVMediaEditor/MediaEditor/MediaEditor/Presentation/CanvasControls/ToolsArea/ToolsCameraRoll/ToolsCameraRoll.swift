@@ -9,6 +9,7 @@ import SwiftUI
 import YPImagePicker
 import AVKit
 import PhotosUI
+import Resolver
 
 struct ToolsCameraRoll {
     enum MediaType {
@@ -35,6 +36,8 @@ struct ToolsCameraRoll {
 }
 
 struct CameraVPView: UIViewControllerRepresentable {
+    @Injected private var images: VDEVImageConfig
+    
     let isLibrary: Bool
     let canvasSize: CGSize
     let didPick: (ToolsCameraRoll?) -> Void
@@ -96,7 +99,7 @@ struct CameraVPView: UIViewControllerRepresentable {
         config.wordings.crop = "Crop"
         config.colors.photoVideoScreenBackgroundColor = AppColors.black.uiColor
 
-        config.icons.capturePhotoImage = UIImage.imageFromBundle("iconCapture")
+        config.icons.capturePhotoImage = images.common.photoVideoCapture
 
         let picker = YPImagePicker(configuration: config)
         picker.overrideUserInterfaceStyle = .dark

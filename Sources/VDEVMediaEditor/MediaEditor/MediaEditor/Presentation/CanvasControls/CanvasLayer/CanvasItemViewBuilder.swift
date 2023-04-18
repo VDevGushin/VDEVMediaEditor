@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Resolver
 
 @ViewBuilder
 func CanvasItemViewBuilder(item: CanvasItemModel,
@@ -16,23 +17,17 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
     case .video:
         let item: CanvasVideoModel = CanvasItemModel.toType(model: item)
         ZStack {
-            if let url = item.videoURL {
-                VideoPlayerView(assetURL: url,
-                                videoComposition: item.avVideoComposition,
-                                volume: 0.0,
-                                thumbnail: item.thumbnail)
-                .frame(width: canvasSize.width)
-            } else {
-                BlurView(style: .systemChromeMaterialDark)
-                    .frame(.init(width: 100, height: 100))
-            }
+            VideoPlayerView(assetURL: item.videoURL,
+                            videoComposition: item.avVideoComposition,
+                            volume: 0.0,
+                            thumbnail: item.thumbnail)
+            .frame(width: canvasSize.width)
             
             if item.inProgress {
                 ActivityIndicator(isAnimating: true,
                                   style: .large,
                                   color: .init(guideLinesColor))
             }
-            
         }
         
     case .image:
@@ -152,7 +147,8 @@ func CanvasItemPreiviewViewBuilder(_ item: CanvasItemModel,
             .scaleEffect(0.8)
         
     case .text:
-        Image("TypeText")
+        let images = Resolver.resolve(VDEVImageConfig.self)
+        Image(uiImage: images.typed.typeText)
             .renderingMode(.template)
             .resizable()
             .aspectRatio(contentMode: .fit)
