@@ -10,10 +10,7 @@ import Resolver
 
 struct ShareButton: View {
     @Injected private var images: VDEVImageConfig
-    
-    struct Strings {
-        static let publish = "SHARE"
-    }
+    @Injected private var strings: VDEVEditorStrings
     
     private let height: CGFloat = 40
     private let action: () -> Void
@@ -37,7 +34,7 @@ struct ShareButton: View {
                         .scaledToFit()
                         .frame(width: 20, height: 20)
                     
-                    Text(Strings.publish)
+                    Text(strings.publish)
                         .font(AppFonts.elmaTrioRegular(13))
                         .foregroundColor(AppColors.whiteWithOpacity1)
                         .shadow(radius: 5)

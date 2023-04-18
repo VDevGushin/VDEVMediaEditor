@@ -15,13 +15,17 @@ public struct VDEVMediaEditorConfig {
     private(set) var networkService: MediaEditorSourceService
     // images
     private(set) var images: VDEVImageConfig
+    // strings
+    private(set) var strings: VDEVEditorStrings
     
     public init(challengeId: String,
                 networkService: MediaEditorSourceService,
-                images: VDEVImageConfig) {
+                images: VDEVImageConfig,
+                strings: VDEVEditorStrings) {
         self.baseChallengeId = challengeId
         self.networkService = networkService
         self.images = images
+        self.strings = strings
     }
 }
 
@@ -86,4 +90,49 @@ public protocol VDEVMediaEditorButtonsTypedImages {
     var typeTemplate: UIImage { get }
     var typeText: UIImage { get }
     var typeVideo: UIImage { get }
+}
+
+public protocol VDEVEditorStrings {
+    var paste: String { get }
+    var brightness: String { get }
+    var contrast: String { get }
+    var saturation: String { get }
+    var highlight: String { get }
+    var shadow: String { get }
+    var `default`: String { get }
+    var mask: String { get }
+    var filter: String { get }
+    var texture: String { get }
+    var adjustments: String { get }
+    var crop: String { get }
+    var removeBack: String { get }
+    var editText: String { get }
+    var dublicate: String { get }
+    var reset: String { get }
+    var remove: String { get }
+    var up: String { get }
+    var down: String { get }
+    var bringToTop: String { get }
+    var bringToBottom: String { get }
+    var selectMedia: String { get }
+    var colorFilter: String { get }
+    var close: String { get }
+    var layers: String { get }
+    var templatePack: String { get }
+    var addMedia: String { get }
+    var challengeTitle: String { get }
+    var shareOrSave: String { get }
+    var template: String { get }
+    var text: String { get }
+    var stickersCustom: String { get }
+    var addPhoto: String { get }
+    var addVideo: String { get }
+    var camera: String { get }
+    var drawing: String { get }
+    var background: String { get }
+    var error: String { get }
+    var ok: String { get }
+    var publish: String { get }
+    var see: String { get }
+    var answers: String { get }
 }

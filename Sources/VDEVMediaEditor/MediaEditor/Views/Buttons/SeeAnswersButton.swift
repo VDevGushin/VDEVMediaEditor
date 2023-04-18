@@ -6,12 +6,10 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct SeeAnswersButton: View {
-    struct Strings {
-        static let see = "SEE"
-        static let answers = "ANSWERS"
-    }
+    @Injected private var strings: VDEVEditorStrings
     
     private let height: CGFloat = 40
     private let action: () -> Void
@@ -31,7 +29,7 @@ struct SeeAnswersButton: View {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(AppColors.shareButtonsColors)
                 
-                Text("\(Strings.see) \(number) \(Strings.answers)")
+                Text("\(strings.see) \(number) \(strings.answers)")
                     .font(AppFonts.elmaTrioRegular(13))
                     .foregroundColor(AppColors.whiteWithOpacity1)
                     .shadow(radius: 5)

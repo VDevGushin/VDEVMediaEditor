@@ -6,12 +6,9 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct TemplateSelectorView: View {
-    enum Strings {
-        static let templatePack = "Template pack"
-    }
-    
     @StateObject private var vm: TemplateSelectorViewModel
     @State private var size: CGSize
 
@@ -19,6 +16,7 @@ struct TemplateSelectorView: View {
          challengeId: String,
          onClose: @escaping ([TemplatePack.Variant.Item]) -> Void) {
         self.size = size
+        
         self._vm = .init(wrappedValue: .init(fitCanvasSize: size, challengeId: challengeId, onClose: onClose))
     }
 
@@ -42,7 +40,7 @@ struct TemplateSelectorView: View {
     }
 
     var tools: some View {
-        ToolWrapper(title: vm.templatePackForPreview == nil ? Strings.templatePack : vm.templatePackForPreview!.name, fullScreen: false) {
+        ToolWrapper(title: vm.templatePackForPreview == nil ? Resolver.resolve(VDEVEditorStrings.self).templatePack : vm.templatePackForPreview!.name, fullScreen: false) {
             if vm.templatePackForPreview == nil {
                 vm.clearSelectedTool()
                 vm.select()

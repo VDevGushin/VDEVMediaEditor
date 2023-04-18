@@ -8,18 +8,6 @@
 import SwiftUI
 import Resolver
 
-extension ToolItem {
-    enum Strings {
-        static let template = "TEMPLATE"
-        static let text = "TEXT"
-        static let stickersCustom = "STICKER"
-        static let addPhoto = "PHOTO"
-        static let addVideo = "VIDEO"
-        static let camera = "CAMERA"
-        static let drawing = "DRAWING"
-        static let background = "BG"
-    }
-}
 
 enum ToolItem: CaseIterable, Identifiable, Equatable {
     // Тулзы, которые показываем в меню добавления новых слоев
@@ -78,6 +66,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     }
 
     var title: String {
+        let Strings = Resolver.resolve(VDEVEditorStrings.self)
         switch self {
         case .template:
             return Strings.template

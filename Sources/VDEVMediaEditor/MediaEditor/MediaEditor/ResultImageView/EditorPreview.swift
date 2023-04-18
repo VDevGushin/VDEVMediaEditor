@@ -18,9 +18,6 @@ extension View {
 }
 
 struct EditorPreviewModifier: ViewModifier {
-    struct Strings {
-        static let challengeTitle = "Test"
-    }
     
     @Binding private var model: EditorPreview.Content?
     
@@ -34,7 +31,7 @@ struct EditorPreviewModifier: ViewModifier {
                 model = nil
             }, content: {model in
                 EditorPreview(model: model,
-                              challengeTitle: Strings.challengeTitle)
+                              challengeTitle: "")
             })
     }
 }
@@ -65,10 +62,7 @@ extension EditorPreview {
 struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @Injected private var images: VDEVImageConfig
-    struct Strings {
-        static let shareOrSave = "Share\nor save"
-    }
-    
+   
     @State var model: Content
     @State var challengeTitle: String
     @State var needShare: Bool = false

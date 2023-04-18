@@ -8,23 +8,16 @@
 import SwiftUI
 import Resolver
 
-extension LayersView {
-    enum Strings {
-        static let close = "CLOSE"
-        static let layers = "LAYERS"
-    }
-}
-
-
 struct LayersView: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
+    @Injected private var strings: VDEVEditorStrings
     
     var body: some View {
         Group {
             if !vm.tools.openLayersList {
                 ImageButton(image: images.common.layers,
-                            title: Strings.layers,
+                            title: strings.layers,
                             fontSize: 9,
                             size: .init(width: 44, height: 44),
                             tintColor: AppColors.whiteWithOpacity,
@@ -37,7 +30,7 @@ struct LayersView: View {
                     Layers()
                     
                     ImageButton(image: images.common.close,
-                                title: Strings.close,
+                                title: strings.close,
                                 fontSize: 9,
                                 size: .init(width: 44, height: 44),
                                 tintColor: AppColors.whiteWithOpacity,

@@ -12,14 +12,7 @@ import PhotosUI
 import Resolver
 
 struct ToolsAreaView: View {
-    enum Strings {
-        static let adjustments = "ADJUSTMENTS"
-        static let colorFilter = "COLOR FILTER"
-        static let texture = "TEXTURE"
-        static let mask = "MASK"
-        static let addMedia = "ADD MEDIA"
-    }
-    
+    @Injected private var strings: VDEVEditorStrings
     @Injected private var images: VDEVImageConfig
     @ObservedObject private var vm: CanvasEditorViewModel
 
@@ -218,7 +211,7 @@ struct ToolsAreaView: View {
             
             if !vm.data.isLimit {
                 ImageButton(image: images.common.add,
-                            title: Strings.addMedia,
+                            title: strings.addMedia,
                             fontSize: 9,
                             size: .init(width: 44, height: 44),
                             tintColor: AppColors.white,
@@ -387,7 +380,7 @@ fileprivate extension ToolsAreaView {
     // добавление фильтров
     @ViewBuilder
     func filterTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.colorFilter, fullScreen: false) {
+        ToolWrapper(title: strings.colorFilter, fullScreen: false) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             ColorFilterTool(layerModel: item,
@@ -398,7 +391,7 @@ fileprivate extension ToolsAreaView {
     // добалвение текстуры
     @ViewBuilder
     func textureTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.texture, fullScreen: true) {
+        ToolWrapper(title: strings.texture, fullScreen: true) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             GridPickTool(
@@ -414,7 +407,7 @@ fileprivate extension ToolsAreaView {
     // добавление маски
     @ViewBuilder
     func maskTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.mask, fullScreen: true) {
+        ToolWrapper(title: strings.mask, fullScreen: true) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             GridPickTool(
@@ -430,7 +423,7 @@ fileprivate extension ToolsAreaView {
     // добавление аджастментов
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.adjustments, fullScreen: false) {
+        ToolWrapper(title: strings.adjustments, fullScreen: false) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             ToolAdjustments(item)

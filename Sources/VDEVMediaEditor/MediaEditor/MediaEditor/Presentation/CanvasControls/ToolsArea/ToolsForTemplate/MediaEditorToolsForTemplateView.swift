@@ -9,6 +9,7 @@ import SwiftUI
 import Resolver
 
 struct MediaEditorToolsForTemplateView: View {
+    @Injected private var strings: VDEVEditorStrings
     @ObservedObject private var vm: CanvasEditorToolsForTemplateViewModel
     @Binding private var mainBackgroundColor: Color
     
@@ -86,10 +87,6 @@ fileprivate extension MediaEditorToolsForTemplateView {
 
 // MARK: - Photo and Video Picker
 private struct PickMediaContainer: View {
-    enum Strings {
-        static let selectMedia = "Select Media"
-    }
-    
     @EnvironmentObject private var vm: CanvasEditorToolsForTemplateViewModel
     
     var body: some View {
@@ -132,15 +129,9 @@ private struct PickMediaContainer: View {
 
 // MARK: - Item edit variants
 fileprivate extension MediaEditorToolsForTemplateView {
-    enum Strings {
-        static let adjustments = "ADJUSTMENTS"
-        static let colorFilter = "COLOR FILTER"
-        static let texture = "TEXTURE"
-    }
-    
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.adjustments, fullScreen: false) {
+        ToolWrapper(title: strings.adjustments, fullScreen: false) {
             vm.hideAllOverlayViews()
         } tool: {
             ToolAdjustments(item)
@@ -151,7 +142,7 @@ fileprivate extension MediaEditorToolsForTemplateView {
     // добавление фильтров
     @ViewBuilder
     func filterTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.colorFilter, fullScreen: false) {
+        ToolWrapper(title: strings.colorFilter, fullScreen: false) {
             vm.hideAllOverlayViews()
         } tool: {
             ColorFilterTool(layerModel: item,
@@ -162,7 +153,7 @@ fileprivate extension MediaEditorToolsForTemplateView {
     // добалвение текстуры
     @ViewBuilder
     func textureTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: Strings.texture, fullScreen: true) {
+        ToolWrapper(title: strings.texture, fullScreen: true) {
             vm.hideAllOverlayViews()
         } tool: {
             GridPickTool(
@@ -198,13 +189,7 @@ private struct EditVariants: View {
 
 private struct ItemEditVariantsView: View {
     @Injected private var images: VDEVImageConfig
-    
-    enum Strings {
-        static let filter = "FILTER"
-        static let texture = "TEXTURE"
-        static let adjustments = "ADJUSTMENTS"
-        static let remove = "REMOVE"
-    }
+    @Injected private var strings: VDEVEditorStrings
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
@@ -246,33 +231,33 @@ private struct ItemEditVariantsView: View {
                 HStack(alignment: .center, spacing: buttonSpacing) {
                     switch item.type {
                     case .image:
-                        ToolRow(image: images.currentItem.currentItemFilter, title: Strings.filter) {
+                        ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) {
                             onColorFilter(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemTexture, title: Strings.texture) {
+                        ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) {
                             onTextureFilter(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemAdjustments, title: Strings.adjustments) { onAdjustments(item)
+                        ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemRM, title: Strings.remove) {
+                        ToolRow(image: images.currentItem.currentItemRM, title: strings.remove) {
                             onDelete(item)
                         }
                     case .video:
-                        ToolRow(image: images.currentItem.currentItemTexture, title: Strings.texture) {
+                        ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) {
                             onTextureFilter(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemFilter, title: Strings.filter) {
+                        ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) {
                             onColorFilter(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemAdjustments, title: Strings.adjustments) { onAdjustments(item)
+                        ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemRM, title: Strings.remove) {
+                        ToolRow(image: images.currentItem.currentItemRM, title: strings.remove) {
                             onDelete(item)
                         }
                     default: EmptyView()

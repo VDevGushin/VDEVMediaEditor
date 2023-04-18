@@ -6,28 +6,15 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct ToolAdjustments: View {
-    struct Strings {
-        static let brightness = "Brightness".uppercased()
-        static let contrast = "Contrast".uppercased()
-        static let saturation = "Saturation".uppercased()
-        static let highlight = "Highlight".uppercased()
-        static let shadow = "Shadow".uppercased()
-        static let `default` = "Default".uppercased()
-    }
-    
+    @Injected private var strings: VDEVEditorStrings
     @EnvironmentObject private var vm: CanvasEditorViewModel
 
     private let item: CanvasItemModel
 
-    private let toolItems: [AdjustToolItem] = [
-        AdjustToolItem(title: Strings.brightness, min: -0.1, max: 0.1, normal: 0),
-        AdjustToolItem(title: Strings.contrast, min: 0.9, max: 1, normal: 1),
-        AdjustToolItem(title: Strings.saturation, min: 0.0, max: 2, normal: 1),
-        AdjustToolItem(title: Strings.highlight, min: 0.0, max: 1, normal: 1),
-        AdjustToolItem(title: Strings.shadow, min: 0.0, max: 1, normal: 0)
-    ]
+    private var toolItems: [AdjustToolItem] = []
 
     @State private var brightness: Double = 0
     @State private var contrast: Double = 0
@@ -37,6 +24,13 @@ struct ToolAdjustments: View {
 
     init(_ item: CanvasItemModel) {
         self.item = item
+        toolItems = [
+            AdjustToolItem(title: strings.brightness, min: -0.1, max: 0.1, normal: 0),
+            AdjustToolItem(title: strings.contrast, min: 0.9, max: 1, normal: 1),
+            AdjustToolItem(title: strings.saturation, min: 0.0, max: 2, normal: 1),
+            AdjustToolItem(title: strings.highlight, min: 0.0, max: 1, normal: 1),
+            AdjustToolItem(title: strings.shadow, min: 0.0, max: 1, normal: 0)
+        ]
     }
 
     var body: some View {
@@ -90,7 +84,7 @@ struct ToolAdjustments: View {
                 item.apply(adjustmentSettings: nil)
                 resetState()
             } label: {
-                Text(Strings.default)
+                Text(strings.default)
                     .font(AppFonts.elmaTrioRegular(12))
                     .foregroundColor(AppColors.whiteWithOpacity)
             }

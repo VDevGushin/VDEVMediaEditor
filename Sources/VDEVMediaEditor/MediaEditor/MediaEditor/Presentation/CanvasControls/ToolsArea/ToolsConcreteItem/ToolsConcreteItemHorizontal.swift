@@ -8,28 +8,10 @@
 import SwiftUI
 import Resolver
 
-extension ToolsConcreteItemHorizontal {
-    enum Strings {
-        static let mask = "MASK"
-        static let filter = "FILTER"
-        static let texture = "TEXTURE"
-        static let adjustments = "ADJUSTMENTS"
-        static let crop = "CROP"
-        static let removeBack = "REMOVE BG"
-        static let editText = "EDIT"
-        static let dublicate = "DUBLICATE"
-        static let reset = "RESET"
-        static let remove = "REMOVE"
-        static let up = "UP"
-        static let down = "DOWN"
-        static let bringToTop = "TOP"
-        static let bringToBottom = "BOTTOM"
-    }
-}
-
 struct ToolsConcreteItemHorizontal: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
+    @Injected private var strings: VDEVEditorStrings
     
     private weak var item: CanvasItemModel?
     
@@ -105,45 +87,45 @@ struct ToolsConcreteItemHorizontal: View {
                         case .image:
                             
                             ToolRow(image: images.currentItem.currentItemMask,
-                                    title: Strings.mask) { onMaskFilter(item) }
+                                    title: strings.mask) { onMaskFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemFilter, title: Strings.filter) { onColorFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) { onColorFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemTexture, title: Strings.texture) { onTextureFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) { onTextureFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemAdjustments, title: Strings.adjustments) { onAdjustments(item) }
+                            ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemCrop, title: Strings.crop) { onCropImage(item) }
+                            ToolRow(image: images.currentItem.currentItemCrop, title: strings.crop) { onCropImage(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemRMBack, title: Strings.removeBack) { removeBackgroundML(item) }
+                            ToolRow(image: images.currentItem.currentItemRMBack, title: strings.removeBack) { removeBackgroundML(item) }
                             
                         case .video:
-                            ToolRow(image: images.currentItem.currentItemMask, title: Strings.mask) { onMaskFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemMask, title: strings.mask) { onMaskFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemTexture, title: Strings.texture) { onTextureFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) { onTextureFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemFilter, title: Strings.filter) { onColorFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) { onColorFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemAdjustments, title: Strings.adjustments) { onAdjustments(item) }
+                            ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item) }
                         case .text:
-                            ToolRow(image: images.currentItem.currentItemEditText, title: Strings.editText) { onEditText(item) }
+                            ToolRow(image: images.currentItem.currentItemEditText, title: strings.editText) { onEditText(item) }
                         default: EmptyView()
                         }
                         
                         switch item.type {
                         case .image, .video, .text, .sticker, .drawing:
-                            ToolRow(image: images.currentItem.currentIteDublicate, title: Strings.dublicate) { onDublicate(item) }
+                            ToolRow(image: images.currentItem.currentIteDublicate, title: strings.dublicate) { onDublicate(item) }
                         default: EmptyView()
                         }
                         
                         if vm.data.canReset(item: item) {
                             ToolRow(image: images.currentItem.currentItemReset,
-                                    title: Strings.reset,
+                                    title: strings.reset,
                                     tintColor: AppColors.greenWithOpacity) { onReset(item) }
                         }
                         
                         ToolRow(image: images.currentItem.currentItemRM,
-                                title: Strings.remove,
+                                title: strings.remove,
                                 tintColor: AppColors.redWithOpacity) { onDelete(item) }
                         
                         Rectangle()
@@ -152,20 +134,20 @@ struct ToolsConcreteItemHorizontal: View {
                             .frame(width: 1)
                         
                         if item.type != .template {
-                            ToolRow(image: images.currentItem.currentItemUp, title: Strings.up) {
+                            ToolRow(image: images.currentItem.currentItemUp, title: strings.up) {
                                 onUp(item)
                             }
                             
-                            ToolRow(image: images.currentItem.currentItemDown, title: Strings.down) {
+                            ToolRow(image: images.currentItem.currentItemDown, title: strings.down) {
                                 onBack(item)
                             }
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemBringToTop, title: Strings.bringToTop) {
+                        ToolRow(image: images.currentItem.currentItemBringToTop, title: strings.bringToTop) {
                             onBringToFront(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemBringToBottom, title: Strings.bringToBottom) {
+                        ToolRow(image: images.currentItem.currentItemBringToBottom, title: strings.bringToBottom) {
                             onBringToBack(item)
                         }
                     }

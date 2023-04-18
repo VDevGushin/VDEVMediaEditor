@@ -7,16 +7,14 @@
 
 import SwiftUI
 import Combine
-
-fileprivate  struct Strings {
-    static let error = "Error"
-    static let ok = "OK"
-}
+import Resolver
 
 struct AlertData: Identifiable, Equatable {
+    @Injected private var strings: VDEVEditorStrings
+    
     let id = UUID()
-    let title: String
-    let detail: String?
+    private(set) var title: String = ""
+    private(set) var detail: String?
     
     init(title: String, detail: String?) {
         self.title = title
@@ -27,13 +25,13 @@ struct AlertData: Identifiable, Equatable {
         switch completion {
         case .finished: return nil
         case .failure(let error):
-            self.title = Strings.error
+            self.title = strings.error
             self.detail = error.localizedDescription
         }
     }
     
     init(_ error: Error) {
-        self.title = Strings.error
+        self.title = strings.error
         self.detail = error.localizedDescription
     }
     
@@ -47,7 +45,7 @@ extension View {
 }
 
 struct AlertModifier: ViewModifier {
-    
+    @Injected private var strings: VDEVEditorStrings
     @Binding private var alertData: AlertData?
     
     init(alertData: Binding<AlertData?>) {
@@ -57,7 +55,7 @@ struct AlertModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alert(item: $alertData) { data in
-                Alert(title: data.title, message: data.detail, dismissButtonTitle: Strings.ok)
+                Alert(title: data.title, message: data.detail, dismissButtonTitle: strings.ok)
             }
     }
 }

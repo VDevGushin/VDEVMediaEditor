@@ -8,18 +8,13 @@
 import SwiftUI
 import Resolver
 
-extension ToolSelectorHorizontalView {
-    enum Strings {
-        static let paste = "PASTE"
-    }
-}
-
 enum PasteboardModel {
     case image(UIImage)
     case text(String)
 }
 
 struct ToolSelectorHorizontalView: View {
+    @Injected private var strings: VDEVEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var pasteboardService: PasteboardService
     
@@ -83,7 +78,7 @@ struct ToolSelectorHorizontalView: View {
         switch pasteboardService.tryPaste(canPasteOnlyImages: canPasteOnlyImages) {
         case .text(let text):
             ImageButton(image: images.typed.typePaste,
-                        title: Strings.paste,
+                        title: strings.paste,
                         fontSize: 12,
                         size: .init(width: buttonSize, height: buttonSize),
                         tintColor: AppColors.whiteWithOpacity) {
@@ -92,7 +87,7 @@ struct ToolSelectorHorizontalView: View {
             }
         case .image(let image):
             ImageButton(image: images.typed.typePaste,
-                        title: Strings.paste,
+                        title: strings.paste,
                         fontSize: 12,
                         size: .init(width: buttonSize, height: buttonSize),
                         tintColor: AppColors.whiteWithOpacity) {

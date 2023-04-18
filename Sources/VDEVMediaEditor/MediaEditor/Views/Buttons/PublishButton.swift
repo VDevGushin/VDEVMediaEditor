@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
+import Resolver
 
 struct PublishButton: View {
-    struct Strings {
-        static let publish = "PUBLISH"
-    }
+    @Injected private var strings: VDEVEditorStrings
     
     private let size: CGSize = .init(width: 75, height: 45)
     private let action: () -> Void
@@ -30,7 +29,7 @@ struct PublishButton: View {
                     .shadow(color: AppColors.whiteWithOpacity,
                             radius: 8, x: 0, y: 0)
                 
-                Text(Strings.publish)
+                Text(strings.publish)
                     .font(AppFonts.elmaTrioRegular(14))
                     .foregroundColor(AppColors.black)
                     .shadow(radius: 5)
