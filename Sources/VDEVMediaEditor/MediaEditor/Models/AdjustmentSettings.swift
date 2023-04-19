@@ -25,6 +25,7 @@ struct AdjustmentSettings: Identifiable {
                     "inputSaturation": .number(NSNumber(value: saturation))
                 ]
             ),
+            
             FilterDescriptor(
                 name: "CIHighlightShadowAdjust",
                 params: [
