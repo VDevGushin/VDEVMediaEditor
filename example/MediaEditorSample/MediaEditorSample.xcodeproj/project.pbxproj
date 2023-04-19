@@ -32,6 +32,62 @@
 		3C3AFBBA29EDD207008D0D46 /* getChallengeEditorMasksFilters.gql in Resources */ = {isa = PBXBuildFile; fileRef = 3C3AFBA729EDD207008D0D46 /* getChallengeEditorMasksFilters.gql */; };
 		3C3AFBBB29EDD207008D0D46 /* FilePlistStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFBA929EDD207008D0D46 /* FilePlistStorage.swift */; };
 		3C3AFBBC29EDD207008D0D46 /* NetworkAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFBAA29EDD207008D0D46 /* NetworkAdapter.swift */; };
+		3CB00FCD29F06AFC00BC087A /* Poteha-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9529F06AFC00BC087A /* Poteha-Regular.otf */; };
+		3CB00FCE29F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9629F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf */; };
+		3CB00FCF29F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9729F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf */; };
+		3CB00FD029F06AFC00BC087A /* Mabry Pro Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9829F06AFC00BC087A /* Mabry Pro Bold.otf */; };
+		3CB00FD129F06AFC00BC087A /* ElmaTrio-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9929F06AFC00BC087A /* ElmaTrio-Light.ttf */; };
+		3CB00FD229F06AFC00BC087A /* CoFo_Sans-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9A29F06AFC00BC087A /* CoFo_Sans-Black.ttf */; };
+		3CB00FD329F06AFC00BC087A /* ElmaTrio-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9B29F06AFC00BC087A /* ElmaTrio-ExtraLightItalic.ttf */; };
+		3CB00FD429F06AFC00BC087A /* ElmaMono-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9C29F06AFC00BC087A /* ElmaMono-ExtraBoldItalic.ttf */; };
+		3CB00FD529F06AFC00BC087A /* Mabry Pro Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9D29F06AFC00BC087A /* Mabry Pro Black.otf */; };
+		3CB00FD629F06AFC00BC087A /* ElmaMono-ExtraLightSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9E29F06AFC00BC087A /* ElmaMono-ExtraLightSlanted.ttf */; };
+		3CB00FD729F06AFC00BC087A /* MabryMonoPro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9F29F06AFC00BC087A /* MabryMonoPro-Regular.ttf */; };
+		3CB00FD829F06AFC00BC087A /* KazimirText-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA029F06AFC00BC087A /* KazimirText-Regular.otf */; };
+		3CB00FD929F06AFC00BC087A /* Mabry Pro Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA129F06AFC00BC087A /* Mabry Pro Medium.otf */; };
+		3CB00FDA29F06AFC00BC087A /* ElmaMono-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA229F06AFC00BC087A /* ElmaMono-ExtraLightItalic.ttf */; };
+		3CB00FDB29F06AFC00BC087A /* ElmaTrio-BoldSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA329F06AFC00BC087A /* ElmaTrio-BoldSlanted.ttf */; };
+		3CB00FDC29F06AFC00BC087A /* Visuelt Pro Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA429F06AFC00BC087A /* Visuelt Pro Medium.ttf */; };
+		3CB00FDD29F06AFC00BC087A /* StyreneBLCApp-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA529F06AFC00BC087A /* StyreneBLCApp-Medium.ttf */; };
+		3CB00FDE29F06AFC00BC087A /* ElmaMono-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA629F06AFC00BC087A /* ElmaMono-ExtraBold.ttf */; };
+		3CB00FDF29F06AFC00BC087A /* StyreneBLCApp-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA729F06AFC00BC087A /* StyreneBLCApp-Regular.ttf */; };
+		3CB00FE029F06AFC00BC087A /* Gramatika-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA829F06AFC00BC087A /* Gramatika-Bold.ttf */; };
+		3CB00FE129F06AFC00BC087A /* ElmaTrio-ExtraBoldSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FA929F06AFC00BC087A /* ElmaTrio-ExtraBoldSlanted.ttf */; };
+		3CB00FE229F06AFC00BC087A /* ElmaTrio-RegularSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FAA29F06AFC00BC087A /* ElmaTrio-RegularSlanted.ttf */; };
+		3CB00FE329F06AFC00BC087A /* ElmaTrio-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FAB29F06AFC00BC087A /* ElmaTrio-ExtraBoldItalic.ttf */; };
+		3CB00FE429F06AFC00BC087A /* ElmaMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FAC29F06AFC00BC087A /* ElmaMono-Regular.ttf */; };
+		3CB00FE529F06AFC00BC087A /* MabryMonoPro-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FAD29F06AFC00BC087A /* MabryMonoPro-Medium.ttf */; };
+		3CB00FE629F06AFC00BC087A /* ElmaMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FAE29F06AFC00BC087A /* ElmaMono-Bold.ttf */; };
+		3CB00FE729F06AFC00BC087A /* ElmaTrio-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FAF29F06AFC00BC087A /* ElmaTrio-LightItalic.ttf */; };
+		3CB00FE829F06AFC00BC087A /* CoFo_Sans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB029F06AFC00BC087A /* CoFo_Sans-Regular.ttf */; };
+		3CB00FE929F06AFC00BC087A /* Visuelt Pro Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB129F06AFC00BC087A /* Visuelt Pro Regular.ttf */; };
+		3CB00FEA29F06AFC00BC087A /* ElmaMono-ExtraBoldSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB229F06AFC00BC087A /* ElmaMono-ExtraBoldSlanted.ttf */; };
+		3CB00FEB29F06AFC00BC087A /* ElmaTrio-LightSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB329F06AFC00BC087A /* ElmaTrio-LightSlanted.ttf */; };
+		3CB00FEC29F06AFC00BC087A /* ElmaMono-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB429F06AFC00BC087A /* ElmaMono-BoldItalic.ttf */; };
+		3CB00FED29F06AFC00BC087A /* CoFo_Sans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB529F06AFC00BC087A /* CoFo_Sans-Bold.ttf */; };
+		3CB00FEE29F06AFC00BC087A /* ElmaMono-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB629F06AFC00BC087A /* ElmaMono-ExtraLight.ttf */; };
+		3CB00FEF29F06AFC00BC087A /* ElmaTrio-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB729F06AFC00BC087A /* ElmaTrio-Regular.ttf */; };
+		3CB00FF029F06AFC00BC087A /* ElmaMono-RegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB829F06AFC00BC087A /* ElmaMono-RegularItalic.ttf */; };
+		3CB00FF129F06AFC00BC087A /* ElmaMono-BoldSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FB929F06AFC00BC087A /* ElmaMono-BoldSlanted.ttf */; };
+		3CB00FF229F06AFC00BC087A /* ElmaMono-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FBA29F06AFC00BC087A /* ElmaMono-Light.ttf */; };
+		3CB00FF329F06AFC00BC087A /* ElmaTrio-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FBB29F06AFC00BC087A /* ElmaTrio-BoldItalic.ttf */; };
+		3CB00FF429F06AFC00BC087A /* Grtsk-Giga-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FBC29F06AFC00BC087A /* Grtsk-Giga-Medium.ttf */; };
+		3CB00FF529F06AFC00BC087A /* MabryMonoPro-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FBD29F06AFC00BC087A /* MabryMonoPro-Bold.ttf */; };
+		3CB00FF629F06AFC00BC087A /* Grtsk-Giga-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FBE29F06AFC00BC087A /* Grtsk-Giga-Regular.otf */; };
+		3CB00FF729F06AFC00BC087A /* ElmaTrio-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FBF29F06AFC00BC087A /* ElmaTrio-ExtraLight.ttf */; };
+		3CB00FF829F06AFC00BC087A /* ElmaTrio-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC029F06AFC00BC087A /* ElmaTrio-Bold.ttf */; };
+		3CB00FF929F06AFC00BC087A /* Mabry Pro.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC129F06AFC00BC087A /* Mabry Pro.otf */; };
+		3CB00FFA29F06AFC00BC087A /* Epos-Medium-App.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC229F06AFC00BC087A /* Epos-Medium-App.ttf */; };
+		3CB00FFB29F06AFC00BC087A /* GTPressuraPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC329F06AFC00BC087A /* GTPressuraPro-Regular.otf */; };
+		3CB00FFC29F06AFC00BC087A /* CoFo_Sans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC429F06AFC00BC087A /* CoFo_Sans-Medium.ttf */; };
+		3CB00FFD29F06AFC00BC087A /* ElmaMono-RegularSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC529F06AFC00BC087A /* ElmaMono-RegularSlanted.ttf */; };
+		3CB00FFE29F06AFC00BC087A /* ElmaTrio-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC629F06AFC00BC087A /* ElmaTrio-ExtraBold.ttf */; };
+		3CB00FFF29F06AFC00BC087A /* GTPressuraMonoLC-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC729F06AFC00BC087A /* GTPressuraMonoLC-Regular.otf */; };
+		3CB0100029F06AFC00BC087A /* Menoe Grotesque-Regular-Desktop.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC829F06AFC00BC087A /* Menoe Grotesque-Regular-Desktop.otf */; };
+		3CB0100129F06AFC00BC087A /* MaregrapheCaption-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FC929F06AFC00BC087A /* MaregrapheCaption-Regular.ttf */; };
+		3CB0100229F06AFC00BC087A /* ElmaMono-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FCA29F06AFC00BC087A /* ElmaMono-LightItalic.ttf */; };
+		3CB0100329F06AFC00BC087A /* ElmaMono-LightSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FCB29F06AFC00BC087A /* ElmaMono-LightSlanted.ttf */; };
+		3CB0100429F06AFC00BC087A /* Mabry Pro Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00FCC29F06AFC00BC087A /* Mabry Pro Light.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +115,63 @@
 		3C3AFBA729EDD207008D0D46 /* getChallengeEditorMasksFilters.gql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = getChallengeEditorMasksFilters.gql; sourceTree = "<group>"; };
 		3C3AFBA929EDD207008D0D46 /* FilePlistStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilePlistStorage.swift; sourceTree = "<group>"; };
 		3C3AFBAA29EDD207008D0D46 /* NetworkAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkAdapter.swift; sourceTree = "<group>"; };
+		3CB00F9529F06AFC00BC087A /* Poteha-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poteha-Regular.otf"; sourceTree = "<group>"; };
+		3CB00F9629F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-RegularItalic.ttf"; sourceTree = "<group>"; };
+		3CB00F9729F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraLightSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00F9829F06AFC00BC087A /* Mabry Pro Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mabry Pro Bold.otf"; sourceTree = "<group>"; };
+		3CB00F9929F06AFC00BC087A /* ElmaTrio-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-Light.ttf"; sourceTree = "<group>"; };
+		3CB00F9A29F06AFC00BC087A /* CoFo_Sans-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CoFo_Sans-Black.ttf"; sourceTree = "<group>"; };
+		3CB00F9B29F06AFC00BC087A /* ElmaTrio-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		3CB00F9C29F06AFC00BC087A /* ElmaMono-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		3CB00F9D29F06AFC00BC087A /* Mabry Pro Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mabry Pro Black.otf"; sourceTree = "<group>"; };
+		3CB00F9E29F06AFC00BC087A /* ElmaMono-ExtraLightSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-ExtraLightSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00F9F29F06AFC00BC087A /* MabryMonoPro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MabryMonoPro-Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FA029F06AFC00BC087A /* KazimirText-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "KazimirText-Regular.otf"; sourceTree = "<group>"; };
+		3CB00FA129F06AFC00BC087A /* Mabry Pro Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mabry Pro Medium.otf"; sourceTree = "<group>"; };
+		3CB00FA229F06AFC00BC087A /* ElmaMono-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FA329F06AFC00BC087A /* ElmaTrio-BoldSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-BoldSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FA429F06AFC00BC087A /* Visuelt Pro Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Visuelt Pro Medium.ttf"; sourceTree = "<group>"; };
+		3CB00FA529F06AFC00BC087A /* StyreneBLCApp-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "StyreneBLCApp-Medium.ttf"; sourceTree = "<group>"; };
+		3CB00FA629F06AFC00BC087A /* ElmaMono-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-ExtraBold.ttf"; sourceTree = "<group>"; };
+		3CB00FA729F06AFC00BC087A /* StyreneBLCApp-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "StyreneBLCApp-Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FA829F06AFC00BC087A /* Gramatika-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gramatika-Bold.ttf"; sourceTree = "<group>"; };
+		3CB00FA929F06AFC00BC087A /* ElmaTrio-ExtraBoldSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraBoldSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FAA29F06AFC00BC087A /* ElmaTrio-RegularSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-RegularSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FAB29F06AFC00BC087A /* ElmaTrio-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FAC29F06AFC00BC087A /* ElmaMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FAD29F06AFC00BC087A /* MabryMonoPro-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MabryMonoPro-Medium.ttf"; sourceTree = "<group>"; };
+		3CB00FAE29F06AFC00BC087A /* ElmaMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-Bold.ttf"; sourceTree = "<group>"; };
+		3CB00FAF29F06AFC00BC087A /* ElmaTrio-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-LightItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FB029F06AFC00BC087A /* CoFo_Sans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CoFo_Sans-Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FB129F06AFC00BC087A /* Visuelt Pro Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Visuelt Pro Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FB229F06AFC00BC087A /* ElmaMono-ExtraBoldSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-ExtraBoldSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FB329F06AFC00BC087A /* ElmaTrio-LightSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-LightSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FB429F06AFC00BC087A /* ElmaMono-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-BoldItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FB529F06AFC00BC087A /* CoFo_Sans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CoFo_Sans-Bold.ttf"; sourceTree = "<group>"; };
+		3CB00FB629F06AFC00BC087A /* ElmaMono-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-ExtraLight.ttf"; sourceTree = "<group>"; };
+		3CB00FB729F06AFC00BC087A /* ElmaTrio-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FB829F06AFC00BC087A /* ElmaMono-RegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-RegularItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FB929F06AFC00BC087A /* ElmaMono-BoldSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-BoldSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FBA29F06AFC00BC087A /* ElmaMono-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-Light.ttf"; sourceTree = "<group>"; };
+		3CB00FBB29F06AFC00BC087A /* ElmaTrio-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-BoldItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FBC29F06AFC00BC087A /* Grtsk-Giga-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Grtsk-Giga-Medium.ttf"; sourceTree = "<group>"; };
+		3CB00FBD29F06AFC00BC087A /* MabryMonoPro-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MabryMonoPro-Bold.ttf"; sourceTree = "<group>"; };
+		3CB00FBE29F06AFC00BC087A /* Grtsk-Giga-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Grtsk-Giga-Regular.otf"; sourceTree = "<group>"; };
+		3CB00FBF29F06AFC00BC087A /* ElmaTrio-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraLight.ttf"; sourceTree = "<group>"; };
+		3CB00FC029F06AFC00BC087A /* ElmaTrio-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-Bold.ttf"; sourceTree = "<group>"; };
+		3CB00FC129F06AFC00BC087A /* Mabry Pro.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mabry Pro.otf"; sourceTree = "<group>"; };
+		3CB00FC229F06AFC00BC087A /* Epos-Medium-App.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Epos-Medium-App.ttf"; sourceTree = "<group>"; };
+		3CB00FC329F06AFC00BC087A /* GTPressuraPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GTPressuraPro-Regular.otf"; sourceTree = "<group>"; };
+		3CB00FC429F06AFC00BC087A /* CoFo_Sans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CoFo_Sans-Medium.ttf"; sourceTree = "<group>"; };
+		3CB00FC529F06AFC00BC087A /* ElmaMono-RegularSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-RegularSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FC629F06AFC00BC087A /* ElmaTrio-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraBold.ttf"; sourceTree = "<group>"; };
+		3CB00FC729F06AFC00BC087A /* GTPressuraMonoLC-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GTPressuraMonoLC-Regular.otf"; sourceTree = "<group>"; };
+		3CB00FC829F06AFC00BC087A /* Menoe Grotesque-Regular-Desktop.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menoe Grotesque-Regular-Desktop.otf"; sourceTree = "<group>"; };
+		3CB00FC929F06AFC00BC087A /* MaregrapheCaption-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MaregrapheCaption-Regular.ttf"; sourceTree = "<group>"; };
+		3CB00FCA29F06AFC00BC087A /* ElmaMono-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-LightItalic.ttf"; sourceTree = "<group>"; };
+		3CB00FCB29F06AFC00BC087A /* ElmaMono-LightSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaMono-LightSlanted.ttf"; sourceTree = "<group>"; };
+		3CB00FCC29F06AFC00BC087A /* Mabry Pro Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mabry Pro Light.otf"; sourceTree = "<group>"; };
+		3CB0100529F06B8C00BC087A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +209,8 @@
 		3C3AFB7B29EDCFB5008D0D46 /* MediaEditorSample */ = {
 			isa = PBXGroup;
 			children = (
+				3CB0100529F06B8C00BC087A /* Info.plist */,
+				3CB00F9429F06AFC00BC087A /* Fonts */,
 				3C3AFB9629EDD206008D0D46 /* DataLayer */,
 				3C3AFB7C29EDCFB5008D0D46 /* MediaEditorSampleApp.swift */,
 				3C3AFB7E29EDCFB5008D0D46 /* ContentView.swift */,
@@ -169,6 +284,69 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		3CB00F9429F06AFC00BC087A /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				3CB00F9529F06AFC00BC087A /* Poteha-Regular.otf */,
+				3CB00F9629F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf */,
+				3CB00F9729F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf */,
+				3CB00F9829F06AFC00BC087A /* Mabry Pro Bold.otf */,
+				3CB00F9929F06AFC00BC087A /* ElmaTrio-Light.ttf */,
+				3CB00F9A29F06AFC00BC087A /* CoFo_Sans-Black.ttf */,
+				3CB00F9B29F06AFC00BC087A /* ElmaTrio-ExtraLightItalic.ttf */,
+				3CB00F9C29F06AFC00BC087A /* ElmaMono-ExtraBoldItalic.ttf */,
+				3CB00F9D29F06AFC00BC087A /* Mabry Pro Black.otf */,
+				3CB00F9E29F06AFC00BC087A /* ElmaMono-ExtraLightSlanted.ttf */,
+				3CB00F9F29F06AFC00BC087A /* MabryMonoPro-Regular.ttf */,
+				3CB00FA029F06AFC00BC087A /* KazimirText-Regular.otf */,
+				3CB00FA129F06AFC00BC087A /* Mabry Pro Medium.otf */,
+				3CB00FA229F06AFC00BC087A /* ElmaMono-ExtraLightItalic.ttf */,
+				3CB00FA329F06AFC00BC087A /* ElmaTrio-BoldSlanted.ttf */,
+				3CB00FA429F06AFC00BC087A /* Visuelt Pro Medium.ttf */,
+				3CB00FA529F06AFC00BC087A /* StyreneBLCApp-Medium.ttf */,
+				3CB00FA629F06AFC00BC087A /* ElmaMono-ExtraBold.ttf */,
+				3CB00FA729F06AFC00BC087A /* StyreneBLCApp-Regular.ttf */,
+				3CB00FA829F06AFC00BC087A /* Gramatika-Bold.ttf */,
+				3CB00FA929F06AFC00BC087A /* ElmaTrio-ExtraBoldSlanted.ttf */,
+				3CB00FAA29F06AFC00BC087A /* ElmaTrio-RegularSlanted.ttf */,
+				3CB00FAB29F06AFC00BC087A /* ElmaTrio-ExtraBoldItalic.ttf */,
+				3CB00FAC29F06AFC00BC087A /* ElmaMono-Regular.ttf */,
+				3CB00FAD29F06AFC00BC087A /* MabryMonoPro-Medium.ttf */,
+				3CB00FAE29F06AFC00BC087A /* ElmaMono-Bold.ttf */,
+				3CB00FAF29F06AFC00BC087A /* ElmaTrio-LightItalic.ttf */,
+				3CB00FB029F06AFC00BC087A /* CoFo_Sans-Regular.ttf */,
+				3CB00FB129F06AFC00BC087A /* Visuelt Pro Regular.ttf */,
+				3CB00FB229F06AFC00BC087A /* ElmaMono-ExtraBoldSlanted.ttf */,
+				3CB00FB329F06AFC00BC087A /* ElmaTrio-LightSlanted.ttf */,
+				3CB00FB429F06AFC00BC087A /* ElmaMono-BoldItalic.ttf */,
+				3CB00FB529F06AFC00BC087A /* CoFo_Sans-Bold.ttf */,
+				3CB00FB629F06AFC00BC087A /* ElmaMono-ExtraLight.ttf */,
+				3CB00FB729F06AFC00BC087A /* ElmaTrio-Regular.ttf */,
+				3CB00FB829F06AFC00BC087A /* ElmaMono-RegularItalic.ttf */,
+				3CB00FB929F06AFC00BC087A /* ElmaMono-BoldSlanted.ttf */,
+				3CB00FBA29F06AFC00BC087A /* ElmaMono-Light.ttf */,
+				3CB00FBB29F06AFC00BC087A /* ElmaTrio-BoldItalic.ttf */,
+				3CB00FBC29F06AFC00BC087A /* Grtsk-Giga-Medium.ttf */,
+				3CB00FBD29F06AFC00BC087A /* MabryMonoPro-Bold.ttf */,
+				3CB00FBE29F06AFC00BC087A /* Grtsk-Giga-Regular.otf */,
+				3CB00FBF29F06AFC00BC087A /* ElmaTrio-ExtraLight.ttf */,
+				3CB00FC029F06AFC00BC087A /* ElmaTrio-Bold.ttf */,
+				3CB00FC129F06AFC00BC087A /* Mabry Pro.otf */,
+				3CB00FC229F06AFC00BC087A /* Epos-Medium-App.ttf */,
+				3CB00FC329F06AFC00BC087A /* GTPressuraPro-Regular.otf */,
+				3CB00FC429F06AFC00BC087A /* CoFo_Sans-Medium.ttf */,
+				3CB00FC529F06AFC00BC087A /* ElmaMono-RegularSlanted.ttf */,
+				3CB00FC629F06AFC00BC087A /* ElmaTrio-ExtraBold.ttf */,
+				3CB00FC729F06AFC00BC087A /* GTPressuraMonoLC-Regular.otf */,
+				3CB00FC829F06AFC00BC087A /* Menoe Grotesque-Regular-Desktop.otf */,
+				3CB00FC929F06AFC00BC087A /* MaregrapheCaption-Regular.ttf */,
+				3CB00FCA29F06AFC00BC087A /* ElmaMono-LightItalic.ttf */,
+				3CB00FCB29F06AFC00BC087A /* ElmaMono-LightSlanted.ttf */,
+				3CB00FCC29F06AFC00BC087A /* Mabry Pro Light.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -237,13 +415,69 @@
 			files = (
 				3C3AFB8429EDCFB6008D0D46 /* Preview Assets.xcassets in Resources */,
 				3C3AFBB229EDD207008D0D46 /* getChallengeMeta.gql in Resources */,
+				3CB00FFF29F06AFC00BC087A /* GTPressuraMonoLC-Regular.otf in Resources */,
+				3CB00FDB29F06AFC00BC087A /* ElmaTrio-BoldSlanted.ttf in Resources */,
+				3CB00FEE29F06AFC00BC087A /* ElmaMono-ExtraLight.ttf in Resources */,
+				3CB00FE129F06AFC00BC087A /* ElmaTrio-ExtraBoldSlanted.ttf in Resources */,
+				3CB00FD229F06AFC00BC087A /* CoFo_Sans-Black.ttf in Resources */,
+				3CB00FF229F06AFC00BC087A /* ElmaMono-Light.ttf in Resources */,
+				3CB00FE029F06AFC00BC087A /* Gramatika-Bold.ttf in Resources */,
+				3CB00FD629F06AFC00BC087A /* ElmaMono-ExtraLightSlanted.ttf in Resources */,
+				3CB00FEF29F06AFC00BC087A /* ElmaTrio-Regular.ttf in Resources */,
+				3CB00FD529F06AFC00BC087A /* Mabry Pro Black.otf in Resources */,
+				3CB0100029F06AFC00BC087A /* Menoe Grotesque-Regular-Desktop.otf in Resources */,
+				3CB00FD129F06AFC00BC087A /* ElmaTrio-Light.ttf in Resources */,
+				3CB00FFE29F06AFC00BC087A /* ElmaTrio-ExtraBold.ttf in Resources */,
+				3CB00FF529F06AFC00BC087A /* MabryMonoPro-Bold.ttf in Resources */,
+				3CB00FF629F06AFC00BC087A /* Grtsk-Giga-Regular.otf in Resources */,
+				3CB00FE629F06AFC00BC087A /* ElmaMono-Bold.ttf in Resources */,
+				3CB00FEC29F06AFC00BC087A /* ElmaMono-BoldItalic.ttf in Resources */,
+				3CB00FF429F06AFC00BC087A /* Grtsk-Giga-Medium.ttf in Resources */,
+				3CB00FD029F06AFC00BC087A /* Mabry Pro Bold.otf in Resources */,
+				3CB00FE429F06AFC00BC087A /* ElmaMono-Regular.ttf in Resources */,
+				3CB00FE229F06AFC00BC087A /* ElmaTrio-RegularSlanted.ttf in Resources */,
+				3CB00FDE29F06AFC00BC087A /* ElmaMono-ExtraBold.ttf in Resources */,
+				3CB00FD329F06AFC00BC087A /* ElmaTrio-ExtraLightItalic.ttf in Resources */,
 				3C3AFBAF29EDD207008D0D46 /* getChallengeEditorTexturesFilters.gql in Resources */,
+				3CB0100429F06AFC00BC087A /* Mabry Pro Light.otf in Resources */,
+				3CB0100229F06AFC00BC087A /* ElmaMono-LightItalic.ttf in Resources */,
+				3CB0100129F06AFC00BC087A /* MaregrapheCaption-Regular.ttf in Resources */,
+				3CB00FF329F06AFC00BC087A /* ElmaTrio-BoldItalic.ttf in Resources */,
+				3CB0100329F06AFC00BC087A /* ElmaMono-LightSlanted.ttf in Resources */,
+				3CB00FDA29F06AFC00BC087A /* ElmaMono-ExtraLightItalic.ttf in Resources */,
+				3CB00FE529F06AFC00BC087A /* MabryMonoPro-Medium.ttf in Resources */,
+				3CB00FEB29F06AFC00BC087A /* ElmaTrio-LightSlanted.ttf in Resources */,
+				3CB00FDF29F06AFC00BC087A /* StyreneBLCApp-Regular.ttf in Resources */,
+				3CB00FFA29F06AFC00BC087A /* Epos-Medium-App.ttf in Resources */,
+				3CB00FF029F06AFC00BC087A /* ElmaMono-RegularItalic.ttf in Resources */,
 				3C3AFB8129EDCFB6008D0D46 /* Assets.xcassets in Resources */,
+				3CB00FF129F06AFC00BC087A /* ElmaMono-BoldSlanted.ttf in Resources */,
+				3CB00FFB29F06AFC00BC087A /* GTPressuraPro-Regular.otf in Resources */,
 				3C3AFBB629EDD207008D0D46 /* schema.json in Resources */,
 				3C3AFBBA29EDD207008D0D46 /* getChallengeEditorMasksFilters.gql in Resources */,
 				3C3AFBAD29EDD207008D0D46 /* getChallengeStickerPacksFull.gql in Resources */,
+				3CB00FCF29F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf in Resources */,
+				3CB00FCD29F06AFC00BC087A /* Poteha-Regular.otf in Resources */,
+				3CB00FD429F06AFC00BC087A /* ElmaMono-ExtraBoldItalic.ttf in Resources */,
+				3CB00FEA29F06AFC00BC087A /* ElmaMono-ExtraBoldSlanted.ttf in Resources */,
+				3CB00FF829F06AFC00BC087A /* ElmaTrio-Bold.ttf in Resources */,
+				3CB00FFC29F06AFC00BC087A /* CoFo_Sans-Medium.ttf in Resources */,
+				3CB00FD729F06AFC00BC087A /* MabryMonoPro-Regular.ttf in Resources */,
+				3CB00FDC29F06AFC00BC087A /* Visuelt Pro Medium.ttf in Resources */,
+				3CB00FE929F06AFC00BC087A /* Visuelt Pro Regular.ttf in Resources */,
+				3CB00FFD29F06AFC00BC087A /* ElmaMono-RegularSlanted.ttf in Resources */,
+				3CB00FDD29F06AFC00BC087A /* StyreneBLCApp-Medium.ttf in Resources */,
+				3CB00FCE29F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf in Resources */,
+				3CB00FF929F06AFC00BC087A /* Mabry Pro.otf in Resources */,
+				3CB00FD929F06AFC00BC087A /* Mabry Pro Medium.otf in Resources */,
+				3CB00FD829F06AFC00BC087A /* KazimirText-Regular.otf in Resources */,
+				3CB00FF729F06AFC00BC087A /* ElmaTrio-ExtraLight.ttf in Resources */,
+				3CB00FE729F06AFC00BC087A /* ElmaTrio-LightItalic.ttf in Resources */,
+				3CB00FE329F06AFC00BC087A /* ElmaTrio-ExtraBoldItalic.ttf in Resources */,
 				3C3AFBB029EDD207008D0D46 /* getChallengeEditorTemplates.gql in Resources */,
+				3CB00FED29F06AFC00BC087A /* CoFo_Sans-Bold.ttf in Resources */,
 				3C3AFBAC29EDD207008D0D46 /* getChallengeEditorFilter.gql in Resources */,
+				3CB00FE829F06AFC00BC087A /* CoFo_Sans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,6 +633,7 @@
 				DEVELOPMENT_TEAM = ED5577XBKG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MediaEditorSample/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Grant access to camera to be able to take photos and videos";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Grant access to microphone to be able to take videos";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Grant access to photo library to be able to select photos";
@@ -434,6 +669,7 @@
 				DEVELOPMENT_TEAM = ED5577XBKG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MediaEditorSample/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Grant access to camera to be able to take photos and videos";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Grant access to microphone to be able to take videos";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Grant access to photo library to be able to select photos";

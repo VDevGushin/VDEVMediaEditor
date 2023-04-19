@@ -39,7 +39,8 @@ let package = Package(
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
                            "CombineExt",
                            "BackgroundRemoval"
-                          ]
+                          ],
+            resources: [.process("Resources")]
         ),
         
         
