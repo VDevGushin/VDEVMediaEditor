@@ -9,28 +9,22 @@ import SwiftUI
 import VDEVMediaEditor
 
 struct ContentView: View {
-    private let editor: VDEVMediaEditor
+    let config: VDEVMediaEditorConfig
     
     init() {
-        let output = Output { model in
-            dump(model)
-        } close: {
-            print(close)
-        }
-
-        let config: VDEVMediaEditorConfig  =
+        config =
             .init(challengeId: "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
                   networkService: NetworkAdapter(client: NetworkClientImpl()),
                   images: Images(),
-                  strings: Strings(),
-                  output: output)
-        
-        
-        editor = .init(config: config)
+                  strings: Strings())
     }
     
     var body: some View {
-        editor.rootView
+        VDEVMediaEditorView(config: config) { model in
+            print(model.url)
+        } onClose: {
+            print("close")
+        }
     }
 }
 
@@ -38,11 +32,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-}
-
-struct Output: VDEVMediaEditorOut {
-    var output: (@MainActor (CombinerOutput) -> ())
-    var close: (@MainActor () -> ())
 }
 
 struct Images: VDEVImageConfig {
@@ -109,12 +98,12 @@ struct Images: VDEVImageConfig {
 
 struct Strings: VDEVMediaEditorStrings {
     let paste = "PASTE"
-    let brightness = "Brightness".uppercased()
-    let contrast = "Contrast".uppercased()
-    let saturation = "Saturation".uppercased()
-    let highlight = "Highlight".uppercased()
-    let shadow = "Shadow".uppercased()
-    let `default` = "Default".uppercased()
+    let brightness = "BRIGHTNESS"
+    let contrast = "CONTRAST"
+    let saturation = "SATURATION"
+    let highlight = "HIGHLIGHT"
+    let shadow = "SHADOW"
+    let `default` = "DEFAULT"
     let mask = "MASK"
     let filter = "FILTER"
     let texture = "TEXTURE"
@@ -129,14 +118,14 @@ struct Strings: VDEVMediaEditorStrings {
     let down = "DOWN"
     let bringToTop = "TOP"
     let bringToBottom = "BOTTOM"
-    let selectMedia = "Select Media".uppercased()
+    let selectMedia = "SELECT MEDIA"
     let colorFilter = "COLOR FILTER"
     let close = "CLOSE"
     let layers = "LAYERS"
-    let templatePack = "Template pack".uppercased()
+    let templatePack = "TEMPLATE PACK"
     let addMedia = "ADD MEDIA"
-    let challengeTitle = "Test".uppercased()
-    let shareOrSave = "Share\nor save".uppercased()
+    let challengeTitle = "TEST"
+    let shareOrSave = "SHARE\nOR SAVE"
     let template = "TEMPLATE"
     let text = "TEXT"
     let stickersCustom = "STICKER"
@@ -145,7 +134,7 @@ struct Strings: VDEVMediaEditorStrings {
     let camera = "CAMERA"
     let drawing = "DRAWING"
     let background = "BG"
-    let error = "Error".uppercased()
+    let error = "ERROR"
     let ok = "OK"
     let publish = "PUBLISH"
     let see = "SEE"

@@ -9,27 +9,27 @@ import UIKit
 import Photos
 import AVFoundation
 
-final class FilteringProcessor {
-    static let shared = FilteringProcessor()
+public final class FilteringProcessor {
+    public static let shared = FilteringProcessor()
     private let renderContext = CIContext()
-    static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
+    
+    public static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
     
     private init() {}
-
-
+    
     func process(image: UIImage, filteringChain: [FilterDescriptor]) -> CIImage? {
         guard let image = image.rotatedCIImage else { return nil }
         let filterChain = Processor(filterChain: filteringChain)
         return filterChain.applyFilters(to: image)
     }
-
+    
     func makeAVVideoComposition(
         for asset: AVAsset,
         filterChain: [FilterDescriptor],
         resize: (CGSize, UIView.ContentMode)? = nil
     ) -> AVVideoComposition {
         let filterChain = Processor(filterChain: filterChain)
-
+        
         let composition = AVMutableVideoComposition(asset: asset, applyingCIFiltersWithHandler: { [filterChain] request in
             autoreleasepool {
                 var imageOutput = filterChain.applyFilters(to: request.sourceImage)
@@ -52,7 +52,7 @@ final class FilteringProcessor {
         if let resize = resize { composition.renderSize = resize.0 }
         return composition
     }
-
+    
     func processAndExport(
         asset: AVAsset,
         containerSize: CGSize,
@@ -84,7 +84,7 @@ final class FilteringProcessor {
                 if let mask = mask {
                     imageOutput = imageOutput.createMask(maskCG: mask, for: containerSize)
                 }
-            
+                
                 request.finish(with: imageOutput, context: nil)
             }
         })
@@ -101,7 +101,7 @@ final class FilteringProcessor {
         
         return try await processAndExportComposition(composition, ofAsset: asset, exportQuality: exportQuality)
     }
-
+    
     func processAndExport(
         asset: AVAsset,
         filterChain: [FilterDescriptor],
@@ -111,7 +111,7 @@ final class FilteringProcessor {
         let composition = makeAVVideoComposition(for: asset, filterChain: filterChain, resize: resize)
         return try await processAndExportComposition(composition, ofAsset: asset, exportQuality: exportQuality)
     }
-
+    
     func createCGImage(from ciImage: CIImage) -> CGImage? {
         renderContext.createCGImage(ciImage, from: ciImage.extent)
     }
@@ -147,7 +147,7 @@ final class FilteringProcessor {
             }
         }
         composition.renderSize = container.size
-
+        
         return try await processAndExportComposition(composition, ofAsset: asset, exportQuality: exportQuality)
     }
 }
@@ -167,7 +167,7 @@ extension FilteringProcessor {
                                     format: .RGBA8,
                                     colorSpace: colorSpace,
                                     options: [:])
-
+        
         return generatedImagePath
     }
     
@@ -181,14 +181,14 @@ extension FilteringProcessor {
                                                 presetName: exportQuality.presetId) else {
             throw ProcessorError.couldNotMakeExportSession
         }
-
+        
         let outURL = try generateURLInCacheDir(withExtension: "mp4")
-
+        
         export.outputFileType = .mp4
         export.outputURL = outURL
         export.videoComposition = composition
         export.shouldOptimizeForNetworkUse = false
-
+        
         return try await withCheckedThrowingContinuation { c in
             export.exportAsynchronously { [weak export] in
                 if let error = export?.error {
@@ -210,7 +210,7 @@ extension FilteringProcessor {
 }
 
 // MARK: - Helpers
-extension FilteringProcessor {
+public extension FilteringProcessor {
     enum ProcessorError: Error {
         case imageReturnedNull
         case processImageReturnedNil
@@ -223,12 +223,12 @@ extension FilteringProcessor {
         case low
         case medium
         case highest
-
+        
         case HEVCHighest
         case HEVCHighestWithAlpha
         
         case `default`
-
+        
         var presetId: String {
             switch self {
             case .low: return AVAssetExportPresetLowQuality
@@ -302,5 +302,45 @@ private extension FilteringProcessor {
             
             bootstrapped = true
         }
+    }
+}
+
+// MARK: - Public helper
+public extension FilteringProcessor {
+    func generateAndSaveContent(
+        withOverlayImage overlayImage: CIImage,
+        overContentAtURL contentURL: URL,
+        withContentMode contentMode: UIView.ContentMode? = nil
+    ) async throws -> URL {
+        let contentAsset = AVAsset(url: contentURL)
+        let isVideo = contentAsset.isPlayable
+        
+        let filter = FilterDescriptor(
+            name: "CISourceOverCompositing",
+            params: [
+                "inputImage": FilterDescriptor.Param.image(overlayImage, contentMode, URL(fileURLWithPath: ""))
+            ],
+            customImageTargetKey: "inputBackgroundImage"
+        )
+        
+        if isVideo {
+            let canExportHEVCWithAlpha = AVAssetExportSession.allExportPresets().contains(AVAssetExportPresetHEVCHighestQualityWithAlpha)
+            let quality: ExportQuality = canExportHEVCWithAlpha ? .HEVCHighestWithAlpha: .highest
+            return try await processAndExport(asset: contentAsset, filterChain: [filter], exportQuality: quality)
+        } else {
+            guard let processedImage = process(imageURL: contentURL, filterChain: [filter]) else {
+                throw ProcessorError.processImageReturnedNil
+            }
+            let resultImage = try generateAndSaveImage(ciImage: processedImage)
+            return resultImage
+        }
+    }
+    
+    private func process(imageURL: URL, filterChain: [FilterDescriptor]) -> CIImage? {
+        guard let image = AssetExtractionUtil.image(fromUrl: imageURL, storeCache: false) else {
+            return nil
+        }
+        let filterChain = Processor(filterChain: filterChain)
+        return filterChain.applyFilters(to: image)
     }
 }

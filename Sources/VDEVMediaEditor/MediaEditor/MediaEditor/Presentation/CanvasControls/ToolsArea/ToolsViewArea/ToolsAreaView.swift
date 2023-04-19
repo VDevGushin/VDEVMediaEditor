@@ -308,8 +308,11 @@ fileprivate extension ToolsAreaView {
                                                      bounds: output.bounds,
                                                      offset: output.offset)
                     vm.data.add(newDrawing)
+                    
+                    vm.tools.currentCloseActionFor(newDrawing)
+                } else {
+                    vm.tools.closeTools(false)
                 }
-                vm.tools.closeTools(false)
             }
             .frame(vm.ui.editroSize)
             .cornerRadius(vm.ui.canvasCornerRadius)

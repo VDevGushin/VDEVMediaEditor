@@ -112,7 +112,7 @@ struct EditorPreview: View {
                 }
                 
                 SeeAnswersButton(number: 345) {
-                    output.output(model.model)
+                    output.onComplete(model.model)
                 }
             }
             .padding(.horizontal, 15)

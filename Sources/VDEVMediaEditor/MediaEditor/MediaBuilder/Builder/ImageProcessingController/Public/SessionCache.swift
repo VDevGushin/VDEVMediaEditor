@@ -9,12 +9,12 @@ import Foundation
 import CoreImage
 
 private var sessionCaches = [String: Any]()
-class SessionCache<T> {
-    static func data(from url: URL, storeCache: Bool, extractor: @autoclosure (() -> T?)) -> T? {
+public final class SessionCache<T> {
+    public static func data(from url: URL, storeCache: Bool, extractor: @autoclosure (() -> T?)) -> T? {
         return data(fromIdentifier: url.absoluteString, storeCache: storeCache, extractor: extractor())
     }
 
-    static func data(fromIdentifier identifier: String, storeCache: Bool, extractor: @autoclosure (() -> T?)) -> T? {
+    public static func data(fromIdentifier identifier: String, storeCache: Bool, extractor: @autoclosure (() -> T?)) -> T? {
         let type = String(describing: T.self)
         var sessionCache = (sessionCaches[type] as? [String: T]) ?? [:]
         if let cached = sessionCache[identifier] {
@@ -29,5 +29,12 @@ class SessionCache<T> {
         }
         return nil
     }
+    
+    public static func warmup(_ urls: [URL]) {
+        DispatchQueue.global(qos: .background).async {
+            urls.forEach {
+                _ = AssetExtractionUtil.image(fromUrl: $0, storeCache: true)
+            }
+        }
+    }
 }
-
