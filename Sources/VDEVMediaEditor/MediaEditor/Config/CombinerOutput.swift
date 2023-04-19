@@ -20,7 +20,7 @@ public struct CombinerOutput {
 }
 
 public extension CombinerOutput {
-    struct FeaturesUsageData {
+    public struct FeaturesUsageData {
         let usedMasks: Bool
         let usedTextures: Bool
         let usedFilters: Bool
