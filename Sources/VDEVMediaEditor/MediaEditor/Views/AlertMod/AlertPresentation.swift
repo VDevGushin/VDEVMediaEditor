@@ -10,7 +10,7 @@ import Combine
 import Resolver
 
 struct AlertData: Identifiable, Equatable {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     
     let id = UUID()
     private(set) var title: String = ""
@@ -45,7 +45,7 @@ extension View {
 }
 
 struct AlertModifier: ViewModifier {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     @Binding private var alertData: AlertData?
     
     init(alertData: Binding<AlertData?>) {

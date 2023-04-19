@@ -12,16 +12,19 @@ final class AppModule: Module {
     private let dataService: MediaEditorSourceService
     private let baseChallengeId: String
     private let images: VDEVImageConfig
-    private let strings: VDEVEditorStrings
+    private let strings: VDEVMediaEditorStrings
+    private let output: VDEVMediaEditorOut
     
     init(baseChallengeId: String,
          dataService: MediaEditorSourceService,
          images: VDEVImageConfig,
-         strings: VDEVEditorStrings) {
+         strings: VDEVMediaEditorStrings,
+         output: VDEVMediaEditorOut) {
         self.dataService = dataService
         self.baseChallengeId = baseChallengeId
         self.images = images
         self.strings = strings
+        self.output = output
     }
     
     func bootstrap(with ioc: Resolver) {
@@ -42,7 +45,11 @@ final class AppModule: Module {
         }.scope(.application)
         
         ioc.register {
-            self.strings as VDEVEditorStrings
+            self.strings as VDEVMediaEditorStrings
+        }.scope(.application)
+        
+        ioc.register {
+            self.output as VDEVMediaEditorOut
         }.scope(.application)
         
         

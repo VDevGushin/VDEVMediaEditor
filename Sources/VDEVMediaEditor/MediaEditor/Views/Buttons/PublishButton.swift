@@ -9,7 +9,7 @@ import SwiftUI
 import Resolver
 
 struct PublishButton: View {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     
     private let size: CGSize = .init(width: 75, height: 45)
     private let action: () -> Void

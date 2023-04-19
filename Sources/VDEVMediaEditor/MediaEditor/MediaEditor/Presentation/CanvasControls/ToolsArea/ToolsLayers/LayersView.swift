@@ -11,7 +11,7 @@ import Resolver
 struct LayersView: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     
     var body: some View {
         Group {

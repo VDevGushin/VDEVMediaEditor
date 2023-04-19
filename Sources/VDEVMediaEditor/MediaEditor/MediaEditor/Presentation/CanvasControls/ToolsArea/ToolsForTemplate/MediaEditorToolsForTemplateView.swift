@@ -9,7 +9,7 @@ import SwiftUI
 import Resolver
 
 struct MediaEditorToolsForTemplateView: View {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     @ObservedObject private var vm: CanvasEditorToolsForTemplateViewModel
     @Binding private var mainBackgroundColor: Color
     
@@ -189,7 +189,7 @@ private struct EditVariants: View {
 
 private struct ItemEditVariantsView: View {
     @Injected private var images: VDEVImageConfig
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60

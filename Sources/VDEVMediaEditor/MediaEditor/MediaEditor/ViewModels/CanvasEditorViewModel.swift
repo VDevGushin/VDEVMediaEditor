@@ -8,8 +8,11 @@
 import SwiftUI
 import Combine
 import AVKit
+import Resolver
 
 final class CanvasEditorViewModel: ObservableObject {
+    @Injected private var editorOut: VDEVMediaEditorOut
+    
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
     @Published var data: CanvasLayersDataViewModel = .init()
@@ -49,11 +52,7 @@ final class CanvasEditorViewModel: ObservableObject {
                 case .inProgress(let message):
                     self?.isLoading = .init(value: true, message: message)
                 case .success(let combinerOutput):
-                    if combinerOutput.url.absoluteString.lowercased().hasSuffix("mov") {
-                        self?.contentPreview = .video(combinerOutput.url)
-                    } else {
-                        self?.contentPreview = .image(combinerOutput.url)
-                    }
+                    self?.contentPreview = .init(model: combinerOutput)
                     self?.isLoading = .false
                 case .error(let error):
                     self?.isLoading = .false

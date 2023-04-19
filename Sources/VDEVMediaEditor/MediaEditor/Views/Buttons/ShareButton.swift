@@ -10,7 +10,7 @@ import Resolver
 
 struct ShareButton: View {
     @Injected private var images: VDEVImageConfig
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     
     private let height: CGFloat = 40
     private let action: () -> Void

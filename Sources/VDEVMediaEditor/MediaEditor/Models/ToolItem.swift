@@ -66,7 +66,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     }
 
     var title: String {
-        let Strings = Resolver.resolve(VDEVEditorStrings.self)
+        let Strings = Resolver.resolve(VDEVMediaEditorStrings.self)
         switch self {
         case .template:
             return Strings.template

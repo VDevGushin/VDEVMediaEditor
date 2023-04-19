@@ -9,7 +9,7 @@ import SwiftUI
 import Resolver
 
 struct ToolAdjustments: View {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     @EnvironmentObject private var vm: CanvasEditorViewModel
 
     private let item: CanvasItemModel

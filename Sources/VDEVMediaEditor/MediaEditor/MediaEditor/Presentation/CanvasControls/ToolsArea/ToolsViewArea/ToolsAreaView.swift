@@ -12,7 +12,7 @@ import PhotosUI
 import Resolver
 
 struct ToolsAreaView: View {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @ObservedObject private var vm: CanvasEditorViewModel
 

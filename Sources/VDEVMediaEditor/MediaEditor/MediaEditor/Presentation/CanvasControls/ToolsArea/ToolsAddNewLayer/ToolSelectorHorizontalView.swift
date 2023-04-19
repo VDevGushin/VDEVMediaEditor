@@ -14,7 +14,7 @@ enum PasteboardModel {
 }
 
 struct ToolSelectorHorizontalView: View {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var pasteboardService: PasteboardService
     

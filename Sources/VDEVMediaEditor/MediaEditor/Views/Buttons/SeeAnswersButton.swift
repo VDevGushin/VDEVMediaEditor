@@ -9,7 +9,7 @@ import SwiftUI
 import Resolver
 
 struct SeeAnswersButton: View {
-    @Injected private var strings: VDEVEditorStrings
+    @Injected private var strings: VDEVMediaEditorStrings
     
     private let height: CGFloat = 40
     private let action: () -> Void

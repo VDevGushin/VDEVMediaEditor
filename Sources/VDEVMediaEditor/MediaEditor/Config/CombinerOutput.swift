@@ -8,7 +8,18 @@
 import Foundation
 import SwiftUI
 
-struct CombinerOutput {
+public protocol VDEVMediaEditorOut {
+    var output: (@MainActor (CombinerOutput) -> ()) { get }
+    var close: (@MainActor () -> ()) { get }
+}
+
+public struct CombinerOutput {
+    public let cover: URL
+    public let url: URL
+    public var featuresUsageData: FeaturesUsageData?
+}
+
+public extension CombinerOutput {
     struct FeaturesUsageData {
         let usedMasks: Bool
         let usedTextures: Bool
@@ -19,8 +30,4 @@ struct CombinerOutput {
         let usedMusic: Bool
         let usedStickers: Bool
     }
-
-    let cover: URL
-    let url: URL
-    var featuresUsageData: FeaturesUsageData?
 }

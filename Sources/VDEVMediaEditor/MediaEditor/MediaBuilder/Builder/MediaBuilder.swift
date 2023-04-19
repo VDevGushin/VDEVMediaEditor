@@ -111,22 +111,3 @@ fileprivate extension Array where Element == CanvasItemModel {
     
     @MainActor var hasStickers: Bool { contains { $0.type == .sticker } }
 }
-
-// MARK: - New asset builder
-/*
- let combiner = VideoAssetCombiner(layers: layers,
-                                   canvasSize: size,
-                                   scaleFactor: scale,
-                                   backgroundColor: backgrondColor.uiColor)
- if var result = try? await combiner.execute() {
-     result.featuresUsageData = await .init(usedMasks: layers.hasMasks,
-                                            usedTextures: layers.hasTextures,
-                                            usedFilters: layers.hasColorFilters,
-                                            usedTemplates: layers.hasTemplates,
-                                            usedVideo: layers.hasVideos,
-                                            usedVideoSound: false,
-                                            usedMusic: false,
-                                            usedStickers: layers.hasStickers)
-     await self?.set(result)
- }
- */

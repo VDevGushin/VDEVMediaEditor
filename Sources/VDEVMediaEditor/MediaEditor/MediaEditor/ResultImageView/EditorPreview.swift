@@ -38,23 +38,27 @@ struct EditorPreviewModifier: ViewModifier {
 
 // MARK: - Model
 extension EditorPreview {
-    enum Content: Identifiable {
-        case video(URL)
-        case image(URL)
+    struct Content: Identifiable {
+        enum ResultType {
+            case video
+            case image
+        }
         
-        var id: String {
-            switch self {
-            case .image(let url): return url.absoluteString
-            case .video(let url): return url.absoluteString
+        let type: ResultType
+        let model: CombinerOutput
+        
+        init(model: CombinerOutput) {
+            self.model = model
+            
+            if model.url.absoluteString.lowercased().hasSuffix("mov") {
+                self.type = .video
+            } else {
+                self.type = .image
             }
         }
         
-        var url: URL {
-            switch self {
-            case .image(let url): return url
-            case .video(let url): return url
-            }
-        }
+        var id: String { model.url.absoluteString }
+        var url: URL { model.url }
     }
 }
 
@@ -62,6 +66,7 @@ extension EditorPreview {
 struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @Injected private var images: VDEVImageConfig
+    @Injected private var output: VDEVMediaEditorOut
    
     @State var model: Content
     @State var challengeTitle: String
@@ -78,16 +83,16 @@ struct EditorPreview: View {
             }
             
             Group {
-                switch model {
-                case .video(let url):
-                    ResultVideoPlayer(assetURL: url,
+                switch model.type {
+                case .video:
+                    ResultVideoPlayer(assetURL: model.url,
                                       videoComposition: nil,
                                       volume: 0,
                                       thumbnail: nil,
                                       cornerRadius: 15)
                     .clipShape(RoundedCorner(radius: 15))
-                case .image(let url):
-                    AsyncImageView(url: url) { img in
+                case .image:
+                    AsyncImageView(url: model.url) { img in
                         Image(uiImage: img)
                             .resizable()
                             .scaledToFit()
@@ -107,7 +112,7 @@ struct EditorPreview: View {
                 }
                 
                 SeeAnswersButton(number: 345) {
-                    
+                    output.output(model.model)
                 }
             }
             .padding(.horizontal, 15)

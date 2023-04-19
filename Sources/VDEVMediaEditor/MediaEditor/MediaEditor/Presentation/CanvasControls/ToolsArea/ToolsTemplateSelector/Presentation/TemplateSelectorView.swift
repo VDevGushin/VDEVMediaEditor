@@ -40,7 +40,7 @@ struct TemplateSelectorView: View {
     }
 
     var tools: some View {
-        ToolWrapper(title: vm.templatePackForPreview == nil ? Resolver.resolve(VDEVEditorStrings.self).templatePack : vm.templatePackForPreview!.name, fullScreen: false) {
+        ToolWrapper(title: vm.templatePackForPreview == nil ? Resolver.resolve(VDEVMediaEditorStrings.self).templatePack : vm.templatePackForPreview!.name, fullScreen: false) {
             if vm.templatePackForPreview == nil {
                 vm.clearSelectedTool()
                 vm.select()

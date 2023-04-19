@@ -12,11 +12,18 @@ struct ContentView: View {
     private let mediaEditorEntryPoint: VDEVMediaEditor
     
     init() {
+        let output = Output { model in
+            dump(model)
+        } close: {
+            print(close)
+        }
+
         let config: VDEVMediaEditorConfig  =
             .init(challengeId: "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
                   networkService: NetworkAdapter(client: NetworkClientImpl()),
                   images: Images(),
-                  strings: Strings())
+                  strings: Strings(),
+                  output: output)
         mediaEditorEntryPoint = .init(config: config)
     }
     
@@ -29,6 +36,11 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
+}
+
+struct Output: VDEVMediaEditorOut {
+    var output: (@MainActor (CombinerOutput) -> ())
+    var close: (@MainActor () -> ())
 }
 
 struct Images: VDEVImageConfig {
@@ -93,7 +105,7 @@ struct Images: VDEVImageConfig {
     }
 }
 
-struct Strings: VDEVEditorStrings {
+struct Strings: VDEVMediaEditorStrings {
     let paste = "PASTE"
     let brightness = "Brightness".uppercased()
     let contrast = "Contrast".uppercased()

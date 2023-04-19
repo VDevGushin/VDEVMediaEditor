@@ -16,16 +16,20 @@ public struct VDEVMediaEditorConfig {
     // images
     private(set) var images: VDEVImageConfig
     // strings
-    private(set) var strings: VDEVEditorStrings
+    private(set) var strings: VDEVMediaEditorStrings
+    // output
+    private(set) var output: VDEVMediaEditorOut
     
     public init(challengeId: String,
                 networkService: MediaEditorSourceService,
                 images: VDEVImageConfig,
-                strings: VDEVEditorStrings) {
+                strings: VDEVMediaEditorStrings,
+                output: VDEVMediaEditorOut) {
         self.baseChallengeId = challengeId
         self.networkService = networkService
         self.images = images
         self.strings = strings
+        self.output = output
     }
 }
 
@@ -92,7 +96,8 @@ public protocol VDEVMediaEditorButtonsTypedImages {
     var typeVideo: UIImage { get }
 }
 
-public protocol VDEVEditorStrings {
+// MARK: - Strings
+public protocol VDEVMediaEditorStrings {
     var paste: String { get }
     var brightness: String { get }
     var contrast: String { get }

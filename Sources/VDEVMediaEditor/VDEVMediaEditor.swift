@@ -12,7 +12,8 @@ public struct VDEVMediaEditor {
             AppModule(baseChallengeId: config.baseChallengeId,
                       dataService: config.networkService,
                       images: config.images,
-                      strings: config.strings)
+                      strings: config.strings,
+                      output: config.output)
         ]
         
         appModules.bootstrap()
