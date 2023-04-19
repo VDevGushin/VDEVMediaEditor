@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct UploadCareWrapper {
+public struct UploadCareWrapper {
     let url: URL
 
     func resized(size: (width: CGFloat?, height: CGFloat?), withScreenScaleRespect: Bool = true) -> URL {
@@ -27,7 +27,7 @@ struct UploadCareWrapper {
     }
 }
 
-extension URL {
+public extension URL {
     var uc: UploadCareWrapper { UploadCareWrapper(url: self) }
 
     init?(w1d1URLString: String) {
