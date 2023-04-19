@@ -9,7 +9,7 @@ import SwiftUI
 import VDEVMediaEditor
 
 struct ContentView: View {
-    private let mediaEditorEntryPoint: VDEVMediaEditor
+    private let editor: VDEVMediaEditor
     
     init() {
         let output = Output { model in
@@ -24,11 +24,13 @@ struct ContentView: View {
                   images: Images(),
                   strings: Strings(),
                   output: output)
-        mediaEditorEntryPoint = .init(config: config)
+        
+        
+        editor = .init(config: config)
     }
     
     var body: some View {
-        mediaEditorEntryPoint.rootView
+        editor.rootView
     }
 }
 
