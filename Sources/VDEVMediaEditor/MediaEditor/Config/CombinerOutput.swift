@@ -20,14 +20,14 @@ public struct CombinerOutput {
 }
 
 public extension CombinerOutput {
-    public struct FeaturesUsageData {
-        let usedMasks: Bool
-        let usedTextures: Bool
-        let usedFilters: Bool
-        let usedTemplates: Bool
-        let usedVideo: Bool
-        let usedVideoSound: Bool
-        let usedMusic: Bool
-        let usedStickers: Bool
+    struct FeaturesUsageData {
+        public let usedMasks: Bool
+        public let usedTextures: Bool
+        public let usedFilters: Bool
+        public let usedTemplates: Bool
+        public let usedVideo: Bool
+        public let usedVideoSound: Bool
+        public let usedMusic: Bool
+        public let usedStickers: Bool
     }
 }
