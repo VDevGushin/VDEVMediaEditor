@@ -10,25 +10,21 @@ import CoreImage.CIFilterBuiltins
 import Combine
 import Resolver
 
-let kDefaultPlaceholder = "Write here"
-
 struct TextTool: View {
-    @Injected private var images: VDEVImageConfig
-    
-    @State private var text: String = ""
-    @State private var placeholder: String = kDefaultPlaceholder
-    @State private var fontSize: CGFloat = 32
-    @State private var textColor: UIColor = AppColors.black.uiColor.contrast
-    @State private var alignment: Alignment = .center
-    @State private var textAlignment: NSTextAlignment = .center
-    @State private var textStyle: CanvasTextStyle = .basicText
-    @State private var needTextBG: Bool = false
+    @State private var text: String
+    @State private var placeholder: String
+    @State private var fontSize: CGFloat
+    @State private var textColor: UIColor
+    @State private var alignment: Alignment
+    @State private var textAlignment: NSTextAlignment
+    @State private var textStyle: CanvasTextStyle
+    @State private var needTextBG: Bool
     @State private var isEditing = true
     @State private var colorSelectorOpen = false
-    @State private var scale: CGFloat = 1
-    @State private var rot: Angle = .zero
-    @State private var offset: CGSize = .zero
-    @State private var isEditable: Bool = true
+    @State private var scale: CGFloat
+    @State private var rot: Angle
+    @State private var offset: CGSize
+    @State private var isEditable: Bool
     @State private var textFrameSize: CGSize = .zero
     @State private var sliderInManipulation: Bool = false
 
@@ -58,20 +54,36 @@ struct TextTool: View {
         self.doneAction = doneAction
         self.deleteAction = deleteAction
 
-        if let item = textItem {
-            self.text = item.text
-            self.placeholder = item.placeholder
-            self.fontSize = item.fontSize
-            self.textColor = item.color
-            self.alignment = item.alignment
-            self.textAlignment = item.textAlignment
-            self.textStyle = item.textStyle
-            self.needTextBG = item.needTextBG
-            self.scale = item.scale
-            self.rot = item.rotation
-            self.offset = item.offset
+        guard let item = textItem else {
+            self.text = ""
+            self.placeholder = Resolver.resolve(VDEVMediaEditorStrings.self).defaultPlaceholder
+            self.fontSize = 32
+            self.textColor = AppColors.black.uiColor.contrast
+            self.alignment = .center
+            self.textAlignment = .center
+            self.textStyle = CanvasTextStyle.basicText
+            self.needTextBG = false
+            self.scale = 1
+            self.rot = .zero
+            self.offset = .zero
             self.isEditable = true
+            return
         }
+
+        self.text = item.text
+        self.placeholder = item.placeholder
+        self.fontSize = item.fontSize
+        self.textColor = item.color
+        self.alignment = item.alignment
+        self.textAlignment = item.textAlignment
+        self.textStyle = item.textStyle
+        self.needTextBG = item.needTextBG
+
+        self.scale = item.scale
+        self.rot = item.rotation
+        self.offset = item.offset
+
+        self.isEditable = true
     }
 
     var body: some View {
@@ -151,7 +163,11 @@ struct TextTool: View {
         )
     }
 
+    @ViewBuilder
     var topBar: some View {
+        let images = Resolver.resolve(VDEVImageConfig.self)
+        let doneStr = Resolver.resolve(VDEVMediaEditorStrings.self).done
+        
         HStack {
             Group {
                 if !fromTemplate {
@@ -205,7 +221,7 @@ struct TextTool: View {
                 isEditable = false
                 donePressed()
             } label: {
-                Text("DONE")
+                Text(doneStr)
                     .font(.gramatika(size: 16))
             }
             .disabled(text.isEmpty && isEditable)
@@ -213,8 +229,13 @@ struct TextTool: View {
         }
     }
 
+    @ViewBuilder
     var bottomBar: some View {
         HStack(alignment: .bottom) {
+            let images = Resolver.resolve(VDEVImageConfig.self)
+            let deleteStr = Resolver.resolve(VDEVMediaEditorStrings.self).delete
+            let closeStr = Resolver.resolve(VDEVMediaEditorStrings.self).close
+            
             if isEditable {
                 Button {
                     haptics(.light)
@@ -226,7 +247,7 @@ struct TextTool: View {
                             .frame(width: 35, height: 35)
                             .scaledToFit()
 
-                        Text("DELETE").font(AppFonts.elmaTrioRegular(14))
+                        Text(deleteStr).font(AppFonts.elmaTrioRegular(14))
                     }
                 }
                 .buttonStyle(BlurButtonStyle())
@@ -241,7 +262,7 @@ struct TextTool: View {
                     isEditing = true
                 }
             } label: {
-                Text("CLOSE")
+                Text(closeStr)
                     .font(.gramatika(size: 16))
             }
             .buttonStyle(BlurButtonStyle())
@@ -266,7 +287,10 @@ struct TextTool: View {
         }
     }
 
+    
     private func textAlignmentImage() -> UIImage {
+        let images = Resolver.resolve(VDEVImageConfig.self)
+        
         if textAlignment == .center {
             return images.textEdit.textEditingAlignCenter
         }

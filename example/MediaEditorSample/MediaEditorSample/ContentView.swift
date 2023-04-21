@@ -139,4 +139,7 @@ struct Strings: VDEVMediaEditorStrings {
     let publish = "PUBLISH"
     let see = "SEE"
     let answers = "ANSWERS"
+    let defaultPlaceholder = "WRITE HERE"
+    let delete = "DELETE"
+    let done = "DONE"
 }

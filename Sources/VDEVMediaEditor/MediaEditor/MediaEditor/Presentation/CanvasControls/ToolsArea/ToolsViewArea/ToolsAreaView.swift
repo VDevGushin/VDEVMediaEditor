@@ -311,7 +311,9 @@ fileprivate extension ToolsAreaView {
                     
                     vm.tools.currentCloseActionFor(newDrawing)
                 } else {
-                    vm.tools.closeTools(false)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        vm.tools.closeTools(false)
+                    }
                 }
             }
             .frame(vm.ui.editroSize)

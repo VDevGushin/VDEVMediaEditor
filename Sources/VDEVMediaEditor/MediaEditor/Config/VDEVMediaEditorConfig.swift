@@ -136,4 +136,7 @@ public protocol VDEVMediaEditorStrings {
     var publish: String { get }
     var see: String { get }
     var answers: String { get }
+    var defaultPlaceholder: String { get }
+    var delete: String { get }
+    var done: String { get }
 }

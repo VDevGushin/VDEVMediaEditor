@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import Resolver
 
 // MARK: - Sticker
 final class CanvasTextModel: CanvasItemModel {
     static func with(text: String) -> CanvasTextModel {
         CanvasTextModel(text: text,
-                        placeholder: kDefaultPlaceholder,
+                        placeholder: Resolver.resolve(VDEVMediaEditorStrings.self).defaultPlaceholder,
                         fontSize: 32,
                         color: AppColors.white.uiColor,
                         alignment: .center,
