@@ -158,7 +158,8 @@ func CanvasItemPreiviewViewBuilder(_ item: CanvasItemModel,
             .scaleEffect(0.5)
         
     case .template:
-        Image(systemName: "square.3.layers.3d.down.left")
+        let images = Resolver.resolve(VDEVImageConfig.self)
+        Image(uiImage: images.typed.typeTemplate)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: size, height: size)
