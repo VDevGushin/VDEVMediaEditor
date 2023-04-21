@@ -8,6 +8,12 @@
 import SwiftUI
 import PencilKit
 
+struct DrawingViewOutput {
+    let image: UIImage
+    let offset: CGSize
+    let bounds: CGRect
+}
+
 final class DrawingViewModel: NSObject,
                               ObservableObject,
                               PKCanvasViewDelegate {
@@ -46,7 +52,10 @@ final class DrawingViewModel: NSObject,
     func getImage(_ completion: @escaping (DrawingViewOutput?) -> Void) {
         isLoading = true
         canvas.traitCollection.performAsCurrent { [weak self] in
-            defer { self?.isLoading = false }
+            defer {
+                self?.isLoading = false
+                self?.cancelDrawing()
+            }
             
             guard let self = self else { return }
             
@@ -57,18 +66,10 @@ final class DrawingViewModel: NSObject,
             let image = self.canvas.drawing.image(from: self.canvas.drawing.bounds, scale: UIScreen.main.scale)
             
             completion(.init(image: image, offset: offset, bounds: self.canvas.drawing.bounds))
-            
-            self.cancelDrawing()
         }
     }
     
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) { }
-}
-
-struct DrawingViewOutput {
-    let image: UIImage
-    let offset: CGSize
-    let bounds: CGRect
 }
 
 struct DrawingView: View {
@@ -141,8 +142,6 @@ private struct DrawingCanvasView: UIViewRepresentable {
         uiView.removeFromSuperview()
     }
     
-    func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        
-    }
+    func updateUIView(_ uiView: PKCanvasView, context: Context) { }
 }
 
