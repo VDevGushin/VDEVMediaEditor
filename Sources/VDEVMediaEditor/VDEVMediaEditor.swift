@@ -3,7 +3,6 @@ import SwiftUIX
 import SwiftUI
 import Combine
 
-
 public final class VDEVMediaEditorViewModel: ObservableObject {
     private let appModules: [Module]
     private(set) var colorScheme: ColorScheme = .dark
@@ -18,7 +17,8 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
                       images: config.images,
                       strings: config.strings,
                       output: OutputModel(onComplete: onComplete,
-                                          onClose: onClose))
+                                          onClose: onClose),
+                      uiConfig: config.uiConfig)
         ]
         
         appModules.bootstrap()
@@ -34,8 +34,8 @@ public struct VDEVMediaEditorView: View {
     @StateObject private var vm: VDEVMediaEditorViewModel
     
     public init(config: VDEVMediaEditorConfig,
-         onComplete: @escaping (@MainActor (CombinerOutput) -> ()),
-         onClose: @escaping (@MainActor () -> ())) {
+                onComplete: @escaping (@MainActor (CombinerOutput) -> ()),
+                onClose: @escaping (@MainActor () -> ())) {
         
         self._vm = .init(wrappedValue: .init(config: config,
                                              onComplete: onComplete,

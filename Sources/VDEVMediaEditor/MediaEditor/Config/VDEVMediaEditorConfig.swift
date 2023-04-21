@@ -17,16 +17,24 @@ public struct VDEVMediaEditorConfig {
     private(set) var images: VDEVImageConfig
     // strings
     private(set) var strings: VDEVMediaEditorStrings
+    // ui config
+    private(set) var uiConfig: VDEVUIConfig
     
     public init(challengeId: String,
                 networkService: MediaEditorSourceService,
                 images: VDEVImageConfig,
-                strings: VDEVMediaEditorStrings) {
+                strings: VDEVMediaEditorStrings,
+                uiConfig: VDEVUIConfig) {
         self.baseChallengeId = challengeId
         self.networkService = networkService
         self.images = images
         self.strings = strings
+        self.uiConfig = uiConfig
     }
+}
+
+public protocol VDEVUIConfig {
+    var isBackEnabled: Bool { get }
 }
 
 public protocol VDEVImageConfig {

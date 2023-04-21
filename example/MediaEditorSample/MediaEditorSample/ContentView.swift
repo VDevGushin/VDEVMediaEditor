@@ -16,7 +16,8 @@ struct ContentView: View {
             .init(challengeId: "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
                   networkService: NetworkAdapter(client: NetworkClientImpl()),
                   images: Images(),
-                  strings: Strings())
+                  strings: Strings(),
+                  uiConfig: UIConfig())
     }
     
     var body: some View {
@@ -32,6 +33,10 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
+}
+
+struct UIConfig: VDEVUIConfig {
+    let isBackEnabled = true
 }
 
 struct Images: VDEVImageConfig {

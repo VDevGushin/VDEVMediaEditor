@@ -15,6 +15,7 @@ struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var out: VDEVMediaEditorOut
+    @Injected private var uiConfig: VDEVUIConfig
     
     @ObservedObject private var vm: CanvasEditorViewModel
     
@@ -37,18 +38,24 @@ struct ToolsAreaView: View {
                     .bottomTool()
                     .transition(.trailingTransition)
             case (true, false):
-                ZStack {
-                    BackButton {
-                        out.onClose()
+                if uiConfig.isBackEnabled {
+                    ZStack {
+                        BackButton {
+                            out.onClose()
+                        }
+                        .padding()
+                        .leftTool()
+                        .topTool()
+                        
+                        toolsLayersManager()
+                            .bottomTool()
                     }
-                    .padding()
-                    .leftTool()
-                    .topTool()
-                    
+                    .transition(.leadingTransition)
+                } else {
                     toolsLayersManager()
                         .bottomTool()
+                        .transition(.leadingTransition)
                 }
-                .transition(.leadingTransition)
             default: EmptyView()
             }
             
