@@ -14,17 +14,19 @@ import Resolver
 struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
+    @Injected private var out: VDEVMediaEditorOut
+    
     @ObservedObject private var vm: CanvasEditorViewModel
-
+    
     @State private var showPhoroPicker = false
     @State private var showVideoPicker = false
     @State private var showCamera = false
     @State private var showImageCropper = false
-
+    
     init(rootMV: CanvasEditorViewModel) {
         self.vm = rootMV
     }
-
+    
     var body: some View {
         ZStack {
             toolsOverlay()
@@ -35,9 +37,18 @@ struct ToolsAreaView: View {
                     .bottomTool()
                     .transition(.trailingTransition)
             case (true, false):
-                toolsLayersManager()
-                    .bottomTool()
-                    .transition(.leadingTransition)
+                ZStack {
+                    BackButton {
+                        out.onClose()
+                    }
+                    .padding()
+                    .leftTool()
+                    .topTool()
+                    
+                    toolsLayersManager()
+                        .bottomTool()
+                }
+                .transition(.leadingTransition)
             default: EmptyView()
             }
             
@@ -86,8 +97,8 @@ struct ToolsAreaView: View {
             case .masksFilter(let item):
                 maskTool(item)
                     .transition(.bottomTransition)
-
-            // данные тулзы нужно показывать путем оверлеев экрана
+                
+                // данные тулзы нужно показывать путем оверлеев экрана
             case .empty: EmptyView()
             case .imageCropper: EmptyView()
             case .camera: EmptyView()
@@ -113,9 +124,9 @@ struct ToolsAreaView: View {
                 defer {
                     vm.tools.closeTools(false)
                 }
-
+                
                 guard let model = model else { return }
-
+                
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.photo else { return }
@@ -127,7 +138,7 @@ struct ToolsAreaView: View {
                 default: break
                 }
             }
-        }  
+        }
         .fullScreenCover(isPresented: $showPhoroPicker, content: {
             PhotoPickerView(type: .image) { model in
                 vm.tools.closeTools(false)
@@ -165,15 +176,12 @@ struct ToolsAreaView: View {
     private func toolsOverlay() -> some View {
         switch vm.tools.currentToolItem {
         case .concreteItem:
-            VStack {
-                HStack {
-                    Spacer()
-                    CloseButton {
-                        vm.tools.closeTools(false)
-                    }.padding()
-                }
-                Spacer()
+            CloseButton {
+                vm.tools.closeTools(false)
             }
+            .padding()
+            .rightTool()
+            .topTool()
             .transition(.opacity)
         default: EmptyView()
         }
@@ -231,7 +239,7 @@ struct ToolsAreaView: View {
             .padding()
         }
     }
-
+    
     // что можно сделать с конктетным слоем канваса
     @ViewBuilder
     func toolConcrete(_ item: CanvasItemModel) ->  some View {
@@ -297,7 +305,7 @@ fileprivate extension ToolsAreaView {
                 .padding(.horizontal)
         }
     }
-
+    
     // добавление рисунка
     @ViewBuilder
     func drawingTool() -> some View {
@@ -325,7 +333,7 @@ fileprivate extension ToolsAreaView {
             vm.tools.openLayersList(false)
         }
     }
-
+    
     // добавление стикера
     @ViewBuilder
     func stickersTool(title: String) -> some View {
@@ -349,27 +357,27 @@ fileprivate extension ToolsAreaView {
             }
         }
     }
-
+    
     // добавление текста
     @ViewBuilder
     func textTool(_ item: CanvasTextModel?) -> some View {
         ZStack {
             Color.clear
-
+            
             TextTool(textItem: item,
                      backgroundColor: vm.ui.mainLayerBackgroundColor,
                      labelContainerToCanvasWidthRatio: 0.8) { newModel in
                 if let item = item { vm.data.delete(item) }
-
+                
                 vm.data.add(newModel)
-
+                
                 vm.tools.closeTools(false)
             } deleteAction: {
                 vm.tools.closeTools(false)
             }
         }
     }
-
+    
     // Выбор и добалвение шаблона
     @ViewBuilder
     func templatesTool() -> some View {
@@ -392,7 +400,7 @@ fileprivate extension ToolsAreaView {
                             challengeId: vm.tools.baseChallengeId)
         }
     }
-
+    
     // добалвение текстуры
     @ViewBuilder
     func textureTool(_ item: CanvasItemModel) -> some View {
@@ -408,7 +416,7 @@ fileprivate extension ToolsAreaView {
             .padding(.horizontal)
         }
     }
-
+    
     // добавление маски
     @ViewBuilder
     func maskTool(_ item: CanvasItemModel) -> some View {
@@ -432,7 +440,7 @@ fileprivate extension ToolsAreaView {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             ToolAdjustments(item)
-            .padding(.horizontal)
+                .padding(.horizontal)
         }
     }
 }
