@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C02083A29F290C100535399 /* VDEVMediaEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 3C02083929F290C100535399 /* VDEVMediaEditor */; };
 		3C3AFB7D29EDCFB5008D0D46 /* MediaEditorSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFB7C29EDCFB5008D0D46 /* MediaEditorSampleApp.swift */; };
 		3C3AFB7F29EDCFB5008D0D46 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFB7E29EDCFB5008D0D46 /* ContentView.swift */; };
 		3C3AFB8129EDCFB6008D0D46 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3C3AFB8029EDCFB6008D0D46 /* Assets.xcassets */; };
 		3C3AFB8429EDCFB6008D0D46 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3C3AFB8329EDCFB6008D0D46 /* Preview Assets.xcassets */; };
 		3C3AFB8C29EDD028008D0D46 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 3C3AFB8B29EDD028008D0D46 /* Apollo */; };
 		3C3AFB8E29EDD028008D0D46 /* ApolloAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 3C3AFB8D29EDD028008D0D46 /* ApolloAPI */; };
-		3C3AFB9529EDD1AE008D0D46 /* VDEVMediaEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 3C3AFB9429EDD1AE008D0D46 /* VDEVMediaEditor */; };
 		3C3AFBAB29EDD207008D0D46 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFB9829EDD206008D0D46 /* NetworkClient.swift */; };
 		3C3AFBAC29EDD207008D0D46 /* getChallengeEditorFilter.gql in Resources */ = {isa = PBXBuildFile; fileRef = 3C3AFB9929EDD206008D0D46 /* getChallengeEditorFilter.gql */; };
 		3C3AFBAD29EDD207008D0D46 /* getChallengeStickerPacksFull.gql in Resources */ = {isa = PBXBuildFile; fileRef = 3C3AFB9A29EDD206008D0D46 /* getChallengeStickerPacksFull.gql */; };
@@ -180,7 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C3AFB8E29EDD028008D0D46 /* ApolloAPI in Frameworks */,
-				3C3AFB9529EDD1AE008D0D46 /* VDEVMediaEditor in Frameworks */,
+				3C02083A29F290C100535399 /* VDEVMediaEditor in Frameworks */,
 				3C3AFB8C29EDD028008D0D46 /* Apollo in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,7 +366,7 @@
 			packageProductDependencies = (
 				3C3AFB8B29EDD028008D0D46 /* Apollo */,
 				3C3AFB8D29EDD028008D0D46 /* ApolloAPI */,
-				3C3AFB9429EDD1AE008D0D46 /* VDEVMediaEditor */,
+				3C02083929F290C100535399 /* VDEVMediaEditor */,
 			);
 			productName = MediaEditorSample;
 			productReference = 3C3AFB7929EDCFB5008D0D46 /* MediaEditorSample.app */;
@@ -728,6 +728,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3C02083929F290C100535399 /* VDEVMediaEditor */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VDEVMediaEditor;
+		};
 		3C3AFB8B29EDD028008D0D46 /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3C3AFB8A29EDD028008D0D46 /* XCRemoteSwiftPackageReference "apollo-ios" */;
@@ -737,10 +741,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3C3AFB8A29EDD028008D0D46 /* XCRemoteSwiftPackageReference "apollo-ios" */;
 			productName = ApolloAPI;
-		};
-		3C3AFB9429EDD1AE008D0D46 /* VDEVMediaEditor */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = VDEVMediaEditor;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
