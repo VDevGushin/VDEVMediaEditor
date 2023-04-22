@@ -36,19 +36,6 @@ final class DrawingViewModel: NSObject,
         Log.d("❌ Deinit: DrawingViewModel")
     }
     
-    func cancelDrawing() {
-        canvas.drawing.strokes.removeAll()
-        canvas.resignFirstResponder()
-        canvas.delegate = nil
-        toolPicker.removeObserver(canvas)
-        toolPicker.setVisible(false, forFirstResponder: canvas)
-        canvas = PKCanvasView()
-    }
-    
-    func deleteDrawing() {
-        _ = canvas.drawing.strokes.popLast()
-    }
-    
     func getImage(_ completion: @escaping (DrawingViewOutput?) -> Void) {
         isLoading = true
         canvas.traitCollection.performAsCurrent { [weak self] in
@@ -67,6 +54,19 @@ final class DrawingViewModel: NSObject,
             
             completion(.init(image: image, offset: offset, bounds: self.canvas.drawing.bounds))
         }
+    }
+    
+    func cancelDrawing() {
+        canvas.drawing.strokes.removeAll()
+        canvas.resignFirstResponder()
+        canvas.delegate = nil
+        toolPicker.removeObserver(canvas)
+        toolPicker.setVisible(false, forFirstResponder: canvas)
+        canvas = PKCanvasView()
+    }
+    
+    func deleteDrawing() {
+        _ = canvas.drawing.strokes.popLast()
     }
     
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) { }
@@ -125,13 +125,15 @@ private struct DrawingCanvasView: UIViewRepresentable {
         drawingCanvas.clipsToBounds = true
         drawingCanvas.backgroundColor = .clear
         
-        let subviews = canvas.subviews[0]
-        subviews.addSubview(drawingCanvas)
-        subviews.sendSubviewToBack(drawingCanvas)
+        canvas.subviews[0].addSubview(drawingCanvas)
+        canvas.subviews[0].sendSubviewToBack(drawingCanvas)
+        
         canvas.overrideUserInterfaceStyle = .dark
         toolPicker.overrideUserInterfaceStyle = .dark
+        
         toolPicker.setVisible(true, forFirstResponder: canvas)
         toolPicker.addObserver(canvas)
+        
         canvas.becomeFirstResponder()
         canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
         
