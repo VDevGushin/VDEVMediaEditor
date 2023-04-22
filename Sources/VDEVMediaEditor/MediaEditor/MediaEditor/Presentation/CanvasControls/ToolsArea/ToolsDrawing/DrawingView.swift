@@ -131,12 +131,6 @@ private struct DrawingCanvasView: UIViewRepresentable {
         canvas.overrideUserInterfaceStyle = .dark
         toolPicker.overrideUserInterfaceStyle = .dark
         
-        toolPicker.setVisible(true, forFirstResponder: canvas)
-        toolPicker.addObserver(canvas)
-        
-        canvas.becomeFirstResponder()
-        canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
-        
         return canvas
     }
     
@@ -144,6 +138,12 @@ private struct DrawingCanvasView: UIViewRepresentable {
         uiView.removeFromSuperview()
     }
     
-    func updateUIView(_ uiView: PKCanvasView, context: Context) { }
+    func updateUIView(_ uiView: PKCanvasView, context: Context) {
+        canvas.drawingPolicy = .anyInput
+        toolPicker.addObserver(canvas)
+        toolPicker.setVisible(true, forFirstResponder: canvas)
+        canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
+        DispatchQueue.main.async { canvas.becomeFirstResponder() }
+    }
 }
 
