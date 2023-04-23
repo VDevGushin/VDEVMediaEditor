@@ -14,7 +14,6 @@ import Resolver
 struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
-    @Injected private var out: VDEVMediaEditorOut
     @Injected private var uiConfig: VDEVUIConfig
     
     @ObservedObject private var vm: CanvasEditorViewModel
@@ -40,9 +39,7 @@ struct ToolsAreaView: View {
             case (true, false):
                 if uiConfig.isBackEnabled {
                     ZStack {
-                        BackButton {
-                            out.onClose()
-                        }
+                        BackButton { vm.onCloseEditor() }
                         .padding()
                         .leftTool()
                         .topTool()

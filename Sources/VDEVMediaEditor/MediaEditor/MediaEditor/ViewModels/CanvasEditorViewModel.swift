@@ -84,3 +84,10 @@ extension CanvasEditorViewModel {
     }
 }
 
+extension CanvasEditorViewModel {
+    @MainActor
+    func onCloseEditor() {
+        Resolver.reset()
+        editorOut.onClose()
+    }
+}

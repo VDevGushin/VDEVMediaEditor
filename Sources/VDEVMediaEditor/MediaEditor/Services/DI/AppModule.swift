@@ -33,34 +33,34 @@ final class AppModule: Module {
     func bootstrap(with ioc: Resolver) {
         ioc.register {
             MediaEditorInputServiceImpl(self.baseChallengeId) as MediaEditorInputService
-        }.scope(.application)
+        }.scope(.cached)
         
         ioc.register {
             self.dataService as MediaEditorSourceService
-        }.scope(.application)
+        }.scope(.cached)
         
         ioc.register {
             self.dataService as MediaEditorSourceService
-        }.scope(.application)
+        }.scope(.cached)
         
         ioc.register {
             self.images as VDEVImageConfig
-        }.scope(.application)
+        }.scope(.cached)
         
         ioc.register {
             self.strings as VDEVMediaEditorStrings
-        }.scope(.application)
+        }.scope(.cached)
         
         ioc.register {
             self.output as VDEVMediaEditorOut
-        }.scope(.application)
+        }.scope(.cached)
         
         ioc.register {
             self.uiConfig as VDEVUIConfig
-        }.scope(.application)
+        }.scope(.cached)
         
         
-        ioc.register{ PasteboardService() }.scope(.application)
+        ioc.register{ PasteboardService() }.scope(.cached)
     }
     
     func setup(with ioc: Resolver) {
