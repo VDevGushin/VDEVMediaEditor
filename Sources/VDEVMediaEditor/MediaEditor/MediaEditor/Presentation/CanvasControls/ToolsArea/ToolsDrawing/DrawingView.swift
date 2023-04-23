@@ -147,11 +147,11 @@ private struct DrawingCanvasView: UIViewRepresentable {
     }
     
     private func setup() {
+        canvas.drawingPolicy = .anyInput
+        toolPicker.addObserver(canvas)
+        toolPicker.setVisible(true, forFirstResponder: canvas)
+        //canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
         DispatchQueue.main.async {
-            canvas.drawingPolicy = .default
-            toolPicker.addObserver(canvas)
-            toolPicker.setVisible(true, forFirstResponder: canvas)
-            canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
             canvas.becomeFirstResponder()
         }
     }
