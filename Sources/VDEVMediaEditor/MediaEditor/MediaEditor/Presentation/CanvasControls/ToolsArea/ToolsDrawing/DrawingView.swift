@@ -19,9 +19,9 @@ final class DrawingViewModel: NSObject,
                               ObservableObject,
                               PKCanvasViewDelegate {
     
-    @Published var canvas = PKCanvasView()
-    @Published var toolPicker = PKToolPicker()
-    @Published var drawingCanvas = UIView()
+    var canvas = PKCanvasView()
+    let toolPicker = PKToolPicker()
+    let drawingCanvas = UIView()
     @Published var isLoading = false
     
     private let size: CGSize
@@ -89,14 +89,13 @@ struct DrawingView: View {
                 ZStack {
                     AppColors.blackWithOpacity1
                     
-                    DrawingCanvasView(canvas: $vm.canvas,
-                                      drawingCanvas: $vm.drawingCanvas,
-                                      toolPicker: $vm.toolPicker,
+                    DrawingCanvasView(canvas: vm.canvas,
+                                      drawingCanvas: vm.drawingCanvas,
+                                      toolPicker: vm.toolPicker,
                                       rect: proxy.frame(in: .global).size)
                 }
             }
             
-            //RoundButton(systemName: "arrow.uturn.backward") { vm.deleteDrawing() }
             BackButton {
                 vm.getImage(onClose)
             }
@@ -112,9 +111,9 @@ struct DrawingView: View {
 }
 
 private struct DrawingCanvasView: UIViewRepresentable {
-    @Binding var canvas: PKCanvasView
-    @Binding var drawingCanvas: UIView
-    @Binding var toolPicker: PKToolPicker
+    var canvas: PKCanvasView
+    var drawingCanvas: UIView
+    var toolPicker: PKToolPicker
     
     var rect: CGSize
     

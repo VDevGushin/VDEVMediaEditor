@@ -36,7 +36,7 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct UIConfig: VDEVUIConfig {
-    let isBackEnabled = true
+    let isBackEnabled = false
 }
 
 struct Images: VDEVImageConfig {
