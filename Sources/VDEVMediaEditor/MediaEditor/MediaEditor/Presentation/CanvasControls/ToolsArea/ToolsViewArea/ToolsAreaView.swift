@@ -39,13 +39,13 @@ struct ToolsAreaView: View {
             case (true, false):
                 if uiConfig.isBackEnabled {
                     ZStack {
+                        toolsLayersManager()
+                            .bottomTool()
+                        
                         BackButton { vm.onCloseEditor() }
                         .padding()
                         .leftTool()
                         .topTool()
-                        
-                        toolsLayersManager()
-                            .bottomTool()
                     }
                     .transition(.leadingTransition)
                 } else {
