@@ -121,6 +121,8 @@ private struct DrawingCanvasView: UIViewRepresentable {
     func makeUIView(context: Context) -> PKCanvasView {
         canvas.isOpaque = false
         canvas.backgroundColor = .clear
+        canvas.overrideUserInterfaceStyle = .dark
+        toolPicker.overrideUserInterfaceStyle = .dark
         
         drawingCanvas.frame = .init(x: 0, y: 0, width: rect.width, height: rect.height)
         drawingCanvas.contentMode = .scaleAspectFit
@@ -129,9 +131,7 @@ private struct DrawingCanvasView: UIViewRepresentable {
         
         canvas.subviews[0].addSubview(drawingCanvas)
         canvas.subviews[0].sendSubviewToBack(drawingCanvas)
-        
-        canvas.overrideUserInterfaceStyle = .dark
-        toolPicker.overrideUserInterfaceStyle = .dark
+        canvas.drawingPolicy = .anyInput
         
         setup()
         
@@ -147,10 +147,8 @@ private struct DrawingCanvasView: UIViewRepresentable {
     }
     
     private func setup() {
-        canvas.drawingPolicy = .anyInput
-        toolPicker.addObserver(canvas)
         toolPicker.setVisible(true, forFirstResponder: canvas)
-        //canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
+        toolPicker.addObserver(canvas)
         DispatchQueue.main.async {
             canvas.becomeFirstResponder()
         }
