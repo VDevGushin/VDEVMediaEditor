@@ -96,10 +96,11 @@ struct DrawingView: View {
                 }
             }
             
-            VStack {
-                RoundButton(systemName: "checkmark") { vm.getImage(onClose) }
-                RoundButton(systemName: "arrow.uturn.backward") { vm.deleteDrawing() }
+            //RoundButton(systemName: "arrow.uturn.backward") { vm.deleteDrawing() }
+            BackButton {
+                vm.getImage(onClose)
             }
+            .padding()
             .topTool()
             .leftTool()
             
@@ -140,7 +141,7 @@ private struct DrawingCanvasView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        canvas.drawingPolicy = .anyInput
+        canvas.drawingPolicy = .default
         toolPicker.addObserver(canvas)
         toolPicker.setVisible(true, forFirstResponder: canvas)
         canvas.tool = PKInkingTool(.pen, color: AppColors.red.uiColor, width: 10)
