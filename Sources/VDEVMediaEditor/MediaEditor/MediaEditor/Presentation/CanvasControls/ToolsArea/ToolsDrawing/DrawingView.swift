@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PencilKit
+import Combine
 
 struct DrawingViewOutput {
     let image: UIImage
@@ -95,13 +96,13 @@ struct DrawingView: View {
                 }
             }
             
-            HStack {
-                RoundButton(systemName: "arrow.uturn.backward") { vm.deleteDrawing() }
-                
-                Spacer()
-                
+            VStack {
                 RoundButton(systemName: "checkmark") { vm.getImage(onClose) }
+                RoundButton(systemName: "arrow.uturn.backward") { vm.deleteDrawing() }
             }
+            .topTool()
+            .leftTool()
+            
         }
         .overlay(alignment: .center) {
             LoadingView(inProgress: vm.isLoading, style: .large)
