@@ -27,11 +27,9 @@ protocol CanvasEditorDelegate: AnyObject {
 }
 
 final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEditorDelegate {
-    @Injected private var appInputService: MediaEditorInputService
+    @Injected private var settings: VDEVMediaEditorSettings
     
-    var baseChallengeId: String {
-        appInputService.baseChallengeId
-    }
+    var baseChallengeId: String { settings.baseChallengeId }
     
     @Published var state: State = .empty
     @Published var showPhotoPicker: Bool = false

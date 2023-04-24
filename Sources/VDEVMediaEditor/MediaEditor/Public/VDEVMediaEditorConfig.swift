@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 public struct VDEVMediaEditorConfig {
-    // challenge id
-    private(set) var baseChallengeId: String
+    // settings
+    private(set) var settings: VDEVMediaEditorSettings
     // network service
-    private(set) var networkService: MediaEditorSourceService
+    private(set) var networkService: VDEVMediaEditorSourceService
     // images
     private(set) var images: VDEVImageConfig
     // strings
@@ -20,12 +20,12 @@ public struct VDEVMediaEditorConfig {
     // ui config
     private(set) var uiConfig: VDEVUIConfig
     
-    public init(challengeId: String,
-                networkService: MediaEditorSourceService,
+    public init(settings: VDEVMediaEditorSettings,
+                networkService: VDEVMediaEditorSourceService,
                 images: VDEVImageConfig,
                 strings: VDEVMediaEditorStrings,
                 uiConfig: VDEVUIConfig) {
-        self.baseChallengeId = challengeId
+        self.settings = settings
         self.networkService = networkService
         self.images = images
         self.strings = strings

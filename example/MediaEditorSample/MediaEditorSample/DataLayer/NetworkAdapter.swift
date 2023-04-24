@@ -8,15 +8,11 @@
 import UIKit
 import VDEVMediaEditor
 
-final class NetworkAdapter: MediaEditorSourceService {
+final class NetworkAdapter: VDEVMediaEditorSourceService {
     private let client: NetworkClient
     
     init(client: NetworkClient) {
         self.client = client
-    }
-    
-    func challengeTitle(baseChallengeId: String) async throws -> String? {
-        try await client.challengeLocalizedTitle(baseChallengeId: baseChallengeId)
     }
     
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {

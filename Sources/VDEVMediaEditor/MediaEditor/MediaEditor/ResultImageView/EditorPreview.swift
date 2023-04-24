@@ -81,7 +81,7 @@ struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
-    @Injected private var inputService: MediaEditorInputService
+    @Injected private var settings: VDEVMediaEditorSettings
    
     @State var model: Content
     @State var challengeTitle: String = ""
@@ -170,7 +170,7 @@ struct EditorPreview: View {
             }
         })
         .onAppear {
-            challengeTitle = inputService.title
+            challengeTitle = settings.title
         }
     }
 }

@@ -11,7 +11,7 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
     public init(config: VDEVMediaEditorConfig) {
         
         appModules = [
-            AppModule(baseChallengeId: config.baseChallengeId,
+            AppModule(settings: config.settings,
                       dataService: config.networkService,
                       images: config.images,
                       strings: config.strings,

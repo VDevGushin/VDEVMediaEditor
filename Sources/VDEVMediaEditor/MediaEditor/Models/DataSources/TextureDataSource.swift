@@ -11,7 +11,7 @@ import Resolver
 class TextureDataSource: SectionedDataSource, ObservableObject {
     typealias ItemModel = EditorFilter
     
-    @Injected private var sourceService: MediaEditorSourceService
+    @Injected private var sourceService: VDEVMediaEditorSourceService
 
     @Published var sections: [Section<EditorFilter>] = []
     @Published var isLoading: Bool = false

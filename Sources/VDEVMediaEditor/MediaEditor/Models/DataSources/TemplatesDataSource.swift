@@ -12,7 +12,7 @@ import Resolver
 class TemplatesDataSource: SectionedDataSource, ObservableObject {
     typealias ItemModel = TemplatePack
     
-    @Injected private var sourceService: MediaEditorSourceService
+    @Injected private var sourceService: VDEVMediaEditorSourceService
 
     @Published var sections: [Section<TemplatePack>] = []
     @Published var isLoading: Bool = false

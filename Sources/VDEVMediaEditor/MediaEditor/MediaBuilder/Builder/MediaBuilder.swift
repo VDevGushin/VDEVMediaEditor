@@ -31,15 +31,15 @@ final class MediaBuilder: NSObject, ObservableObject {
     func makeMediaItem(layers: [CanvasItemModel],
                        size: CGSize,
                        backgrondColor: Color,
-                       resolutuon: MediaResolution = .fullHD) {
+                       resolution: MediaResolution = .fullHD) {
         
         let progressObserver = ProgressObserver(total: layers.getTotalCount(),
                                                 factor: 0.5) { [weak self] in
             self?.state = .inProgress($0)
         }
         
-        Log.d("Get scale from media resolution: \(resolutuon.toString)")
-        let scale = resolutuon.getScale(for: size.width)
+        Log.d("Get scale from media resolution: \(resolution.toString)")
+        let scale = resolution.getScale(for: size.width)
         
         let assetBuilder = CombinerAssetBuilder(layers: layers,
                                                 canvasSize: size,

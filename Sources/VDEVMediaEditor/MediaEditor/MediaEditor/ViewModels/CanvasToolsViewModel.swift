@@ -10,11 +10,9 @@ import Kingfisher
 import Resolver
 
 final class CanvasToolsViewModel: ObservableObject {
-    @Injected private var appInputService: MediaEditorInputService
+    @Injected private var settings: VDEVMediaEditorSettings
     
-    var baseChallengeId: String {
-        appInputService.baseChallengeId
-    }
+    var baseChallengeId: String { settings.baseChallengeId }
 
     // Открыть/закрыть показ развернутых слоев
     @Published private(set) var openLayersList: Bool = false

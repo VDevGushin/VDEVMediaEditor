@@ -26,7 +26,7 @@ final class StickersDataSource: SectionedDataSource, ObservableObject {
 
     @Published var isLoading: Bool = false
     
-    @Injected private var sourceService: MediaEditorSourceService
+    @Injected private var sourceService: VDEVMediaEditorSourceService
 
     typealias ItemModel = StickerItem
     private let challengeId: String

@@ -9,7 +9,7 @@ import SwiftUI
 import Resolver
 
 final class ColorFilterToolLoader {
-    @Injected private var sourceService: MediaEditorSourceService
+    @Injected private var sourceService: VDEVMediaEditorSourceService
     
     @MainActor
     @Binding private var items: [EditorFilter]

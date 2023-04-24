@@ -12,6 +12,8 @@ import Resolver
 
 final class CanvasEditorViewModel: ObservableObject {
     @Injected private var strings: VDEVMediaEditorStrings
+    @Injected private var settings: VDEVMediaEditorSettings
+    
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
     @Published var data: CanvasLayersDataViewModel = .init()
@@ -73,7 +75,8 @@ final class CanvasEditorViewModel: ObservableObject {
     func onBuildMedia() {
         builder.makeMediaItem(layers: data.layers.elements,
                               size: ui.editroSize,
-                              backgrondColor: ui.mainLayerBackgroundColor)
+                              backgrondColor: ui.mainLayerBackgroundColor,
+                              resolution: settings.resolution.value)
     }
 }
 

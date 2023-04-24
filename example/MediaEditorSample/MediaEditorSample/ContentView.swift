@@ -14,7 +14,8 @@ struct ContentView: View {
     
     init() {
         config =
-            .init(challengeId: "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
+            .init(settings: EditorSettings("f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
+                                           resolution: .fullHD),
                   networkService: NetworkAdapter(client: NetworkClientImpl()),
                   images: Images(),
                   strings: Strings(),
@@ -27,6 +28,32 @@ struct ContentView: View {
         VDEVMediaEditorView(vm: vm)
     }
 }
+
+//EditorSettings
+//challengeId: "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
+
+final class EditorSettings: VDEVMediaEditorSettings {
+    private(set) var baseChallengeId: String
+    private(set) var title: String = ""
+    private(set) var resolution: VDEVMediaResolution
+    private let network: NetworkClient
+
+    init(_ baseChallengeId: String,
+         resolution: VDEVMediaResolution) {
+        self.resolution = resolution
+        self.baseChallengeId = baseChallengeId
+        self.network = NetworkClientImpl()
+        getTitle()
+    }
+
+    private func getTitle() {
+        Task {
+            let title = try? await network.challengeLocalizedTitle(baseChallengeId: baseChallengeId) ?? ""
+            await MainActor.run { [weak self] in self?.title = title ?? "" }
+        }
+    }
+}
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
