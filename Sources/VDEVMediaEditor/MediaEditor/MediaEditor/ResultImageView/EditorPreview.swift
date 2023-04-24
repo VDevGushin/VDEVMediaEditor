@@ -12,27 +12,42 @@ import Resolver
 // MARK: - Modifier
 
 extension View {
-    func editorPreview(with contentPreview: Binding<EditorPreview.Content?>) -> some View {
-        modifier(EditorPreviewModifier(model: contentPreview))
+    func editorPreview(with contentPreview: Binding<EditorPreview.Content?>,
+                       onPublish: @escaping (CombinerOutput) -> Void,
+                       onClose: @escaping () -> Void) -> some View {
+        
+        modifier(EditorPreviewModifier(model: contentPreview,
+                                       onPublish: onPublish,
+                                       onClose: onClose))
     }
 }
 
 struct EditorPreviewModifier: ViewModifier {
     
     @Binding private var model: EditorPreview.Content?
+    private let onPublish: (CombinerOutput) -> Void
+    private let onClose: () -> Void
     
-    init(model: Binding<EditorPreview.Content?>) {
+    init(model: Binding<EditorPreview.Content?> ,
+         onPublish: @escaping (CombinerOutput) -> Void,
+         onClose: @escaping () -> Void) {
         self._model = model
+        self.onClose = onClose
+        self.onPublish = onPublish
     }
     
     func body(content: Content) -> some View {
-        content
-            .sheet(item: $model, onDismiss: {
-                model = nil
-            }, content: {model in
-                EditorPreview(model: model,
-                              challengeTitle: "")
-            })
+        ZStack {
+            content
+            
+            model.map {
+                EditorPreview(model: $0,
+                              challengeTitle: "",
+                              onPublish: onPublish,
+                              onClose: onClose)
+                .transition(.trailingTransition)
+            }
+        }
     }
 }
 
@@ -73,6 +88,9 @@ struct EditorPreview: View {
     @State var challengeTitle: String
     @State var needShare: Bool = false
     
+    var onPublish: (CombinerOutput) -> Void
+    var onClose: () -> Void
+    
     var body: some View {
         VStack {
             HStack {
@@ -80,7 +98,7 @@ struct EditorPreview: View {
                 CloseButton {
                     haptics(.light)
                     needShare = false
-                    dismiss()
+                    onClose()
                 }.padding()
             }
             
@@ -117,7 +135,8 @@ struct EditorPreview: View {
                 
                 PublishButton {
                     haptics(.light)
-                    vm.onPublish(output: model.model)
+                    needShare = false
+                    onPublish(model.model)
                 }
             }
             .padding(.horizontal, 15)

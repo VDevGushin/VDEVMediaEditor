@@ -32,7 +32,12 @@ struct MediaEditorView: View {
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
             vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))
         }
-        .editorPreview(with: $vm.contentPreview)
+        .editorPreview(with: $vm.contentPreview, onPublish: { model in
+            vm.contentPreview = nil
+            vm.onPublish(output: model)
+        }, onClose: {
+            vm.contentPreview = nil
+        })
         .showAlert(with: $vm.alertData)
         .environmentObject(vm)
         .environment(\.guideLinesColor, vm.ui.guideLinesColor)

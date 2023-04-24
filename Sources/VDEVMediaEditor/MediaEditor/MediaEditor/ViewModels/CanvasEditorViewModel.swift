@@ -63,6 +63,8 @@ final class CanvasEditorViewModel: ObservableObject {
             .store(in: &storage)
     }
     
+    deinit { Log.d("❌ Deinit: CanvasEditorViewModel") }
+    
     func onBuildMedia() {
         builder.makeMediaItem(layers: data.layers.elements,
                               size: ui.editroSize,
