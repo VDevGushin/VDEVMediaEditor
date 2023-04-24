@@ -28,7 +28,7 @@ struct LoadingView: View {
          color: UIColor = AppColors.gray.uiColor,
          blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
          cornerRadius: CGFloat = 15,
-         showMessage: Bool = false) {
+         showMessage: Bool = true) {
         self.inProgress = inProgress.value
         self.style = style
         self.color = color
@@ -43,7 +43,7 @@ struct LoadingView: View {
          color: UIColor = AppColors.whiteWithOpacity.uiColor,
          blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
          cornerRadius: CGFloat = 15,
-         showMessage: Bool = false) {
+         showMessage: Bool = true) {
         self.inProgress = inProgress
         self.style = style
         self.color = color

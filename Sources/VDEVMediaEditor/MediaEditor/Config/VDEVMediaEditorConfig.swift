@@ -148,4 +148,5 @@ public protocol VDEVMediaEditorStrings {
     var delete: String { get }
     var done: String { get }
     var `continue`: String { get }
+    var processing: String { get }
 }

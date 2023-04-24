@@ -11,6 +11,7 @@ import AVKit
 import Resolver
 
 final class CanvasEditorViewModel: ObservableObject {
+    @Injected private var strings: VDEVMediaEditorStrings
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
     @Published var data: CanvasLayersDataViewModel = .init()
@@ -53,8 +54,8 @@ final class CanvasEditorViewModel: ObservableObject {
                 case .idle:
                     self?.isLoading = .false
                     self?.contentPreview = nil
-                case .inProgress(let message):
-                    self?.isLoading = .init(value: true, message: message)
+                case .inProgress:
+                    self?.isLoading = .init(value: true, message: self?.strings.processing ?? "")
                 case .success(let combinerOutput):
                     self?.contentPreview = .init(model: combinerOutput)
                     self?.isLoading = .false
@@ -80,7 +81,7 @@ final class CanvasEditorViewModel: ObservableObject {
 extension CanvasEditorViewModel {
     func removeBackground(on item: CanvasItemModel,
                           completion: @escaping (CanvasItemModel) -> Void) {
-        isLoading = .init(value: true, message: "Remove background...")
+        isLoading = .init(value: true, message: strings.processing)
         imageProcessingController.removeBackground(on: item) { [weak self] new in
             self?.data.delete(item)
             self?.data.add(new)
@@ -98,6 +99,9 @@ extension CanvasEditorViewModel {
     
     @MainActor
     func onPublishResult(output: CombinerOutput) {
-        onPublish?(output)
+        if onPublish != nil {
+            isLoading = .init(value: true, message: strings.processing)
+            onPublish?(output)
+        }
     }
 }
