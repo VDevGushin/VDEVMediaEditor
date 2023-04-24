@@ -116,6 +116,7 @@ struct EditorPreview: View {
                 Spacer()
                 
                 PublishButton {
+                    dismiss()
                     haptics(.light)
                     vm.onPublish(output: model.model)
                 }
