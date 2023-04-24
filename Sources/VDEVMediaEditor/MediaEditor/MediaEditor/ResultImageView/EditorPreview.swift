@@ -27,7 +27,7 @@ struct EditorPreviewModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .fullScreenCover(item: $model, onDismiss: {
+            .sheet(item: $model, onDismiss: {
                 model = nil
             }, content: {model in
                 EditorPreview(model: model,
@@ -116,7 +116,6 @@ struct EditorPreview: View {
                 Spacer()
                 
                 PublishButton {
-                    dismiss()
                     haptics(.light)
                     vm.onPublish(output: model.model)
                 }
