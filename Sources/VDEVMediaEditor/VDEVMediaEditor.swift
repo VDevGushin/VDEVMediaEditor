@@ -2,9 +2,10 @@
 import SwiftUIX
 import SwiftUI
 import Combine
+import Resolver
 
 public final class VDEVMediaEditorViewModel: ObservableObject {
-    private let appModules: [Module]
+    private var appModules: [Module]
     private(set) var colorScheme: ColorScheme = .dark
     
     public init(config: VDEVMediaEditorConfig) {
@@ -18,6 +19,11 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
         ]
         
         appModules.bootstrap()
+    }
+    
+    deinit {
+        appModules.removeAll()
+        Resolver.reset()
     }
 }
 
