@@ -90,7 +90,7 @@ extension CanvasEditorViewModel {
     @MainActor
     func onCloseEditor() {
         if editorOut.onClose != nil {
-            defer { Resolver.reset() }
+            //defer { Resolver.reset() }
             editorOut.onClose?()
         }
     }
@@ -98,7 +98,7 @@ extension CanvasEditorViewModel {
     @MainActor
     func onPublish(output: CombinerOutput) {
         if editorOut.onComplete != nil {
-            defer { Resolver.reset() }
+            //defer { Resolver.reset() }
             editorOut.onComplete?(output)
         }
     }

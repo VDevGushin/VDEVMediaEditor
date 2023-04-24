@@ -31,15 +31,11 @@ struct OutputModel: VDEVMediaEditorOut {
 }
 
 public struct VDEVMediaEditorView: View {
-    @StateObject private var vm: VDEVMediaEditorViewModel
+    @ObservedObject private var vm: VDEVMediaEditorViewModel
     
-    public init(config: VDEVMediaEditorConfig,
-                onComplete: (@MainActor (CombinerOutput) -> ())? = nil,
-                onClose: (@MainActor () -> ())? = nil) {
+    public init(vm: VDEVMediaEditorViewModel) {
         
-        self._vm = .init(wrappedValue: .init(config: config,
-                                             onComplete: onComplete,
-                                             onClose: onClose))
+        self.vm = vm
     }
     
     public var body: some View {

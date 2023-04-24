@@ -10,6 +10,7 @@ import VDEVMediaEditor
 
 struct ContentView: View {
     let config: VDEVMediaEditorConfig
+    let vm: VDEVMediaEditorViewModel
     
     init() {
         config =
@@ -18,10 +19,12 @@ struct ContentView: View {
                   images: Images(),
                   strings: Strings(),
                   uiConfig: UIConfig())
+        
+        vm = .init(config: config)
     }
     
     var body: some View {
-        VDEVMediaEditorView(config: config)
+        VDEVMediaEditorView(vm: vm)
     }
 }
 

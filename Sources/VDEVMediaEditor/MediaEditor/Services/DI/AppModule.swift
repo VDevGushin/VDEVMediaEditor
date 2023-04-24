@@ -68,6 +68,5 @@ final class AppModule: Module {
     }
     
     func ready(with ioc: Resolver) {
-        _ = ioc.resolve(MediaEditorInputService.self)
     }
 }

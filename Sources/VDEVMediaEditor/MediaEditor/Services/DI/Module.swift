@@ -23,6 +23,7 @@ protocol Module {
 
 extension Array where Element == Module {
     func bootstrap() {
+        
         for module in self {
             let resolver = Resolver()
             Resolver.main.add(child: resolver)
