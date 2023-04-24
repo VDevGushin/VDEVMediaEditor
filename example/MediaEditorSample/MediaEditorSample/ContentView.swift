@@ -29,9 +29,6 @@ struct ContentView: View {
     }
 }
 
-//EditorSettings
-//challengeId: "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
-
 final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var baseChallengeId: String
     private(set) var title: String = ""
@@ -53,7 +50,6 @@ final class EditorSettings: VDEVMediaEditorSettings {
         }
     }
 }
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

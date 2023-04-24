@@ -24,6 +24,7 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
     deinit {
         appModules.removeAll()
         Resolver.reset()
+        Log.d("❌ Deinit: VDEVMediaEditorViewModel")
     }
 }
 
