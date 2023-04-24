@@ -42,9 +42,7 @@ extension PlaceholderTemplateViewModel {
             delegate?.hideAllOverlayViews()
             delegate?.deleteItem = { [weak self] model in
                 if canvasItem == model {
-                    self?.storage.removeAll()
-                    self?.imageModel = nil
-                    self?.videoModel = nil
+                    self?.resetItem()
                 }
             }
             delegate?.showMediaEditor(item: canvasItem)
@@ -69,7 +67,9 @@ extension PlaceholderTemplateViewModel {
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
+                    
                     await self.reset()
+                    
                     let model = await CanvasImagePlaceholderModel
                         .applyFilter(applyer: self.aplayer,
                                      image: image,
@@ -77,10 +77,12 @@ extension PlaceholderTemplateViewModel {
                                      filters: self.item.filters)
 
                     await self.setImage(model: model)
+                    
                 case .video:
                     guard let url = model.url else { return }
+                    
                     await self.reset()
-
+                    
                     let model = await CanvasVideoPlaceholderModel
                         .applyFilter(applyer:  self.aplayer,
                                      url: url,
@@ -101,13 +103,18 @@ extension PlaceholderTemplateViewModel {
 
 fileprivate extension PlaceholderTemplateViewModel {
     @MainActor
-    func reset() async {
+    func reset() async { resetItem() }
+    
+    func resetItem() {
+        storage.removeAll()
         imageModel = nil
         videoModel = nil
+        item.update(imageModel: nil)
+        item.update(videoModel: nil)
     }
 
     @MainActor
-    func setImage(model: CanvasImagePlaceholderModel) async {
+    func setImage(model: CanvasImagePlaceholderModel?) async {
         inProgress = false
         imageModel = model
 
