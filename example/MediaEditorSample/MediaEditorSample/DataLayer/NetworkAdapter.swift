@@ -15,6 +15,10 @@ final class NetworkAdapter: MediaEditorSourceService {
         self.client = client
     }
     
+    func challengeTitle(baseChallengeId: String) async throws -> String? {
+        try await client.challengeLocalizedTitle(baseChallengeId: baseChallengeId)
+    }
+    
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {
         try await client.filters(forChallenge: baseChallengeId).compactMap { filter -> EditorFilter? in
             guard let coverUrl = filter.cover?.url else { return nil }

@@ -17,4 +17,6 @@ public protocol MediaEditorSourceService {
     func editorTemplates(forChallenge baseChallengeId: String, challengeTitle: String, renderSize: CGSize) async throws -> [TemplatePack]
     
     func stickersPack(forChallenge baseChallengeId: String) async throws -> [(String, [StickerItem])]
+    
+    func challengeTitle(baseChallengeId: String) async throws -> String?
 }

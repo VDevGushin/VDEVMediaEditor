@@ -29,11 +29,11 @@ final class AppModule: Module {
     
     func bootstrap(with ioc: Resolver) {
         ioc.register {
-            MediaEditorInputServiceImpl(self.baseChallengeId) as MediaEditorInputService
+            self.dataService as MediaEditorSourceService
         }.scope(.cached)
         
         ioc.register {
-            self.dataService as MediaEditorSourceService
+            MediaEditorInputServiceImpl(self.baseChallengeId, service: $0.resolve()) as MediaEditorInputService
         }.scope(.cached)
         
         ioc.register {

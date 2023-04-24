@@ -42,7 +42,6 @@ struct EditorPreviewModifier: ViewModifier {
             
             model.map {
                 EditorPreview(model: $0,
-                              challengeTitle: "",
                               onPublish: onPublish,
                               onClose: onClose)
                 .transition(.trailingTransition)
@@ -82,9 +81,10 @@ struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
+    @Injected private var inputService: MediaEditorInputService
    
     @State var model: Content
-    @State var challengeTitle: String
+    @State var challengeTitle: String = ""
     @State var needShare: Bool = false
     
     var onPublish: (CombinerOutput) -> Void
@@ -93,7 +93,13 @@ struct EditorPreview: View {
     var body: some View {
         VStack {
             HStack {
+                Text(challengeTitle)
+                    .font(AppFonts.elmaTrioRegular(12))
+                    .foregroundColor(AppColors.white)
+                    .padding()
+                
                 Spacer()
+                
                 CloseButton {
                     haptics(.light)
                     needShare = false
@@ -163,5 +169,8 @@ struct EditorPreview: View {
                 needShare = false
             }
         })
+        .onAppear {
+            challengeTitle = inputService.title
+        }
     }
 }
