@@ -236,7 +236,8 @@ struct ToolsAreaView: View {
             
             Spacer()
             
-            PublishButton {
+            ContinueButton {
+                haptics(.light)
                 vm.onBuildMedia()
             }
             .hidden(vm.data.layers.isEmpty)

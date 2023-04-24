@@ -65,6 +65,7 @@ extension EditorPreview {
 // MARK: - View
 struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
     @Injected private var output: VDEVMediaEditorOut
    
@@ -77,6 +78,7 @@ struct EditorPreview: View {
             HStack {
                 Spacer()
                 CloseButton {
+                    haptics(.light)
                     needShare = false
                     dismiss()
                 }.padding()
@@ -111,8 +113,11 @@ struct EditorPreview: View {
                     needShare = true
                 }
                 
-                SeeAnswersButton(number: 345) {
-                    output.onComplete(model.model)
+                Spacer()
+                
+                PublishButton {
+                    haptics(.light)
+                    vm.onPublish(output: model.model)
                 }
             }
             .padding(.horizontal, 15)

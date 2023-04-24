@@ -147,4 +147,5 @@ public protocol VDEVMediaEditorStrings {
     var defaultPlaceholder: String { get }
     var delete: String { get }
     var done: String { get }
+    var `continue`: String { get }
 }

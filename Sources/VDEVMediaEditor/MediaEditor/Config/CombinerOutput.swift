@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 protocol VDEVMediaEditorOut {
-    var onComplete: (@MainActor (CombinerOutput) -> ()) { get }
-    var onClose: (@MainActor () -> ()) { get }
+    var onComplete: (@MainActor (CombinerOutput) -> ())? { get }
+    var onClose: (@MainActor () -> ())? { get }
 }
 
 public struct CombinerOutput {

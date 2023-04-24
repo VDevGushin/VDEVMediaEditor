@@ -21,11 +21,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VDEVMediaEditorView(config: config) { model in
-            print(model.url)
-        } onClose: {
-            print("close")
-        }
+        VDEVMediaEditorView(config: config)
     }
 }
 
@@ -147,4 +143,5 @@ struct Strings: VDEVMediaEditorStrings {
     let defaultPlaceholder = "WRITE HERE"
     let delete = "DELETE"
     let done = "DONE"
+    let `continue` = "CONTINUE"
 }

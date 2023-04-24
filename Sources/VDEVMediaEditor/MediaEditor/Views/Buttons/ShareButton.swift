@@ -12,7 +12,7 @@ struct ShareButton: View {
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
     
-    private let height: CGFloat = 40
+    private let size: CGSize = .init(width: 100, height: 45)
     private let action: () -> Void
     
     init(action: @escaping () -> Void) {
@@ -34,25 +34,13 @@ struct ShareButton: View {
                         .scaledToFit()
                         .frame(width: 20, height: 20)
                     
-                    Text(strings.publish)
+                    Text(strings.shareOrSave)
                         .font(AppFonts.elmaTrioRegular(13))
                         .foregroundColor(AppColors.whiteWithOpacity1)
                         .shadow(radius: 5)
                 }
             }
-            .frame(height: height)
-            .frame(minHeight: 100)
+            .frame(size)
         }
-    }
-}
-
-struct ShareButton_Previews: PreviewProvider {
-    static var previews: some View {
-        ShareButton(action: {
-            print("test")
-        })
-        .previewLayout(.sizeThatFits)
-        .padding()
-        .background(Color(.systemBackground))
     }
 }

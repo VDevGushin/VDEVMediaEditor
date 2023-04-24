@@ -8,8 +8,8 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
     private(set) var colorScheme: ColorScheme = .dark
     
     public init(config: VDEVMediaEditorConfig,
-                onComplete: @escaping (@MainActor (CombinerOutput) -> ()),
-                onClose: @escaping (@MainActor () -> ())) {
+                onComplete:(@MainActor (CombinerOutput) -> ())? = nil,
+                onClose: (@MainActor () -> ())? = nil) {
         
         appModules = [
             AppModule(baseChallengeId: config.baseChallengeId,
@@ -26,16 +26,16 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
 }
 
 struct OutputModel: VDEVMediaEditorOut {
-    var onComplete: (@MainActor (CombinerOutput) -> ())
-    var onClose: (@MainActor () -> ())
+    var onComplete: (@MainActor (CombinerOutput) -> ())?
+    var onClose: (@MainActor () -> ())?
 }
 
 public struct VDEVMediaEditorView: View {
     @StateObject private var vm: VDEVMediaEditorViewModel
     
     public init(config: VDEVMediaEditorConfig,
-                onComplete: @escaping (@MainActor (CombinerOutput) -> ()),
-                onClose: @escaping (@MainActor () -> ())) {
+                onComplete: (@MainActor (CombinerOutput) -> ())? = nil,
+                onClose: (@MainActor () -> ())? = nil) {
         
         self._vm = .init(wrappedValue: .init(config: config,
                                              onComplete: onComplete,
