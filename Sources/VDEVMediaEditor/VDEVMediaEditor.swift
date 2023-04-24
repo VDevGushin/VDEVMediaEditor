@@ -7,17 +7,13 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
     private let appModules: [Module]
     private(set) var colorScheme: ColorScheme = .dark
     
-    public init(config: VDEVMediaEditorConfig,
-                onComplete:(@MainActor (CombinerOutput) -> ())? = nil,
-                onClose: (@MainActor () -> ())? = nil) {
+    public init(config: VDEVMediaEditorConfig) {
         
         appModules = [
             AppModule(baseChallengeId: config.baseChallengeId,
                       dataService: config.networkService,
                       images: config.images,
                       strings: config.strings,
-                      output: OutputModel(onComplete: onComplete,
-                                          onClose: onClose),
                       uiConfig: config.uiConfig)
         ]
         
@@ -25,20 +21,21 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
     }
 }
 
-struct OutputModel: VDEVMediaEditorOut {
-    var onComplete: (@MainActor (CombinerOutput) -> ())?
-    var onClose: (@MainActor () -> ())?
-}
-
 public struct VDEVMediaEditorView: View {
     @ObservedObject private var vm: VDEVMediaEditorViewModel
+    private var onPublish: (@MainActor (CombinerOutput) -> Void)?
+    private var onClose: (@MainActor () -> Void)?
     
-    public init(vm: VDEVMediaEditorViewModel) {
-        
+    public init(vm: VDEVMediaEditorViewModel,
+                onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
+                onClose: (@MainActor () -> Void)? = nil) {
+        self.onClose = onClose
+        self.onPublish = onPublish
         self.vm = vm
     }
     
     public var body: some View {
-        MediaEditorView().preferredColorScheme(vm.colorScheme)
+        MediaEditorView(onPublish: onPublish,
+                        onClose: onClose).preferredColorScheme(vm.colorScheme)
     }
 }

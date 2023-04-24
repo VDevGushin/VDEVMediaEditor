@@ -8,11 +8,6 @@
 import Foundation
 import SwiftUI
 
-protocol VDEVMediaEditorOut {
-    var onComplete: (@MainActor (CombinerOutput) -> ())? { get }
-    var onClose: (@MainActor () -> ())? { get }
-}
-
 public struct CombinerOutput {
     public let cover: URL
     public let url: URL

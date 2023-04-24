@@ -13,20 +13,17 @@ final class AppModule: Module {
     private let dataService: MediaEditorSourceService
     private let images: VDEVImageConfig
     private let strings: VDEVMediaEditorStrings
-    private let output: VDEVMediaEditorOut
     private let uiConfig: VDEVUIConfig
     
     init(baseChallengeId: String,
          dataService: MediaEditorSourceService,
          images: VDEVImageConfig,
          strings: VDEVMediaEditorStrings,
-         output: VDEVMediaEditorOut,
          uiConfig: VDEVUIConfig) {
         self.dataService = dataService
         self.baseChallengeId = baseChallengeId
         self.images = images
         self.strings = strings
-        self.output = output
         self.uiConfig = uiConfig
     }
     
@@ -49,10 +46,6 @@ final class AppModule: Module {
         
         ioc.register {
             self.strings as VDEVMediaEditorStrings
-        }.scope(.cached)
-        
-        ioc.register {
-            self.output as VDEVMediaEditorOut
         }.scope(.cached)
         
         ioc.register {

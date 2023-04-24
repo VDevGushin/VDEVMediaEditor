@@ -12,7 +12,10 @@ import Combine
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
     
-    init() { vm = .init() }
+    init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
+         onClose: (@MainActor () -> Void)? = nil) {
+        vm = .init(onPublish: onPublish, onClose: onClose)
+    }
     
     var body: some View {
         ZStack {
@@ -34,7 +37,7 @@ struct MediaEditorView: View {
         }
         .editorPreview(with: $vm.contentPreview, onPublish: { model in
             vm.contentPreview = nil
-            vm.onPublish(output: model)
+            vm.onPublishResult(output: model)
         }, onClose: {
             vm.contentPreview = nil
         })

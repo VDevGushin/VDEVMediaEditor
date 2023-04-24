@@ -11,14 +11,15 @@ import AVKit
 import Resolver
 
 final class CanvasEditorViewModel: ObservableObject {
-    @Injected private var editorOut: VDEVMediaEditorOut
-    
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
     @Published var data: CanvasLayersDataViewModel = .init()
     @Published var tools: CanvasToolsViewModel = .init()
     @Published var isLoading: LoadingModel = .false
     @Published var contentPreview: EditorPreview.Content?
+    
+    private var onPublish: (@MainActor (CombinerOutput) -> Void)?
+    private var onClose: (@MainActor () -> Void)?
     
     private let builder = MediaBuilder()
     private var storage: Set<AnyCancellable> = Set()
@@ -27,7 +28,10 @@ final class CanvasEditorViewModel: ObservableObject {
     
     private let imageProcessingController = ImageProcessingController()
     
-    init() {
+    init(onPublish: (@MainActor (CombinerOutput) -> Void)?, onClose: (@MainActor () -> Void)?) {
+        self.onClose = onClose
+        self.onPublish = onPublish
+        
         observe(nested: self.ui).store(in: &storage)
         
         observe(nested: self.tools).store(in: &storage)
@@ -89,17 +93,11 @@ extension CanvasEditorViewModel {
 extension CanvasEditorViewModel {
     @MainActor
     func onCloseEditor() {
-        if editorOut.onClose != nil {
-            //defer { Resolver.reset() }
-            editorOut.onClose?()
-        }
+       onClose?()
     }
     
     @MainActor
-    func onPublish(output: CombinerOutput) {
-        if editorOut.onComplete != nil {
-            //defer { Resolver.reset() }
-            editorOut.onComplete?(output)
-        }
+    func onPublishResult(output: CombinerOutput) {
+        onPublish?(output)
     }
 }
