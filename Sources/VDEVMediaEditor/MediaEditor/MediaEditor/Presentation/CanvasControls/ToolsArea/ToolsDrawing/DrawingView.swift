@@ -73,6 +73,7 @@ final class DrawingViewModel: NSObject,
     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) { }
 }
 
+@MainActor
 struct DrawingView: View {
     @StateObject private var vm: DrawingViewModel
     
@@ -118,7 +119,7 @@ private struct DrawingCanvasView: UIViewRepresentable {
     var rect: CGSize
     
     func makeUIView(context: Context) -> PKCanvasView {
-        canvas.isOpaque = false
+       // canvas.isOpaque = false
         canvas.backgroundColor = .clear
         canvas.overrideUserInterfaceStyle = .dark
         toolPicker.overrideUserInterfaceStyle = .dark
@@ -128,9 +129,10 @@ private struct DrawingCanvasView: UIViewRepresentable {
         drawingCanvas.clipsToBounds = true
         drawingCanvas.backgroundColor = .clear
         
-        canvas.subviews[0].addSubview(drawingCanvas)
-        canvas.subviews[0].sendSubviewToBack(drawingCanvas)
-        canvas.drawingPolicy = .anyInput
+        if let subviews = canvas.subviews.first {
+            subviews.addSubview(drawingCanvas)
+            subviews.sendSubviewToBack(drawingCanvas)
+        }
         
         setup()
         
