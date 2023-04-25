@@ -31,14 +31,11 @@ struct TextTool: View {
     private var backgroundColor: Color = AppColors.black
     private var textItem: CanvasTextModel?
     private let fromTemplate: Bool
-
     private let labelContainerToCanvasWidthRatio: CGFloat
     private let doneAction: (CanvasTextModel) -> ()
     private let deleteAction: () -> ()
-
     private var textViewPaddingRatio: CGFloat { (1 - labelContainerToCanvasWidthRatio) / 2 }
 
-    //@MainActor
     init(
         textItem: CanvasTextModel? = nil,
         backgroundColor: Color,
@@ -133,7 +130,6 @@ struct TextTool: View {
                         .padding(.vertical)
                         .offset(x: sliderInManipulation ? 12 : -(sliderWidth / 2))
                         .animation(.interactiveSpring(), value: sliderInManipulation)
-                        .isVisible(!fromTemplate)
                 }
 
                 bottomBar
@@ -170,14 +166,13 @@ struct TextTool: View {
         
         HStack {
             Group {
-                if !fromTemplate {
-                    Button {
-                        haptics(.light)
-                        toggleAlignment()
-                    } label: {
-                        Image(uiImage: textAlignmentImage())
-                    }
+                Button {
+                    haptics(.light)
+                    toggleAlignment()
+                } label: {
+                    Image(uiImage: textAlignmentImage())
                 }
+                .isVisible(!fromTemplate)
 
                 Button {
                     haptics(.light)
@@ -199,18 +194,18 @@ struct TextTool: View {
                         .scaledToFit()
                 }
 
-                if !fromTemplate {
-                    Button {
-                        haptics(.light)
-                        needTextBG.toggle()
-                    } label: {
-                        Image(uiImage: images.common.fontBGSelect)
-                            .resizable()
-                            .frame(width: 40.0, height: 40.0)
-                            .scaledToFit()
-                            .opacity(needTextBG ? 1 : 0.4)
-                    }
+                Button {
+                    haptics(.light)
+                    needTextBG.toggle()
+                } label: {
+                    Image(uiImage: images.common.fontBGSelect)
+                        .resizable()
+                        .frame(width: 40.0, height: 40.0)
+                        .scaledToFit()
+                        .opacity(needTextBG ? 1 : 0.4)
                 }
+                .isVisible(!fromTemplate)
+                
             }
             .buttonStyle(BlurButtonStyle(sizeClass: .medium(padding: 0)))
 

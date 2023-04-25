@@ -17,40 +17,53 @@ struct ResultVideoPlayer: View {
     let volume: Double
     let thumbnail: UIImage?
     let cornerRadius: CGFloat
+    let aspectRatio: CGFloat?
     
     init(avAsset: AVAsset,
-         videoComposition:
-         AVVideoComposition?,
-         volume: Double,
-         thumbnail: UIImage?,
-         cornerRadius: CGFloat) {
+         videoComposition: AVVideoComposition? = nil,
+         volume: Double = 0.0,
+         thumbnail: UIImage? = nil,
+         cornerRadius: CGFloat,
+         aspectRatio: CGFloat? = nil) {
         self.avAsset = avAsset
         self.videoComposition = videoComposition
         self.volume = volume
         self.thumbnail = thumbnail
         self.cornerRadius = cornerRadius
+        self.aspectRatio = aspectRatio
     }
     
-    init(assetURL: URL, videoComposition: AVVideoComposition?, volume: Double, thumbnail: UIImage?, cornerRadius: CGFloat) {
+    init(assetURL: URL,
+         videoComposition: AVVideoComposition? = nil,
+         volume: Double = 0.0,
+         thumbnail: UIImage? = nil,
+         cornerRadius: CGFloat,
+         aspectRatio: CGFloat? = nil) {
         self.init(avAsset: AVAsset(url: assetURL),
                   videoComposition: videoComposition,
                   volume: volume,
                   thumbnail: thumbnail,
-                  cornerRadius: cornerRadius)
+                  cornerRadius: cornerRadius,
+                  aspectRatio: aspectRatio)
     }
     
     var body: some View {
-        PlayerView(asset: avAsset, videoComposition: videoComposition, isPlaying: $isPlaying, volume: volume, cornerRadius: cornerRadius)
-            .clipped()
-            .onAppear {
-                isPlaying = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { (_) in
-                isPlaying = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { (_) in
-                isPlaying = false
-            }
+        PlayerView(asset: avAsset,
+                   videoComposition: videoComposition,
+                   isPlaying: $isPlaying,
+                   volume: volume,
+                   cornerRadius: cornerRadius)
+        .aspectRatio(aspectRatio, contentMode: .fit)
+        .clipped()
+        .onAppear {
+            isPlaying = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { (_) in
+            isPlaying = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { (_) in
+            isPlaying = false
+        }
     }
 }
 

@@ -25,8 +25,11 @@ extension View {
 struct EditorPreviewModifier: ViewModifier {
     
     @Binding private var model: EditorPreview.Content?
+    
     private let onPublish: (CombinerOutput) -> Void
     private let onClose: () -> Void
+    
+    @State private var showResult = false
     
     init(model: Binding<EditorPreview.Content?> ,
          onPublish: @escaping (CombinerOutput) -> Void,
@@ -40,39 +43,20 @@ struct EditorPreviewModifier: ViewModifier {
         ZStack {
             content
             
-            model.map {
-                EditorPreview(model: $0,
-                              onPublish: onPublish,
-                              onClose: onClose)
-                .transition(.trailingTransition)
+            if showResult {
+                model.map {
+                    EditorPreview(model: $0,
+                                  onPublish: onPublish,
+                                  onClose: onClose)
+                    .transition(.bottomTransition)
+                }
             }
         }
-    }
-}
-
-// MARK: - Model
-extension EditorPreview {
-    struct Content: Identifiable {
-        enum ResultType {
-            case video
-            case image
-        }
-        
-        let type: ResultType
-        let model: CombinerOutput
-        
-        init(model: CombinerOutput) {
-            self.model = model
-            
-            if model.url.absoluteString.lowercased().hasSuffix("mov") {
-                self.type = .video
-            } else {
-                self.type = .image
+        .onChange(of: model) { value in
+            withAnimation(.interactiveSpring()) {
+                showResult = value != nil
             }
         }
-        
-        var id: String { model.url.absoluteString }
-        var url: URL { model.url }
     }
 }
 
@@ -86,6 +70,12 @@ struct EditorPreview: View {
     @State var model: Content
     @State var challengeTitle: String = ""
     @State var needShare: Bool = false
+    
+    private var aspectRatio: CGFloat {
+        vm.ui.canvasAspectRatio
+    }
+    
+    private var cornerRadius: CGFloat { 15 }
     
     var onPublish: (CombinerOutput) -> Void
     var onClose: () -> Void
@@ -111,11 +101,9 @@ struct EditorPreview: View {
                 switch model.type {
                 case .video:
                     ResultVideoPlayer(assetURL: model.url,
-                                      videoComposition: nil,
-                                      volume: 0,
-                                      thumbnail: nil,
-                                      cornerRadius: 15)
-                    .clipShape(RoundedCorner(radius: 15))
+                                      cornerRadius: cornerRadius,
+                                      aspectRatio: aspectRatio)
+                    .clipShape(RoundedCorner(radius: cornerRadius))
                 case .image:
                     AsyncImageView(url: model.url) { img in
                         Image(uiImage: img)
@@ -124,7 +112,7 @@ struct EditorPreview: View {
                     } placeholder: {
                         LoadingView(inProgress: true, style: .medium)
                     }
-                    .clipShape(RoundedCorner(radius: 15))
+                    .clipShape(RoundedCorner(radius: cornerRadius))
                 }
             }
             .padding(15)
@@ -171,6 +159,36 @@ struct EditorPreview: View {
         })
         .onAppear {
             challengeTitle = settings.title
+        }
+    }
+}
+
+// MARK: - Model
+extension EditorPreview {
+    struct Content: Identifiable, Equatable {
+        enum ResultType {
+            case video
+            case image
+        }
+        
+        let type: ResultType
+        let model: CombinerOutput
+        
+        init(model: CombinerOutput) {
+            self.model = model
+            
+            if model.url.absoluteString.lowercased().hasSuffix("mov") {
+                self.type = .video
+            } else {
+                self.type = .image
+            }
+        }
+        
+        var id: String { model.url.absoluteString }
+        var url: URL { model.url }
+        
+        public static func == (lhs: Content, rhs: Content) -> Bool {
+            lhs.id == rhs.id
         }
     }
 }

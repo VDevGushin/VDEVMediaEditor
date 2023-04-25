@@ -38,6 +38,9 @@ struct TextForTemplateView: View {
             AppColors.black.opacity(0.0001)
         )
         .blendMode(item.blendingMode.swiftUI)
-        .onTapGesture { vm.editText() }
+        .onTapGesture {
+            haptics(.light)
+            vm.editText()
+        }
     }
 }
