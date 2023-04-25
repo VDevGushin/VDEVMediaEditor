@@ -19,10 +19,10 @@ final class DrawingViewModel: NSObject,
                               ObservableObject,
                               PKCanvasViewDelegate {
     
+    @Published var isLoading = false
     var canvas = PKCanvasView()
     let toolPicker = PKToolPicker()
-    let drawingCanvas = UIView()
-    @Published var isLoading = false
+    
     
     private let size: CGSize
     
@@ -86,15 +86,11 @@ struct DrawingView: View {
     
     var body: some View {
         ZStack(alignment: .top){
-            GeometryReader { proxy in
-                ZStack {
-                    AppColors.blackWithOpacity1
-                    
-                    DrawingCanvasView(canvas: vm.canvas,
-                                      drawingCanvas: vm.drawingCanvas,
-                                      toolPicker: vm.toolPicker,
-                                      rect: proxy.frame(in: .global).size)
-                }
+            ZStack {
+                AppColors.blackWithOpacity1
+                
+                DrawingCanvasView(canvas: vm.canvas,
+                                  toolPicker: vm.toolPicker)
             }
             
             BackButton {
@@ -113,28 +109,23 @@ struct DrawingView: View {
 
 private struct DrawingCanvasView: UIViewRepresentable {
     var canvas: PKCanvasView
-    var drawingCanvas: UIView
     var toolPicker: PKToolPicker
     
-    var rect: CGSize
-    
     func makeUIView(context: Context) -> PKCanvasView {
-       // canvas.isOpaque = false
+        canvas.isOpaque = false
         canvas.backgroundColor = .clear
         canvas.overrideUserInterfaceStyle = .dark
+        canvas.drawingPolicy = .anyInput
+        
+        canvas.tool = PKInkingTool(.marker, color: .red, width: 15)
+        
         toolPicker.overrideUserInterfaceStyle = .dark
         
-        drawingCanvas.frame = .init(x: 0, y: 0, width: rect.width, height: rect.height)
-        drawingCanvas.contentMode = .scaleAspectFit
-        drawingCanvas.clipsToBounds = true
-        drawingCanvas.backgroundColor = .clear
+        canvas.becomeFirstResponder()
         
-        if let subviews = canvas.subviews.first {
-            subviews.addSubview(drawingCanvas)
-            subviews.sendSubviewToBack(drawingCanvas)
-        }
+        toolPicker.setVisible(true, forFirstResponder: canvas)
+        toolPicker.addObserver(canvas)
         
-        setup()
         
         return canvas
     }
@@ -143,16 +134,6 @@ private struct DrawingCanvasView: UIViewRepresentable {
         uiView.removeFromSuperview()
     }
     
-    func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        setup()
-    }
-    
-    private func setup() {
-        toolPicker.setVisible(true, forFirstResponder: canvas)
-        toolPicker.addObserver(canvas)
-        DispatchQueue.main.async {
-            canvas.becomeFirstResponder()
-        }
-    }
+    func updateUIView(_ uiView: PKCanvasView, context: Context) { }
 }
 
