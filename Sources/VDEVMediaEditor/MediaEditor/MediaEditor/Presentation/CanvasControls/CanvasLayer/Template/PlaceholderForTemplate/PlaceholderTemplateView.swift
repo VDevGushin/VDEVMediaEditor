@@ -121,20 +121,15 @@ private extension PlaceholderTemplateView {
             vm.openMediaSelector()
             haptics(.light)
         } label: {
-            ZStack {
-                if let placholderURL = vm.item.url {
-                    AsyncImageView(url: placholderURL) { img in
-                        Image(uiImage: img)
-                            .resizable()
-                    } placeholder: {
-                        LoadingView(inProgress: true, style: .medium, color: AppColors.white.uiColor)
-                    }
-                    
-                    addButton(withBackground: false)
-
-                } else {
-                    addButton()
+            if let placholderURL = vm.item.url {
+                AsyncImageView(url: placholderURL) { img in
+                    Image(uiImage: img)
+                        .resizable()
+                } placeholder: {
+                    LoadingView(inProgress: true, style: .medium, color: AppColors.white.uiColor)
                 }
+            } else {
+                addButton()
             }
         }
         .foregroundColor(AppColors.black)

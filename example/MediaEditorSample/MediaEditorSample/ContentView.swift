@@ -120,6 +120,8 @@ struct Images: VDEVImageConfig {
         var share: UIImage = .init(named: "Share")!
         var xmark: UIImage = .init(named: "Xmark")!
         var resultGradient: UIImage = .init(named: "BackGradient")!
+        var done: UIImage = .init(named: "Done")!
+        var reset: UIImage = .init(named: "Reset")!
     }
 }
 

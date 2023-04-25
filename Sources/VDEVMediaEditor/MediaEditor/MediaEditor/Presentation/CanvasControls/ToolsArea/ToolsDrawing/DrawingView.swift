@@ -89,8 +89,14 @@ struct DrawingView: View {
                                   toolPicker: vm.toolPicker)
             }
             
-            BackButton {
-                vm.getImage(onClose)
+            VStack(spacing: 0) {
+                DoneButton {
+                    vm.getImage(onClose)
+                }
+                
+                ResetButton {
+                    vm.deleteDrawing()
+                }
             }
             .padding()
             .topTool()
