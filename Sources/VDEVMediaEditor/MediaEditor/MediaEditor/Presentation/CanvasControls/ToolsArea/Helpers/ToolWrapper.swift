@@ -16,7 +16,10 @@ struct ToolWrapper<Tool: View>: View {
     var body: some View {
         VStack {
             if !fullScreen {
-                Spacer()
+                Color.black.opacity(0.001)
+                    .onTapGesture {
+                        returnPressed()
+                    }
             }
 
             VStack(spacing: 20) {
