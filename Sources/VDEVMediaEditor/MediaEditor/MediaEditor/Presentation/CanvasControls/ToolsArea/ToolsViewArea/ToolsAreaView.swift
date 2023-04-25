@@ -315,7 +315,7 @@ fileprivate extension ToolsAreaView {
     @ViewBuilder
     func drawingTool() -> some View {
         VStack(spacing: 0) {
-            DrawingView(vm.ui.editroSize) { output in
+            DrawingView() { output in
                 if let output = output {
                     let newDrawing = CanvasDrawModel(image: output.image,
                                                      bounds: output.bounds,

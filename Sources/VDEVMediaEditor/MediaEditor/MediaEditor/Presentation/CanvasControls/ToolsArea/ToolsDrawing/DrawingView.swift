@@ -20,14 +20,11 @@ final class DrawingViewModel: NSObject,
                               PKCanvasViewDelegate {
     
     @Published var isLoading = false
+    
     var canvas = PKCanvasView()
     let toolPicker = PKToolPicker()
     
-    
-    private let size: CGSize
-    
-    init(size: CGSize) {
-        self.size = size
+    override init() {
         super.init()
         canvas.delegate = self
     }
@@ -75,13 +72,12 @@ final class DrawingViewModel: NSObject,
 
 @MainActor
 struct DrawingView: View {
-    @StateObject private var vm: DrawingViewModel
+    @StateObject private var vm: DrawingViewModel = .init()
     
     let onClose: (DrawingViewOutput?) -> Void
     
-    init(_ size: CGSize, onClose: @escaping (DrawingViewOutput?) -> Void) {
+    init(onClose: @escaping (DrawingViewOutput?) -> Void) {
         self.onClose = onClose
-        self._vm = .init(wrappedValue: .init(size: size))
     }
     
     var body: some View {
