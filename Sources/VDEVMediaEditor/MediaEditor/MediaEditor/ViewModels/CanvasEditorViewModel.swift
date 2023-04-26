@@ -59,9 +59,11 @@ final class CanvasEditorViewModel: ObservableObject {
                 case .inProgress:
                     self?.isLoading = .init(value: true, message: self?.strings.processing ?? "")
                 case .success(let combinerOutput):
+                    makeHaptics(.light)
                     self?.contentPreview = .init(model: combinerOutput)
                     self?.isLoading = .false
                 case .error(let error):
+                    makeHaptics(.light)
                     self?.isLoading = .false
                     self?.contentPreview = nil
                     self?.alertData = .init(error)

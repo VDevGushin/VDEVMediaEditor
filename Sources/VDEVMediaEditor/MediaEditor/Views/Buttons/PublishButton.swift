@@ -36,6 +36,7 @@ struct PublishButton: View {
             }
             .frame(size)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }
 

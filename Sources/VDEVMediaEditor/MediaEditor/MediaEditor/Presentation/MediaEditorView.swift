@@ -56,7 +56,11 @@ fileprivate extension MediaEditorView {
             GeometryReader { proxy in
                 ParentView {
                     ZStack {
-                        Color.clear
+                        InvisibleTapZoneView(tapCount: 2) {
+                            if vm.tools.currentToolItem != .empty {
+                                vm.tools.closeTools(false)
+                            }
+                        }
                         
                         ForEach(vm.data.layers, id: \.self) { item in
                             CanvasLayerView(item: item) { contentItem in
@@ -66,11 +70,14 @@ fileprivate extension MediaEditorView {
                                                       delegate: vm.tools.overlay)
                             } onSelect: { item in
                                 if vm.tools.currentToolItem == .empty {
+                                    // Выбрать конкретный итем
                                     vm.tools.openLayersList(true)
                                     vm.data.bringToFront(item)
                                     vm.tools.seletedTool(.concreteItem(item))
                                 } else {
-                                    vm.tools.layerInManipulation = item
+                                    // Отменить выборку
+                                    vm.tools.closeTools(false)
+                                    //vm.tools.layerInManipulation = item
                                 }
                             } onDelete: { item in
                                 vm.data.delete(item)

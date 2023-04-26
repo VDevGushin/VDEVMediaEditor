@@ -42,5 +42,6 @@ struct ShareButton: View {
             }
             .frame(size)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }

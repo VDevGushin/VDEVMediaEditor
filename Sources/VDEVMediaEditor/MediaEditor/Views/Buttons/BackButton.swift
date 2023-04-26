@@ -35,5 +35,6 @@ struct BackButton: View {
             .clipShape(Circle())
             .frame(size)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }

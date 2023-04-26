@@ -59,8 +59,7 @@ public protocol VDEVMediaEditorButtonsCommonImages {
     var share: UIImage { get }
     var xmark: UIImage { get }
     var resultGradient: UIImage { get }
-    var done: UIImage { get }
-    var reset: UIImage { get }
+    var undo: UIImage { get }
 }
 
 // MARK: - Selected layer images

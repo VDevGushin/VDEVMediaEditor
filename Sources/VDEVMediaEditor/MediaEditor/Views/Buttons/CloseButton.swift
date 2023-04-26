@@ -35,6 +35,7 @@ struct CloseButton: View {
             .clipShape(Circle())
             .frame(size)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }
 

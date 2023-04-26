@@ -36,5 +36,6 @@ struct ContinueButton: View {
             }
             .frame(size)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }

@@ -56,5 +56,6 @@ struct ImageButton: View {
             }
             .clipShape(Rectangle())
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }

@@ -37,5 +37,6 @@ struct SeeAnswersButton: View {
             .frame(height: height)
             .frame(minHeight: 100)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }

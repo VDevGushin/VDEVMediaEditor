@@ -95,7 +95,9 @@ struct VideoPlayerView: View {
             .aspectRatio(avAsset.tracks(withMediaType: .video).first?.aspectRatio ?? 1,
                          contentMode: .fill)
             .onAppear {
-                isPlaying = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    isPlaying = true
+                }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { (_) in
                 isPlaying = true

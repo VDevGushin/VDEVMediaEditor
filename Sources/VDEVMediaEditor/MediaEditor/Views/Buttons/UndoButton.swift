@@ -1,5 +1,5 @@
 //
-//  ResetButton.swift
+//  UndoButton.swift
 //  
 //
 //  Created by Vladislav Gushin on 25.04.2023.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Resolver
 
-struct ResetButton: View {
+struct UndoButton: View {
     @Injected private var images: VDEVImageConfig
     
     private let size: CGSize = .init(width: 35, height: 35)
@@ -26,15 +26,13 @@ struct ResetButton: View {
         } label: {
             ZStack {
                 AppColors.blackInvisible
-                Image(uiImage: images.common.reset)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(imageSize)
+                Image(uiImage: images.common.undo)
             }
             .contentShape(Circle())
             .clipShape(Circle())
             .frame(size)
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }
 

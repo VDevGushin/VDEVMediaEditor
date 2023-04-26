@@ -8,6 +8,7 @@
 import SwiftUI
 import PencilKit
 import Combine
+import Resolver
 
 struct DrawingViewOutput {
     let image: UIImage
@@ -89,14 +90,22 @@ struct DrawingView: View {
                                   toolPicker: vm.toolPicker)
             }
             
-            VStack(spacing: 0) {
-                DoneButton {
-                    vm.getImage(onClose)
-                }
-                
-                ResetButton {
+            HStack {
+                UndoButton {
                     vm.deleteDrawing()
                 }
+                
+                Spacer()
+
+                
+                Button {
+                    haptics(.light)
+                    vm.getImage(onClose)
+                } label: {
+                    Text(Resolver.resolve(VDEVMediaEditorStrings.self).done)
+                        .font(.gramatika(size: 16))
+                }
+                .buttonStyle(DoneButtonStyle(tintColor: AppColors.black))
             }
             .padding()
             .topTool()

@@ -51,5 +51,6 @@ struct NoShadowRoundButton: View {
                 }
             }
         }
+        .buttonStyle(ScaleButtonStyle())
     }
 }
