@@ -27,9 +27,9 @@ public class TemplatePack: ObservableObject {
     let id: String
     let name: String
     let cover: URL?
-    let isAttached: Bool
+    public let isAttached: Bool
 
-    let variants: [Variant]
+    public let variants: [Variant]
 
     public init(id: String, name: String, cover: URL?, isAttached: Bool, variants: [Variant]) {
         self.id = id
@@ -83,7 +83,7 @@ public class TemplatePack: ObservableObject {
             }
         }
 
-        let items: [Item]
+        public let items: [Item]
         let id: String
         let cover: URL?
         

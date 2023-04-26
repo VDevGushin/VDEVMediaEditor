@@ -70,6 +70,19 @@ final class CanvasEditorViewModel: ObservableObject {
                 }
             }
             .store(in: &storage)
+        
+        
+        settings
+            .isLoading
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.isLoading = .init(value: value, message: self?.strings.loading ?? "")
+                
+                // Загрузка стартового темплейта
+                if !value { self?.getStartTemplate() }
+            }
+            .store(in: &storage)
     }
     
     deinit { Log.d("❌ Deinit: CanvasEditorViewModel") }
@@ -92,6 +105,19 @@ extension CanvasEditorViewModel {
             self?.data.add(new)
             self?.isLoading = .false
             completion(new)
+        }
+    }
+}
+
+// MARK: - Get started template
+extension CanvasEditorViewModel {
+    func getStartTemplate() {
+        isLoading = .init(value: true, message: strings.loading)
+        
+        settings.getStartTemplate(for: ui.editroSize) { [weak self] template in
+            self?.isLoading = .false
+            guard let self = self, let template = template else { return }
+            self.data.addTemplate(.init(variants: template, editorSize: self.ui.editroSize))
         }
     }
 }

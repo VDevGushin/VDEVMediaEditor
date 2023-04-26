@@ -7,6 +7,7 @@
 
 import SwiftUI
 import VDEVMediaEditor
+import Combine
 
 struct ContentView: View {
     let config: VDEVMediaEditorConfig
@@ -14,6 +15,7 @@ struct ContentView: View {
     
     init() {
         let source = NetworkAdapter(client: NetworkClientImpl())
+        
         config =
             .init(settings: EditorSettings("f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
                                            resolution: .fullHD,
@@ -37,6 +39,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var withAttach: Bool = false
     private(set) var resolution: VDEVMediaResolution
     private(set) var sourceService: VDEVMediaEditorSourceService
+    private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
 
     init(_ baseChallengeId: String,
          resolution: VDEVMediaResolution,
@@ -48,12 +51,32 @@ final class EditorSettings: VDEVMediaEditorSettings {
     }
 
     private func getMeta() {
+        isLoading.send(true)
         Task {
             let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? ("", false)
             
             await MainActor.run { [weak self] in
-                self?.title = meta.0
-                self?.withAttach = meta.1
+                guard let self = self else { return }
+                self.title = meta.0
+                self.withAttach = meta.1
+                self.isLoading.send(false)
+            }
+        }
+    }
+    
+    func getStartTemplate(for size: CGSize,
+                          completion: @escaping ([TemplatePack.Variant.Item]?) -> Void) {
+        guard withAttach else { return completion(nil) }
+        
+        Task {
+            guard let templatesDataSource = try? await sourceService.editorTemplates(forChallenge: baseChallengeId, challengeTitle: title, renderSize: size) else {
+                await MainActor.run { completion(nil) }
+                return
+            }
+            
+            await MainActor.run {
+                let attached = templatesDataSource.first { $0.isAttached }?.variants.first?.items
+                completion(attached)
             }
         }
     }
@@ -180,4 +203,5 @@ struct Strings: VDEVMediaEditorStrings {
     let done = "DONE"
     let `continue` = "CONTINUE"
     let processing = "PRCCESSING"
+    let loading = "LOADING"
 }

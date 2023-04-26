@@ -53,8 +53,6 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
             }
             .store(in: &storage)
     }
-    
- 
 
     // CanvasEditorDelegate
     

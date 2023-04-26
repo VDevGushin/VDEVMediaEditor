@@ -150,4 +150,5 @@ public protocol VDEVMediaEditorStrings {
     var done: String { get }
     var `continue`: String { get }
     var processing: String { get }
+    var loading: String { get }
 }
