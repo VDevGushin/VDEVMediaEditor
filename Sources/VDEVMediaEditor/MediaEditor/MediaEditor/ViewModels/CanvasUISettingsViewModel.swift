@@ -16,7 +16,7 @@ final class CanvasUISettingsViewModel: ObservableObject {
     @Published var showHorizontalCenter: Bool = false
     
     // получаем фактический размер канваса редактора
-    @Published var editroSize: CGSize = .zero
+    @Published var editorSize: CGSize = .zero
 
     @Published private(set) var guideLinesColor: Color = AppColors.white
 

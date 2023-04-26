@@ -71,16 +71,24 @@ final class CanvasEditorViewModel: ObservableObject {
             }
             .store(in: &storage)
         
-        
         settings
             .isLoading
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 self?.isLoading = .init(value: value, message: self?.strings.loading ?? "")
-                
+            }
+            .store(in: &storage)
+        
+        // когда настройки загружены
+        // когда получен размер эдитора
+        settings.isLoading.combineLatest(ui.$editorSize)
+            .map { return !$0.0 && ($0.1 != .zero) }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
                 // Загрузка стартового темплейта
-                if !value { self?.getStartTemplate() }
+                if value { self?.getStartTemplate() }
             }
             .store(in: &storage)
     }
@@ -89,7 +97,7 @@ final class CanvasEditorViewModel: ObservableObject {
     
     func onBuildMedia() {
         builder.makeMediaItem(layers: data.layers.elements,
-                              size: ui.editroSize,
+                              size: ui.editorSize,
                               backgrondColor: ui.mainLayerBackgroundColor,
                               resolution: settings.resolution.value)
     }
@@ -114,10 +122,10 @@ extension CanvasEditorViewModel {
     func getStartTemplate() {
         isLoading = .init(value: true, message: strings.loading)
         
-        settings.getStartTemplate(for: ui.editroSize) { [weak self] template in
+        settings.getStartTemplate(for: ui.editorSize) { [weak self] template in
             self?.isLoading = .false
             guard let self = self, let template = template else { return }
-            self.data.addTemplate(.init(variants: template, editorSize: self.ui.editroSize))
+            self.data.addTemplate(.init(variants: template, editorSize: self.ui.editorSize))
         }
     }
 }

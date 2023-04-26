@@ -124,7 +124,7 @@ struct ToolsAreaView: View {
             }
         })
         .fullScreenCover(isPresented: $showCamera) {
-            CameraVPView(isLibrary: false, canvasSize: vm.ui.editroSize) { model in
+            CameraVPView(isLibrary: false, canvasSize: vm.ui.editorSize) { model in
                 defer {
                     vm.tools.closeTools(false)
                 }
@@ -329,7 +329,7 @@ fileprivate extension ToolsAreaView {
                     }
                 }
             }
-            .frame(vm.ui.editroSize)
+            .frame(vm.ui.editorSize)
             .cornerRadius(vm.ui.canvasCornerRadius)
             
             Spacer(minLength: 0)
@@ -386,10 +386,10 @@ fileprivate extension ToolsAreaView {
     // Выбор и добалвение шаблона
     @ViewBuilder
     func templatesTool() -> some View {
-        TemplateSelectorView(vm.ui.editroSize, challengeId: vm.tools.baseChallengeId) { variants in
+        TemplateSelectorView(vm.ui.editorSize, challengeId: vm.tools.baseChallengeId) { variants in
             vm.tools.closeTools(false)
             if variants.isEmpty { return }
-            vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.editroSize))
+            vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.editorSize))
         }
     }
 }

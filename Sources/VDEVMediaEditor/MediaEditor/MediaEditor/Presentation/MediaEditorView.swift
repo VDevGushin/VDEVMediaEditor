@@ -112,7 +112,7 @@ fileprivate extension MediaEditorView {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .aspectRatio(vm.ui.canvasAspectRatio, contentMode: .fit)
         .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
-        .fetchSize($vm.ui.editroSize)
+        .fetchSize($vm.ui.editorSize)
         .overlay(content: CenterAxes)
         .overlay(content: Grids)
         .onChange(of: vm.ui.showHorizontalCenter) {
