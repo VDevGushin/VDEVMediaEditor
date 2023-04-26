@@ -16,6 +16,8 @@ final class PlaceholderTemplateViewModel: ObservableObject {
     @Published private(set) var inProgress: Bool = false
     @Published private(set) var imageModel: CanvasImagePlaceholderModel?
     @Published private(set) var videoModel: CanvasVideoPlaceholderModel?
+    
+    @Published private(set) var showSelection: Bool = false
 
     private let aplayer: CanvasApplayer = .init()
     
@@ -39,18 +41,31 @@ extension PlaceholderTemplateViewModel {
     
     func openEditVariants() {
         if let canvasItem = imageModel ?? videoModel {
+            delegate?.endWorkWithItem?()
+            
             delegate?.hideAllOverlayViews()
+            
+            showSelection = true
+            
             delegate?.deleteItem = { [weak self] model in
                 if canvasItem == model {
+                    self?.showSelection = false
                     self?.resetItem()
                 }
             }
+            
+            delegate?.endWorkWithItem = { [weak self] in
+                self?.showSelection = false
+            }
+            
             delegate?.showMediaEditor(item: canvasItem)
         }
     }
 
     func openMediaSelector() {
         if inProgress { return }
+        
+        delegate?.endWorkWithItem?()
 
         self.delegate?.pickSelector = { [weak self] model in
             guard let self = self else { return }

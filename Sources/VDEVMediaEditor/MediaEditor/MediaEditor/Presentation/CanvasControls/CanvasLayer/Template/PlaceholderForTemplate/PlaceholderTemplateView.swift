@@ -53,7 +53,7 @@ private extension PlaceholderTemplateView {
                             .resizable()
                             .frame(imageModel.imageSize.aspectFill(minimumSize: proxy.size))
                     } onTap: {
-                        haptics(.light)
+                        // haptics(.light)
                         vm.hideAllOverlayViews()
                         // vm.openMediaSelector()
                     } onDoubleTap: {
@@ -108,6 +108,11 @@ private extension PlaceholderTemplateView {
                         }
                     }
                 }
+            }
+        }
+        .overlay {
+            if vm.showSelection {
+                Selection()
             }
         }
     }
@@ -174,5 +179,30 @@ private struct TemplateMask<T, MaskContent: View>: ViewModifier {
         } else {
             content
         }
+    }
+}
+
+private struct Selection: View {
+    @Environment(\.guideLinesColor) private var guideLinesColor
+    
+    @State private var phase = 0.0
+    
+    var body: some View {
+        Rectangle()
+            .inset(by: 1)
+            .stroke(guideLinesColor.opacity(0.8), style:
+                        StrokeStyle(lineWidth: 1,
+                                    dash: [4, 4],
+                                    dashPhase: phase)
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(
+                Animation.linear(duration: 15)
+                    .repeatForever(autoreverses: true),
+                value: phase)
+            .onAppear {
+                phase -= 100
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

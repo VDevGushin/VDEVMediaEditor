@@ -58,6 +58,7 @@ fileprivate extension MediaEditorView {
                     ZStack {
                         InvisibleTapZoneView(tapCount: 2) {
                             if vm.tools.currentToolItem != .empty {
+                                haptics(.light)
                                 vm.tools.closeTools(false)
                             }
                         }

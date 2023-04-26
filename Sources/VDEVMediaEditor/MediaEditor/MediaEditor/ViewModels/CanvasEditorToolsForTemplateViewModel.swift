@@ -22,6 +22,7 @@ protocol CanvasEditorDelegate: AnyObject {
     // Edit text
     var editText: ((CanvasTextModel) -> Void)? { get set }
     var deleteItem: ((CanvasItemModel?) -> Void)? { get set }
+    var endWorkWithItem: (() -> Void)? { get set }
     func showTextEditor(item: CanvasTextModel)
     func hideAllOverlayViews()
 }
@@ -37,6 +38,7 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
     @Published private(set) var isAnyViewOpen: Bool = false
 
     private var storage: Set<AnyCancellable> = Set()
+    
 
     init() {
         // Если у на вообще, что либо открыто на оверлее
@@ -52,11 +54,16 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
             .store(in: &storage)
     }
     
+ 
+
+    // CanvasEditorDelegate
+    
+    var endWorkWithItem: (() -> Void)?
+    
     func hideAllOverlayViews() {
         if state != .empty { set(.empty) }
     }
-
-    // CanvasEditorDelegate
+    
     // MARK: - Pick image
     var pickSelector: ((PickerMediaOutput?) -> Void)?
 

@@ -22,6 +22,8 @@ final class TextForTemplateViewModel: ObservableObject {
     }
     
     func editText() {
+        delegate?.endWorkWithItem?()
+        
         delegate?.editText = {
             [weak self] newModel in
             self?.item.text = newModel

@@ -132,6 +132,7 @@ fileprivate extension MediaEditorToolsForTemplateView {
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
         ToolWrapper(title: strings.adjustments, fullScreen: false) {
+            vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
         } tool: {
             ToolAdjustments(item)
@@ -143,6 +144,7 @@ fileprivate extension MediaEditorToolsForTemplateView {
     @ViewBuilder
     func filterTool(_ item: CanvasItemModel) -> some View {
         ToolWrapper(title: strings.colorFilter, fullScreen: false) {
+            vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
         } tool: {
             ColorFilterTool(layerModel: item,
@@ -154,12 +156,14 @@ fileprivate extension MediaEditorToolsForTemplateView {
     @ViewBuilder
     func textureTool(_ item: CanvasItemModel) -> some View {
         ToolWrapper(title: strings.texture, fullScreen: true) {
+            vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
         } tool: {
             GridPickTool(
                 dataSource: TextureDataSource(challengeId: vm.baseChallengeId, item: item)
             ) { texture in
                 haptics(.light)
+                vm.endWorkWithItem?()
                 vm.hideAllOverlayViews()
                 item.apply(textures: texture)
             }
@@ -174,6 +178,7 @@ private struct EditVariants: View {
     
     var body: some View {
         ItemEditVariantsView(item: item) {
+            vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
         } onDelete: { item in
             vm.onDeleteItem(item: item)
