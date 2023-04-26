@@ -17,4 +17,6 @@ public protocol VDEVMediaEditorSourceService {
     func editorTemplates(forChallenge baseChallengeId: String, challengeTitle: String, renderSize: CGSize) async throws -> [TemplatePack]
     
     func stickersPack(forChallenge baseChallengeId: String) async throws -> [(String, [StickerItem])]
+    
+    func startMeta(forChallenge baseChallengeId: String) async -> (String, Bool)?
 }

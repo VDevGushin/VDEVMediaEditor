@@ -13,10 +13,12 @@ struct ContentView: View {
     let vm: VDEVMediaEditorViewModel
     
     init() {
+        let source = NetworkAdapter(client: NetworkClientImpl())
         config =
             .init(settings: EditorSettings("f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
-                                           resolution: .fullHD),
-                  networkService: NetworkAdapter(client: NetworkClientImpl()),
+                                           resolution: .fullHD,
+                                           sourceService: source),
+                  networkService: source,
                   images: Images(),
                   strings: Strings(),
                   uiConfig: UIConfig())
@@ -32,21 +34,27 @@ struct ContentView: View {
 final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var baseChallengeId: String
     private(set) var title: String = ""
+    private(set) var withAttach: Bool = false
     private(set) var resolution: VDEVMediaResolution
-    private let network: NetworkClient
+    private(set) var sourceService: VDEVMediaEditorSourceService
 
     init(_ baseChallengeId: String,
-         resolution: VDEVMediaResolution) {
+         resolution: VDEVMediaResolution,
+         sourceService: VDEVMediaEditorSourceService) {
         self.resolution = resolution
         self.baseChallengeId = baseChallengeId
-        self.network = NetworkClientImpl()
-        getTitle()
+        self.sourceService = sourceService
+        getMeta()
     }
 
-    private func getTitle() {
+    private func getMeta() {
         Task {
-            let title = try? await network.challengeLocalizedTitle(baseChallengeId: baseChallengeId) ?? ""
-            await MainActor.run { [weak self] in self?.title = title ?? "" }
+            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? ("", false)
+            
+            await MainActor.run { [weak self] in
+                self?.title = meta.0
+                self?.withAttach = meta.1
+            }
         }
     }
 }

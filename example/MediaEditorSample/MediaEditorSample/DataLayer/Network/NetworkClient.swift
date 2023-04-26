@@ -14,6 +14,7 @@ extension NetworkClient {
     typealias EditorMasksFilter = GetChallengeEditorMasksFiltersQuery.Data.BaseChallenge.AppEditorMask
     typealias EditorTexturesFilter = GetChallengeEditorTexturesFiltersQuery.Data.BaseChallenge.AppEditorTexture
     typealias EditorTemplate = GetChallengeEditorTemplatesQuery.Data.BaseChallenge.AppEditorTemplate
+    typealias AttachedEditorTemplate = GetChallengeMetaQuery.Data.BaseChallenge.AppAttachedEditorTemplate
     typealias StickerPack = GetChallengeStickerPacksFullQuery.Data.BaseChallenge.AppStickerPack
     typealias BaseChallenge = GetChallengeMetaQuery.Data.BaseChallenge
 }
@@ -26,7 +27,6 @@ protocol NetworkClient {
     func editorTemplates(forChallenge baseChallengeId: GraphQLID, renderSize: CGSize) async throws -> [EditorTemplate]
     func stickers(forChallenge baseChallengeId: GraphQLID) async throws -> [StickerPack]
     func challengeMeta(for baseChallengeId: GraphQLID) async throws -> BaseChallenge?
-    func challengeLocalizedTitle(baseChallengeId: GraphQLID) async throws -> String?
 }
 
 enum NetworkClientError: Error {
@@ -173,9 +173,5 @@ final class NetworkClientImpl: NetworkClient {
                 query: GetChallengeMetaQuery(baseChallengeId: baseChallengeId),
                 queue: .global()
             ).data?.baseChallenge
-    }
-    
-    func challengeLocalizedTitle(baseChallengeId: GraphQLID) async throws -> String? {
-        try await challengeMeta(for: baseChallengeId)?.titleLocalized
     }
 }
