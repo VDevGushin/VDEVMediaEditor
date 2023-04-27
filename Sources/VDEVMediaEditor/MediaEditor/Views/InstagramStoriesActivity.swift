@@ -7,7 +7,7 @@
 
 import UIKit
 import AVKit
-import Resolver
+
 
 class InstagramStoriesActivity: UIActivity {
     @Injected private var images: VDEVImageConfig

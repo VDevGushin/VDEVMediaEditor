@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 struct ToolAdjustments: View {
     @Injected private var strings: VDEVMediaEditorStrings

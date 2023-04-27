@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Resolver
+
 
 public struct StickerItem: GridToolItem {
     static let cellAspect: CGFloat = 1

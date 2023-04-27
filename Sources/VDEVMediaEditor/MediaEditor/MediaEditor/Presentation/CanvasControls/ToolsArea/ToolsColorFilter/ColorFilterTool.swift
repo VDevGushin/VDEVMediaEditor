@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 final class ColorFilterToolLoader {
     @Injected private var sourceService: VDEVMediaEditorSourceService

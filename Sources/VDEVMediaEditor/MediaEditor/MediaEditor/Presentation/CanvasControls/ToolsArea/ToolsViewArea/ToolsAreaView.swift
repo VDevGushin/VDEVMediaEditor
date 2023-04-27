@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 import Kingfisher
 import PhotosUI
-import Resolver
+
 
 struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings

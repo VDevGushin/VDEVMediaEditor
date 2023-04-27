@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Combine
-import Resolver
+
 
 struct AlertData: Identifiable, Equatable {
     @Injected private var strings: VDEVMediaEditorStrings

@@ -7,7 +7,7 @@
 
 import UIKit
 import CollectionConcurrencyKit
-import Resolver
+
 
 class TemplatesDataSource: SectionedDataSource, ObservableObject {
     typealias ItemModel = TemplatePack

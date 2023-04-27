@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreImage.CIFilterBuiltins
 import Combine
-import Resolver
+
 
 struct TextTool: View {
     @State private var text: String
@@ -53,7 +53,7 @@ struct TextTool: View {
 
         guard let item = textItem else {
             self.text = ""
-            self.placeholder = Resolver.resolve(VDEVMediaEditorStrings.self).defaultPlaceholder
+            self.placeholder = DI.resolve(VDEVMediaEditorStrings.self).defaultPlaceholder
             self.fontSize = 32
             self.textColor = AppColors.black.uiColor.contrast
             self.alignment = .center
@@ -161,8 +161,8 @@ struct TextTool: View {
 
     @ViewBuilder
     var topBar: some View {
-        let images = Resolver.resolve(VDEVImageConfig.self)
-        let doneStr = Resolver.resolve(VDEVMediaEditorStrings.self).done
+        let images = DI.resolve(VDEVImageConfig.self)
+        let doneStr = DI.resolve(VDEVMediaEditorStrings.self).done
         
         HStack {
             Group {
@@ -227,9 +227,9 @@ struct TextTool: View {
     @ViewBuilder
     var bottomBar: some View {
         HStack(alignment: .bottom) {
-            let images = Resolver.resolve(VDEVImageConfig.self)
-            let deleteStr = Resolver.resolve(VDEVMediaEditorStrings.self).delete
-            let closeStr = Resolver.resolve(VDEVMediaEditorStrings.self).close
+            let images = DI.resolve(VDEVImageConfig.self)
+            let deleteStr = DI.resolve(VDEVMediaEditorStrings.self).delete
+            let closeStr = DI.resolve(VDEVMediaEditorStrings.self).close
             
             if isEditable {
                 Button {
@@ -284,7 +284,7 @@ struct TextTool: View {
 
     
     private func textAlignmentImage() -> UIImage {
-        let images = Resolver.resolve(VDEVImageConfig.self)
+        let images = DI.resolve(VDEVImageConfig.self)
         
         if textAlignment == .center {
             return images.textEdit.textEditingAlignCenter

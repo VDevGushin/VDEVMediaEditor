@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 struct CloseButton: View {
     @Injected private var images: VDEVImageConfig

@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 import SwiftUI
-import Resolver
+
 
 protocol CanvasEditorDelegate: AnyObject {
     // Select media from camera rall

@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import Resolver
-
 
 enum ToolItem: CaseIterable, Identifiable, Equatable {
     // Тулзы, которые показываем в меню добавления новых слоев
@@ -66,7 +64,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     }
 
     var title: String {
-        let Strings = Resolver.resolve(VDEVMediaEditorStrings.self)
+        let Strings = DI.resolve(VDEVMediaEditorStrings.self)
         switch self {
         case .template:
             return Strings.template
@@ -90,7 +88,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     }
     
     var image: UIImage {
-        let images = Resolver.resolve(VDEVImageConfig.self)
+        let images = DI.resolve(VDEVImageConfig.self)
         switch self {
         case .template:
             return images.typed.typeTemplate

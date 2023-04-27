@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 struct BackButton: View {
     @Injected private var images: VDEVImageConfig

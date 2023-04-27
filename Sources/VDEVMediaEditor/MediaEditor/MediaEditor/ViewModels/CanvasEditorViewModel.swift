@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 import AVKit
-import Resolver
+
 
 final class CanvasEditorViewModel: ObservableObject {
     @Injected private var strings: VDEVMediaEditorStrings

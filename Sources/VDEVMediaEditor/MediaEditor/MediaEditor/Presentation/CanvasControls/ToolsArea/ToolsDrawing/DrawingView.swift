@@ -8,7 +8,7 @@
 import SwiftUI
 import PencilKit
 import Combine
-import Resolver
+
 
 struct DrawingViewOutput {
     let image: UIImage
@@ -102,7 +102,7 @@ struct DrawingView: View {
                     haptics(.light)
                     vm.getImage(onClose)
                 } label: {
-                    Text(Resolver.resolve(VDEVMediaEditorStrings.self).done)
+                    Text(DI.resolve(VDEVMediaEditorStrings.self).done)
                         .font(.gramatika(size: 16))
                 }
                 .buttonStyle(DoneButtonStyle(tintColor: AppColors.black))

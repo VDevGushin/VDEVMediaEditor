@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Resolver
 
 struct PlaceholderTemplateView: View {
     @StateObject private var vm: PlaceholderTemplateViewModel

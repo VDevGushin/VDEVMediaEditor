@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 @ViewBuilder
 func CanvasItemViewBuilder(item: CanvasItemModel,
@@ -147,7 +147,7 @@ func CanvasItemPreiviewViewBuilder(_ item: CanvasItemModel,
             .scaleEffect(0.8)
         
     case .text:
-        let images = Resolver.resolve(VDEVImageConfig.self)
+        let images = DI.resolve(VDEVImageConfig.self)
         Image(uiImage: images.typed.typeText)
             .renderingMode(.template)
             .resizable()
@@ -158,7 +158,7 @@ func CanvasItemPreiviewViewBuilder(_ item: CanvasItemModel,
             .scaleEffect(0.5)
         
     case .template:
-        let images = Resolver.resolve(VDEVImageConfig.self)
+        let images = DI.resolve(VDEVImageConfig.self)
         Image(uiImage: images.typed.typeTemplate)
             .resizable()
             .aspectRatio(contentMode: .fit)

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 enum PasteboardModel {
     case image(UIImage)

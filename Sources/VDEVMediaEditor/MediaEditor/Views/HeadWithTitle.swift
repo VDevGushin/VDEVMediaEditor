@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 struct HeadWithTitle: View {
     @Injected private var images: VDEVImageConfig

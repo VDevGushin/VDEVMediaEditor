@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 import AVKit
 import IdentifiedCollections
-import Resolver
+
 
 final class CanvasLayersDataViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings

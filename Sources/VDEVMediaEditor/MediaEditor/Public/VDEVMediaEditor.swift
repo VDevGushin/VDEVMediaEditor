@@ -2,28 +2,21 @@
 import SwiftUIX
 import SwiftUI
 import Combine
-import Resolver
+
 
 public final class VDEVMediaEditorViewModel: ObservableObject {
-    private var appModules: [Module]
     private(set) var colorScheme: ColorScheme = .dark
     
     public init(config: VDEVMediaEditorConfig) {
-        
-        appModules = [
-            AppModule(settings: config.settings,
-                      dataService: config.networkService,
-                      images: config.images,
-                      strings: config.strings,
-                      uiConfig: config.uiConfig)
-        ]
-        
-        appModules.bootstrap()
+        DiController.register(settings: config.settings,
+                              dataService: config.networkService,
+                              images: config.images,
+                              strings: config.strings,
+                              uiConfig: config.uiConfig)
     }
     
     deinit {
-        appModules.removeAll()
-        Resolver.reset()
+       
         Log.d("❌ Deinit: VDEVMediaEditorViewModel")
     }
 }

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 struct ToolsConcreteItemHorizontal: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel

@@ -7,7 +7,7 @@
 import SwiftUI
 import Combine
 import Kingfisher
-import Resolver
+
 
 final class CanvasToolsViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings

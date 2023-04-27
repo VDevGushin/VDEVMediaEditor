@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Resolver
+
 
 struct ShareButton: View {
     @Injected private var images: VDEVImageConfig
