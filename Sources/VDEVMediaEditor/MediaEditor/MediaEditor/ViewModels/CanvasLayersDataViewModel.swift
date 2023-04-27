@@ -9,8 +9,11 @@ import SwiftUI
 import Combine
 import AVKit
 import IdentifiedCollections
+import Resolver
 
 final class CanvasLayersDataViewModel: ObservableObject {
+    @Injected private var settings: VDEVMediaEditorSettings
+    
     @Published var layers: IdentifiedArrayOf<CanvasItemModel> = []
 
     var isEmpty: Bool { layers.isEmpty }
@@ -105,6 +108,16 @@ final class CanvasLayersDataViewModel: ObservableObject {
 
         if let replaceItem = layers.remove(id: id) {
             layers.append(replaceItem)
+        }
+    }
+    
+    func getStartTemplate(size: CGSize, completion: @escaping () -> Void) {
+        settings.getStartTemplate(for: size) { [weak self] template in
+            guard let self = self, let template = template else { return }
+            DispatchQueue.main.async {
+                self.addTemplate(.init(variants: template, editorSize: size))
+                completion()
+            }
         }
     }
 }

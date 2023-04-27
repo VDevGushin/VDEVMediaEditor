@@ -375,9 +375,9 @@ fileprivate extension ToolsAreaView {
                 if let item = item { vm.data.delete(item) }
                 
                 vm.data.add(newModel)
-                
                 vm.tools.closeTools(false)
             } deleteAction: {
+                vm.data.delete(item)
                 vm.tools.closeTools(false)
             }
         }

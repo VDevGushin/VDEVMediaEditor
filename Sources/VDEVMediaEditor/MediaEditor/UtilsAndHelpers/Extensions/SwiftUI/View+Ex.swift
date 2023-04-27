@@ -110,3 +110,25 @@ private struct ParallaxCardEffectMod: ViewModifier {
         return window.screen.bounds.size
     }()
 }
+
+extension View {
+    func viewDidLoad(_ onViewDidLoad: @escaping () -> Void) -> some View {
+        return self.modifier(ViewDidLoadModifier(onViewDidLoad: onViewDidLoad))
+    }
+}
+
+
+private struct ViewDidLoadModifier: ViewModifier {
+    @State private var viewDidLoad = false
+    let onViewDidLoad: () -> Void
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                if viewDidLoad == false {
+                    viewDidLoad = true
+                    onViewDidLoad()
+                }
+            }
+    }
+}

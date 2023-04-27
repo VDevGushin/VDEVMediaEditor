@@ -22,7 +22,8 @@ struct MediaEditorView: View {
             AppColors.black
             
             VStack(spacing: 0) {
-                Content()
+                Content().viewDidLoad(vm.contentViewDidLoad)
+                
                 Spacer(minLength: 0)
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
             }

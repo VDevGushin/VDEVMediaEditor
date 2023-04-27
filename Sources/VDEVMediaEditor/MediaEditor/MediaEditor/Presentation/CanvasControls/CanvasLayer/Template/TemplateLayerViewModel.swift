@@ -59,7 +59,7 @@ fileprivate extension TemplateLayerViewModel {
         if let fontPreset = item.fontPreset {
             let offset = CGSize.centralOffset(withTemplateRect: item.rect, canvasSize: canvasSize)
 
-            if item.isMovable {
+            if item.isMovable || item.isLocked {
                 return CanvasTextModel(text: item.text,
                                        placeholder: item.placeholderText,
                                        fontSize: fontPreset.fontSize,

@@ -12,12 +12,14 @@ import Combine
 struct ContentView: View {
     let config: VDEVMediaEditorConfig
     let vm: VDEVMediaEditorViewModel
+    //let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
+    let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
     
     init() {
         let source = NetworkAdapter(client: NetworkClientImpl())
         
         config =
-            .init(settings: EditorSettings("f4ae6408-4dde-43fe-b52d-f9d87a0e68c4",
+            .init(settings: EditorSettings(id,
                                            resolution: .fullHD,
                                            sourceService: source),
                   networkService: source,

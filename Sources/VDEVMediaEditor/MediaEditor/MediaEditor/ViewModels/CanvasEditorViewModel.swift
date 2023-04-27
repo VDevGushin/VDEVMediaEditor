@@ -20,6 +20,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published var tools: CanvasToolsViewModel = .init()
     @Published var isLoading: LoadingModel = .false
     @Published var contentPreview: EditorPreview.Content?
+    @Published private var contentPreviewDidLoad: Bool = false
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
@@ -32,6 +33,8 @@ final class CanvasEditorViewModel: ObservableObject {
     private let imageProcessingController = ImageProcessingController()
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)?, onClose: (@MainActor () -> Void)?) {
+        isLoading = .init(value: true, message: strings.loading)
+        
         self.onClose = onClose
         self.onPublish = onPublish
         
@@ -70,24 +73,11 @@ final class CanvasEditorViewModel: ObservableObject {
                 }
             }
             .store(in: &storage)
-        
-        settings
-            .isLoading
+
+        settings.isLoading.combineLatest(ui.$editorSize, $contentPreviewDidLoad)
+            .map { return !$0.0 && ($0.1 != .zero) && $0.2}
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
-                self?.isLoading = .init(value: value, message: self?.strings.loading ?? "")
-            }
-            .store(in: &storage)
-        
-        // когда настройки загружены
-        // когда получен размер эдитора
-        settings.isLoading.combineLatest(ui.$editorSize)
-            .map { return !$0.0 && ($0.1 != .zero) }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                // Загрузка стартового темплейта
                 if value { self?.getStartTemplate() }
             }
             .store(in: &storage)
@@ -100,6 +90,10 @@ final class CanvasEditorViewModel: ObservableObject {
                               size: ui.editorSize,
                               backgrondColor: ui.mainLayerBackgroundColor,
                               resolution: settings.resolution.value)
+    }
+    
+    func contentViewDidLoad() {
+        self.contentPreviewDidLoad = true
     }
 }
 
@@ -121,11 +115,8 @@ extension CanvasEditorViewModel {
 extension CanvasEditorViewModel {
     func getStartTemplate() {
         isLoading = .init(value: true, message: strings.loading)
-        
-        settings.getStartTemplate(for: ui.editorSize) { [weak self] template in
+        data.getStartTemplate(size: ui.editorSize) { [weak self] in
             self?.isLoading = .false
-            guard let self = self, let template = template else { return }
-            self.data.addTemplate(.init(variants: template, editorSize: self.ui.editorSize))
         }
     }
 }

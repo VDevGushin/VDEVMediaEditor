@@ -52,6 +52,7 @@ extension Array where Element == CanvasItemModel {
         Log.d("Begin to make template items")
         
         var images = [CombinerAsset]()
+        var editedLabels = [CombinerAsset]()
         var labels = [CombinerAsset]()
         var placeHolders = [CombinerAsset]()
         
@@ -80,6 +81,16 @@ extension Array where Element == CanvasItemModel {
                 zIndex += 1
             }
             
+            if let editedLabelsAsset = await element.makeTemplateEditedLabelAsset(
+                scaleFactor: scaleFactor,
+                layerIndex: zIndex,
+                progressObserver: progressObserver
+            ) {
+                progressObserver?.addProgress()
+                editedLabels.append(editedLabelsAsset)
+                zIndex += 1
+            }
+            
             if let labelsAsset = await element.makeTemplateLabelAsset(
                 scaleFactor: scaleFactor,
                 layerIndex: zIndex,
@@ -93,9 +104,10 @@ extension Array where Element == CanvasItemModel {
         
         Log.d("Templates placeholders asset [count: \(placeHolders.count)]")
         Log.d("Templates images asset [count: \(images.count)]")
+        Log.d("Templates edited Labels asset [count: \(editedLabels.count)]")
         Log.d("Templates labels asset [count: \(labels.count)]")
         
-        let res = placeHolders + images + labels
+        let res = placeHolders + images + editedLabels + labels
         
         Log.d("Template assets [count: \(res.count)]")
         
@@ -107,6 +119,53 @@ extension Array where Element == CanvasItemModel {
 extension CanvasItemModel {
     
     func makeTemplateLabelAsset(scaleFactor: CGFloat,
+                                layerIndex i: Int,
+                                progressObserver: ProgressObserver? = nil) async -> CombinerAsset? {
+        
+        guard self.type == .text else {
+            return nil
+        }
+        
+        progressObserver?.setMessage(value: "Подготовка текста в шаблоне...")
+        
+        let item: CanvasTextModel = CanvasItemModel.toType(model: self)
+        
+        var ciImage = TextView.makeLabelImage(
+            naturalContainerWidth: item.bounds.width * scaleFactor,
+            scale: scaleFactor,
+            text: item.text,
+            textAlignment: item.textAlignment,
+            textStyle: item.textStyle,
+            fontSize: item.fontSize,
+            textColor: item.color,
+            needTextBG: item.needTextBG
+        )
+        
+        let size = item.bounds.size  * scaleFactor
+        
+        if ciImage.extent.height > size.height {
+            ciImage = ciImage
+                .resized(to: size, withContentMode: .scaleAspectFit)
+        } else {
+            let contentMode = UIView.ContentMode(verticalAlignment: item.alignment, horizontalAlignment: item.textAlignment)
+            
+            ciImage = ciImage
+                .resized(to: size, withContentMode: contentMode)
+        }
+        
+        return CombinerAsset(
+            body: .image(.init(ciImage: ciImage)),
+            transform: Transform(
+                zIndex: Double(i),
+                offset: item.offset * scaleFactor,
+                scale: item.scale,
+                degrees: item.rotation.degrees,
+                blendingMode: item.blendingMode
+            )
+        )
+    }
+    
+    func makeTemplateEditedLabelAsset(scaleFactor: CGFloat,
                                 layerIndex i: Int,
                                 progressObserver: ProgressObserver? = nil) async -> CombinerAsset? {
         

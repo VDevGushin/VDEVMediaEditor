@@ -47,7 +47,6 @@ struct TemplateLayerView: View {
             
         case .text:
             let item: CanvasTextModel = CanvasItemModel.toType(model: item)
-
                 FullSizeTextView(
                     text: .constant(item.textStyle.uppercased ?
                                     item.text.uppercased() :
@@ -60,13 +59,12 @@ struct TemplateLayerView: View {
                     backgroundColor: .clear,
                     isEditing: .constant(false)
                 )
-                .blendMode(item.blendingMode.swiftUI)
-                .frame(width: width)
+                .frame(item.bounds.size)
                 .offset(item.offset)
+                .allowsHitTesting(false)
             
         case .textForTemplate:
             let item: CanvasTextForTemplateItemModel = CanvasItemModel.toType(model: item)
-            
             TextForTemplateView(item: item, delegate: delegate)
                 .frame(item.text.bounds.size)
                 .offset(item.text.offset)
