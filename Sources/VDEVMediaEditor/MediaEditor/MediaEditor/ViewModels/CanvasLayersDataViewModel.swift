@@ -113,11 +113,15 @@ final class CanvasLayersDataViewModel: ObservableObject {
     
     func getStartTemplate(size: CGSize, completion: @escaping () -> Void) {
         settings.getStartTemplate(for: size) { [weak self] template in
-            guard let self = self, let template = template else { return }
-            DispatchQueue.main.async {
-                self.addTemplate(.init(variants: template, editorSize: size))
-                completion()
+            guard let self = self else { return }
+            if let template = template {
+                DispatchQueue.main.async {
+                    self.addTemplate(.init(variants: template, editorSize: size))
+                    completion()
+                }
+                return
             }
+            completion()
         }
     }
 }
