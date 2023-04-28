@@ -91,7 +91,7 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct UIConfig: VDEVUIConfig {
-    let isBackEnabled = false
+    let isInternalModule = false
 }
 
 struct Images: VDEVImageConfig {
@@ -206,4 +206,6 @@ struct Strings: VDEVMediaEditorStrings {
     let `continue` = "CONTINUE"
     let processing = "PRCCESSING"
     let loading = "LOADING"
+    let applied = "APPLIED"
+    let templates = "templates"
 }

@@ -127,7 +127,7 @@ struct GridPickTool<ItemModel: GridToolItem, DataSource>: View where DataSource:
                 if sections.count == 1 || indexPath.section > 0 {
                     labelView.textColor = AppColors.white.uiColor.withAlphaComponent(0.2)
                 } else {
-                    labelView.textColor = UIColor(named: "Mustard")
+                    labelView.textColor = AppColors.white.uiColor
                 }
             }
             

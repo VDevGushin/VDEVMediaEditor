@@ -28,9 +28,9 @@ struct MediaEditorView: View {
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
             }
             .ignoresSafeArea(.keyboard)
-        
+            
             ToolsAreaView(rootMV: vm)
-         
+            
             LoadingView(inProgress: vm.isLoading, style: .medium, color: vm.ui.guideLinesColor.uiColor)
         }
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
@@ -102,18 +102,14 @@ fileprivate extension MediaEditorView {
                     }
                 }
                 .frame(proxy.size)
-                // .position(x: proxy.frame(in: .local).midX, y: proxy.frame(in: .local).midY)
             }
             .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.5 : 1.0)
-            // .cornerRadius(vm.tools.currentToolItem == .backgroundColor ? vm.ui.canvasCornerRadous : 0.0)
-            // .scaleEffect(vm.tools.currentToolItem == .backgroundColor ? 0.95 : 1.0)
-            // .offset(y: vm.tools.currentToolItem == .backgroundColor ? 44.0 : 0.0)
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .aspectRatio(vm.ui.canvasAspectRatio, contentMode: .fit)
         .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
-        .fetchSize($vm.ui.editorSize)
+        .fetchSize($vm.ui.editorSize, needRound: true)
         .overlay(content: CenterAxes)
         .overlay(content: Grids)
         .onChange(of: vm.ui.showHorizontalCenter) {

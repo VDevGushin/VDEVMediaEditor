@@ -71,7 +71,7 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
                                     Text(templatePack.name)
                                         .font(.gramatika(size: 14))
 
-                                    Text(" \(templatePack.variants.count) templates")
+                                    Text(" \(templatePack.variants.count) \(DI.resolve(VDEVMediaEditorStrings.self).templates)")
                                         .font(.gramatika(size: 9))
                                         .opacity(0.6)
                                 }
@@ -100,12 +100,12 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
                         if templatePack.id == selectedVariant?.packId,
                            variant.id == selectedVariant?.variantId {
                             LinearGradient(
-                                colors: [.clear, Color("Mustard").opacity(0.8)],
+                                colors: [.clear, AppColors.yellow.opacity(0.3)],
                                 startPoint: UnitPoint(x: 0.5, y: 0.5),
                                 endPoint: UnitPoint(x: 0.5, y: 1)
                             )
                             .overlay(
-                                Text("Applied")
+                                Text(DI.resolve(VDEVMediaEditorStrings.self).applied)
                                     .font(.gramatika(size: 20))
                                     .foregroundColor(AppColors.white)
                                     .padding(),

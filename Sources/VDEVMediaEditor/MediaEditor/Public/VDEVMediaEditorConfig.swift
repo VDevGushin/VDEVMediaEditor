@@ -34,7 +34,7 @@ public struct VDEVMediaEditorConfig {
 }
 
 public protocol VDEVUIConfig {
-    var isBackEnabled: Bool { get }
+    var isInternalModule: Bool { get }
 }
 
 public protocol VDEVImageConfig {
@@ -151,4 +151,6 @@ public protocol VDEVMediaEditorStrings {
     var `continue`: String { get }
     var processing: String { get }
     var loading: String { get }
+    var applied: String { get }
+    var templates: String { get }
 }

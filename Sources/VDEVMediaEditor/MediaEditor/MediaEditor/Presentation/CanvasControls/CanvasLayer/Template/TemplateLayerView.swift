@@ -18,7 +18,6 @@ struct TemplateLayerView: View {
     var body: some View {
         ZStack() {
             ZStack {
-                // собираем шаблон по слоям
                 ForEach(vm.templateLayers, id: \.self) { item in
                     ItemBuilder(item, width: vm.item.bounds.size.width, delegate: vm.delegate)
                 }
@@ -27,6 +26,7 @@ struct TemplateLayerView: View {
             
             LoadingView(inProgress: vm.isLoading, style: .large)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     @ViewBuilder
@@ -38,7 +38,7 @@ struct TemplateLayerView: View {
             let item: CanvasImageModel = CanvasItemModel.toType(model: item)
             Image(uiImage: item.image)
                 .resizable()
-                .aspectRatio(item.image.aspectRatio, contentMode: .fill)
+                .aspectRatio(item.image.aspectRatio, contentMode: .fit)
                 .blendMode(item.blendingMode.swiftUI)
                 .frame(item.bounds.size)
                 .offset(item.offset)
@@ -47,21 +47,21 @@ struct TemplateLayerView: View {
             
         case .text:
             let item: CanvasTextModel = CanvasItemModel.toType(model: item)
-                FullSizeTextView(
-                    text: .constant(item.textStyle.uppercased ?
-                                    item.text.uppercased() :
-                                        item.text),
-                    fontSize: item.fontSize,
-                    textColor: item.color,
-                    textAlignment: item.textAlignment,
-                    textStyle: item.textStyle,
-                    needTextBG: item.needTextBG,
-                    backgroundColor: .clear,
-                    isEditing: .constant(false)
-                )
-                .frame(item.bounds.size)
-                .offset(item.offset)
-                .allowsHitTesting(false)
+            FullSizeTextView(
+                text: .constant(item.textStyle.uppercased ?
+                                item.text.uppercased() :
+                                    item.text),
+                fontSize: item.fontSize,
+                textColor: item.color,
+                textAlignment: item.textAlignment,
+                textStyle: item.textStyle,
+                needTextBG: item.needTextBG,
+                backgroundColor: .clear,
+                isEditing: .constant(false)
+            )
+            .frame(item.bounds.size)
+            .offset(item.offset)
+            .allowsHitTesting(false)
             
         case .textForTemplate:
             let item: CanvasTextForTemplateItemModel = CanvasItemModel.toType(model: item)

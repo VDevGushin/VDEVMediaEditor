@@ -9,6 +9,7 @@ import SwiftUI
 
 enum AppColors {
     static let clear = Color.clear
+    static let yellow = Color.yellow
     static let white = Color.white
     static let gray = Color.gray
     static let black = Color.black

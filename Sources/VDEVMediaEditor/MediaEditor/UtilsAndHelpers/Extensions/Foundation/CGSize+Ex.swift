@@ -74,6 +74,10 @@ extension CGSize {
     func rounded(_ rule: FloatingPointRoundingRule) -> CGSize {
         CGSize(width: width.rounded(rule), height: height.rounded(rule))
     }
+    
+    func add(value: CGSize = .init(width: 5, height: 5)) -> CGSize {
+        self + value
+    }
 }
 
 

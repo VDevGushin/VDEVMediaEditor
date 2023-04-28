@@ -37,7 +37,7 @@ struct ToolsAreaView: View {
                     .bottomTool()
                     .transition(.trailingTransition)
             case (true, false):
-                if uiConfig.isBackEnabled {
+                if uiConfig.isInternalModule {
                     ZStack {
                         toolsLayersManager()
                             .bottomTool()

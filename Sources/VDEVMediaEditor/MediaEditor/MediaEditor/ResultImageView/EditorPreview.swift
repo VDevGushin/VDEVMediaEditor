@@ -64,8 +64,10 @@ struct EditorPreviewModifier: ViewModifier {
 struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vm: CanvasEditorViewModel
+    
     @Injected private var images: VDEVImageConfig
     @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var uiConfig: VDEVUIConfig
    
     @State var model: Content
     @State var challengeTitle: String = ""
@@ -126,10 +128,12 @@ struct EditorPreview: View {
                 
                 Spacer()
                 
-                PublishButton {
-                    haptics(.light)
-                    needShare = false
-                    onPublish(model.model)
+                if uiConfig.isInternalModule {   
+                    PublishButton {
+                        haptics(.light)
+                        needShare = false
+                        onPublish(model.model)
+                    }
                 }
             }
             .padding(.horizontal, 15)

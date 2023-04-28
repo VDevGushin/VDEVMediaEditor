@@ -159,9 +159,10 @@ func CanvasItemPreiviewViewBuilder(_ item: CanvasItemModel,
         
     case .template:
         let images = DI.resolve(VDEVImageConfig.self)
+        
         Image(uiImage: images.typed.typeTemplate)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
             .clipped(antialiased: true)
             .foregroundColor(AppColors.white)
