@@ -12,8 +12,8 @@ import Combine
 struct ContentView: View {
     let config: VDEVMediaEditorConfig
     let vm: VDEVMediaEditorViewModel
-    //let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
-    let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
+    let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
+    //let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
     
     init() {
         let source = NetworkAdapter(client: NetworkClientImpl())
@@ -118,6 +118,7 @@ struct Images: VDEVImageConfig {
         var currentItemRMBack: UIImage = .init(named: "CurrentItemRMBack")!
         var currentItemTexture: UIImage = .init(named: "CurrentItemTexture")!
         var currentItemUp: UIImage = .init(named: "CurrentItemUp")!
+        var currentItemMerge: UIImage = .init(named: "CurrentItemMerge")!
     }
     
     struct TextEdit: VDEVMediaEditorButtonsTextEditingImages {
@@ -208,4 +209,5 @@ struct Strings: VDEVMediaEditorStrings {
     let loading = "LOADING"
     let applied = "APPLIED"
     let templates = "templates"
+    let merge = "MERGE"
 }

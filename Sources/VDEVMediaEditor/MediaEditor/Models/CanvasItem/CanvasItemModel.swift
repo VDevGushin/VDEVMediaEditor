@@ -35,6 +35,15 @@ extension CanvasItemModel {
     }
 }
 
+extension CanvasItemModel {
+    var canMerge: Bool {
+        type == .drawing ||
+        type == .image ||
+        type == .sticker ||
+        type == .text
+    }
+}
+
 // MARK: - Base
 class CanvasItemModel: Identifiable, ObservableObject {
     var adjustmentSettings: AdjustmentSettings?

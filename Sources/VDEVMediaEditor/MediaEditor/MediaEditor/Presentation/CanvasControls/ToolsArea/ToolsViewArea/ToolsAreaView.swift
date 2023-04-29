@@ -294,6 +294,8 @@ struct ToolsAreaView: View {
                 vm.tools.openLayersList(false)
                 vm.tools.seletedTool(.concreteItem(newItem))
             }
+        } onMerge: { items in
+            vm.onMergeMedia(items)
         }
     }
 }

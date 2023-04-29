@@ -52,8 +52,8 @@ private extension PlaceholderTemplateView {
                             .resizable()
                             .frame(imageModel.imageSize.aspectFill(minimumSize: proxy.size))
                     } onTap: {
-                        // haptics(.light)
                         vm.hideAllOverlayViews()
+                        // haptics(.light)
                         // vm.openMediaSelector()
                     } onDoubleTap: {
                         haptics(.light)

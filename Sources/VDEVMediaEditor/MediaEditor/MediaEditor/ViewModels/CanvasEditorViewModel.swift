@@ -26,10 +26,11 @@ final class CanvasEditorViewModel: ObservableObject {
     private var onClose: (@MainActor () -> Void)?
     
     private let builder = MediaBuilder()
+    private let merger = LayersMerger()
+    
     private var storage: Set<AnyCancellable> = Set()
     
     private let deviceOrientationService: DeviceOrientationService = .init()
-    
     private let imageProcessingController = ImageProcessingController()
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)?, onClose: (@MainActor () -> Void)?) {
@@ -49,6 +50,42 @@ final class CanvasEditorViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 if value { self?.data.removeAll() }
+            }
+            .store(in: &storage)
+        
+        merger.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                switch value {
+                case .idle:
+                    self?.isLoading = .false
+                    self?.contentPreview = nil
+                case .inProgress:
+                    self?.isLoading = .init(value: true, message: self?.strings.processing ?? "")
+                case .successImage(let imageItem):
+                    makeHaptics(.light)
+                    self?.data.add(imageItem)
+                    
+                    self?.tools.showAddItemSelector(false)
+                    self?.tools.openLayersList(false)
+                    self?.tools.seletedTool(.concreteItem(imageItem))
+                    
+                    self?.isLoading = .false
+                case .successVideo(let videoItem):
+                    makeHaptics(.light)
+                    self?.data.add(videoItem)
+                    
+                    self?.tools.showAddItemSelector(false)
+                    self?.tools.openLayersList(false)
+                    self?.tools.seletedTool(.concreteItem(videoItem))
+                    
+                    self?.isLoading = .false
+                case .error(let error):
+                    makeHaptics(.light)
+                    self?.isLoading = .false
+                    self?.contentPreview = nil
+                    self?.alertData = .init(error)
+                }
             }
             .store(in: &storage)
         
@@ -90,6 +127,10 @@ final class CanvasEditorViewModel: ObservableObject {
                               size: ui.editorSize,
                               backgrondColor: ui.mainLayerBackgroundColor,
                               resolution: settings.resolution.value)
+    }
+    
+    func onMergeMedia(_ layers: [CanvasItemModel]) {
+        merger.merge(layers: layers, on: ui.editorSize)
     }
     
     func contentViewDidLoad() {

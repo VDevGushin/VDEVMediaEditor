@@ -9,11 +9,11 @@ import UIKit
 import Photos
 import AVFoundation
 
-public final class FilteringProcessor {
-    public static let shared = FilteringProcessor()
+final class FilteringProcessor {
+    static let shared = FilteringProcessor()
     private let renderContext = CIContext()
     
-    public static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
+    static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
     
     private init() {}
     
@@ -134,7 +134,7 @@ public final class FilteringProcessor {
         return generatedImagePath
     }
     
-    public func resizeAndExport(
+    func resizeAndExport(
         _ asset: AVAsset,
         container: CGRect,
         withContentMode contentMode: UIView.ContentMode?,
@@ -149,6 +149,10 @@ public final class FilteringProcessor {
         composition.renderSize = container.size
         
         return try await processAndExportComposition(composition, ofAsset: asset, exportQuality: exportQuality)
+    }
+    
+    func generateAndSavePNGImage(ciImage: CIImage) throws -> URL {
+        try generateAndSaveImage(ciImage: ciImage)
     }
 }
 
@@ -210,7 +214,7 @@ extension FilteringProcessor {
 }
 
 // MARK: - Helpers
-public extension FilteringProcessor {
+extension FilteringProcessor {
     enum ProcessorError: Error {
         case imageReturnedNull
         case processImageReturnedNil
@@ -306,7 +310,7 @@ private extension FilteringProcessor {
 }
 
 // MARK: - Public helper
-public extension FilteringProcessor {
+extension FilteringProcessor {
     func generateAndSaveContent(
         withOverlayImage overlayImage: CIImage,
         overContentAtURL contentURL: URL,

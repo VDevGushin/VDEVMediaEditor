@@ -16,6 +16,7 @@ final class CombinerAssetBuilder {
     private let bgColor: UIColor
     private let progressObserver: ProgressObserver?
     private let canvasNativeSize: CGSize
+    private let needBG: Bool
 
     init(layers: [CanvasItemModel],
          canvasSize: CGSize,
@@ -26,22 +27,41 @@ final class CombinerAssetBuilder {
         self.canvasSize = canvasSize
         self.scaleFactor = scaleFactor
         self.bgColor = bgColor
+        self.needBG = bgColor != .clear
         self.progressObserver = progressObserver
         self.canvasNativeSize = canvasSize * scaleFactor
     }
     
     func execute() async -> [CombinerAsset]  {
-        let bgImage = CIImage(color: CIColor(color: bgColor))
-            .cropped(to: CGRect(origin: .zero, size: canvasNativeSize))
+        var bgLayers = [CombinerAsset]()
         
-        let bg = CombinerAsset(
-            body: .init(ciImage: bgImage),
-            transform: Transform(zIndex: 0.1,
-                                 offset: .zero,
-                                 scale: 1,
-                                 degrees: 0,
-                                 blendingMode: .sourceOver)
-        )
+        if needBG {
+            let bgImage = CIImage(color: CIColor(color: bgColor))
+                .cropped(to: CGRect(origin: .zero, size: canvasNativeSize))
+            
+            let bg = CombinerAsset(
+                body: .init(ciImage: bgImage),
+                transform: Transform(zIndex: 0.1,
+                                     offset: .zero,
+                                     scale: 1,
+                                     degrees: 0,
+                                     blendingMode: .sourceOver)
+            )
+            
+            bgLayers.append(bg)
+        } else {
+            let start = CIImage(color: .clear)
+                .cropped(to: CGRect(origin: .zero, size: canvasNativeSize))
+            let asset = CombinerAsset(
+                body: .init(ciImage: start),
+                transform: Transform(zIndex: 0.1,
+                                     offset: .zero,
+                                     scale: 1,
+                                     degrees: 0,
+                                     blendingMode: .sourceOver)
+            )
+            bgLayers.append(asset)
+        }
         
         progressObserver?.addProgress()
         
@@ -102,7 +122,7 @@ final class CombinerAssetBuilder {
         Log.d("Videos combine asset [count: \(videos.count)]")
         Log.d("Labels combine asset [count: \(labels.count)]")
 
-        let res = [bg] + templates + images + videos + labels
+        let res = bgLayers + templates + images + videos + labels
         
         Log.d("Combine assets [count: \(res.count)]")
         

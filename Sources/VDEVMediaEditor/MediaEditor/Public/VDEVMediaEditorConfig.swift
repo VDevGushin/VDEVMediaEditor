@@ -78,6 +78,7 @@ public protocol VDEVMediaEditorButtonsCurrentItemImages {
     var currentItemRMBack: UIImage { get }
     var currentItemTexture: UIImage { get }
     var currentItemUp: UIImage { get }
+    var currentItemMerge: UIImage { get }
 }
 
 // MARK: - Text editing tools
@@ -153,4 +154,5 @@ public protocol VDEVMediaEditorStrings {
     var loading: String { get }
     var applied: String { get }
     var templates: String { get }
+    var merge: String { get }
 }

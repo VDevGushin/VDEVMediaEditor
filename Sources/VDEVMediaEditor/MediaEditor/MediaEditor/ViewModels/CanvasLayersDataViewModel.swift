@@ -139,6 +139,20 @@ extension CanvasLayersDataViewModel {
 }
 
 extension CanvasLayersDataViewModel {
+    func canMerge(item: CanvasItemModel) -> CanvasItemModel? {
+        guard let index = layers.index(id: item.id), index > 0 else {
+            return nil
+        }
+        
+        guard let prevItem = layers[safe: index - 1], prevItem.canMerge else {
+            return nil
+        }
+        
+        return prevItem
+    }
+}
+
+extension CanvasLayersDataViewModel {
     // возможность вставить только 1 шаблон
     func addTemplate(_ item: CanvasTemplateModel) {
         layers.removeAll {

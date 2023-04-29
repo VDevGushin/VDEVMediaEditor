@@ -30,6 +30,7 @@ struct ToolsConcreteItemHorizontal: View {
     private var onUp: (CanvasItemModel) -> Void
     private var onDublicate: (CanvasItemModel) -> Void
     private var removeBackgroundML: (CanvasItemModel) -> Void
+    private var onMerge: ([CanvasItemModel]) -> Void
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
@@ -52,7 +53,8 @@ struct ToolsConcreteItemHorizontal: View {
          onUp: @escaping(CanvasItemModel) -> Void,
          onBack: @escaping (CanvasItemModel) -> Void,
          onDublicate: @escaping (CanvasItemModel) -> Void,
-         removeBackgroundML: @escaping (CanvasItemModel) -> Void) {
+         removeBackgroundML: @escaping (CanvasItemModel) -> Void,
+         onMerge: @escaping ([CanvasItemModel]) -> Void) {
         self.item = item
         self.onClose = onClose
         self.onBringToBack = onBringToBack
@@ -69,6 +71,7 @@ struct ToolsConcreteItemHorizontal: View {
         self.onBack = onBack
         self.onDublicate = onDublicate
         self.removeBackgroundML = removeBackgroundML
+        self.onMerge = onMerge
     }
     
     var body: some View {
@@ -112,10 +115,12 @@ struct ToolsConcreteItemHorizontal: View {
                         default: EmptyView()
                         }
                         
-                        switch item.type {
-                        case .image, .video, .text, .sticker, .drawing:
-                            ToolRow(image: images.currentItem.currentIteDublicate, title: strings.dublicate) { onDublicate(item) }
-                        default: EmptyView()
+                        if !vm.data.isLimit {
+                            switch item.type {
+                            case .image, .video, .text, .sticker, .drawing:
+                                ToolRow(image: images.currentItem.currentIteDublicate, title: strings.dublicate) { onDublicate(item) }
+                            default: EmptyView()
+                            }
                         }
                         
                         if vm.data.canReset(item: item) {
@@ -149,6 +154,14 @@ struct ToolsConcreteItemHorizontal: View {
                         
                         ToolRow(image: images.currentItem.currentItemBringToBottom, title: strings.bringToBottom) {
                             onBringToBack(item)
+                        }
+                        
+                        if item.canMerge,
+                           let withItem = vm.data.canMerge(item: item),
+                           !vm.data.isLimit {
+                            ToolRow(image: images.currentItem.currentItemMerge, title: strings.merge) {
+                                onMerge([withItem, item])
+                            }
                         }
                     }
                 }

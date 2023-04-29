@@ -1,15 +1,15 @@
 //
-//  ImageMixer.swift
-//  MediaEditor
+//  ImageMixerPng.swift
+//  
 //
-//  Created by Vladislav Gushin on 01.03.2023.
+//  Created by Vladislav Gushin on 30.04.2023.
 //
 
 import Foundation
 import UIKit
 import Photos
 
-final class ImageMixer {
+final class ImageMixerPng {
     private let renderSize: CGSize
     private let progressObserver: ProgressObserver?
     
@@ -21,7 +21,7 @@ final class ImageMixer {
     func combineAndStore(assets: [CombinerAsset], alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
         let image = try combine(assets: assets)
         
-        let imageURL = try FilteringProcessor.shared.generateAndSave(ciImage: image, withJPGQuality: 1)
+        let imageURL = try FilteringProcessor.shared.generateAndSavePNGImage(ciImage: image)
         
         if alsoSaveToPhotos {
             PHPhotoLibrary.shared().performChanges({
@@ -33,7 +33,6 @@ final class ImageMixer {
     }
     
     private func combine(assets: [CombinerAsset]) throws -> CIImage {
-        progressObserver?.addProgress(title: "Подготовка изображения для генерации...") // for BG
         var sorted = assets.sorted(by: { $0.transform.zIndex < $1.transform.zIndex })
         var resultImage = sorted.removeFirst().body.imageBody!.ciImage
         
@@ -44,11 +43,9 @@ final class ImageMixer {
                                 canvasSize: renderSize,
                                 transform: asset.transform)
             }
-            progressObserver?.addProgress(title: "Генерация изображения...")
         }
             
         resultImage = resultImage.cropped(to: CGRect(origin: .zero, size: renderSize))
-        
         return resultImage
     }
 }
