@@ -9,11 +9,11 @@ import UIKit
 import Photos
 import AVFoundation
 
-final class FilteringProcessor {
-    static let shared = FilteringProcessor()
+public final class FilteringProcessor {
+    public static let shared = FilteringProcessor()
     private let renderContext = CIContext()
     
-    static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
+    public static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
     
     private init() {}
     
@@ -311,7 +311,7 @@ private extension FilteringProcessor {
 
 // MARK: - Public helper
 extension FilteringProcessor {
-    func generateAndSaveContent(
+    public func generateAndSaveContent(
         withOverlayImage overlayImage: CIImage,
         overContentAtURL contentURL: URL,
         withContentMode contentMode: UIView.ContentMode? = nil
