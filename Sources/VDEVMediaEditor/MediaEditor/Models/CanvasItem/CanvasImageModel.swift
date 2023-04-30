@@ -20,9 +20,14 @@ final class CanvasImageModel: CanvasItemModel {
     private let aplayer: CanvasApplayer = .init()
     private var storage = Set<AnyCancellable>()
     
+    // Если после мержа - то не надо зумить на весь экран
+    // Ширина должна быть такая же как канва
+    private(set) var isFromMerge: Bool
+    
     init(image: UIImage,
          asset: PHAsset?,
          originalImage: UIImage? = nil,
+         isFromMerge: Bool = false,
          bounds: CGRect = .zero,
          offset: CGSize = .zero,
          adjustmentSettings: AdjustmentSettings? = nil,
@@ -34,6 +39,7 @@ final class CanvasImageModel: CanvasItemModel {
         self.originalImage = originalImage ?? image
         self.image = image
         self.asset = asset
+        self.isFromMerge = isFromMerge
         
         super.init(
             offset: offset,

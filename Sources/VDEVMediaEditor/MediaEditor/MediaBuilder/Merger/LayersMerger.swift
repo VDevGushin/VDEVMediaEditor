@@ -30,52 +30,16 @@ final class LayersMerger: ObservableObject {
     private lazy var builder: MediaBuilder = .init()
     
     func merge(layers: [CanvasItemModel], on editorSize: CGSize) {
-        makeMediaItem(layers: layers, size: editorSize, resolution: settings.resolution.value)
+        makeMediaItem(layers: layers,
+                      size: editorSize,
+                      resolution: settings.resolution.value)
     }
 }
 
 private extension LayersMerger {
-    func getSize(layers: [CanvasItemModel]) -> CGSize {
-        var resultMinX: CGFloat = .nan
-        var resultMaxX: CGFloat = .nan
-        var resultMinY: CGFloat = .nan
-        var resultMaxY: CGFloat = .nan
-        
-        for item in layers {
-            let minX = item.offset.width - item.frameFetchedSize.width / 2
-            
-            if resultMinX.isNaN || resultMinX >= minX {
-                resultMinX = minX
-            }
-            
-            let maxX = item.offset.width + item.frameFetchedSize.width / 2
-            
-            if resultMaxX.isNaN || resultMaxX <= maxX {
-                resultMaxX = maxX
-            }
-            
-            let minY = item.offset.height - item.frameFetchedSize.width / 2
-            
-            if resultMinY.isNaN || resultMinY >= minY {
-                resultMinY = minY
-            }
-            
-            let maxY = item.offset.height + item.frameFetchedSize.width / 2
-            
-            if resultMaxY.isNaN || resultMaxY <= maxY {
-                resultMaxY = maxY
-            }
-        }
-        
-        return .init(width: resultMaxX - resultMinX, height: resultMaxY - resultMinY)
-    }
-
-    
     func makeMediaItem(layers: [CanvasItemModel],
                        size: CGSize,
                        resolution: MediaResolution) {
-        
-        //let size = getSize(layers: layers)
 
         let scale = resolution.getScale(for: size.width)
         
@@ -120,8 +84,7 @@ private extension LayersMerger {
             guard let image = image.cropAlpha() else {
                 return .idle
             }
-            
-            let item = CanvasImageModel(image: image, asset: nil)
+            let item = CanvasImageModel(image: image, asset: nil, isFromMerge: true)
             return .successImage(item)
         }
     }
@@ -134,5 +97,40 @@ private extension LayersMerger {
     func set(_ error: Error) async {
         Log.e(error)
         state = .error(error)
+    }
+    
+    func getSize(layers: [CanvasItemModel]) -> CGSize {
+        var resultMinX: CGFloat = .nan
+        var resultMaxX: CGFloat = .nan
+        var resultMinY: CGFloat = .nan
+        var resultMaxY: CGFloat = .nan
+        
+        for item in layers {
+            let minX = item.offset.width - item.frameFetchedSize.width / 2
+            
+            if resultMinX.isNaN || resultMinX >= minX {
+                resultMinX = minX
+            }
+            
+            let maxX = item.offset.width + item.frameFetchedSize.width / 2
+            
+            if resultMaxX.isNaN || resultMaxX <= maxX {
+                resultMaxX = maxX
+            }
+            
+            let minY = item.offset.height - item.frameFetchedSize.width / 2
+            
+            if resultMinY.isNaN || resultMinY >= minY {
+                resultMinY = minY
+            }
+            
+            let maxY = item.offset.height + item.frameFetchedSize.width / 2
+            
+            if resultMaxY.isNaN || resultMaxY <= maxY {
+                resultMaxY = maxY
+            }
+        }
+        
+        return .init(width: resultMaxX - resultMinX, height: resultMaxY - resultMinY)
     }
 }
