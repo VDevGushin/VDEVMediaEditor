@@ -69,6 +69,7 @@ private extension LayersMerger {
         
         return .init(width: resultMaxX - resultMinX, height: resultMaxY - resultMinY)
     }
+
     
     func makeMediaItem(layers: [CanvasItemModel],
                        size: CGSize,
@@ -113,6 +114,10 @@ private extension LayersMerger {
             return .successVideo(item)
         } else {
             guard let image = await AssetExtractionUtil.image(fromURL: model.url) else {
+                return .idle
+            }
+            
+            guard let image = image.cropAlpha() else {
                 return .idle
             }
             

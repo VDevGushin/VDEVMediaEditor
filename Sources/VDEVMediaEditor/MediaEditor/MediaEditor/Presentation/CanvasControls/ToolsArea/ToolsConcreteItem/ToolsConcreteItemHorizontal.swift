@@ -92,33 +92,46 @@ struct ToolsConcreteItemHorizontal: View {
                             ToolRow(image: images.currentItem.currentItemMask,
                                     title: strings.mask) { onMaskFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) { onColorFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemFilter,
+                                    title: strings.filter) { onColorFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) { onTextureFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemTexture,
+                                    title: strings.texture) { onTextureFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item) }
+                            ToolRow(image: images.currentItem.currentItemAdjustments,
+                                    title: strings.adjustments) { onAdjustments(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemCrop, title: strings.crop) { onCropImage(item) }
+                            ToolRow(image: images.currentItem.currentItemCrop,
+                                    title: strings.crop) { onCropImage(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemRMBack, title: strings.removeBack) { removeBackgroundML(item) }
+                            ToolRow(image: images.currentItem.currentItemRMBack,
+                                    title: strings.removeBack) { removeBackgroundML(item) }
                             
                         case .video:
-                            ToolRow(image: images.currentItem.currentItemMask, title: strings.mask) { onMaskFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemMask,
+                                    title: strings.mask) { onMaskFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) { onTextureFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemTexture,
+                                    title: strings.texture) { onTextureFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) { onColorFilter(item) }
+                            ToolRow(image: images.currentItem.currentItemFilter,
+                                    title: strings.filter) { onColorFilter(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item) }
+                            ToolRow(image: images.currentItem.currentItemAdjustments,
+                                    title: strings.adjustments) { onAdjustments(item) }
                         case .text:
-                            ToolRow(image: images.currentItem.currentItemEditText, title: strings.editText) { onEditText(item) }
+                            ToolRow(image: images.currentItem.currentItemEditText,
+                                    title: strings.editText) { onEditText(item) }
                         default: EmptyView()
                         }
                         
                         if !vm.data.isLimit {
                             switch item.type {
                             case .image, .video, .text, .sticker, .drawing:
-                                ToolRow(image: images.currentItem.currentIteDublicate, title: strings.dublicate) { onDublicate(item) }
+                                ToolRow(image: images.currentItem.currentIteDublicate,
+                                        title: strings.dublicate) {
+                                    onDublicate(item)
+                                }
                             default: EmptyView()
                             }
                         }
@@ -139,27 +152,30 @@ struct ToolsConcreteItemHorizontal: View {
                             .frame(width: 1)
                         
                         if item.type != .template {
-                            ToolRow(image: images.currentItem.currentItemUp, title: strings.up) {
+                            ToolRow(image: images.currentItem.currentItemUp,
+                                    title: strings.up) {
                                 onUp(item)
                             }
                             
-                            ToolRow(image: images.currentItem.currentItemDown, title: strings.down) {
+                            ToolRow(image: images.currentItem.currentItemDown,
+                                    title: strings.down) {
                                 onBack(item)
                             }
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemBringToTop, title: strings.bringToTop) {
+                        ToolRow(image: images.currentItem.currentItemBringToTop,
+                                title: strings.bringToTop) {
                             onBringToFront(item)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemBringToBottom, title: strings.bringToBottom) {
+                        ToolRow(image: images.currentItem.currentItemBringToBottom,
+                                title: strings.bringToBottom) {
                             onBringToBack(item)
                         }
                         
-                        if item.canMerge,
-                           let withItem = vm.data.canMerge(item: item),
-                           !vm.data.isLimit {
-                            ToolRow(image: images.currentItem.currentItemMerge, title: strings.merge) {
+                        if let withItem = vm.data.canMerge(item: item) {
+                            ToolRow(image: images.currentItem.currentItemMerge,
+                                    title: strings.merge) {
                                 onMerge([withItem, item])
                             }
                         }

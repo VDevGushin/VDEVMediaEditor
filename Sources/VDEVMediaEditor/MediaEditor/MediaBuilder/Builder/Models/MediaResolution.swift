@@ -40,5 +40,5 @@ enum MediaResolution {
         return resultScale
     }
 
-    static let `default` = MediaResolution.ultraHD4k
+    public static let `default` = MediaResolution.fullHD
 }
