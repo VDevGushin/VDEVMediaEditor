@@ -22,7 +22,6 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", .upToNextMajor(from: "0.6.0")),
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", .upToNextMajor(from: "0.2.0")),
         .package(url: "https://github.com/SwiftUIX/SwiftUIX", .upToNextMajor(from: "0.1.3")),
-        .package(url: "https://github.com/DragonCherry/AssetsPickerViewController", .upToNextMajor(from: "2.9.7")),
         .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git", branch: "main"),
     ],
     targets: [
@@ -37,7 +36,6 @@ let package = Package(
                            "CollectionConcurrencyKit",
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
                            "CombineExt",
-                           "AssetsPickerViewController",
                            "BackgroundRemoval"
                           ],
             resources: [.process("Resources")]

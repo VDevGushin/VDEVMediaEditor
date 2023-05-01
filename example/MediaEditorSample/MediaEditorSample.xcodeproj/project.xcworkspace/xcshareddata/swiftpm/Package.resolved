@@ -10,15 +10,6 @@
       }
     },
     {
-      "identity" : "assetspickerviewcontroller",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/DragonCherry/AssetsPickerViewController",
-      "state" : {
-        "revision" : "288cf078a78fb9f590fc8519d88b4b87089f3103",
-        "version" : "2.9.7"
-      }
-    },
-    {
       "identity" : "backgroundremoval",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Ezaldeen99/BackgroundRemoval.git",
@@ -70,15 +61,6 @@
       "state" : {
         "revision" : "ac1b60a22c7e6a6514de7a66d2f3d5b537c956d5",
         "version" : "4.0.2"
-      }
-    },
-    {
-      "identity" : "snapkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SnapKit/SnapKit",
-      "state" : {
-        "revision" : "f222cbdf325885926566172f6f5f06af95473158",
-        "version" : "5.6.0"
       }
     },
     {
