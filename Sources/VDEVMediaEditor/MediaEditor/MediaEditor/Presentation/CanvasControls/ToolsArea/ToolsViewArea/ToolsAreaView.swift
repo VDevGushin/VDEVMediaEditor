@@ -137,6 +137,7 @@ struct ToolsAreaView: View {
                 default: break
                 }
             }
+            .edgesIgnoringSafeArea(.all)
 //            CameraVPView(isLibrary: false, canvasSize: vm.ui.editorSize) { model in
 //                defer {
 //                    vm.tools.closeTools(false)
@@ -196,6 +197,7 @@ struct ToolsAreaView: View {
                 default: break
                 }
             }
+            .edgesIgnoringSafeArea(.all)
         })
         .fullScreenCover(isPresented: $showVideoPicker, content: {
             PhotoPickerView(type: .video) { model in
@@ -209,6 +211,7 @@ struct ToolsAreaView: View {
                 default: break
                 }
             }
+            .edgesIgnoringSafeArea(.all)
         })
         .imageCropper(show: $showImageCropper,
                       item: vm.tools.currentToolItem) { new in

@@ -25,7 +25,6 @@ struct NativeCameraView: View {
 
 struct CameraVPViewNative: UIViewControllerRepresentable {
     @Injected private var settings: VDEVMediaEditorSettings
-    
     let onComplete: (PickerMediaOutput?) -> Void
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<CameraVPViewNative>) -> UIImagePickerController {
@@ -40,7 +39,8 @@ struct CameraVPViewNative: UIViewControllerRepresentable {
         imagePicker.overrideUserInterfaceStyle = .dark
         imagePicker.cameraFlashMode = .off
         imagePicker.videoQuality = .typeHigh
-        imagePicker.videoExportPreset = AVAssetExportPresetHighestQuality
+        imagePicker.modalPresentationStyle = .fullScreen
+        imagePicker.videoExportPreset = AVAssetExportPreset1280x720
         
         return imagePicker
     }
