@@ -55,30 +55,12 @@
       }
     },
     {
-      "identity" : "prynttrimmerview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/HHK1/PryntTrimmerView",
-      "state" : {
-        "revision" : "ac1b60a22c7e6a6514de7a66d2f3d5b537c956d5",
-        "version" : "4.0.2"
-      }
-    },
-    {
       "identity" : "sqlite.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stephencelis/SQLite.swift.git",
       "state" : {
         "revision" : "4d543d811ee644fa4cc4bfa0be996b4dd6ba0f54",
         "version" : "0.13.3"
-      }
-    },
-    {
-      "identity" : "stevia",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/freshOS/Stevia",
-      "state" : {
-        "revision" : "87dd17a86240f16788239a78dd8be11c4b013150",
-        "version" : "4.8.0"
       }
     },
     {
@@ -106,15 +88,6 @@
       "state" : {
         "revision" : "1b8b443b61b8b37fafb06c1abad9b6be244c9de9",
         "version" : "0.1.4"
-      }
-    },
-    {
-      "identity" : "ypimagepicker",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Yummypets/YPImagePicker.git",
-      "state" : {
-        "revision" : "4dbae7a1f69db3d65c47f4106d0ca09f678edeaf",
-        "version" : "5.2.1"
       }
     }
   ],

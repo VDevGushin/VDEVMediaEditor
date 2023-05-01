@@ -1,8 +1,8 @@
 //
-//  PhotoPicker.swift.swift
-//  MediaEditor
+//  CameraVPViewNative.swift
+//  
 //
-//  Created by Vladislav Gushin on 09.02.2023.
+//  Created by Vladislav Gushin on 01.05.2023.
 //
 
 import UIKit
@@ -11,97 +11,67 @@ import PhotosUI
 import MobileCoreServices
 import AVKit
 
-enum PhotoPickerViewType {
-    case video
-    case image
-}
-
-struct PickerMediaOutput {
-    enum MediaType {
-        case photo, video, livePhoto, empty
-    }
-
-    private(set) var id: String
-    private(set) var image: UIImage?
-    private(set) var phAsset: PHAsset?
-    private(set) var url: URL?
-    private(set) var mediaType: MediaType = .empty
-
-    init(with photo: UIImage, asset: PHAsset?) {
-        id = UUID().uuidString
-        image = photo
-        mediaType = .photo
-        phAsset = asset
-    }
-
-    init(with videoURL: URL, thumbnail: UIImage?, videoAsset: PHAsset?) {
-        id = UUID().uuidString
-        url = videoURL
-        image = thumbnail
-        phAsset = videoAsset
-        mediaType = .video
-    }
-}
-
-struct PhotoPickerView: UIViewControllerRepresentable {
-    typealias UIViewControllerType = UIImagePickerController
-    private(set) var type: PhotoPickerViewType
-    private(set) var onComplete: (PickerMediaOutput?) -> Void
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-
-        let imagePicker = UIImagePickerController()
-        imagePicker.overrideUserInterfaceStyle = .dark
-        
-        switch type {
-        case .image:
-            imagePicker.mediaTypes = [UTType.image.identifier]
-            imagePicker.videoExportPreset = AVAssetExportPreset640x480
-            imagePicker.videoQuality = .type640x480
-        case .video:
-            imagePicker.allowsEditing = true
-            imagePicker.videoMaximumDuration = 30
-            imagePicker.mediaTypes = [UTType.movie.identifier]
-            imagePicker.videoExportPreset = AVAssetExportPreset640x480
-            imagePicker.videoQuality = .type640x480
+struct NativeCameraView: View {
+    let onComplete: (PickerMediaOutput?) -> Void
+    
+    var body: some View {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            CameraVPViewNative(onComplete: onComplete)
+        } else {
+            EmptyView()
         }
+    }
+}
 
-        imagePicker.sourceType = .photoLibrary
+struct CameraVPViewNative: UIViewControllerRepresentable {
+    @Injected private var settings: VDEVMediaEditorSettings
+    
+    let onComplete: (PickerMediaOutput?) -> Void
+    
+    func makeUIViewController(context: UIViewControllerRepresentableContext<CameraVPViewNative>) -> UIImagePickerController {
+        let imagePicker = UIImagePickerController()
         imagePicker.delegate = context.coordinator
+        imagePicker.sourceType = .camera
+        imagePicker.mediaTypes = [UTType.image.identifier, UTType.movie.identifier]
+        imagePicker.cameraCaptureMode = .video
+        imagePicker.videoMaximumDuration = settings.maximumVideoDuration
+        imagePicker.allowsEditing = false
+        imagePicker.showsCameraControls = true
+        imagePicker.overrideUserInterfaceStyle = .dark
+        imagePicker.cameraFlashMode = .off
+        imagePicker.videoQuality = .typeHigh
+        imagePicker.videoExportPreset = AVAssetExportPresetHighestQuality
+        
         return imagePicker
     }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
+    
     static func dismantleUIViewController(_ uiViewController: UIImagePickerController, coordinator: Coordinator) {
-        Log.d("❌ dismantle PhotoPicker")
     }
-
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) { }
+    
     func makeCoordinator() -> Coordinator {
-        Coordinator(with: self)
+        Coordinator(self)
     }
-
-
-    class Coordinator: NSObject, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-        var photoPicker: PhotoPickerView
-
-        init(with photoPicker: PhotoPickerView) {
-            self.photoPicker = photoPicker
-        }
+    
+    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        private let parent: CameraVPViewNative
         
-        deinit { Log.d("❌ Deinit: PhotoPickerView.Coordinator") }
+        init(_ parent: CameraVPViewNative) { self.parent = parent }
+        
+        deinit { Log.d("❌ Deinit: CameraVPViewNative.Coordinator") }
         
         @MainActor
         private func setResult(_ result: PickerMediaOutput) {
-            DispatchQueue.main.async { [weak self] in self?.photoPicker.onComplete(result) }
+            DispatchQueue.main.async { [weak self] in self?.parent.onComplete(result) }
         }
         
         @MainActor
         private func emptyResult( errorMessage: String? = nil) {
             if let errorMessage = errorMessage { Log.e(errorMessage) }
-            DispatchQueue.main.async { [weak self] in self?.photoPicker.onComplete(nil) }
+            DispatchQueue.main.async { [weak self] in self?.parent.onComplete(nil) }
         }
-
+        
         private func generateThumbnail(path: URL) async -> UIImage? {
             do {
                 let asset = AVURLAsset(url: path, options: nil)
@@ -115,13 +85,13 @@ struct PhotoPickerView: UIViewControllerRepresentable {
                 return nil
             }
         }
-
+        
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             emptyResult()
         }
-
+        
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-         
+            
             picker.dismiss()
             
             guard let mediaType = info[.mediaType] as? String else {
@@ -138,11 +108,15 @@ struct PhotoPickerView: UIViewControllerRepresentable {
                         return
                     }
                     
-                    let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset
+                    var resultImage = image
                     
-                    let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
+                    if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
+                        resultImage = image.compressImage(compressionQuality: 0.1, longSize: 640)
+                        setResult(.init(with: resultImage, asset: asset))
+                        return
+                    }
                     
-                    setResult(.init(with: compressed, asset: asset))
+                    setResult(.init(with: resultImage, asset: nil))
                     
                 case String(UTType.movie.identifier):
                     

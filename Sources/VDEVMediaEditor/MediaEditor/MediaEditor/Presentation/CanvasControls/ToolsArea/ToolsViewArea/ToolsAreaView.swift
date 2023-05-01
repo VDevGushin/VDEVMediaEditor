@@ -123,24 +123,38 @@ struct ToolsAreaView: View {
             }
         })
         .fullScreenCover(isPresented: $showCamera) {
-            CameraVPView(isLibrary: false, canvasSize: vm.ui.editorSize) { model in
-                defer {
-                    vm.tools.closeTools(false)
-                }
-                
+            NativeCameraView { model in
+                vm.tools.closeTools(false)
                 guard let model = model else { return }
-                
                 switch model.mediaType {
                 case .photo:
-                    guard let image = model.photo else { return }
-                    vm.data.add(CanvasImageModel(image: image, asset: nil))
+                    guard let image = model.image else { return }
+                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
                 case .video:
                     guard let url = model.url else { return }
-                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.photo, asset: nil)
+                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
                     vm.data.add(videoModel)
                 default: break
                 }
             }
+//            CameraVPView(isLibrary: false, canvasSize: vm.ui.editorSize) { model in
+//                defer {
+//                    vm.tools.closeTools(false)
+//                }
+//
+//                guard let model = model else { return }
+//
+//                switch model.mediaType {
+//                case .photo:
+//                    guard let image = model.photo else { return }
+//                    vm.data.add(CanvasImageModel(image: image, asset: nil))
+//                case .video:
+//                    guard let url = model.url else { return }
+//                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.photo, asset: nil)
+//                    vm.data.add(videoModel)
+//                default: break
+//                }
+//            }
         }
         .fullScreenCover(isPresented: $showPhoroPicker, content: {
 //            PickMediaSDK { model in

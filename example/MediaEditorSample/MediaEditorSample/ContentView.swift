@@ -42,6 +42,8 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var resolution: VDEVMediaResolution
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
+    
+    var maximumVideoDuration: Double { 25.0 }
 
     init(_ baseChallengeId: String,
          resolution: VDEVMediaResolution,
