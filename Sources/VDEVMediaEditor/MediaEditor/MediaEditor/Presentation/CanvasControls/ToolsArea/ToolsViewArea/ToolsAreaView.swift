@@ -10,7 +10,6 @@ import Combine
 import Kingfisher
 import PhotosUI
 
-
 struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
@@ -144,6 +143,35 @@ struct ToolsAreaView: View {
             }
         }
         .fullScreenCover(isPresented: $showPhoroPicker, content: {
+//            PickMediaSDK { model in
+//                vm.tools.closeTools(false)
+//                guard let model = model else { return }
+//                switch model.mediaType {
+//                case .photo:
+//                    guard let image = model.image else { return }
+//                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
+//                case .video:
+//                    guard let url = model.url else { return }
+//                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
+//                    vm.data.add(videoModel)
+//                default: break
+//                }
+//            }
+//            PickerMediaView { model in
+//                vm.tools.closeTools(false)
+//                guard let model = model else { return }
+//                switch model.mediaType {
+//                case .photo:
+//                    guard let image = model.image else { return }
+//                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
+//                case .video:
+//                    guard let url = model.url else { return }
+//                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
+//                    vm.data.add(videoModel)
+//                default: break
+//                }
+//
+//            }
             PhotoPickerView(type: .image) { model in
                 vm.tools.closeTools(false)
                 guard let model = model else { return }

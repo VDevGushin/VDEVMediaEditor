@@ -43,31 +43,16 @@ struct PickerMediaOutput {
     }
 }
 
-struct PhotoPickerView: View {
-    let type: PhotoPickerViewType
-    private(set) var onComplete: (PickerMediaOutput?) -> Void
-
-    @State private var isLoading = false
-
-    var body: some View {
-        PhotoPicker(isLoading: $isLoading, type: type, onComplete: onComplete)
-            .overlay(alignment: .center) {
-                LoadingView(inProgress: isLoading, style: .large)
-            }
-    }
-}
-
-struct PhotoPicker: UIViewControllerRepresentable {
+struct PhotoPickerView: UIViewControllerRepresentable {
     typealias UIViewControllerType = UIImagePickerController
-
-    @Binding var isLoading: Bool
     private(set) var type: PhotoPickerViewType
     private(set) var onComplete: (PickerMediaOutput?) -> Void
-
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
 
         let imagePicker = UIImagePickerController()
+        imagePicker.overrideUserInterfaceStyle = .dark
+        
         switch type {
         case .image:
             imagePicker.mediaTypes = [UTType.image.identifier]
@@ -98,20 +83,26 @@ struct PhotoPicker: UIViewControllerRepresentable {
 
 
     class Coordinator: NSObject, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-        var photoPicker: PhotoPicker
+        var photoPicker: PhotoPickerView
 
-        init(with photoPicker: PhotoPicker) {
+        init(with photoPicker: PhotoPickerView) {
             self.photoPicker = photoPicker
         }
-
-        private func emptyResult() {
-            DispatchQueue.main.async { [weak self] in
-                self?.photoPicker.isLoading = false
-                self?.photoPicker.onComplete(nil)
-            }
+        
+        deinit { Log.d("❌ Deinit: PhotoPickerView.Coordinator") }
+        
+        @MainActor
+        private func setResult(_ result: PickerMediaOutput) {
+            DispatchQueue.main.async { [weak self] in self?.photoPicker.onComplete(result) }
+        }
+        
+        @MainActor
+        private func emptyResult( errorMessage: String? = nil) {
+            if let errorMessage = errorMessage { Log.e(errorMessage) }
+            DispatchQueue.main.async { [weak self] in self?.photoPicker.onComplete(nil) }
         }
 
-        func generateThumbnail(path: URL) -> UIImage? {
+        private func generateThumbnail(path: URL) async -> UIImage? {
             do {
                 let asset = AVURLAsset(url: path, options: nil)
                 let imgGenerator = AVAssetImageGenerator(asset: asset)
@@ -130,54 +121,45 @@ struct PhotoPicker: UIViewControllerRepresentable {
         }
 
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+         
+            picker.dismiss()
             
-            DispatchQueue.main.async { [weak self] in
-                self?.photoPicker.isLoading = true
-            }
-
             guard let mediaType = info[.mediaType] as? String else {
                 emptyResult()
                 return
             }
-
-            switch mediaType {
-            case String(UTType.image.identifier):
-                guard let image = info[.originalImage] as? UIImage else {
-                    emptyResult()
-                    return
-                }
+            
+            Task(priority: .high) {
                 
-                let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset
-                
-                let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
-
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.photoPicker.onComplete(.init(with: compressed, asset: asset))
-                    self.photoPicker.isLoading = false
-                }
-
-            case String(UTType.movie.identifier):
-                
-                guard let videoURL = info[.mediaURL] as? URL else {
-                    emptyResult()
-                    return
-                }
-                
-                let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset
-
-                DispatchQueue.global().async { [weak self] in
-                    guard let self = self else { return }
-                    
-                    let image = self.generateThumbnail(path: videoURL)
-                    
-                    DispatchQueue.main.async {
-                        self.photoPicker.isLoading = false
-                        self.photoPicker.onComplete(.init(with: videoURL, thumbnail: image, videoAsset: asset))
+                switch mediaType {
+                case String(UTType.image.identifier):
+                    guard let image = info[.originalImage] as? UIImage else {
+                        emptyResult()
+                        return
                     }
+                    
+                    let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset
+                    
+                    let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
+                    
+                    setResult(.init(with: compressed, asset: asset))
+                    
+                case String(UTType.movie.identifier):
+                    
+                    guard let videoURL = info[.mediaURL] as? URL else {
+                        emptyResult()
+                        return
+                    }
+                    
+                    let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset
+                    
+                    let image = await generateThumbnail(path: videoURL)
+                    
+                    setResult(.init(with: videoURL, thumbnail: image, videoAsset: asset))
+                    
+                default:
+                    emptyResult()
                 }
-            default:
-                emptyResult()
             }
         }
     }

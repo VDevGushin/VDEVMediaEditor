@@ -10,24 +10,30 @@ import Combine
 import AVKit
 import PhotosUI
 
+enum MediaExportError: Error {
+    case imageExportReturnedNoData
+    case cannotGetJPEGRepresentation
+    case cannotGetAVAssetExportSession
+    case cannotFetchAVAsset
+    case cannotFetchPHAsset
+    case noVideoExportPresetsAvailable
+    case noCachesDirectory
+    case avAssetExportSessionFailed
+}
 
 struct PickerMediaView: UIViewControllerRepresentable {
-    @Binding var pickerResult: [UIImage] // pass images back to the SwiftUI view
-    @Binding var isPresented: Bool // close the modal view
+    private(set) var onComplete: (PickerMediaOutput?) -> Void
     
     func makeUIViewController(context: Context) -> some UIViewController {
         let library = PHPhotoLibrary.shared()
-        
         var configuration = PHPickerConfiguration(photoLibrary: library)
-        configuration.filter = .any(of: [.images, .videos, .not(.livePhotos)])
-        configuration.selectionLimit = 1 // ignore limit
-        configuration.preferredAssetRepresentationMode = .current
+        configuration.filter = .all(of: [.any(of: [.images, .screenshots, .panoramas, .videos])])
+        configuration.selectionLimit = 1
+        configuration.preferredAssetRepresentationMode = .automatic
         configuration.selection = .ordered
-        
-        
-        
         let photoPickerViewController = PHPickerViewController(configuration: configuration)
-        photoPickerViewController.delegate = context.coordinator // Use Coordinator for delegation
+        photoPickerViewController.overrideUserInterfaceStyle = .dark
+        photoPickerViewController.delegate = context.coordinator
         return photoPickerViewController
     }
     
@@ -35,134 +41,240 @@ struct PickerMediaView: UIViewControllerRepresentable {
     
     func makeCoordinator() -> Coordinator { Coordinator(self) }
     
-    class Coordinator: PHPickerViewControllerDelegate {
+    final class Coordinator: PHPickerViewControllerDelegate {
         private let parent: PickerMediaView
         
         init(_ parent: PickerMediaView) {
             self.parent = parent
         }
         
+        deinit { Log.d("❌ Deinit: PickerMediaView.Coordinator") }
+        
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            parent.pickerResult.removeAll()
-            
-            for image in results {
-                
-                if image.itemProvider.canLoadObject(ofClass: UIImage.self) {
-                    image.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] newImage, error in
-                        if let error = error {
-                            Log.e("Can't load image \(error.localizedDescription)")
-                        } else if let image = newImage as? UIImage {
-                            self?.parent.pickerResult.append(image)
-                        }
-                    }
-                    
-                } else {
-                    print("Can't load asset")
-                }
+            guard !results.isEmpty else {
+                return emptyResult()
             }
             
-            // close the modal view
-            parent.isPresented = false
+            for item in results {
+                if item.itemProvider.canLoadObject(ofClass: UIImage.self) {
+                    fetchImage(from: item)
+                    return
+                }
+                
+                if item.itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                    fetchVideo(from: item)
+                    return
+                }
+                
+                emptyResult()
+            }
+        }
+        
+        private func fetchVideo(from item: PHPickerResult) {
+            item.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [weak self] videoURL, error in
+                if let error = error {
+                    self?.emptyResult(errorMessage: error.localizedDescription)
+                } else {
+                    guard let url = videoURL else {
+                        self?.emptyResult(errorMessage: "Empty url")
+                        return
+                    }
+                    
+                    if !FileManager.default.fileExists(atPath: url.path) {
+                        self?.emptyResult(errorMessage: "File doesn't exist at path")
+                        return
+                    }
+                    
+                    self?.exportForVideo(item: item, url: url)
+                }
+            }
+        }
+        
+        private func fetchImage(from item: PHPickerResult) {
+            item.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] newImage, error in
+                if let error = error {
+                    self?.emptyResult(errorMessage: error.localizedDescription)
+                } else if let image = newImage as? UIImage {
+                    let asset = self?.getPHAsset(from: item)
+                    let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
+                    let result = PickerMediaOutput.init(with: compressed, asset: asset)
+                    self?.setResult(result)
+                }
+            }
+        }
+        
+        @MainActor
+        private func setResult(_ result: PickerMediaOutput) {
+            DispatchQueue.main.async { [weak self] in self?.parent.onComplete(result) }
+        }
+        
+        @MainActor
+        private func emptyResult( errorMessage: String? = nil) {
+            if let errorMessage = errorMessage { Log.e(errorMessage) }
+            DispatchQueue.main.async { [weak self] in self?.parent.onComplete(nil) }
         }
     }
 }
 
-//struct PickerMediaAsyncView: View {
-//    @StateObject private var vm: PickerMediaAsyncViewModel
-//    @State private var isPresented: Bool = true
-//
-//    init(onComplete: @escaping (PickerMediaOutput?) async -> Void) {
-//        self._vm = .init(wrappedValue: .init(onComplete: onComplete))
-//    }
-//
-//    var body: some View {
-//        MediaPicker(
-//
-//            isPresented: $isPresented,
-//            limit: 1,
-//            onChange: { medias in
-//                vm.setup(media: medias.first)
-//            }
-//        )
-//        .overlay {
-//            LoadingView(inProgress: vm.isLoading, style: .large)
-//                .ignoresSafeArea(.all)
-//        }
-//        .onChange(of: isPresented) { newValue in
-//            if !newValue {
-//                Task { await vm.onComplete(nil) }
-//            }
-//        }
-//    }
-//}
-//
-//private final class PickerMediaAsyncViewModel: ObservableObject {
-//    private(set) var onComplete: (PickerMediaOutput?) async -> Void
-//
-//    @Published private(set) var isLoading: Bool = false
-//
-//    private var operation: Task<Void, Never>?
-//
-//    init(onComplete: @escaping (PickerMediaOutput?) async -> Void) {
-//        self.onComplete = onComplete
-//    }
-//
-//    @MainActor
-//    private func setup(image: UIImage?) async {
-//        await complete(image == nil ? nil : .init(with: image!))
-//    }
-//
-//    @MainActor
-//    private func setup(videoURL: URL?, tumbnail: UIImage?) async {
-//        await complete(videoURL == nil ? nil : .init(with: videoURL!, thumbnail: tumbnail))
-//    }
-//
-//    @MainActor
-//    private func complete(_ result: PickerMediaOutput?) async {
-//        isLoading = false
-//        await onComplete(result)
-//    }
-//
-//    func setup(media: Media?) {
-//        isLoading = true
-//
-//        operation = Task(priority: .utility) {
-//            guard let media = media else {
-//                await complete(nil)
-//                return
-//            }
-//
-//            switch media.type {
-//            case .image:
-//                if let data = await media.getData() {
-//                    let image = UIImage(data: data)
-//                    let compressed = image?.compressImage()
-//                    await setup(image: compressed)
-//                }
-//
-//            case .video:
-//                let mediaURL = await media.getVideoURL()
-//
-//                let exportSession = await compressVideoAsync(inputURL: mediaURL,
-//                                            presetName: AVAssetExportPresetMediumQuality)
-//
-//                let videURL = exportSession?.outputURL ?? mediaURL
-//
-//                var tumbnail: UIImage? = nil
-//
-//                if let tumbnailURL = await media.getUrl(),
-//                   let data = try? Data(contentsOf: tumbnailURL) {
-//                    tumbnail = UIImage(data: data)
-//                }
-//
-//                await setup(videoURL: videURL, tumbnail: tumbnail)
-//            }
-//        }
-//    }
-//
-//    deinit {
-//        operation?.cancel()
-//        operation = nil
-//        print("❌ Deinit: DrawingViewModel")
-//    }
-//}
+// MARK: - Helpers
+private extension PickerMediaView.Coordinator {
+    func generateThumbnail(path: URL) -> UIImage? {
+        do {
+            let asset = AVURLAsset(url: path, options: nil)
+            let imgGenerator = AVAssetImageGenerator(asset: asset)
+            imgGenerator.appliesPreferredTrackTransform = true
+            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+            let thumbnail = UIImage(cgImage: cgImage)
+            return thumbnail
+        } catch let error {
+            Log.e("*** Error generating thumbnail: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    func getPHAsset(from item: PHPickerResult) -> PHAsset? {
+        if let id = item.assetIdentifier,
+           let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [id],
+                                                 options: nil).firstObject{
+            return fetchResult
+        }
+        return nil
+    }
+    
+    func makeUrlForVideoExportSession(url: URL) -> URL {
+        FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent("\(UUID().uuidString)\(url.lastPathComponent)")
+    }
+}
+
+// MARK: - Export video
+private extension PickerMediaView.Coordinator {
+    func exportForVideo(item: PHPickerResult, url: URL) {
+        Task(priority: .high) {
+            let asset = self.getPHAsset(from: item)
+            
+            var destinationUrl = try? await self.tryToExport(url: url, asset: asset)
+            
+            if let destinationUrl = destinationUrl {
+                let thumbnail = self.generateThumbnail(path: destinationUrl)
+                
+                let result = PickerMediaOutput.init(with: destinationUrl,
+                                                    thumbnail: thumbnail,
+                                                    videoAsset: asset)
+                
+                self.setResult(result)
+                return
+            }
+            
+            destinationUrl = makeUrlForVideoExportSession(url: url)
+            
+            do {
+                try? FileManager.default.removeItem(at: destinationUrl!)
+                try FileManager.default.copyItem(at: url, to: destinationUrl!)
+            } catch {
+                emptyResult(errorMessage: "ERROR: Unable to copy file - \(error.localizedDescription)")
+                return
+            }
+            
+            let thumbnail = self.generateThumbnail(path: destinationUrl!)
+            
+            let result = PickerMediaOutput.init(with: destinationUrl!,
+                                                thumbnail: thumbnail,
+                                                videoAsset: asset)
+            
+            self.setResult(result)
+        }
+    }
+    
+    func tryToExport(url: URL, asset: PHAsset?) async throws -> URL {
+        guard let asset = asset else {
+            throw MediaExportError.cannotFetchPHAsset
+        }
+        
+        let outputURL = self.makeUrlForVideoExportSession(url: url)
+        let exportSession = try await self.exportSessionForVideoAsset(asset)
+        
+        exportSession.outputFileType = .mov
+        exportSession.outputURL = outputURL
+        exportSession.shouldOptimizeForNetworkUse = true
+        
+        try await withCheckedThrowingContinuation { c in
+            exportSession.exportAsynchronously() { [weak exportSession] in
+                if let error = exportSession?.error {
+                    c.resume(throwing: error)
+                    return
+                }
+                c.resume(returning: ())
+            }
+        } as Void
+        
+        return outputURL
+    }
+    
+    func exportSessionForVideoAsset(_ asset: PHAsset) async throws -> AVAssetExportSession {
+        let avAsset = try await fetchAVAsset(for: asset)
+        let preset = try await videoExportPreset(for: avAsset)
+        
+        return try await withCheckedThrowingContinuation
+        { (continuation: CheckedContinuation<AVAssetExportSession, Error>) in
+            PHImageManager.default().requestExportSession(
+                forVideo: asset,
+                options: makeVideoRequestOptions(),
+                exportPreset: preset
+            ) { session, info in
+                guard let session = session else {
+                    continuation.resume(throwing: MediaExportError.cannotGetAVAssetExportSession)
+                    return
+                }
+                continuation.resume(returning: session)
+            }
+        }
+    }
+    
+    func videoExportPreset(for asset: AVAsset) async throws -> String {
+        let preferredPresets = [
+            AVAssetExportPreset640x480,
+            AVAssetExportPresetMediumQuality,
+            AVAssetExportPreset1280x720,
+            AVAssetExportPresetLowQuality,
+            AVAssetExportPreset960x540
+        ]
+        let compatiblePresets = AVAssetExportSession.exportPresets(compatibleWith: asset)
+        let allPresets = preferredPresets + compatiblePresets
+        for preset in allPresets {
+            let canExport = await AVAssetExportSession.compatibility(
+                ofExportPreset: preset,
+                with: asset,
+                outputFileType: .mov
+            )
+            if canExport {
+                return preset
+            }
+        }
+        throw MediaExportError.noVideoExportPresetsAvailable
+    }
+    
+    func fetchAVAsset(for asset: PHAsset) async throws -> AVAsset {
+        try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<AVAsset, Error>) in
+            PHImageManager.default().requestAVAsset(
+                forVideo: asset,
+                options: makeVideoRequestOptions()
+            ) { avAsset, audioMix, info in
+                guard let avAsset = avAsset else {
+                    continuation.resume(throwing: MediaExportError.cannotFetchAVAsset)
+                    return
+                }
+                continuation.resume(returning: avAsset)
+            }
+        })
+    }
+    
+    func makeVideoRequestOptions() -> PHVideoRequestOptions {
+        let options = PHVideoRequestOptions()
+        options.deliveryMode = .mediumQualityFormat
+        options.isNetworkAccessAllowed = true
+        options.version = .current
+        return options
+    }
+}
