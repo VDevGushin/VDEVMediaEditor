@@ -27,6 +27,7 @@ extension View {
 
                     onComplete(newItem)
                 }
+                .edgesIgnoringSafeArea(.all)
             })
         default: self
         }
