@@ -42,7 +42,6 @@ struct EditorPreviewModifier: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
             content
-            
             if showResult {
                 model.map {
                     EditorPreview(model: $0,
@@ -67,15 +66,10 @@ struct EditorPreview: View {
     
     @Injected private var images: VDEVImageConfig
     @Injected private var settings: VDEVMediaEditorSettings
-    @Injected private var uiConfig: VDEVUIConfig
    
     @State var model: Content
     @State var challengeTitle: String = ""
     @State var needShare: Bool = false
-    
-    private var aspectRatio: CGFloat {
-        vm.ui.canvasAspectRatio
-    }
     
     private var cornerRadius: CGFloat { 15 }
     
@@ -83,12 +77,11 @@ struct EditorPreview: View {
     var onClose: () -> Void
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
                 Text(challengeTitle)
                     .font(AppFonts.elmaTrioRegular(12))
                     .foregroundColor(AppColors.white)
-                    .padding()
                 
                 Spacer()
                 
@@ -96,15 +89,18 @@ struct EditorPreview: View {
                     haptics(.light)
                     needShare = false
                     onClose()
-                }.padding()
+                }
             }
+            .padding()
+            
+            Spacer()
             
             Group {
                 switch model.type {
                 case .video:
                     ResultVideoPlayer(assetURL: model.url,
                                       cornerRadius: cornerRadius,
-                                      aspectRatio: aspectRatio)
+                                      aspectRatio: settings.aspectRatio)
                     .clipShape(RoundedCorner(radius: cornerRadius))
                 case .image:
                     AsyncImageView(url: model.url) { img in
@@ -117,8 +113,10 @@ struct EditorPreview: View {
                     .clipShape(RoundedCorner(radius: cornerRadius))
                 }
             }
-            .padding(15)
+            .padding(.horizontal, 15)
             .withParallaxCardEffect()
+            
+            Spacer()
             
             HStack {
                 ShareButton {
@@ -128,7 +126,7 @@ struct EditorPreview: View {
                 
                 Spacer()
                 
-                if uiConfig.isInternalModule {   
+                if settings.isInternalModule {   
                     PublishButton {
                         haptics(.light)
                         needShare = false

@@ -20,7 +20,6 @@ final class CanvasUISettingsViewModel: ObservableObject {
 
     @Published private(set) var guideLinesColor: Color = AppColors.white
 
-    var canvasAspectRatio: CGFloat { 9/16 }
     var canvasCornerRadius: CGFloat { 16 }
     var bottomBarHeight: CGFloat { 76 }
 

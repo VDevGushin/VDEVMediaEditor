@@ -14,6 +14,8 @@ public protocol VDEVMediaEditorSettings {
     var withAttach: Bool { get }
     var maximumVideoDuration: Double { get }
     var resolution: VDEVMediaResolution { get }
+    var isInternalModule: Bool { get }
+    var aspectRatio: CGFloat? { get }
     var sourceService: VDEVMediaEditorSourceService { get }
     var isLoading: CurrentValueSubject<Bool, Never> { get }
     

@@ -24,8 +24,7 @@ struct ContentView: View {
                                            sourceService: source),
                   networkService: source,
                   images: Images(),
-                  strings: Strings(),
-                  uiConfig: UIConfig())
+                  strings: Strings())
         
         vm = .init(config: config)
     }
@@ -43,6 +42,9 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
+    //nil //9/16
+    var aspectRatio: CGFloat? { nil }
+    var isInternalModule: Bool { false }
     var maximumVideoDuration: Double { 25.0 }
 
     init(_ baseChallengeId: String,
@@ -90,10 +92,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-}
-
-struct UIConfig: VDEVUIConfig {
-    let isInternalModule = false
 }
 
 struct Images: VDEVImageConfig {

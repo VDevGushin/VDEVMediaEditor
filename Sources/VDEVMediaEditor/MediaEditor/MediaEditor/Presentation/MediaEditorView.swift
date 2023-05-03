@@ -11,6 +11,7 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
+    @Injected private var settings: VDEVMediaEditorSettings
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -23,13 +24,13 @@ struct MediaEditorView: View {
             
             VStack(spacing: 0) {
                 Content().viewDidLoad(vm.contentViewDidLoad)
-                
-                Spacer(minLength: 0)
+                    .padding(.bottom, 4)
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
             }
-            .ignoresSafeArea(.keyboard)
+            //.ignoresSafeArea(.keyboard)
             
             ToolsAreaView(rootMV: vm)
+                .padding(.bottom, 6)
             
             LoadingView(inProgress: vm.isLoading, style: .medium, color: vm.ui.guideLinesColor.uiColor)
         }
@@ -107,7 +108,7 @@ fileprivate extension MediaEditorView {
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .aspectRatio(vm.ui.canvasAspectRatio, contentMode: .fit)
+        .with(aspectRatio: settings.aspectRatio)
         .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
         .fetchSize($vm.ui.editorSize, needRound: true)
         .overlay(content: CenterAxes)
@@ -166,17 +167,5 @@ fileprivate extension MediaEditorView {
             }
         }
         .allowsHitTesting(false)
-    }
-}
-
-fileprivate extension MediaEditorView {
-    func canvasAspectSize(_ proxy: GeometryProxy) -> CGSize {
-        CGSize(width: proxy.size.width,
-               height: min(proxy.size.height, (proxy.size.width / vm.ui.canvasAspectRatio).rounded()))
-    }
-    
-    func canvasFullSize(_ proxy: GeometryProxy) -> CGSize {
-        CGSize(width: proxy.size.width,
-               height: proxy.size.height)
     }
 }

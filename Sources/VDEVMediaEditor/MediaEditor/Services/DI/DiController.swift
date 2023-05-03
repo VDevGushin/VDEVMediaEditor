@@ -12,13 +12,11 @@ struct DiController {
                          settings: VDEVMediaEditorSettings,
                          dataService: VDEVMediaEditorSourceService,
                          images: VDEVImageConfig,
-                         strings: VDEVMediaEditorStrings,
-                         uiConfig: VDEVUIConfig) {
+                         strings: VDEVMediaEditorStrings) {
         container.register(type: VDEVMediaEditorSettings.self, service: settings)
         container.register(type: VDEVMediaEditorSourceService.self, service: dataService)
         container.register(type: VDEVImageConfig.self, service: images)
         container.register(type: VDEVMediaEditorStrings.self, service: strings)
-        container.register(type: VDEVUIConfig.self, service: uiConfig)
         container.register(type: PasteboardService.self, service: PasteboardService())
     }
     

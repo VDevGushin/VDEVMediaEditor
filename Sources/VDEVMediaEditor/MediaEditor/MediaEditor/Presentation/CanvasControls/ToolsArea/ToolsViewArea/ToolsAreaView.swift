@@ -13,7 +13,7 @@ import PhotosUI
 struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
-    @Injected private var uiConfig: VDEVUIConfig
+    @Injected private var settings: VDEVMediaEditorSettings
     
     @ObservedObject private var vm: CanvasEditorViewModel
     
@@ -36,7 +36,7 @@ struct ToolsAreaView: View {
                     .bottomTool()
                     .transition(.trailingTransition)
             case (true, false):
-                if uiConfig.isInternalModule {
+                if settings.isInternalModule {
                     ZStack {
                         toolsLayersManager()
                             .bottomTool()

@@ -53,7 +53,10 @@ struct ResultVideoPlayer: View {
                    isPlaying: $isPlaying,
                    volume: volume,
                    cornerRadius: cornerRadius)
-        .aspectRatio(aspectRatio, contentMode: .fit)
+        .aspectRatio(aspectRatio ??
+                     avAsset.tracks(withMediaType: .video).first?.aspectRatio ??
+                     1,
+                     contentMode: .fit)
         .clipped()
         .onAppear {
             isPlaying = true

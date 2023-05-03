@@ -17,24 +17,16 @@ public struct VDEVMediaEditorConfig {
     private(set) var images: VDEVImageConfig
     // strings
     private(set) var strings: VDEVMediaEditorStrings
-    // ui config
-    private(set) var uiConfig: VDEVUIConfig
     
     public init(settings: VDEVMediaEditorSettings,
                 networkService: VDEVMediaEditorSourceService,
                 images: VDEVImageConfig,
-                strings: VDEVMediaEditorStrings,
-                uiConfig: VDEVUIConfig) {
+                strings: VDEVMediaEditorStrings) {
         self.settings = settings
         self.networkService = networkService
         self.images = images
         self.strings = strings
-        self.uiConfig = uiConfig
     }
-}
-
-public protocol VDEVUIConfig {
-    var isInternalModule: Bool { get }
 }
 
 public protocol VDEVImageConfig {

@@ -11,12 +11,10 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
         DiController.register(settings: config.settings,
                               dataService: config.networkService,
                               images: config.images,
-                              strings: config.strings,
-                              uiConfig: config.uiConfig)
+                              strings: config.strings)
     }
     
     deinit {
-       
         Log.d("❌ Deinit: VDEVMediaEditorViewModel")
     }
 }
