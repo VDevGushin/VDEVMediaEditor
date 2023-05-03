@@ -200,9 +200,7 @@ extension CanvasItemModel {
         
         if let _phImage = phImage {
             let applyer: CanvasApplayer = .init()
-            
             let res = await applyer.applyFilters(for: _phImage, filterChain: filterChain)
-            
             switch res.value {
             case .image(let image): phImage = image
             default: break
