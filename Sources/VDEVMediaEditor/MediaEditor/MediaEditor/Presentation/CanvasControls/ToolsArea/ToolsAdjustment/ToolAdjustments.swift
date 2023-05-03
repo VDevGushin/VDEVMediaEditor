@@ -88,8 +88,9 @@ struct ToolAdjustments: View {
                     .font(AppFonts.elmaTrioRegular(12))
                     .foregroundColor(AppColors.whiteWithOpacity)
             }
+            .frame(height: 32)
             .frame(maxWidth: .infinity, alignment: .trailing)
-
+            .buttonStyle(PlainButtonStyle())
         }
         .onAppear { resetState() }
         .padding(.top)
