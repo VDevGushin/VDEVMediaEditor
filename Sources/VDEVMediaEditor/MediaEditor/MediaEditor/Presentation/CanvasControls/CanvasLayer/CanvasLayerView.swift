@@ -95,10 +95,21 @@ struct CanvasLayerView<Content: View>: View {
     
     private(set) var manipulationWatcher: ManipulationWatcher = .shared
     
-    private var selectionColor: Color {
-        if vm.item.type == .template { return .clear }
-        if !isCurrentInManipulation { return .clear }
-        return (gestureInProgress || isLongTap) ? guideLinesColor.opacity(0.1) : .clear
+    @ViewBuilder
+    private var selectionColor: some View {
+        if vm.item.type == .template {
+            EmptyView()
+        }
+        
+        if !isCurrentInManipulation {
+            EmptyView()
+        }
+        
+        if (gestureInProgress || isLongTap) {
+            guideLinesColor.opacity(0.1)
+        } else {
+            EmptyView()
+        }
     }
     
     private var borderType: BorderType {
@@ -319,7 +330,9 @@ fileprivate extension CanvasLayerView {
                 .inset(by: -borderType.borderOverlay(scale: vm.scale))
                 .stroke(guideLinesColor.opacity(0.8), style:
                             StrokeStyle(lineWidth: borderType.borderOverlay(scale: vm.scale),
-                                        dash: [4, 4],
+                                        lineCap: .round,
+                                        lineJoin: .round,
+                                        dash: [10, 10],
                                         dashPhase: phase)
                 )
                 .animation(
