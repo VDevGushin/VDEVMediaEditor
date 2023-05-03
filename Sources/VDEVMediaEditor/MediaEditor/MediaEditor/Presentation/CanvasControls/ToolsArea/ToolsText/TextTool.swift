@@ -92,10 +92,9 @@ struct TextTool: View {
                     .padding(.horizontal)
 
                 ZStack {
-                    AppColors.white.opacity(0.001)
-                        .onTapGesture {
-                            _ = text.isEmpty ? deletePressed() : donePressed()
-                        }
+                    InvisibleTapZoneView(tapCount: 1) {
+                        text.isEmpty ? deletePressed() : donePressed()
+                    }
 
                     GeometryReader { geo in
                         FancyTextView(
@@ -125,8 +124,9 @@ struct TextTool: View {
                     let sliderWidth: CGFloat = 40
                     
                     VSlider(value: $fontSize, inManipulation: $sliderInManipulation, in: 16...42)
-                        .frame(width: sliderWidth, height: 300)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .frame(width: sliderWidth, height: 250)
+                        .frame(maxHeight: .infinity, alignment: .center)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical)
                         .offset(x: sliderInManipulation ? 12 : -(sliderWidth / 2))
                         .animation(.interactiveSpring(), value: sliderInManipulation)

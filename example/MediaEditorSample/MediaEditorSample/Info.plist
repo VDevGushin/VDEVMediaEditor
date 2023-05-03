@@ -53,5 +53,7 @@
 		<string>ElmaTrio-Regular.ttf</string>
 		<string>ElmaTrio-RegularItalic.ttf</string>
 	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>
