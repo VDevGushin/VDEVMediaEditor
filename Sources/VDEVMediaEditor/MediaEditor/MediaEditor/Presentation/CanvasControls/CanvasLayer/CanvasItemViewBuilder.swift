@@ -33,29 +33,16 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
     case .image:
         let item: CanvasImageModel = CanvasItemModel.toType(model: item)
         
-        if item.isFromMerge {
-            ZStack {
-                Image(uiImage: item.image)
-                    .resizable()
-                    .aspectRatio(item.image.aspectRatio, contentMode: .fill)
-                
-                if item.inProgress {
-                    ActivityIndicator(isAnimating: true, style: .large, color: .init(guideLinesColor))
-                }
+        ZStack {
+            Image(uiImage: item.image)
+                .resizable()
+                .aspectRatio(item.image.aspectRatio, contentMode: .fill)
+            
+            if item.inProgress {
+                ActivityIndicator(isAnimating: true, style: .large, color: .init(guideLinesColor))
             }
-            .frame(item.image.size.aspectFit(boundingSize: canvasSize))
-        } else {
-            ZStack {
-                Image(uiImage: item.image)
-                    .resizable()
-                    .aspectRatio(item.image.aspectRatio, contentMode: .fill)
-                
-                if item.inProgress {
-                    ActivityIndicator(isAnimating: true, style: .large, color: .init(guideLinesColor))
-                }
-            }
-            .frame(item.image.size.aspectFill(minimumSize: canvasSize))
         }
+        .frame(item.image.size.aspectFill(minimumSize: canvasSize))
         
     case .sticker:
         let item: CanvasStickerModel = CanvasItemModel.toType(model: item)

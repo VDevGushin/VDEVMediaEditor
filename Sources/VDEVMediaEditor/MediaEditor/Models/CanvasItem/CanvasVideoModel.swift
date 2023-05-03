@@ -12,7 +12,7 @@ import Photos
 
 // MARK: - Video
 final class CanvasVideoModel: CanvasItemModel {
-    private(set) var asset: PHAsset?
+    private(set) var asset: CanvasItemAsset?
     
     private var originalVideoURL: URL
     @Published private(set) var avVideoComposition: AVVideoComposition?
@@ -26,7 +26,7 @@ final class CanvasVideoModel: CanvasItemModel {
     init(videoURL: URL,
          thumbnail: UIImage?,
          originalVideoURL: URL? = nil,
-         asset: PHAsset?,
+         asset: CanvasItemAsset?,
          avVideoComposition: AVVideoComposition? = nil,
          adjustmentSettings: AdjustmentSettings? = nil,
          colorFilter: EditorFilter? = nil,

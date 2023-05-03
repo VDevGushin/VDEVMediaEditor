@@ -37,6 +37,7 @@ final class LayersMerger: ObservableObject {
 }
 
 private extension LayersMerger {
+    
     func makeMediaItem(layers: [CanvasItemModel],
                        size: CGSize,
                        resolution: MediaResolution) {
@@ -84,7 +85,7 @@ private extension LayersMerger {
             guard let image = image.cropAlpha() else {
                 return .idle
             }
-            let item = CanvasImageModel(image: image, asset: nil, isFromMerge: true)
+            let item = CanvasImageModel(image: image, asset: nil)
             return .successImage(item)
         }
     }

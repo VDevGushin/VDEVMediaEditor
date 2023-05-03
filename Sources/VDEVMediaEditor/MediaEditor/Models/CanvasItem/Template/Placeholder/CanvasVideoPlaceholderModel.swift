@@ -11,7 +11,7 @@ import Combine
 import Photos
 
 final class CanvasVideoPlaceholderModel: CanvasItemModel {
-    private(set) var asset: PHAsset?
+    private(set) var asset: CanvasItemAsset?
     
     private var originalVideoURL: URL
 
@@ -37,7 +37,7 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     init(url: URL,
          avVideoComposition: AVVideoComposition?,
          maskVideoComposition: AVVideoComposition?,
-         asset: PHAsset?,
+         asset: CanvasItemAsset?,
          thumbnail: UIImage?,
          maskImageFromTemplate: UIImage?,
          size: CGSize,
@@ -107,7 +107,7 @@ extension CanvasVideoPlaceholderModel {
     static func applyFilter(applyer: CanvasApplayer,
                             url: URL,
                             thumbnail: UIImage?,
-                            asset: PHAsset?,
+                            asset: CanvasItemAsset?,
                             filters: [EditorFilter]) async -> CanvasVideoPlaceholderModel? {
         
         let size = await AVAsset(url: url).getSize()

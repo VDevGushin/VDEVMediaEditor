@@ -129,71 +129,24 @@ struct ToolsAreaView: View {
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
-                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
+                    vm.data.add(CanvasImageModel(image: image, asset: model.itemAsset))
                 case .video:
                     guard let url = model.url else { return }
-                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
+                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.itemAsset)
                     vm.data.add(videoModel)
                 default: break
                 }
             }
             .edgesIgnoringSafeArea(.all)
-//            CameraVPView(isLibrary: false, canvasSize: vm.ui.editorSize) { model in
-//                defer {
-//                    vm.tools.closeTools(false)
-//                }
-//
-//                guard let model = model else { return }
-//
-//                switch model.mediaType {
-//                case .photo:
-//                    guard let image = model.photo else { return }
-//                    vm.data.add(CanvasImageModel(image: image, asset: nil))
-//                case .video:
-//                    guard let url = model.url else { return }
-//                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.photo, asset: nil)
-//                    vm.data.add(videoModel)
-//                default: break
-//                }
-//            }
         }
         .fullScreenCover(isPresented: $showPhoroPicker, content: {
-//            PickMediaSDK { model in
-//                vm.tools.closeTools(false)
-//                guard let model = model else { return }
-//                switch model.mediaType {
-//                case .photo:
-//                    guard let image = model.image else { return }
-//                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
-//                case .video:
-//                    guard let url = model.url else { return }
-//                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
-//                    vm.data.add(videoModel)
-//                default: break
-//                }
-//            }
-//            PickerMediaView { model in
-//                vm.tools.closeTools(false)
-//                guard let model = model else { return }
-//                switch model.mediaType {
-//                case .photo:
-//                    guard let image = model.image else { return }
-//                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
-//                case .video:
-//                    guard let url = model.url else { return }
-//                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
-//                    vm.data.add(videoModel)
-//                default: break
-//                }
-//
-//            }
             PhotoPickerView(type: .image) { model in
                 vm.tools.closeTools(false)
                 guard let model = model else { return }
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
-                    vm.data.add(CanvasImageModel(image: image, asset: model.phAsset))
+                    vm.data.add(CanvasImageModel(image: image, asset: model.itemAsset))
                 default: break
                 }
             }
@@ -206,7 +159,7 @@ struct ToolsAreaView: View {
                 switch model.mediaType {
                 case .video:
                     guard let url = model.url else { return }
-                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.phAsset)
+                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.itemAsset)
                     vm.data.add(videoModel)
                 default: break
                 }

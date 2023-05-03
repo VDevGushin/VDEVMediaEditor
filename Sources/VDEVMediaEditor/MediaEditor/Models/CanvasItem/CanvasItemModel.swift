@@ -166,10 +166,18 @@ extension CanvasItemModel {
             }
         }
     }
+    
+    func getOriginalURLFrom(asset: CanvasItemAsset?) async -> URL? {
+        guard let asset = asset, asset.type == .video else { return nil }
+        
+        let originalURL: URL? = await getOriginalURLFrom(asset: asset.asset) ?? asset.url
+        
+        return originalURL
+    }
 }
 
 extension CanvasItemModel {
-    func getFilteredOriginal(asset: PHAsset?) async -> UIImage? {
+    func getFrom(asset: PHAsset?) async -> UIImage? {
         guard let asset = asset else { return nil }
         
         var phImage: UIImage?
@@ -180,6 +188,15 @@ extension CanvasItemModel {
         PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFill, options: options) { image, _ in
             phImage = image
         }
+        
+        return phImage
+    }
+    
+    func getFilteredOriginal(asset: CanvasItemAsset?) async -> UIImage? {
+        guard let asset = asset else { return nil }
+        guard asset.type == .image else { return nil }
+        
+        var phImage: UIImage? = await getFrom(asset: asset.asset) ?? asset.image
         
         if let _phImage = phImage {
             let applyer: CanvasApplayer = .init()
@@ -193,5 +210,32 @@ extension CanvasItemModel {
         }
         
         return phImage
+    }
+}
+
+final class CanvasItemAsset {
+    enum `Type` {
+        case image
+        case video
+    }
+    
+    let asset: PHAsset?
+    let image: UIImage?
+    let url: URL?
+    let type: `Type`
+    
+    init(asset: PHAsset?, image: UIImage?, url: URL?, type: `Type`) {
+        self.asset = asset
+        self.image = image
+        self.url = url
+        self.type = type
+    }
+    
+    static func image(asset: PHAsset?, image: UIImage?)  -> CanvasItemAsset{
+        return .init(asset: asset, image: image, url: nil, type: .image)
+    }
+    
+    static func video(asset: PHAsset?, url: URL?) -> CanvasItemAsset{
+        return .init(asset: asset, image: nil, url: url, type: .video)
     }
 }

@@ -88,7 +88,7 @@ extension PlaceholderTemplateViewModel {
                     let model = await CanvasImagePlaceholderModel
                         .applyFilter(applyer: self.aplayer,
                                      image: image,
-                                     asset: model.phAsset,
+                                     asset: model.itemAsset,
                                      filters: self.item.filters)
 
                     await self.setImage(model: model)
@@ -102,7 +102,7 @@ extension PlaceholderTemplateViewModel {
                         .applyFilter(applyer:  self.aplayer,
                                      url: url,
                                      thumbnail: model.image,
-                                     asset: model.phAsset,
+                                     asset: model.itemAsset,
                                      filters: self.item.filters)
 
                     await self.setVideo(model: model)

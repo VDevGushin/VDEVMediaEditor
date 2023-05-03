@@ -10,7 +10,8 @@ import Combine
 import Photos
 
 final class CanvasImagePlaceholderModel: CanvasItemModel {
-    private(set) var asset: PHAsset?
+    private(set) var asset: CanvasItemAsset?
+    
     private(set) var originalImage: UIImage
     // картинка, которую показываем
     @Published private(set) var image: UIImage
@@ -34,7 +35,7 @@ final class CanvasImagePlaceholderModel: CanvasItemModel {
     init(image: UIImage,
          templatedImage: UIImage? = nil,
          maskImageFromTemplate: UIImage?,
-         asset: PHAsset?,
+         asset: CanvasItemAsset?,
          filters: [EditorFilter]) {
         self.originalImage = image
         self.image = image
@@ -98,7 +99,7 @@ final class CanvasImagePlaceholderModel: CanvasItemModel {
 extension CanvasImagePlaceholderModel {
     static func applyFilter(applyer: CanvasApplayer,
                             image: UIImage,
-                            asset: PHAsset?,
+                            asset: CanvasItemAsset?,
                             filters: [EditorFilter]) async -> CanvasImagePlaceholderModel {
         
         if filters.isEmpty {
