@@ -89,6 +89,13 @@ struct ToolAdjustments: View {
                     .foregroundColor(AppColors.whiteWithOpacity)
             }
             .frame(height: 32)
+            .background {
+                InvisibleTapZoneView {
+                    haptics(.light)
+                    item.apply(adjustmentSettings: nil)
+                    resetState()
+                }
+            }
             .frame(maxWidth: .infinity, alignment: .trailing)
             .buttonStyle(PlainButtonStyle())
         }
