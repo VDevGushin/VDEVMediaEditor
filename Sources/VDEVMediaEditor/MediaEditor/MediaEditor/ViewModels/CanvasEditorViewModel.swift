@@ -173,8 +173,9 @@ extension CanvasEditorViewModel {
 extension CanvasEditorViewModel {
     func removeAllLayers() {
         tools.showAddItemSelector(false)
-        tools.openLayersList(true)
+        tools.seletedTool(.empty)
         data.removeAll()
+        tools.openLayersList(true)
     }
 }
 
