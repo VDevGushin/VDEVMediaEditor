@@ -19,13 +19,13 @@ final class ImageProcessingController {
             
             let newImage = BackgroundRemoval().removeBackground(image: item.image)
             
-            let newItem = CanvasImageModel(image: newImage, asset: nil)
+            let result = newImage.cropAlpha() ?? newImage
+            
+            let newItem = CanvasImageModel(image: result, asset: nil)
             
             newItem.update(offset: item.offset, scale: item.scale, rotation: item.rotation)
             
-            DispatchQueue.main.async {
-                completion(newItem)
-            }
+            DispatchQueue.main.async { completion(newItem) }
         }
     }
 }
