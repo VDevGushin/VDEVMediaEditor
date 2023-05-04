@@ -42,6 +42,48 @@ extension View {
     func showAlert(with alertData: Binding<AlertData?>) -> some View {
         modifier(AlertModifier(alertData: alertData))
     }
+    
+    func showRemoveAlert(isPresented: Binding<Bool>, onComfirm: @escaping () -> Void) -> some View {
+        modifier(RemoveAllLayersAlertModifier(isPresented: isPresented, onComfirm: onComfirm))
+    }
+}
+
+struct RemoveAllLayersAlertModifier: ViewModifier {
+    @Injected private var strings: VDEVMediaEditorStrings
+    @Binding private var isPresented: Bool
+    private let onComfirm: () -> Void
+    
+    init(isPresented: Binding<Bool>, onComfirm: @escaping () -> Void) {
+        self._isPresented = isPresented
+        self.onComfirm = onComfirm
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .alert(isPresented: $isPresented) {
+                Alert(
+                    title: Text(strings.removeAllLayersTitle),
+                    message: Text(strings.removeAllLayersSubTitle),
+                    primaryButton: .default(
+                        Text(strings.confirm),
+                        action: confirmAction
+                    ),
+                    secondaryButton: .destructive(
+                        Text(strings.cancel),
+                        action: cancelAction
+                    )
+                )
+            }
+    }
+    
+    private func confirmAction() {
+        onComfirm()
+        isPresented = false
+    }
+    
+    private func cancelAction() {
+        isPresented = false
+    }
 }
 
 struct AlertModifier: ViewModifier {

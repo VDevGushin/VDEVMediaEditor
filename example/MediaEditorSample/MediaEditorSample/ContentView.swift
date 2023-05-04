@@ -210,4 +210,8 @@ struct Strings: VDEVMediaEditorStrings {
     let applied = "APPLIED"
     let templates = "templates"
     let merge = "MERGE"
+    let confirm = "Confirm"
+    let cancel = "Cancel"
+    let removeAllLayersTitle = "Remove all layers"
+    let removeAllLayersSubTitle = "Are you sure that you want to clear the canvas?"
 }

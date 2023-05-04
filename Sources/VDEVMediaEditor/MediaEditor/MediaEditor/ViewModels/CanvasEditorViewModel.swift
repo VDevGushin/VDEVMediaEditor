@@ -21,6 +21,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published var isLoading: LoadingModel = .false
     @Published var contentPreview: EditorPreview.Content?
     @Published private var contentPreviewDidLoad: Bool = false
+    @Published var showRemoveAllAlert: Bool = false
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
@@ -47,9 +48,14 @@ final class CanvasEditorViewModel: ObservableObject {
         
         deviceOrientationService.$isFaceDown
             .removeDuplicates()
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
-                if value { self?.data.removeAll() }
+                guard let self = self else { return }
+                if self.showRemoveAllAlert { return }
+                if self.data.isEmpty { return }
+                
+                self.showRemoveAllAlert = value
             }
             .store(in: &storage)
         
@@ -162,6 +168,18 @@ extension CanvasEditorViewModel {
     }
 }
 
+
+// MARK: - Remove all after screen down
+extension CanvasEditorViewModel {
+    func removeAllLayers() {
+        tools.showAddItemSelector(false)
+        tools.openLayersList(true)
+        data.removeAll()
+    }
+}
+
+
+// MARK: - Global actions to output
 extension CanvasEditorViewModel {
     @MainActor
     func onCloseEditor() {

@@ -147,4 +147,8 @@ public protocol VDEVMediaEditorStrings {
     var applied: String { get }
     var templates: String { get }
     var merge: String { get }
+    var removeAllLayersTitle: String { get }
+    var removeAllLayersSubTitle: String { get }
+    var confirm: String { get }
+    var cancel: String { get }
 }

@@ -54,6 +54,12 @@ struct ImageButton: View {
                         .padding(.top, 10)
                 }
             }
+            .background {
+                InvisibleTapZoneView {
+                    haptics(.light)
+                    action()
+                }
+            }
             .clipShape(Rectangle())
         }
         .buttonStyle(ScaleButtonStyle())
