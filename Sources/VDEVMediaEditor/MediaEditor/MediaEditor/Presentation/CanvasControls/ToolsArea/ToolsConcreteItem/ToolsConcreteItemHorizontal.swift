@@ -75,7 +75,7 @@ struct ToolsConcreteItemHorizontal: View {
     }
     
     var body: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .center, spacing: 0) {
             ImageButton(image: images.common.backArrow,
                         size: .init(width: backButtonSize,
                                     height: backButtonSize),
