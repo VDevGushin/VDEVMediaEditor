@@ -8,11 +8,10 @@
 import UIKit
 import CoreImage
 
-public class FilterDescriptor: Codable {
+public class FilterDescriptor: Codable, Hashable {
     public enum Param: Codable, Hashable {
-        enum ParamErrors: Error {
-            case unableToDecodeBase64StringToData
-        }
+        enum ParamErrors: Error { case unableToDecodeBase64StringToData }
+        
         case number(NSNumber)
         case dataBase64(NSData)
         case dataURL(NSData, URL)
@@ -159,9 +158,19 @@ public class FilterDescriptor: Codable {
         self.params = params
         self.customImageTargetKey = customImageTargetKey
     }
+    
+    public static func == (lhs: FilterDescriptor, rhs: FilterDescriptor) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(params)
+        hasher.combine(customImageTargetKey)
+    }
 }
 
-private class ParamDataPreprocessor {
+private final class ParamDataPreprocessor {
     static func process(url: URL, data: NSData) -> NSData {
         if (data as Data).mimetype.type == .image ||
             ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased()),
@@ -175,16 +184,3 @@ private class ParamDataPreprocessor {
         return data
     }
 }
-
-extension FilterDescriptor: Hashable {
-    public static func == (lhs: FilterDescriptor, rhs: FilterDescriptor) -> Bool {
-        lhs.hashValue == rhs.hashValue
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
-        hasher.combine(params)
-        hasher.combine(customImageTargetKey)
-    }
-}
-

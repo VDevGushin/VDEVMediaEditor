@@ -22,6 +22,7 @@ public class TemplatePack: ObservableObject {
     var coverUrl: URL? { cover }
 
     static var cellAspect: CGFloat { 16/9 }
+    
     static var contentMode: UIView.ContentMode { .scaleAspectFill }
 
     let id: String

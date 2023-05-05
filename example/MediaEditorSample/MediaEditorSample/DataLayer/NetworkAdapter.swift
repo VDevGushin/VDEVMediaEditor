@@ -34,8 +34,9 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
                 name: filter.name,
                 cover: coverUrl,
                 steps: filter.stepsFull.compactMap { step in
-                    guard let imageURL = step.url?.url else { return nil }
-                    return .init(type: step.type, url: imageURL)
+                    guard let imageURL = step.url?.url,
+                          let stepType = EditorFilter.Step.StepType(value: step.type) else { return nil }
+                    return .init(type: stepType, url: imageURL)
                 }
             )
         }
@@ -45,8 +46,9 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
         try await client.textures(forChallenge: baseChallengeId).compactMap { editorFilter -> EditorFilter? in
             guard let coverUrl = editorFilter.cover?.url else { return nil }
             let steps = editorFilter.stepsFull.compactMap { step -> EditorFilter.Step? in
-                guard let url = step.url?.url else { return nil }
-                return .init(type: step.type, url: url, settings: .init(jsonValue: step.settings.jsonValue))
+                guard let url = step.url?.url,
+                      let stepType = EditorFilter.Step.StepType(value: step.type) else { return nil }
+                return .init(type: stepType, url: url, settings: .init(jsonValue: step.settings.jsonValue))
             }
             return .init(id: editorFilter.id, name: editorFilter.name, cover: coverUrl, steps: steps)
         }
@@ -56,8 +58,9 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
         try await client.masks(forChallenge: baseChallengeId).compactMap { editorFilter -> EditorFilter? in
             guard let coverUrl = editorFilter.cover?.url else { return nil }
             let steps = editorFilter.stepsFull.compactMap { step -> EditorFilter.Step? in
-                guard let url = step.url?.url else { return nil }
-                return .init(type: step.type, url: url)
+                guard let url = step.url?.url,
+                      let stepType = EditorFilter.Step.StepType(value: step.type) else { return nil }
+                return .init(type: stepType, url: url)
             }
             return .init(id: editorFilter.id, name: editorFilter.name, cover: coverUrl, steps: steps)
         }
@@ -91,8 +94,9 @@ extension EditorFilter {
             id: networkFilter.id,
             name: networkFilter.name,
             cover: networkFilter.cover?.url,
-            steps: networkFilter.stepsFull.map {
-                Step(type: $0.type, url: $0.url?.url, settings: .init(jsonValue: $0.settings.jsonValue))
+            steps: networkFilter.stepsFull.compactMap {
+                guard let stepType = EditorFilter.Step.StepType(value: $0.type) else { return nil }
+                return Step(type: stepType, url: $0.url?.url, settings: .init(jsonValue: $0.settings.jsonValue))
             }
         )
     }

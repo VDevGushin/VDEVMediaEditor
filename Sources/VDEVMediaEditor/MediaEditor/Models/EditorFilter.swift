@@ -8,54 +8,70 @@
 import Foundation
 import SwiftUI
 
-public extension EditorFilter {
-    struct Step {
-        var type: String
-        var url: URL?
-        var settings: StepSettings?
-        
-        public init(type: String, url: URL? = nil, settings: StepSettings? = nil) {
-            self.type = type
-            self.url = url
-            self.settings = settings
-        }
-    }
-    
-    @dynamicMemberLookup
-    final class StepSettings {
-        private(set) public var jsonValue: [String: Any]
-        
-        public init(jsonValue value: Any) {
-            self.jsonValue = (value as? [String: Any]) ?? [:]
-        }
-        
-        public subscript(dynamicMember member: String) -> StepSettings? {
-            guard let value = jsonValue[member] else { return nil }
-            return .init(jsonValue: value)
-        }
-        
-        public subscript<T>(dynamicMember member: String) -> T? {
-            return jsonValue[member] as? T
-        }
-    }
-}
-
-
 public struct EditorFilter: Equatable {
     var id: String
     var name: String
     var cover: URL?
     var steps: [Step]
     
-    public init(id: String, name: String, cover: URL? = nil, steps: [Step]) {
+    public init(id: String,
+                name: String,
+                cover: URL? = nil,
+                steps: [Step]) {
         self.id = id
         self.name = name
         self.cover = cover
         self.steps = steps
     }
 
-    public static func == (lhs: EditorFilter, rhs: EditorFilter) -> Bool {
+    public static func == (lhs: EditorFilter,
+                           rhs: EditorFilter) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    public struct Step {
+        var type: StepType
+        var url: URL?
+        var settings: StepSettings?
+        
+        public init(type: StepType,
+                    url: URL? = nil,
+                    settings: StepSettings? = nil) {
+            self.type = type
+            self.url = url
+            self.settings = settings
+        }
+        
+        public enum StepType: String {
+            case lut
+            case mask
+            case texture
+            
+            public init?(value: String) {
+                guard let value = StepType(rawValue: value) else {
+                    return nil
+                }
+                self = value
+            }
+        }
+    }
+    
+    @dynamicMemberLookup
+    public final class StepSettings {
+        private(set) public var rawValue: [String: Any]
+        
+        public init(jsonValue value: Any) {
+            self.rawValue = (value as? [String: Any]) ?? [:]
+        }
+        
+        public subscript(dynamicMember member: String) -> StepSettings? {
+            guard let value = rawValue[member] else { return nil }
+            return .init(jsonValue: value)
+        }
+        
+        public subscript<T>(dynamicMember member: String) -> T? {
+            return rawValue[member] as? T
+        }
     }
 }
 
@@ -64,7 +80,7 @@ extension FilterDescriptor {
         guard let url = step.url else { return nil }
         
         switch step.type {
-        case "lut":
+        case .lut:
             let colorSpaceString = "sRGB"
             guard let colorSpace = CGColorSpace.fromCFIDString(colorSpaceString) else {
                 return nil
@@ -78,14 +94,14 @@ extension FilterDescriptor {
                     "inputColorSpace": .colorSpaceString(colorSpace, colorSpaceString)
                 ]
             )
-        case "mask":
+        case .mask:
             self.init(
                 name: "CIBlendWithMask",
                 params: [
                     "inputMaskImage": .init(imageURL: url, contentMode: .scaleAspectFit)
                 ]
             )
-        case "texture":
+        case .texture:
             let blendMode = step.settings?.blendMode ?? "CISourceOverCompositing"
             let contentModeId = step.settings?.contentMode ?? 0
             let contentMode = UIView.ContentMode(rawValue: contentModeId) ?? .scaleToFill
@@ -111,19 +127,14 @@ extension Array where Element == EditorFilter.Step {
 
 extension EditorFilter: GridToolItem {
     var coverUrl: URL? { cover }
-
     static var cellAspect: CGFloat { 16/9 }
     static var contentMode: UIView.ContentMode { .scaleAspectFill }
 }
 
 extension Array where Element ==  EditorFilter.Step {
-    var noMask: [Element] {
-        self.filter { $0.type != "mask" }
-    }
+    var noMask: [Element] { self.filter { $0.type != .mask } }
 
-    var mask: [Element] {
-        self.filter { $0.type == "mask" }
-    }
+    var mask: [Element] { self.filter { $0.type == .mask } }
 }
 
 extension Array where Element == EditorFilter {
