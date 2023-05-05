@@ -319,7 +319,7 @@ fileprivate extension ToolsAreaView {
     @ViewBuilder
     func drawingTool() -> some View {
         VStack(spacing: 0) {
-            DrawingView() { output in
+            DrawingView(canvasSize: vm.ui.editorSize) { output in
                 if let output = output {
                     let newDrawing = CanvasDrawModel(image: output.image,
                                                      bounds: output.bounds,
@@ -333,7 +333,7 @@ fileprivate extension ToolsAreaView {
                     }
                 }
             }
-            .frame(vm.ui.editorSize)
+            .environmentObject(vm.ui)
             .cornerRadius(vm.ui.canvasCornerRadius)
             
             Spacer(minLength: 0)
@@ -463,8 +463,9 @@ extension ToolsAreaView {
         } tool: {
             ToolsAspectRatioView { result in
                 vm.ui.setAspectRatio(result)
-            }.padding(.horizontal)
-                .environmentObject(vm.ui)
+            }
+            .padding(.horizontal)
+            .environmentObject(vm.ui)
         }
     }
 }

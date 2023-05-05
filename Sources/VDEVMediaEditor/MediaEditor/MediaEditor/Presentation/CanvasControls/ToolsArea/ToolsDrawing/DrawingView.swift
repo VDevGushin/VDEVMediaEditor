@@ -9,7 +9,6 @@ import SwiftUI
 import PencilKit
 import Combine
 
-
 struct DrawingViewOutput {
     let image: UIImage
     let offset: CGSize
@@ -19,7 +18,6 @@ struct DrawingViewOutput {
 final class DrawingViewModel: NSObject,
                               ObservableObject,
                               PKCanvasViewDelegate {
-    
     @Published var isLoading = false
     
     var canvas = PKCanvasView()
@@ -73,21 +71,33 @@ final class DrawingViewModel: NSObject,
 
 @MainActor
 struct DrawingView: View {
+    @EnvironmentObject private var uiVM: CanvasUISettingsViewModel
     @StateObject private var vm: DrawingViewModel = .init()
     
-    let onClose: (DrawingViewOutput?) -> Void
+    private let onClose: (DrawingViewOutput?) -> Void
+    private let canvasSize: CGSize
     
-    init(onClose: @escaping (DrawingViewOutput?) -> Void) {
+    init(canvasSize: CGSize,
+         onClose: @escaping (DrawingViewOutput?) -> Void) {
+        self.canvasSize = canvasSize
         self.onClose = onClose
     }
     
     var body: some View {
-        ZStack(alignment: .top){
-            ZStack {
-                AppColors.blackWithOpacity1
+        ZStack {
+            
+            AppColors.blackWithOpacity1
+            
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
                 
                 DrawingCanvasView(canvas: vm.canvas,
                                   toolPicker: vm.toolPicker)
+                .frame(canvasSize)
+                
+                Spacer(minLength: 0)
+                
+                AppColors.clear.frame(height: uiVM.bottomBarHeight)
             }
             
             HStack {
@@ -96,7 +106,6 @@ struct DrawingView: View {
                 }
                 
                 Spacer()
-
                 
                 Button {
                     haptics(.light)
@@ -109,8 +118,6 @@ struct DrawingView: View {
             }
             .padding()
             .topTool()
-            .leftTool()
-            
         }
         .overlay(alignment: .center) {
             LoadingView(inProgress: vm.isLoading, style: .large)
@@ -127,17 +134,11 @@ private struct DrawingCanvasView: UIViewRepresentable {
         canvas.backgroundColor = .clear
         canvas.overrideUserInterfaceStyle = .dark
         canvas.drawingPolicy = .anyInput
-        
         canvas.tool = PKInkingTool(.marker, color: .red, width: 15)
-        
         toolPicker.overrideUserInterfaceStyle = .dark
-        
         canvas.becomeFirstResponder()
-        
         toolPicker.setVisible(true, forFirstResponder: canvas)
         toolPicker.addObserver(canvas)
-        
-        
         return canvas
     }
     
