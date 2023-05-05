@@ -97,16 +97,16 @@ struct CanvasLayerView<Content: View>: View {
     
     @ViewBuilder
     private var selectionColor: some View {
-        if vm.item.type == .template {
-            EmptyView()
+        if vm.item.type == .template { EmptyView() }
+        
+        if editorVM.tools.isItemInSelection(item: vm.item) {
+            AnimatedGradientView(color: guideLinesColor.opacity(0.2))
         }
         
-        if !isCurrentInManipulation {
-            EmptyView()
-        }
+        if !isCurrentInManipulation { EmptyView() }
         
         if (gestureInProgress || isLongTap) {
-            guideLinesColor.opacity(0.1)
+            AnimatedGradientView(color: guideLinesColor.opacity(0.3))
         } else {
             EmptyView()
         }

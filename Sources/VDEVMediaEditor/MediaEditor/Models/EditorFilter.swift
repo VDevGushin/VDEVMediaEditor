@@ -9,9 +9,20 @@ import Foundation
 import SwiftUI
 
 public extension EditorFilter {
+    struct Step {
+        var type: String
+        var url: URL?
+        var settings: StepSettings?
+        
+        public init(type: String, url: URL? = nil, settings: StepSettings? = nil) {
+            self.type = type
+            self.url = url
+            self.settings = settings
+        }
+    }
     
     @dynamicMemberLookup
-    class StepSettings {
+    final class StepSettings {
         private(set) public var jsonValue: [String: Any]
         
         public init(jsonValue value: Any) {
@@ -31,17 +42,6 @@ public extension EditorFilter {
 
 
 public struct EditorFilter: Equatable {
-    public struct Step {
-        var type: String
-        var url: URL?
-        var settings: StepSettings?
-        
-        public init(type: String, url: URL? = nil, settings: StepSettings? = nil) {
-            self.type = type
-            self.url = url
-            self.settings = settings
-        }
-    }
     var id: String
     var name: String
     var cover: URL?
