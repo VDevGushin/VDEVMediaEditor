@@ -88,17 +88,23 @@ struct ToolsAspectRatioView: View {
                     makeHaptics()
                     onSelected(variants[index].value)
                 } label: {
-                    if vm.aspectRatio == variants[index].value {
-                        Text(variants[index].title)
-                            .font(AppFonts.elmaTrioRegular(15))
-                            .foregroundColor(AppColors.whiteWithOpacity)
-                            .underline()
-                    } else {
-                        Text(variants[index].title)
-                            .font(AppFonts.elmaTrioRegular(15))
-                            .foregroundColor(AppColors.whiteWithOpacity)
+                    Group {
+                        if vm.aspectRatio == variants[index].value {
+                            Text(variants[index].title)
+                                .font(AppFonts.elmaTrioRegular(15))
+                                .foregroundColor(AppColors.whiteWithOpacity)
+                                .underline()
+                        } else {
+                            Text(variants[index].title)
+                                .font(AppFonts.elmaTrioRegular(15))
+                                .foregroundColor(AppColors.whiteWithOpacity)
+                        }
+                    }.background {
+                        InvisibleTapZoneView {
+                            makeHaptics()
+                            onSelected(variants[index].value)
+                        }
                     }
-                   
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
