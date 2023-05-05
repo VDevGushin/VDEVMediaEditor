@@ -46,7 +46,7 @@ private enum Aspects {
         case .full:
             return "FULL"
         case .type1:
-            return "1:1"
+            return "1:1 (Instagram)"
         case .type2:
             return "9:16"
         case .type3:
