@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct LayersView: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
@@ -77,6 +76,16 @@ struct LayersView: View {
                             vm.tools.openLayersList(false)
                             vm.tools.seletedTool(.backgroundColor)
                             Log.d("Select tool backgroundColor")
+                        }.scaleEffect(0.95)
+                        
+                        //Aspect ratio
+                        NoShadowRoundButtonSystem(image: Image(systemName: "arrow.down.forward.and.arrow.up.backward"),
+                                            size: 40,
+                                            backgroundColor: AppColors.layerButtonsLightBlack,
+                                            tintColor: AppColors.white) {
+                            vm.tools.openLayersList(false)
+                            vm.tools.seletedTool(.aspectRatio)
+                            Log.d("Select tool aspect ratio")
                         }.scaleEffect(0.95)
                     }
                     .padding(.vertical, 15)

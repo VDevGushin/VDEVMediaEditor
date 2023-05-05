@@ -24,7 +24,7 @@ struct AnimatedGradientView: View {
         LinearGradient(gradient: Gradient(colors: colors), startPoint: start, endPoint: end)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
-                withAnimation(.easeInOut(duration:3).repeatForever(autoreverses:true)) {
+                withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses:true)) {
                     start = nextPointFrom(self.start)
                     end = nextPointFrom(self.end)
                 }

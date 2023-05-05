@@ -101,6 +101,7 @@ struct ToolsAspectRatioView: View {
                         }
                     }
                 }
+                .buttonStyle(PlainButtonStyle())
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(minHeight: 32)
                 .background {

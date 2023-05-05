@@ -40,7 +40,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             .stickers,
             .text(nil),
             .drawing,
-            .aspectRatio
+            //.aspectRatio
         ]
     }
     
