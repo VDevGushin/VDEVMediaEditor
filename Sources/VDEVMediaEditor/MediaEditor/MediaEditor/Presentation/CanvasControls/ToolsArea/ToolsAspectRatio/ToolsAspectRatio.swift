@@ -99,14 +99,16 @@ struct ToolsAspectRatioView: View {
                                 .font(AppFonts.elmaTrioRegular(15))
                                 .foregroundColor(AppColors.whiteWithOpacity)
                         }
-                    }.background {
-                        InvisibleTapZoneView {
-                            makeHaptics()
-                            onSelected(variants[index].value)
-                        }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: 32)
+                .background {
+                    InvisibleTapZoneView {
+                        makeHaptics()
+                        onSelected(variants[index].value)
+                    }
+                }
             }
         }
         .cornerRadius(8)
