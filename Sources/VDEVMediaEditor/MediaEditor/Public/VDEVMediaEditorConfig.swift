@@ -92,6 +92,7 @@ public protocol VDEVMediaEditorButtonsTypedImages {
     var typeTemplate: UIImage { get }
     var typeText: UIImage { get }
     var typeVideo: UIImage { get }
+    var aspectRatio: UIImage { get }
 }
 
 // MARK: - Strings
@@ -151,4 +152,5 @@ public protocol VDEVMediaEditorStrings {
     var removeAllLayersSubTitle: String { get }
     var confirm: String { get }
     var cancel: String { get }
+    var aspectRatio: String { get }
 }

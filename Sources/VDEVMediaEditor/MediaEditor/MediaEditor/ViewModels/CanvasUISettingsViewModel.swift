@@ -10,15 +10,16 @@ import Combine
 
 
 final class CanvasUISettingsViewModel: ObservableObject {
-
+    @Injected private var settings: VDEVMediaEditorSettings
+    
     @Published var mainLayerBackgroundColor: Color = .init(hexadecimal: "18191A")
     @Published var showVerticalCenter: Bool = false
     @Published var showHorizontalCenter: Bool = false
     
     // получаем фактический размер канваса редактора
     @Published var editorSize: CGSize = .zero
-
     @Published private(set) var guideLinesColor: Color = AppColors.white
+    @Published private(set) var aspectRatio: CGFloat? = nil
 
     var canvasCornerRadius: CGFloat { 16 }
     var bottomBarHeight: CGFloat { 76 }
@@ -41,5 +42,13 @@ final class CanvasUISettingsViewModel: ObservableObject {
                 let color = Color(uiColor: value.contrast(dark: .orange))
                 self.guideLinesColor = color
             }
+        
+        aspectRatio = settings.aspectRatio
+    }
+    
+    func setAspectRatio(_ value: CGFloat?) {
+        withAnimation(.interactiveSpring()) {
+            self.aspectRatio = value
+        }
     }
 }

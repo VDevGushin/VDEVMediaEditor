@@ -11,7 +11,6 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
-    @Injected private var settings: VDEVMediaEditorSettings
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -111,7 +110,7 @@ fileprivate extension MediaEditorView {
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .with(aspectRatio: settings.aspectRatio)
+        .with(aspectRatio: vm.ui.aspectRatio)
         .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
         .fetchSize($vm.ui.editorSize, needRound: true)
         .overlay(content: CenterAxes)

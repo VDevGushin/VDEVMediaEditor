@@ -113,8 +113,6 @@ extension FilterDescriptor {
                 ],
                 customImageTargetKey: "inputBackgroundImage"
             )
-            
-        default: return nil
         }
     }
 }

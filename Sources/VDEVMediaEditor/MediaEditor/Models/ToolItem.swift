@@ -17,6 +17,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case drawing
     case backgroundColor
     case text(CanvasTextModel?)
+    case aspectRatio
 
     // Тулзы для редактирования конкретных объектов слоя
     case concreteItem(CanvasItemModel)
@@ -31,15 +32,15 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
 
     // То, что показываем в меню выбора нового слоя
     static var allCases: [ToolItem] {
-        [
+       [
             .photoPicker,
             .videoPicker,
             .camera,
             .template,
             .stickers,
             .text(nil),
-            .drawing
-            //.backgroundColor
+            .drawing,
+            .aspectRatio
         ]
     }
     
@@ -52,6 +53,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .camera: return nil
         case .drawing: return nil
         case .backgroundColor: return nil
+        case .aspectRatio: return nil
         case .text(let item): return item
         case .concreteItem(let item): return item
         case .imageCropper(let item): return item
@@ -80,6 +82,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.camera
         case .drawing:
             return Strings.drawing
+        case .aspectRatio:
+            return Strings.aspectRatio
         case .backgroundColor:
             return Strings.background
         case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
@@ -102,6 +106,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return images.typed.typeVideo
         case .camera:
             return images.typed.typeCamera
+        case .aspectRatio:
+            return images.typed.aspectRatio
         case .drawing:
             return images.typed.typeDraw
         case .backgroundColor:

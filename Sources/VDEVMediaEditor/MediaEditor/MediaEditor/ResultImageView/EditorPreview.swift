@@ -100,7 +100,7 @@ struct EditorPreview: View {
                 case .video:
                     ResultVideoPlayer(assetURL: model.url,
                                       cornerRadius: cornerRadius,
-                                      aspectRatio: settings.aspectRatio)
+                                      aspectRatio: vm.ui.aspectRatio)
                     .clipShape(RoundedCorner(radius: cornerRadius))
                 case .image:
                     AsyncImageView(url: model.url) { img in

@@ -101,6 +101,10 @@ struct ToolsAreaView: View {
                 maskTool(item)
                     .transition(.bottomTransition)
                 
+            case .aspectRatio:
+                aspectRatio()
+                    .transition(.bottomTransition)
+                
                 // данные тулзы нужно показывать путем оверлеев экрана
             case .empty: EmptyView()
             case .imageCropper: EmptyView()
@@ -446,6 +450,21 @@ fileprivate extension ToolsAreaView {
         } tool: {
             ToolAdjustments(item)
                 .padding(.horizontal)
+        }
+    }
+}
+
+// MARK: - Aspect ratio
+extension ToolsAreaView {
+    @ViewBuilder
+    func aspectRatio() -> some View {
+        ToolWrapper(title: strings.aspectRatio, fullScreen: false) {
+            vm.tools.closeTools(false)
+        } tool: {
+            ToolsAspectRatioView { result in
+                vm.ui.setAspectRatio(result)
+            }.padding(.horizontal)
+                .environmentObject(vm.ui)
         }
     }
 }

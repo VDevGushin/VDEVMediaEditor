@@ -43,7 +43,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
     //nil //9/16
-    var aspectRatio: CGFloat? { nil }
+    var aspectRatio: CGFloat? { 9/16 }
     var isInternalModule: Bool { false }
     var maximumVideoDuration: Double { 25.0 }
 
@@ -138,6 +138,7 @@ struct Images: VDEVImageConfig {
         var typeTemplate: UIImage = .init(named: "TypeTemplate")!
         var typeText: UIImage = .init(named: "TypeText")!
         var typeVideo: UIImage = .init(named: "TypeVideo")!
+        var aspectRatio: UIImage = .init(named: "TypeAspectRatio")!
     }
     
     struct Common: VDEVMediaEditorButtonsCommonImages {
@@ -214,4 +215,5 @@ struct Strings: VDEVMediaEditorStrings {
     let cancel = "Cancel"
     let removeAllLayersTitle = "Remove all layers"
     let removeAllLayersSubTitle = "Are you sure that you want to clear the canvas?"
+    let aspectRatio = "RATIO"
 }
