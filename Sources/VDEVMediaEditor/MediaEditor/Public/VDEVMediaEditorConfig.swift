@@ -153,4 +153,5 @@ public protocol VDEVMediaEditorStrings {
     var confirm: String { get }
     var cancel: String { get }
     var aspectRatio: String { get }
+    var resolution: String { get }
 }

@@ -24,6 +24,16 @@ enum MediaResolution {
         }
     }
     
+    var title: String {
+        switch self {
+        case .sd: return "SD (480x640)"
+        case .hd: return "HD (720x1280)"
+        case .fullHD: return "FULLHD (1080x1920)"
+        case .ultraHD4k: return "ULTRAHD4K (2160x3840)"
+        case .ultraHD8k: return "ULTRAHD8K (4320x7680)"
+        }
+    }
+    
     var toString: String {
         switch self {
         case .sd: return "SD -> width: 480, height: 640"

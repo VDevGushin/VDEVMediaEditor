@@ -18,6 +18,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case backgroundColor
     case text(CanvasTextModel?)
     case aspectRatio
+    case resolution
 
     // Тулзы для редактирования конкретных объектов слоя
     case concreteItem(CanvasItemModel)
@@ -40,7 +41,6 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             .stickers,
             .text(nil),
             .drawing,
-            //.aspectRatio
         ]
     }
     
@@ -54,6 +54,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .drawing: return nil
         case .backgroundColor: return nil
         case .aspectRatio: return nil
+        case .resolution: return nil
         case .text(let item): return item
         case .concreteItem(let item): return item
         case .imageCropper(let item): return item
@@ -82,11 +83,9 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.camera
         case .drawing:
             return Strings.drawing
-        case .aspectRatio:
-            return Strings.aspectRatio
         case .backgroundColor:
             return Strings.background
-        case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
+        case  .aspectRatio, .resolution, .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
             return ""
         }
     }
@@ -106,11 +105,13 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return images.typed.typeVideo
         case .camera:
             return images.typed.typeCamera
-        case .aspectRatio:
-            return images.typed.aspectRatio
         case .drawing:
             return images.typed.typeDraw
         case .backgroundColor:
+            fatalError("No image")
+        case .resolution:
+            fatalError("No image")
+        case .aspectRatio:
             fatalError("No image")
         case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
             fatalError("No image")

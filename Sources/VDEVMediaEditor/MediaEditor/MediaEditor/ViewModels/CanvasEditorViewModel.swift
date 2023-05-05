@@ -22,6 +22,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published var contentPreview: EditorPreview.Content?
     @Published private var contentPreviewDidLoad: Bool = false
     @Published var showRemoveAllAlert: Bool = false
+    @Published private(set) var resultResolution: MediaResolution = .fullHD
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
@@ -45,6 +46,8 @@ final class CanvasEditorViewModel: ObservableObject {
         observe(nested: self.tools).store(in: &storage)
         
         observeOnMain(nested: self.data).store(in: &storage)
+        
+        resultResolution = settings.resolution.value
         
         deviceOrientationService.$isFaceDown
             .removeDuplicates()
@@ -132,7 +135,7 @@ final class CanvasEditorViewModel: ObservableObject {
         builder.makeMediaItem(layers: data.layers.elements,
                               size: ui.editorSize,
                               backgrondColor: ui.mainLayerBackgroundColor,
-                              resolution: settings.resolution.value)
+                              resolution: resultResolution)
     }
     
     func onMergeMedia(_ layers: [CanvasItemModel]) {
@@ -179,6 +182,12 @@ extension CanvasEditorViewModel {
     }
 }
 
+// MARK: - Resolution
+extension CanvasEditorViewModel {
+    func set(resolution: MediaResolution) {
+        resultResolution = resolution
+    }
+}
 
 // MARK: - Global actions to output
 extension CanvasEditorViewModel {

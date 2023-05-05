@@ -105,6 +105,10 @@ struct ToolsAreaView: View {
                 aspectRatio()
                     .transition(.bottomTransition)
                 
+            case .resolution:
+                resolution()
+                    .transition(.bottomTransition)
+
                 // данные тулзы нужно показывать путем оверлеев экрана
             case .empty: EmptyView()
             case .imageCropper: EmptyView()
@@ -466,6 +470,23 @@ extension ToolsAreaView {
             }
             .padding(.horizontal)
             .environmentObject(vm.ui)
+        }
+    }
+}
+
+// MARK: - Resol
+extension ToolsAreaView {
+    @ViewBuilder
+    func resolution() -> some View {
+        ToolWrapper(title: strings.resolution, fullScreen: false) {
+            vm.tools.closeTools(false)
+        } tool: {
+            ToolsResolution { result in
+                vm.set(resolution: result)
+            }
+            .padding(.horizontal)
+            .environmentObject(vm)
+            
         }
     }
 }

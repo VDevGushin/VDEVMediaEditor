@@ -89,6 +89,16 @@ struct LayersView: View {
                                 vm.tools.seletedTool(.aspectRatio)
                                 Log.d("Select tool aspect ratio")
                             }.scaleEffect(0.95)
+                            
+                            //Format
+                            NoShadowRoundButtonSystem(image: Image(systemName: "bubbles.and.sparkles.fill"),
+                                                      size: 40,
+                                                      backgroundColor: AppColors.layerButtonsLightBlack,
+                                                      tintColor: AppColors.white) {
+                                vm.tools.openLayersList(false)
+                                vm.tools.seletedTool(.resolution)
+                                Log.d("Select tool resolution")
+                            }.scaleEffect(0.95)
                         }
                     }
                     .padding(.vertical, 15)

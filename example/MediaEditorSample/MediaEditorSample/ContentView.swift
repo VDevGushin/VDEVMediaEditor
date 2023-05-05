@@ -216,4 +216,5 @@ struct Strings: VDEVMediaEditorStrings {
     let removeAllLayersTitle = "Remove all layers"
     let removeAllLayersSubTitle = "Are you sure that you want to clear the canvas?"
     let aspectRatio = "RATIO"
+    let resolution = "RESOLUTION"
 }
