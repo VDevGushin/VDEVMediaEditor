@@ -192,9 +192,7 @@ extension CanvasEditorViewModel {
 // MARK: - Global actions to output
 extension CanvasEditorViewModel {
     @MainActor
-    func onCloseEditor() {
-       onClose?()
-    }
+    func onCloseEditor() { onClose?() }
     
     @MainActor
     func onPublishResult(output: CombinerOutput) {
