@@ -128,8 +128,7 @@ final class CanvasEditorViewModel: ObservableObject {
             .store(in: &storage)
         
         // Не разрешать работать с видео в формате 8к 4к
-        data.$layers
-            .map { $0.elements.hasVideos }
+        data.$layers.flatMap { result -> AnyPublisher<Bool, Never> in result.elements.withVideoAsync() }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self = self, value else { return }

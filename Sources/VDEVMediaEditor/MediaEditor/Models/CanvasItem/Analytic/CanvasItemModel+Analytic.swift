@@ -6,6 +6,19 @@
 //
 
 import Foundation
+import Combine
+
+extension Array where Element == CanvasItemModel {
+    func withVideoAsync() -> AnyPublisher<Bool, Never> {
+        Future<Bool, Never> { seal in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let hasVideos = self.hasVideos
+                seal(.success(hasVideos))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+}
 
 extension Array where Element == CanvasItemModel {
     var hasMasks: Bool {

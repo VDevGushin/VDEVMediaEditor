@@ -32,10 +32,7 @@ final class CanvasUISettingsViewModel: ObservableObject {
         // чтобы не сливались цвета
         colorOp = $mainLayerBackgroundColor
             .receive(on: DispatchQueue.global())
-            // .map { UIColor($0).inverseColor() }
-            .map {
-                UIColor($0)
-            }
+            .map { UIColor($0) }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self = self else { return }

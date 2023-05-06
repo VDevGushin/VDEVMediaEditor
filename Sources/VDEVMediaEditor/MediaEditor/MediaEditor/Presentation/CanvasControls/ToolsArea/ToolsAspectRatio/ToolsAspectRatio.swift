@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+extension View {
+    @ViewBuilder
+    func with(aspectRatio: CGFloat? ) -> some View {
+        if let aspectRatio = aspectRatio {
+            self.aspectRatio(aspectRatio, contentMode: .fit)
+        } else {
+            self
+        }
+    }
+}
+
 private enum Aspects {
     case full
     case type1
@@ -20,47 +31,29 @@ private enum Aspects {
     
     var value: CGFloat? {
         switch self {
-        case .full:
-            return nil
-        case .type1:
-            return 1/1
-        case .type2:
-            return 9/16
-        case .type3:
-            return 4/5
-        case .type4:
-            return 5/7
-        case .type5:
-            return 3/4
-        case .type6:
-            return 3/5
-        case .type7:
-            return 2/3
-        case .custom(let value):
-            return value
+        case .full: return nil
+        case .type1: return 1/1
+        case .type2: return 9/16
+        case .type3: return 4/5
+        case .type4: return 5/7
+        case .type5: return 3/4
+        case .type6: return 3/5
+        case .type7: return 2/3
+        case .custom(let value): return value
         }
     }
     
     var title: String {
         switch self {
-        case .full:
-            return "FULL"
-        case .type1:
-            return "1:1 (Instagram)"
-        case .type2:
-            return "9:16"
-        case .type3:
-            return "4:5"
-        case .type4:
-            return "5:7"
-        case .type5:
-            return "3:4"
-        case .type6:
-            return "3:5"
-        case .type7:
-            return "2:3 (10/15)"
-        case .custom:
-            return "CUSTOM"
+        case .full: return "FULL"
+        case .type1: return "1:1 (Instagram)"
+        case .type2: return "9:16"
+        case .type3: return "4:5"
+        case .type4: return "5:7"
+        case .type5: return "3:4"
+        case .type6: return "3:5"
+        case .type7: return "2:3 (10/15)"
+        case .custom: return "CUSTOM"
         }
     }
 }

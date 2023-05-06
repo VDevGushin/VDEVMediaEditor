@@ -22,11 +22,12 @@ struct MediaEditorView: View {
             AppColors.black
             
             VStack(spacing: 0) {
-                Content().viewDidLoad(vm.contentViewDidLoad)
+                Content()
+                    .viewDidLoad(vm.contentViewDidLoad)
                     .padding(.bottom, 4)
+                
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
             }
-            //.ignoresSafeArea(.keyboard)
             
             ToolsAreaView(rootMV: vm)
                 .padding(.bottom, 6)

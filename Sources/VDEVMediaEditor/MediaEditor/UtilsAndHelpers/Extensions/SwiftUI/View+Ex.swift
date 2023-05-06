@@ -19,15 +19,6 @@ extension View {
     func frame(_ size: CGSize) -> some View {
         self.frame(width: size.width, height: size.height)
     }
-    
-    @ViewBuilder
-    func with(aspectRatio: CGFloat? ) -> some View {
-        if let aspectRatio = aspectRatio {
-            self.aspectRatio(aspectRatio, contentMode: .fit)
-        } else {
-            self
-        }
-    }
 }
 
 enum SafeUTType {

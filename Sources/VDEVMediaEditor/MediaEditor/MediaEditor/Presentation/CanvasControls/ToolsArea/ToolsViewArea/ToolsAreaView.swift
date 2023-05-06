@@ -322,26 +322,22 @@ fileprivate extension ToolsAreaView {
     // добавление рисунка
     @ViewBuilder
     func drawingTool() -> some View {
-        VStack(spacing: 0) {
-            DrawingView(canvasSize: vm.ui.editorSize) { output in
-                if let output = output {
-                    let newDrawing = CanvasDrawModel(image: output.image,
-                                                     bounds: output.bounds,
-                                                     offset: output.offset)
-                    vm.data.add(newDrawing)
-                    
-                    vm.tools.currentCloseActionFor(newDrawing)
-                } else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        vm.tools.closeTools(false)
-                    }
+        DrawingView(canvasSize: vm.ui.editorSize) { output in
+            if let output = output {
+                let newDrawing = CanvasDrawModel(image: output.image,
+                                                 bounds: output.bounds,
+                                                 offset: output.offset)
+                vm.data.add(newDrawing)
+                
+                vm.tools.currentCloseActionFor(newDrawing)
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    vm.tools.closeTools(false)
                 }
             }
-            .environmentObject(vm.ui)
-            .cornerRadius(vm.ui.canvasCornerRadius)
-            
-            Spacer(minLength: 0)
         }
+        .environmentObject(vm.ui)
+        .cornerRadius(vm.ui.canvasCornerRadius)
         .onAppear {
             vm.tools.openLayersList(false)
         }

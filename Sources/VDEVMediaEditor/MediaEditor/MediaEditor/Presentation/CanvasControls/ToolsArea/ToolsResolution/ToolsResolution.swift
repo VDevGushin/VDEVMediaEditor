@@ -11,7 +11,6 @@ import Combine
 final class ToolsResolutionViewModel: ObservableObject {
     @Published var variants: [MediaResolution] = []
     @Published var canvasVM: CanvasEditorViewModel
-    
     @Published var current: MediaResolution = .fullHD
     
     private var storage: Set<AnyCancellable> = Set()
@@ -19,6 +18,7 @@ final class ToolsResolutionViewModel: ObservableObject {
     init(vm: CanvasEditorViewModel) {
         self.canvasVM = vm
         current = vm.resultResolution
+        
         canvasVM
             .$resultResolution
             .receive(on: DispatchQueue.main)
@@ -27,26 +27,30 @@ final class ToolsResolutionViewModel: ObservableObject {
             }
             .store(in: &storage)
         
-        variants = make()
-        
+        makeVariants()
     }
     
-    func make() -> [MediaResolution] {
-        var variants: [MediaResolution] = []
-    
+    func makeVariants() {
         // Не разрешать работать с видео в формате 8к 4к
-        if canvasVM.data.layers.elements.hasVideos {
-            switch canvasVM.resultResolution {
-            case .ultraHD8k, .ultraHD4k: canvasVM.set(resolution: .fullHD)
-            default: break
+        canvasVM.data.$layers.flatMap { result -> AnyPublisher<Bool, Never> in result.elements.withVideoAsync() }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                
+                if value {
+                    switch canvasVM.resultResolution {
+                    case .ultraHD8k, .ultraHD4k: canvasVM.set(resolution: .fullHD)
+                    default: break
+                    }
+                    self.variants = [.sd, .hd, .fullHD].filter { $0 != self.canvasVM.resultResolution }
+                    self.variants = [canvasVM.resultResolution] + self.variants
+                } else {
+                    self.variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k].filter { $0 != self.canvasVM.resultResolution }
+                    self.variants = [canvasVM.resultResolution] + self.variants
+                }
+                
             }
-            variants = [.sd, .hd, .fullHD].filter { $0 != canvasVM.resultResolution }
-            variants = [canvasVM.resultResolution] + variants
-        } else {
-            variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k].filter { $0 != canvasVM.resultResolution }
-            variants = [canvasVM.resultResolution] + variants
-        }
-        return variants
+            .store(in: &storage)
     }
     
     func set(_ result: MediaResolution) {
