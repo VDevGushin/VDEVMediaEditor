@@ -390,7 +390,7 @@ fileprivate extension ToolsAreaView {
     // Выбор и добалвение шаблона
     @ViewBuilder
     func templatesTool() -> some View {
-        TemplateSelectorView(vm.ui.editorSize, challengeId: vm.tools.baseChallengeId) { variants in
+        TemplateSelectorView(vm.ui.editorSize.rounded(.up), challengeId: vm.tools.baseChallengeId) { variants in
             vm.tools.closeTools(false)
             if variants.isEmpty { return }
             vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.editorSize))

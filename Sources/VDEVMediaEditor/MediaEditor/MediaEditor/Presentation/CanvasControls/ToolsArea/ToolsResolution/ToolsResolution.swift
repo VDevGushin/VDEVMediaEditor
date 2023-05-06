@@ -33,6 +33,7 @@ final class ToolsResolutionViewModel: ObservableObject {
     func makeVariants() {
         // Не разрешать работать с видео в формате 8к 4к
         canvasVM.data.$layers.flatMap { result -> AnyPublisher<Bool, Never> in result.elements.withVideoAsync() }
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self = self else { return }
