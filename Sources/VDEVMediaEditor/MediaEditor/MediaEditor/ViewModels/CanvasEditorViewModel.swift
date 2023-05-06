@@ -9,7 +9,6 @@ import SwiftUI
 import Combine
 import AVKit
 
-
 final class CanvasEditorViewModel: ObservableObject {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
@@ -125,6 +124,19 @@ final class CanvasEditorViewModel: ObservableObject {
             .removeDuplicates()
             .sink { [weak self] value in
                 if value { self?.getStartTemplate() }
+            }
+            .store(in: &storage)
+        
+        // Не разрешать работать с видео в формате 8к 4к
+        data.$layers
+            .map { $0.elements.hasVideos }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                guard let self = self, value else { return }
+                switch self.resultResolution {
+                case .ultraHD4k, .ultraHD8k: self.set(resolution: .fullHD)
+                default: break
+                }
             }
             .store(in: &storage)
     }

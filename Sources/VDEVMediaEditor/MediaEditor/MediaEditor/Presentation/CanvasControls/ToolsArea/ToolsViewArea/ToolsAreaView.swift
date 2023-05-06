@@ -481,12 +481,8 @@ extension ToolsAreaView {
         ToolWrapper(title: strings.resolution, fullScreen: false) {
             vm.tools.closeTools(false)
         } tool: {
-            ToolsResolution { result in
-                vm.set(resolution: result)
-            }
-            .padding(.horizontal)
-            .environmentObject(vm)
-            
+            ToolsResolution(vm: vm)
+                .padding(.horizontal)
         }
     }
 }

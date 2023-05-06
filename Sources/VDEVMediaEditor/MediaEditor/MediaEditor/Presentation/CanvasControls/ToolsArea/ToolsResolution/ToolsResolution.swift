@@ -6,37 +6,76 @@
 //
 
 import SwiftUI
+import Combine
 
+final class ToolsResolutionViewModel: ObservableObject {
+    @Published var variants: [MediaResolution] = []
+    @Published var canvasVM: CanvasEditorViewModel
+    
+    @Published var current: MediaResolution = .fullHD
+    
+    private var storage: Set<AnyCancellable> = Set()
+    
+    init(vm: CanvasEditorViewModel) {
+        self.canvasVM = vm
+        current = vm.resultResolution
+        canvasVM
+            .$resultResolution
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.current = value
+            }
+            .store(in: &storage)
+        
+        variants = make()
+        
+    }
+    
+    func make() -> [MediaResolution] {
+        var variants: [MediaResolution] = []
+    
+        // Не разрешать работать с видео в формате 8к 4к
+        if canvasVM.data.layers.elements.hasVideos {
+            switch canvasVM.resultResolution {
+            case .ultraHD8k, .ultraHD4k: canvasVM.set(resolution: .fullHD)
+            default: break
+            }
+            variants = [.sd, .hd, .fullHD].filter { $0 != canvasVM.resultResolution }
+            variants = [canvasVM.resultResolution] + variants
+        } else {
+            variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k].filter { $0 != canvasVM.resultResolution }
+            variants = [canvasVM.resultResolution] + variants
+        }
+        return variants
+    }
+    
+    func set(_ result: MediaResolution) {
+        makeHaptics()
+        canvasVM.set(resolution: result)
+    }
+}
 
 struct ToolsResolution: View {
-    @Injected private var settings: VDEVMediaEditorSettings
-    @EnvironmentObject private var vm: CanvasEditorViewModel
+    @StateObject private var vm: ToolsResolutionViewModel
     
-    private var variants: [MediaResolution] = []
-    private let onSelected: (MediaResolution) -> Void
-    
-    init(onSelected: @escaping (MediaResolution) -> Void) {
-        self.onSelected = onSelected
-        let settingsResolution = settings.resolution.value
-        variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k].filter { $0 != settingsResolution }
-        variants = [settings.resolution.value] + variants
+    init(vm: CanvasEditorViewModel) {
+        _vm = .init(wrappedValue: .init(vm: vm))
     }
     
     var body: some View {
         VStack(spacing: 12) {
-            ForEach(0..<variants.count, id: \.self) { index in
+            ForEach(0..<vm.variants.count, id: \.self) { index in
                 Button {
-                    makeHaptics()
-                    onSelected(variants[index])
+                    vm.set(vm.variants[index])
                 } label: {
                     Group {
-                        if vm.resultResolution == variants[index] {
-                            Text(variants[index].title)
+                        if vm.current == vm.variants[index] {
+                            Text(vm.variants[index].title)
                                 .font(AppFonts.elmaTrioRegular(15))
                                 .foregroundColor(AppColors.whiteWithOpacity)
                                 .underline()
                         } else {
-                            Text(variants[index].title)
+                            Text(vm.variants[index].title)
                                 .font(AppFonts.elmaTrioRegular(15))
                                 .foregroundColor(AppColors.whiteWithOpacity)
                         }
@@ -47,8 +86,7 @@ struct ToolsResolution: View {
                 .frame(minHeight: 32)
                 .background {
                     InvisibleTapZoneView {
-                        makeHaptics()
-                        onSelected(variants[index])
+                        vm.set(vm.variants[index])
                     }
                 }
             }
