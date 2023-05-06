@@ -8,8 +8,8 @@
 import SwiftUI
 
 extension View {
-    func fetchSize(_ size: Binding<CGSize>, needRound: Bool = false) -> some View {
-        modifier(FetchSize(size: size, needRound: needRound))
+    func fetchSize(_ size: Binding<CGSize>) -> some View {
+        modifier(FetchSize(size: size))
     }
     
     func fetchSize(_ callBack: @escaping (CGSize) -> Void) -> some View {
@@ -19,7 +19,6 @@ extension View {
 
 private struct FetchSize: ViewModifier {
     @Binding var size: CGSize
-    let needRound: Bool
     
     func body(content: Content) -> some View {
         content
@@ -27,10 +26,8 @@ private struct FetchSize: ViewModifier {
                 GeometryReader { geometryProxy in
                     Color.clear.preference(key: SizeKey.self, value: geometryProxy.size)
                 }.onPreferenceChange(SizeKey.self) { preferences in
-                    DispatchQueue.main.async {
-                        if size != preferences {
-                            size = needRound ? preferences.rounded(.up) : preferences
-                        }
+                    if size != preferences {
+                        size = preferences
                     }
                 }
             }

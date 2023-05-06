@@ -20,10 +20,20 @@ final class DrawingViewModel: NSObject,
                               PKCanvasViewDelegate {
     @Published var isLoading = false
     
+    private var editorVM: CanvasEditorViewModel
+    
+    private(set) var buttomBarHeight: CGFloat
+    private(set) var canvasSize: CGSize
+    private(set) var aspectRatio: CGFloat?
+    
     var canvas = PKCanvasView()
     let toolPicker = PKToolPicker()
     
-    override init() {
+    init(editorVM: CanvasEditorViewModel) {
+        self.buttomBarHeight = editorVM.ui.bottomBarHeight
+        self.canvasSize = editorVM.ui.editorSize
+        self.editorVM = editorVM
+        self.aspectRatio = editorVM.ui.aspectRatio
         super.init()
         canvas.delegate = self
     }
@@ -71,15 +81,12 @@ final class DrawingViewModel: NSObject,
 
 @MainActor
 struct DrawingView: View {
-    @EnvironmentObject private var uiVM: CanvasUISettingsViewModel
-    @StateObject private var vm: DrawingViewModel = .init()
-    
+    @StateObject private var vm: DrawingViewModel
     private let onClose: (DrawingViewOutput?) -> Void
-    private let canvasSize: CGSize
     
-    init(canvasSize: CGSize,
+    init(vm: CanvasEditorViewModel,
          onClose: @escaping (DrawingViewOutput?) -> Void) {
-        self.canvasSize = canvasSize
+        _vm = .init(wrappedValue: .init(editorVM: vm))
         self.onClose = onClose
     }
     
@@ -89,15 +96,16 @@ struct DrawingView: View {
             AppColors.blackWithOpacity1
             
             VStack(spacing: 0) {
+                
                 Spacer(minLength: 0)
                 
                 DrawingCanvasView(canvas: vm.canvas,
                                   toolPicker: vm.toolPicker)
-                .frame(canvasSize)
+                .with(aspectRatio: vm.aspectRatio)
                 
                 Spacer(minLength: 0)
                 
-                AppColors.clear.frame(height: uiVM.bottomBarHeight)
+                AppColors.clear.frame(height: vm.buttomBarHeight)
             }
             
             HStack {

@@ -9,7 +9,7 @@ import SwiftUI
 
 extension View {
     @ViewBuilder
-    func with(aspectRatio: CGFloat? ) -> some View {
+    func with(aspectRatio: CGFloat?) -> some View {
         if let aspectRatio = aspectRatio {
             self.aspectRatio(aspectRatio, contentMode: .fit)
         } else {

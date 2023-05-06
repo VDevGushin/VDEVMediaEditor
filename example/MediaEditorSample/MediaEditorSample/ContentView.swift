@@ -43,7 +43,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
     //nil //9/16
-    var aspectRatio: CGFloat? { 9/16 }
+    var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
     var maximumVideoDuration: Double { 25.0 }
 
