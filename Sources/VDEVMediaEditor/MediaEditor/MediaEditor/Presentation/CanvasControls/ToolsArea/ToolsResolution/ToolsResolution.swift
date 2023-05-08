@@ -39,17 +39,16 @@ final class ToolsResolutionViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 if value {
-                    switch canvasVM.resultResolution {
-                    case .ultraHD8k, .ultraHD4k: canvasVM.set(resolution: .fullHD)
+                    switch self.canvasVM.resultResolution {
+                    case .ultraHD8k, .ultraHD4k: self.canvasVM.set(resolution: .fullHD)
                     default: break
                     }
                     self.variants = [.sd, .hd, .fullHD].filter { $0 != self.canvasVM.resultResolution }
-                    self.variants = [canvasVM.resultResolution] + self.variants
+                    self.variants = [self.canvasVM.resultResolution] + self.variants
                 } else {
                     self.variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k].filter { $0 != self.canvasVM.resultResolution }
-                    self.variants = [canvasVM.resultResolution] + self.variants
+                    self.variants = [self.canvasVM.resultResolution] + self.variants
                 }
-                
             }
             .store(in: &storage)
     }
