@@ -12,7 +12,7 @@ import MobileCoreServices
 import AVKit
 
 struct PhotoPickerView: UIViewControllerRepresentable {
-    @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     
     typealias UIViewControllerType = UIImagePickerController
     private(set) var type: PhotoPickerViewType
@@ -31,7 +31,7 @@ struct PhotoPickerView: UIViewControllerRepresentable {
             imagePicker.videoQuality = .type640x480
         case .video:
             imagePicker.allowsEditing = true
-            imagePicker.videoMaximumDuration = settings.maximumVideoDuration
+            imagePicker.videoMaximumDuration = resultSettings.maximumVideoDuration
             imagePicker.mediaTypes = [UTType.movie.identifier]
             imagePicker.videoExportPreset = AVAssetExportPreset640x480
             imagePicker.videoQuality = .type640x480

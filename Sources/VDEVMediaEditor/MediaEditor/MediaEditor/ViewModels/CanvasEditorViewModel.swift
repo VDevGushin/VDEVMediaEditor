@@ -12,6 +12,7 @@ import AVKit
 final class CanvasEditorViewModel: ObservableObject {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
@@ -46,7 +47,7 @@ final class CanvasEditorViewModel: ObservableObject {
         
         observeOnMain(nested: self.data).store(in: &storage)
         
-        resultResolution = settings.resolution.value
+        resultResolution = resultSettings.resolution.value
         
         deviceOrientationService.$isFaceDown
             .removeDuplicates()

@@ -11,7 +11,8 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
         DiController.register(settings: config.settings,
                               dataService: config.networkService,
                               images: config.images,
-                              strings: config.strings)
+                              strings: config.strings,
+                              resultSettings: config.resultSettings)
     }
     
     deinit {

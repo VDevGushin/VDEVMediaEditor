@@ -22,7 +22,7 @@ struct NativeCameraView: View {
 }
 
 struct CameraVPViewNative: UIViewControllerRepresentable {
-    @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     let onComplete: (PickerMediaOutput?) -> Void
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<CameraVPViewNative>) -> UIImagePickerController {
@@ -31,7 +31,7 @@ struct CameraVPViewNative: UIViewControllerRepresentable {
         imagePicker.sourceType = .camera
         imagePicker.mediaTypes = [UTType.image.identifier, UTType.movie.identifier]
         imagePicker.cameraCaptureMode = .photo
-        imagePicker.videoMaximumDuration = settings.maximumVideoDuration
+        imagePicker.videoMaximumDuration = resultSettings.maximumVideoDuration
         imagePicker.allowsEditing = false
         imagePicker.showsCameraControls = true
         imagePicker.overrideUserInterfaceStyle = .dark

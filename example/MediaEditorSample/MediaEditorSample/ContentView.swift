@@ -19,12 +19,11 @@ struct ContentView: View {
         let source = NetworkAdapter(client: NetworkClientImpl())
         
         config =
-            .init(settings: EditorSettings(id,
-                                           resolution: .fullHD,
-                                           sourceService: source),
+            .init(settings: EditorSettings(id, sourceService: source),
                   networkService: source,
                   images: Images(),
-                  strings: Strings())
+                  strings: Strings(),
+                resultSettings: ResultSettings())
         
         vm = .init(config: config)
     }
@@ -34,11 +33,17 @@ struct ContentView: View {
     }
 }
 
+final class ResultSettings: VDEVMediaEditorResultSettings {
+    var needAutoEnhance: Bool = true
+    var resolution: VDEVMediaResolution { .fullHD }
+    var maximumVideoDuration: Double { 25.0 }
+}
+
 final class EditorSettings: VDEVMediaEditorSettings {
+    
     private(set) var baseChallengeId: String
     private(set) var title: String = ""
     private(set) var withAttach: Bool = false
-    private(set) var resolution: VDEVMediaResolution
     private(set) var needGuideLinesGrid = true
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
@@ -46,12 +51,9 @@ final class EditorSettings: VDEVMediaEditorSettings {
     //nil //9/16
     var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
-    var maximumVideoDuration: Double { 25.0 }
 
     init(_ baseChallengeId: String,
-         resolution: VDEVMediaResolution,
          sourceService: VDEVMediaEditorSourceService) {
-        self.resolution = resolution
         self.baseChallengeId = baseChallengeId
         self.sourceService = sourceService
         getMeta()

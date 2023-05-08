@@ -8,10 +8,14 @@
 import Foundation
 import Combine
 
-public protocol VDEVMediaEditorSettings {
-    var needGuideLinesGrid: Bool { get }
+public protocol VDEVMediaEditorResultSettings {
+    var needAutoEnhance: Bool { get set }
     var maximumVideoDuration: Double { get }
     var resolution: VDEVMediaResolution { get }
+}
+
+public protocol VDEVMediaEditorSettings {
+    var needGuideLinesGrid: Bool { get }
     var isInternalModule: Bool { get }
     var aspectRatio: CGFloat? { get }
     

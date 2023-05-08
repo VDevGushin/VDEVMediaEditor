@@ -10,6 +10,8 @@ import UIKit
 import Photos
 
 final class ImageMixer {
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
+    
     private let renderSize: CGSize
     private let progressObserver: ProgressObserver?
     
@@ -19,7 +21,11 @@ final class ImageMixer {
     }
     
     func combineAndStore(assets: [CombinerAsset], alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
-        let image = try combine(assets: assets)
+        var image = try combine(assets: assets)
+        
+        if resultSettings.needAutoEnhance {
+            image = image.autoEnhance()
+        }
         
         let imageURL = try FilteringProcessor.shared.generateAndSave(ciImage: image, withJPGQuality: 1)
         

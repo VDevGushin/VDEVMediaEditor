@@ -17,15 +17,19 @@ public struct VDEVMediaEditorConfig {
     private(set) var images: VDEVImageConfig
     // strings
     private(set) var strings: VDEVMediaEditorStrings
+    //result settings
+    private(set) var resultSettings: VDEVMediaEditorResultSettings
     
     public init(settings: VDEVMediaEditorSettings,
                 networkService: VDEVMediaEditorSourceService,
                 images: VDEVImageConfig,
-                strings: VDEVMediaEditorStrings) {
+                strings: VDEVMediaEditorStrings,
+                resultSettings: VDEVMediaEditorResultSettings) {
         self.settings = settings
         self.networkService = networkService
         self.images = images
         self.strings = strings
+        self.resultSettings = resultSettings
     }
 }
 

@@ -22,7 +22,7 @@ extension LayersMerger {
 // Мержит все - кроме видосиков и шаблонов
 
 final class LayersMerger: ObservableObject {
-    @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     @Injected private var strings: VDEVMediaEditorStrings
     
     @Published var state: State = .idle
@@ -32,7 +32,7 @@ final class LayersMerger: ObservableObject {
     func merge(layers: [CanvasItemModel], on editorSize: CGSize) {
         makeMediaItem(layers: layers,
                       size: editorSize,
-                      resolution: settings.resolution.value)
+                      resolution: resultSettings.resolution.value)
     }
 }
 

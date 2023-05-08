@@ -9,6 +9,20 @@ import UIKit
 import Kingfisher
 
 extension CIImage {
+    func autoEnhance() -> CIImage {
+        var ciImage = self
+        let adjustments = ciImage.autoAdjustmentFilters(options: [.enhance: true, .redEye: true, .crop: false, .level: false])
+        
+        for filter in adjustments {
+            
+            filter.setValue(ciImage, forKey: kCIInputImageKey)
+            
+            if let outputImage = filter.outputImage { ciImage = outputImage }
+        }
+        
+        return ciImage
+    }
+    
     func scaled(to size: CGSize, withContentMode contentMode: UIView.ContentMode) -> CIImage {
         switch contentMode {
         case .scaleToFill:
