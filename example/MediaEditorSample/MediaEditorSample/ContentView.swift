@@ -39,6 +39,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var title: String = ""
     private(set) var withAttach: Bool = false
     private(set) var resolution: VDEVMediaResolution
+    private(set) var needGuideLinesGrid = true
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     

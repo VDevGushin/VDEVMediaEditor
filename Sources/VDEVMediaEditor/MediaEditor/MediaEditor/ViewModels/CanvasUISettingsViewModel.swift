@@ -23,6 +23,10 @@ final class CanvasUISettingsViewModel: ObservableObject {
 
     var canvasCornerRadius: CGFloat { 16 }
     var bottomBarHeight: CGFloat { 76 }
+    
+    var needGuideLinesGrid: Bool {
+        settings.needGuideLinesGrid
+    }
 
     private var storage: Set<AnyCancellable> = Set()
     private var colorOp: AnyCancellable?

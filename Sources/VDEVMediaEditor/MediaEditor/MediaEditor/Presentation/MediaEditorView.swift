@@ -148,27 +148,29 @@ fileprivate extension MediaEditorView {
     
     @ViewBuilder
     func Grids() -> some View {
-        ZStack {
-            HStack {
-                ForEach(0..<9, id: \.self) { _ in
-                    Rectangle()
-                        .fill(vm.ui.guideLinesColor)
-                        .opacity(0.1)
-                        .frame(width: 0.5)
-                        .frame(maxWidth: .infinity)
+        if vm.ui.needGuideLinesGrid {
+            ZStack {
+                HStack {
+                    ForEach(0..<3, id: \.self) { _ in
+                        Rectangle()
+                            .fill(vm.ui.guideLinesColor)
+                            .opacity(0.05)
+                            .frame(width: 0.5)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                
+                VStack {
+                    ForEach(0..<3, id: \.self) { _ in
+                        Rectangle()
+                            .fill(vm.ui.guideLinesColor)
+                            .opacity(0.05)
+                            .frame(height: 0.5)
+                            .frame(maxHeight: .infinity)
+                    }
                 }
             }
-            
-            VStack {
-                ForEach(0..<13, id: \.self) { _ in
-                    Rectangle()
-                        .fill(vm.ui.guideLinesColor)
-                        .opacity(0.1)
-                        .frame(height: 0.5)
-                        .frame(maxHeight: .infinity)
-                }
-            }
+            .allowsHitTesting(false)
         }
-        .allowsHitTesting(false)
     }
 }
