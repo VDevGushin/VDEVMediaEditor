@@ -34,7 +34,7 @@ struct ContentView: View {
 }
 
 final class ResultSettings: VDEVMediaEditorResultSettings {
-    var needAutoEnhance: Bool = true
+    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(true)
     var resolution: VDEVMediaResolution { .fullHD }
     var maximumVideoDuration: Double { 25.0 }
 }

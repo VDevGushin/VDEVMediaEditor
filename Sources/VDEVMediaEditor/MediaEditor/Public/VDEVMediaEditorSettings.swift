@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 public protocol VDEVMediaEditorResultSettings: AnyObject {
-    var needAutoEnhance: Bool { get set }
+    var needAutoEnhance: CurrentValueSubject<Bool, Never> { get set }
     var maximumVideoDuration: Double { get }
     var resolution: VDEVMediaResolution { get }
 }

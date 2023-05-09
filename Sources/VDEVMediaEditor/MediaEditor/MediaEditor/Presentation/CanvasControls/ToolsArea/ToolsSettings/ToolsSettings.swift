@@ -21,8 +21,7 @@ final class ToolsSettingsViewModel: ObservableObject {
     init(vm: CanvasEditorViewModel) {
         self.canvasVM = vm
         current = vm.resultResolution
-        
-        needAutoEnhance = resultSettings.needAutoEnhance
+        needAutoEnhance = resultSettings.needAutoEnhance.value
         
         canvasVM
             .$resultResolution
@@ -34,10 +33,16 @@ final class ToolsSettingsViewModel: ObservableObject {
         
         makeVariants()
         
-        $needAutoEnhance.removeAllDuplicates().sink { [resultSettings] in
-            resultSettings.needAutoEnhance = $0
-        }
-        .store(in: &storage)
+        $needAutoEnhance
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                if self.needAutoEnhance != self.resultSettings.needAutoEnhance.value {
+                    self.resultSettings.needAutoEnhance.send($0)
+                }
+            }
+            .store(in: &storage)
     }
     
     func makeVariants() {
@@ -69,7 +74,9 @@ final class ToolsSettingsViewModel: ObservableObject {
     }
     
     func set(_ needAutoEnhance: Bool) {
-        resultSettings.needAutoEnhance = needAutoEnhance
+        resultSettings
+            .needAutoEnhance
+            .send(needAutoEnhance)
     }
 }
 

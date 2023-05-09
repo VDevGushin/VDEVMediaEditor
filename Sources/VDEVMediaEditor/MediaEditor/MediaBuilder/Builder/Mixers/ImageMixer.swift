@@ -24,7 +24,7 @@ final class ImageMixer {
                          alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
         var image = try combine(assets: assets)
         
-        if resultSettings.needAutoEnhance {
+        if resultSettings.needAutoEnhance.value {
             image = image.autoEnhance()
         }
         
