@@ -40,6 +40,7 @@ final class ToolsSettingsViewModel: ObservableObject {
                 guard let self = self else { return }
                 if self.needAutoEnhance != self.resultSettings.needAutoEnhance.value {
                     self.resultSettings.needAutoEnhance.send($0)
+                    makeHaptics()
                 }
             }
             .store(in: &storage)

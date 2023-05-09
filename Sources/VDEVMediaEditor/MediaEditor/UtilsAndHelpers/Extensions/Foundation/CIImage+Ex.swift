@@ -11,7 +11,8 @@ import Kingfisher
 extension CIImage {
     func autoEnhance() -> CIImage {
         var ciImage = self
-        let adjustments = ciImage.autoAdjustmentFilters(options: [.enhance: true, .redEye: true, .crop: false, .level: false])
+        
+        let adjustments = ciImage.autoAdjustmentFilters()
         
         for filter in adjustments {
             
