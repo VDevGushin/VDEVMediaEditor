@@ -37,17 +37,24 @@ struct NoShadowRoundButton: View {
             haptics(.light)
             action()
         } label: {
-            VStack(alignment: .center, spacing: 0) {
-                Image(uiImage: image)
+            ZStack {
+                AppColors
+                    .blackInvisible
                     .frame(width: size, height: size)
-                    .background(backgroundColor)
                     .clipShape(RoundedRectangle(cornerRadius: size / 2))
                 
-                title.map {
-                    Text($0)
-                        .foregroundColor(tintColor)
-                        .font(AppFonts.elmaTrioRegular(fontSize))
-                        .padding(.top, 10)
+                VStack(alignment: .center, spacing: 0) {
+                    Image(uiImage: image)
+                        .frame(width: size, height: size)
+                        .background(backgroundColor)
+                        .clipShape(RoundedRectangle(cornerRadius: size / 2))
+                    
+                    title.map {
+                        Text($0)
+                            .foregroundColor(tintColor)
+                            .font(AppFonts.elmaTrioRegular(fontSize))
+                            .padding(.top, 10)
+                    }
                 }
             }
         }
@@ -85,23 +92,24 @@ struct NoShadowRoundButtonSystem: View {
             haptics(.light)
             action()
         } label: {
-            VStack(alignment: .center, spacing: 0) {
-                image
+            ZStack {
+                AppColors
+                    .blackInvisible
                     .frame(width: size, height: size)
-                    .background(backgroundColor)
                     .clipShape(RoundedRectangle(cornerRadius: size / 2))
                 
-                /*
-                 .symbolRenderingMode(.monochrome)
-                 .foregroundColor(AppColors.white)
-                 .font(.system(size: 16, weight: .regular))
-                 */
-                
-                title.map {
-                    Text($0)
-                        .foregroundColor(tintColor)
-                        .font(AppFonts.elmaTrioRegular(fontSize))
-                        .padding(.top, 10)
+                VStack(alignment: .center, spacing: 0) {
+                    image
+                        .frame(width: size, height: size)
+                        .background(backgroundColor)
+                        .clipShape(RoundedRectangle(cornerRadius: size / 2))
+                    
+                    title.map {
+                        Text($0)
+                            .foregroundColor(tintColor)
+                            .font(AppFonts.elmaTrioRegular(fontSize))
+                            .padding(.top, 10)
+                    }
                 }
             }
         }

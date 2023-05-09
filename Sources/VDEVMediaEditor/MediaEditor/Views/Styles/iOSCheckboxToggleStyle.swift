@@ -12,9 +12,13 @@ struct iOSCheckboxToggleStyle: ToggleStyle {
         Button(action: {
             configuration.isOn.toggle()
         }, label: {
-            HStack {
-                Image(systemName: configuration.isOn ? "checkmark.square" : "square")
-                configuration.label
+            ZStack(alignment: .leading) {
+                AppColors.blackInvisible
+                    .frame(height: 32)
+                HStack {
+                    Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+                    configuration.label
+                }
             }
         })
     }

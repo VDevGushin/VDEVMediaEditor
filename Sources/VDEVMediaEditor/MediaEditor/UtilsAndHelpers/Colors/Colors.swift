@@ -14,7 +14,7 @@ enum AppColors {
     static let gray = Color.gray
     static let black = Color.black
     static let shareButtonsColors = Color(uiColor: UIColor(red: 1, green: 1, blue: 1, alpha: 0.1))
-    static let blackInvisible = Color.black.opacity(0.1)
+    static let blackInvisible = Color.black.opacity(0.001)
     static let blackWithOpacity = Color.black.opacity(0.5)
     static let blackWithOpacity1 = Color.black.opacity(0.3)
     static let blackWithOpacity2 = Color.black.opacity(0.1)
