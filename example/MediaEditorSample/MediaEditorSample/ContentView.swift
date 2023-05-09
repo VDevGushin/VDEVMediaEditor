@@ -33,10 +33,16 @@ struct ContentView: View {
     }
 }
 
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+
 final class ResultSettings: VDEVMediaEditorResultSettings {
     var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(true)
     var resolution: VDEVMediaResolution { .fullHD }
-    var maximumVideoDuration: Double { 25.0 }
+    var maximumVideoDuration: Double { 15.0 }
 }
 
 final class EditorSettings: VDEVMediaEditorSettings {
@@ -91,12 +97,6 @@ final class EditorSettings: VDEVMediaEditorSettings {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
 struct Images: VDEVImageConfig {
     let common: VDEVMediaEditorButtonsCommonImages = Common()
 
@@ -141,7 +141,6 @@ struct Images: VDEVImageConfig {
         var typeTemplate: UIImage = .init(named: "TypeTemplate")!
         var typeText: UIImage = .init(named: "TypeText")!
         var typeVideo: UIImage = .init(named: "TypeVideo")!
-        var aspectRatio: UIImage = .init(named: "TypeAspectRatio")!
     }
     
     struct Common: VDEVMediaEditorButtonsCommonImages {

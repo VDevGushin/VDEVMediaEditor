@@ -21,7 +21,7 @@ struct ResultVideoPlayer: View {
     
     init(avAsset: AVAsset,
          videoComposition: AVVideoComposition? = nil,
-         volume: Double = 0.0,
+         volume: Double = 1.0,
          thumbnail: UIImage? = nil,
          cornerRadius: CGFloat,
          aspectRatio: CGFloat? = nil) {
@@ -35,7 +35,7 @@ struct ResultVideoPlayer: View {
     
     init(assetURL: URL,
          videoComposition: AVVideoComposition? = nil,
-         volume: Double = 0.0,
+         volume: Double = 1.0,
          thumbnail: UIImage? = nil,
          cornerRadius: CGFloat,
          aspectRatio: CGFloat? = nil) {
@@ -54,8 +54,7 @@ struct ResultVideoPlayer: View {
                    volume: volume,
                    cornerRadius: cornerRadius)
         .aspectRatio(aspectRatio ??
-                     avAsset.tracks(withMediaType: .video).first?.aspectRatio ??
-                     1,
+                     avAsset.tracks(withMediaType: .video).first?.aspectRatio ?? 1,
                      contentMode: .fit)
         .clipped()
         .onAppear {
@@ -79,14 +78,14 @@ struct VideoPlayerView: View {
     let volume: Double
     let thumbnail: UIImage?
     
-    init(avAsset: AVAsset, videoComposition: AVVideoComposition?, volume: Double, thumbnail: UIImage?) {
+    init(avAsset: AVAsset, videoComposition: AVVideoComposition?, volume: Double = 1.0, thumbnail: UIImage?) {
         self.avAsset = avAsset
         self.videoComposition = videoComposition
         self.volume = volume
         self.thumbnail = thumbnail
     }
     
-    init(assetURL: URL, videoComposition: AVVideoComposition?, volume: Double, thumbnail: UIImage?) {
+    init(assetURL: URL, videoComposition: AVVideoComposition?, volume: Double = 1.0, thumbnail: UIImage?) {
         self.init(avAsset: AVAsset(url: assetURL),
                   videoComposition: videoComposition,
                   volume: volume,

@@ -80,7 +80,6 @@ private extension PlaceholderTemplateView {
                                        isInManipulation: $isInManipulation) {
                         VideoPlayerView(assetURL: videoModel.videoURL,
                                         videoComposition: videoModel.avVideoComposition,
-                                        volume: 0.0,
                                         thumbnail: videoModel.thumbnail)
                         .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
                     } onTap: {
@@ -94,7 +93,6 @@ private extension PlaceholderTemplateView {
                         TemplateMask(itemForShow: videoModel.maskVideoComposition) {
                             VideoPlayerView(assetURL: videoModel.videoURL,
                                             videoComposition: $0,
-                                            volume: 0.0,
                                             thumbnail: videoModel.thumbnail)
                             .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
                         }

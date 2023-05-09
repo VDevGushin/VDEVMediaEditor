@@ -428,7 +428,7 @@ fileprivate extension CanvasItemModel {
             
             return CombinerAsset(
                 body: .init(asset: AVAsset(url: processedUrl),
-                            preferredVolume: 0.0,
+                            preferredVolume: 1.0,
                             cycleMode: .loopToLongestVideo),
                 
                 transform: Transform(

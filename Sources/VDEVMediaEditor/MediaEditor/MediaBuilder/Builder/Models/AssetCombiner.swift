@@ -44,7 +44,7 @@ class AssetCombiner {
             let videoMixer = VideoMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
             return try await videoMixer.composeVideo(data: input)
             
-            // Создание картиртинки
+        // Создание картиртинки
         } else {
             let mixer = ImageMixerPng(renderSize: canvasNativeSize, progressObserver: progressObserver)
             let resultPack = try mixer.combineAndStore(assets: input, alsoSaveToPhotos: false)

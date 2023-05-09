@@ -96,7 +96,6 @@ public protocol VDEVMediaEditorButtonsTypedImages {
     var typeTemplate: UIImage { get }
     var typeText: UIImage { get }
     var typeVideo: UIImage { get }
-    var aspectRatio: UIImage { get }
 }
 
 // MARK: - Strings
