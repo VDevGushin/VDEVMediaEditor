@@ -1,5 +1,5 @@
 //
-//  ToolsResolution.swift
+//  ToolsSettings.swift
 //  
 //
 //  Created by Vladislav Gushin on 05.05.2023.
@@ -8,16 +8,21 @@
 import SwiftUI
 import Combine
 
-final class ToolsResolutionViewModel: ObservableObject {
+final class ToolsSettingsViewModel: ObservableObject {
     @Published var variants: [MediaResolution] = []
     @Published var canvasVM: CanvasEditorViewModel
     @Published var current: MediaResolution = .fullHD
+    @Published var needAutoEnhance: Bool = false
+    
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     
     private var storage: Set<AnyCancellable> = Set()
     
     init(vm: CanvasEditorViewModel) {
         self.canvasVM = vm
         current = vm.resultResolution
+        
+        needAutoEnhance = resultSettings.needAutoEnhance
         
         canvasVM
             .$resultResolution
@@ -28,6 +33,11 @@ final class ToolsResolutionViewModel: ObservableObject {
             .store(in: &storage)
         
         makeVariants()
+        
+        $needAutoEnhance.removeAllDuplicates().sink { [resultSettings] in
+            resultSettings.needAutoEnhance = $0
+        }
+        .store(in: &storage)
     }
     
     func makeVariants() {
@@ -57,10 +67,15 @@ final class ToolsResolutionViewModel: ObservableObject {
         makeHaptics()
         canvasVM.set(resolution: result)
     }
+    
+    func set(_ needAutoEnhance: Bool) {
+        resultSettings.needAutoEnhance = needAutoEnhance
+    }
 }
 
-struct ToolsResolution: View {
-    @StateObject private var vm: ToolsResolutionViewModel
+struct ToolsSettings: View {
+    @StateObject private var vm: ToolsSettingsViewModel
+    @Injected private var strings: VDEVMediaEditorStrings
     
     init(vm: CanvasEditorViewModel) {
         _vm = .init(wrappedValue: .init(vm: vm))
@@ -68,6 +83,24 @@ struct ToolsResolution: View {
     
     var body: some View {
         VStack(spacing: 12) {
+            Text(strings.quality)
+                .font(AppFonts.elmaTrioRegular(18))
+                .foregroundColor(AppColors.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Toggle(strings.questionQualityImage, isOn: $vm.needAutoEnhance)
+                .toggleStyle(iOSCheckboxToggleStyle())
+                .font(AppFonts.elmaTrioRegular(15))
+                .foregroundColor(AppColors.whiteWithOpacity)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical)
+            
+            
+            Text(strings.resolution)
+                .font(AppFonts.elmaTrioRegular(18))
+                .foregroundColor(AppColors.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
             ForEach(0..<vm.variants.count, id: \.self) { index in
                 Button {
                     vm.set(vm.variants[index])
@@ -98,3 +131,4 @@ struct ToolsResolution: View {
         .cornerRadius(8)
     }
 }
+

@@ -105,8 +105,8 @@ struct ToolsAreaView: View {
                 aspectRatio()
                     .transition(.bottomTransition)
                 
-            case .resolution:
-                resolution()
+            case .settings:
+                settingsMenu()
                     .transition(.bottomTransition)
 
                 // данные тулзы нужно показывать путем оверлеев экрана
@@ -474,11 +474,11 @@ extension ToolsAreaView {
 // MARK: - Resol
 extension ToolsAreaView {
     @ViewBuilder
-    func resolution() -> some View {
-        ToolWrapper(title: strings.resolution, fullScreen: false) {
+    func settingsMenu() -> some View {
+        ToolWrapper(title: strings.settings, fullScreen: false) {
             vm.tools.closeTools(false)
         } tool: {
-            ToolsResolution(vm: vm)
+            ToolsSettings(vm: vm)
                 .padding(.horizontal)
         }
     }

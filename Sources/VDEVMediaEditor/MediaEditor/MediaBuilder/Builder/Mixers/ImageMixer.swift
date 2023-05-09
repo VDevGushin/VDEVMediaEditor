@@ -20,7 +20,8 @@ final class ImageMixer {
         self.progressObserver = progressObserver
     }
     
-    func combineAndStore(assets: [CombinerAsset], alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
+    func combineAndStore(assets: [CombinerAsset],
+                         alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
         var image = try combine(assets: assets)
         
         if resultSettings.needAutoEnhance {

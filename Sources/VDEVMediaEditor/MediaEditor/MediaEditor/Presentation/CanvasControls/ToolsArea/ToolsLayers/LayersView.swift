@@ -81,7 +81,7 @@ struct LayersView: View {
                         
                         if !settings.isInternalModule {
                             //Aspect ratio
-                            NoShadowRoundButtonSystem(image: Image(systemName: "arrow.down.forward.and.arrow.up.backward"),
+                            NoShadowRoundButtonSystem(image: Image(systemName: "aspectratio"),
                                                       size: 40,
                                                       backgroundColor: AppColors.layerButtonsLightBlack,
                                                       tintColor: AppColors.white) {
@@ -91,13 +91,13 @@ struct LayersView: View {
                             }.scaleEffect(0.95)
                             
                             //Format
-                            NoShadowRoundButtonSystem(image: Image(systemName: "bubbles.and.sparkles.fill"),
+                            NoShadowRoundButtonSystem(image: Image(systemName: "gearshape"),
                                                       size: 40,
                                                       backgroundColor: AppColors.layerButtonsLightBlack,
                                                       tintColor: AppColors.white) {
                                 vm.tools.openLayersList(false)
-                                vm.tools.seletedTool(.resolution)
-                                Log.d("Select tool resolution")
+                                vm.tools.seletedTool(.settings)
+                                Log.d("Select tool settings")
                             }.scaleEffect(0.95)
                         }
                     }

@@ -18,7 +18,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case backgroundColor
     case text(CanvasTextModel?)
     case aspectRatio
-    case resolution
+    case settings
 
     // Тулзы для редактирования конкретных объектов слоя
     case concreteItem(CanvasItemModel)
@@ -54,7 +54,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .drawing: return nil
         case .backgroundColor: return nil
         case .aspectRatio: return nil
-        case .resolution: return nil
+        case .settings: return nil
         case .text(let item): return item
         case .concreteItem(let item): return item
         case .imageCropper(let item): return item
@@ -85,7 +85,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.drawing
         case .backgroundColor:
             return Strings.background
-        case  .aspectRatio, .resolution, .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
+        case  .aspectRatio, .settings, .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
             return ""
         }
     }
@@ -109,7 +109,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return images.typed.typeDraw
         case .backgroundColor:
             fatalError("No image")
-        case .resolution:
+        case .settings:
             fatalError("No image")
         case .aspectRatio:
             fatalError("No image")

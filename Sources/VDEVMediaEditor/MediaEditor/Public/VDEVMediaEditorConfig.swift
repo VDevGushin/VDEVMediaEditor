@@ -158,4 +158,7 @@ public protocol VDEVMediaEditorStrings {
     var cancel: String { get }
     var aspectRatio: String { get }
     var resolution: String { get }
+    var settings: String { get }
+    var quality: String { get }
+    var questionQualityImage: String { get }
 }
