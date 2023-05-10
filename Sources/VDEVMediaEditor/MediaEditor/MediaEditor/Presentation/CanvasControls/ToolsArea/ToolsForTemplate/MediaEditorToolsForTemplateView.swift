@@ -188,6 +188,8 @@ private struct EditVariants: View {
             vm.showFilters(item: item)
         } onTextureFilter: { item in
             vm.showTexture(item: item)
+        } onVolume: { item, sound in
+            vm.onChangeSound(for: item, value: sound)
         }
     }
 }
@@ -208,19 +210,22 @@ private struct ItemEditVariantsView: View {
     private var onAdjustments: (CanvasItemModel) -> Void
     private var onColorFilter: (CanvasItemModel) -> Void
     private var onTextureFilter: (CanvasItemModel) -> Void
+    private var onVolume: (CanvasVideoPlaceholderModel, Float) -> Void
     
     init(item: CanvasItemModel,
          onClose: @escaping () -> Void,
          onDelete: @escaping (CanvasItemModel) -> Void,
          onAdjustments: @escaping (CanvasItemModel) -> Void,
          onColorFilter: @escaping (CanvasItemModel) -> Void,
-         onTextureFilter: @escaping (CanvasItemModel) -> Void) {
+         onTextureFilter: @escaping (CanvasItemModel) -> Void,
+         onVolume: @escaping (CanvasVideoPlaceholderModel, Float) -> Void) {
         self.item = item
         self.onClose = onClose
         self.onDelete = onDelete
         self.onAdjustments = onAdjustments
         self.onColorFilter = onColorFilter
         self.onTextureFilter = onTextureFilter
+        self.onVolume = onVolume
     }
     
     var body: some View {
@@ -251,6 +256,23 @@ private struct ItemEditVariantsView: View {
                             onDelete(item)
                         }
                     case .video:
+                        
+                        let video: CanvasVideoPlaceholderModel? = CanvasItemModel.toTypeOptional(model: item)
+                        
+                        if let videoTemplate = video {
+                            if videoTemplate.volume <= 0.0 {
+                                ToolRow(image: images.currentItem.currentItemTexture,
+                                        title: strings.sound) {
+                                    onVolume(videoTemplate, 1.0)
+                                }
+                            } else {
+                                ToolRow(image: images.currentItem.currentItemTexture,
+                                        title: strings.sound) {
+                                    onVolume(videoTemplate, 0.0)
+                                }
+                            }
+                        }
+                        
                         ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) {
                             onTextureFilter(item)
                         }

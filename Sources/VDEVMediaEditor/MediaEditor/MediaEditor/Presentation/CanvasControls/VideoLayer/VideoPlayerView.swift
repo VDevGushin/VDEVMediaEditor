@@ -51,7 +51,7 @@ struct ResultVideoPlayer: View {
         PlayerView(asset: avAsset,
                    videoComposition: videoComposition,
                    isPlaying: $isPlaying,
-                   volume: volume,
+                   volume: .constant(volume),
                    cornerRadius: cornerRadius)
         .aspectRatio(aspectRatio ??
                      avAsset.tracks(withMediaType: .video).first?.aspectRatio ?? 1,
@@ -99,7 +99,7 @@ struct VideoPlayerView: View {
     }
     
     var body: some View {
-        PlayerView(asset: avAsset, videoComposition: videoComposition, isPlaying: $isPlaying, volume: volume, cornerRadius: nil)
+        PlayerView(asset: avAsset, videoComposition: videoComposition, isPlaying: $isPlaying, volume: $volume, cornerRadius: nil)
             .aspectRatio(avAsset.tracks(withMediaType: .video).first?.aspectRatio ?? 1,
                          contentMode: .fill)
             .onAppear {
@@ -120,7 +120,7 @@ private struct PlayerView: UIViewRepresentable {
     let asset: AVAsset
     var videoComposition: AVVideoComposition?
     @Binding var isPlaying: Bool
-    var volume: Float
+    @Binding var volume: Float
     let cornerRadius: CGFloat?
     
     func makeUIView(context: Context) -> _PlayerView {

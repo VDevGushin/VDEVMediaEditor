@@ -91,12 +91,14 @@ private extension PlaceholderTemplateView {
                         haptics(.light)
                         vm.openEditVariants()
                     }.modifier(
-                        TemplateMask(itemForShow: videoModel.maskVideoComposition) {
-                            VideoPlayerView(assetURL: videoModel.videoURL,
-                                            videoComposition: $0,
-                                            thumbnail: videoModel.thumbnail,
-                                            volume: 0.0)
-                            .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
+                        TemplateMask(itemForShow: videoModel.maskVideoComposition) { _ in
+                            Color.red
+                                .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
+//                            VideoPlayerView(assetURL: videoModel.videoURL,
+//                                            videoComposition: $0,
+//                                            thumbnail: videoModel.thumbnail,
+//                                            volume: videoModel.volume)
+//                            .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
                         }
                     )
                     .overlay {

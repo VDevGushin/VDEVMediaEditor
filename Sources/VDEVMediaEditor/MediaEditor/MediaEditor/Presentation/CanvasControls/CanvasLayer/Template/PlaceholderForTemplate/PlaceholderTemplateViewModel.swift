@@ -58,6 +58,21 @@ extension PlaceholderTemplateViewModel {
                 self?.showSelection = false
             }
             
+            delegate?.changeSound = { [weak self] item, volume in
+                guard let self = self else { return }
+                
+                self.showSelection = false
+                guard let videoModel = self.videoModel,
+                      videoModel.id == item.id else { return }
+                
+                let videoItem = CanvasVideoPlaceholderModel.changeVolume(from: item, volume: volume)
+                
+                Task {
+                    await self.reset()
+                    await self.setVideo(model: videoItem)
+                }
+            }
+            
             delegate?.showMediaEditor(item: canvasItem)
         }
     }
@@ -143,7 +158,6 @@ fileprivate extension PlaceholderTemplateViewModel {
     func setVideo(model: CanvasVideoPlaceholderModel?) async {
         inProgress = false
         videoModel = model
-
         guard let vModel = videoModel else { return }
         item.update(videoModel: vModel)
         observe(nested: vModel).store(in: &storage)

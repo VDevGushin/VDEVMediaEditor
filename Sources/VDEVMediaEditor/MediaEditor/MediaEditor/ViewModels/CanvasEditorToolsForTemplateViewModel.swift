@@ -25,6 +25,9 @@ protocol CanvasEditorDelegate: AnyObject {
     var endWorkWithItem: (() -> Void)? { get set }
     func showTextEditor(item: CanvasTextModel)
     func hideAllOverlayViews()
+    
+    // Sound
+    var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)? { get set }
 }
 
 final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEditorDelegate {
@@ -99,6 +102,15 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
     func showFilters(item: CanvasItemModel) {
         hideAllOverlayViews()
         if state.id != 5 { set(.filter(item: item)) }
+    }
+    
+    // MARK: - Sound
+    
+    var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)?
+    
+    func onChangeSound(for model: CanvasVideoPlaceholderModel, value: Float) {
+        hideAllOverlayViews()
+        changeSound?(model, value)
     }
     
     // MARK: - Edit text

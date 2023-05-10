@@ -12,10 +12,9 @@ import Photos
 
 final class CanvasVideoPlaceholderModel: CanvasItemModel {
     private(set) var asset: CanvasItemAsset?
-    private(set) var volume: Float
-    
     private var originalVideoURL: URL
 
+    @Published private(set) var volume: Float
     @Published private(set) var avVideoComposition: AVVideoComposition?
     @Published private(set) var maskVideoComposition: AVVideoComposition?
 
@@ -181,6 +180,20 @@ extension CanvasVideoPlaceholderModel {
                      size: size,
                      aspect: aspect,
                      filters: filters)
+    }
+    
+    static func changeVolume(from item: CanvasVideoPlaceholderModel, volume: Float) -> CanvasVideoPlaceholderModel? {
+        
+        return .init(url: item.videoURL,
+                     avVideoComposition: item.avVideoComposition,
+                     maskVideoComposition: item.maskVideoComposition,
+                     asset: item.asset,
+                     volume: volume,
+                     thumbnail: item.thumbnail,
+                     maskImageFromTemplate: item.maskImageFromTemplate,
+                     size: item.size,
+                     aspect: item.aspect,
+                     filters: item.filters)
     }
 }
 

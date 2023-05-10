@@ -67,13 +67,6 @@ final class CanvasLayersDataViewModel: ObservableObject {
         layers.remove(item)
         layers.append(copy)
     }
-    
-    func copyReplaceWithOrder(_ item: CanvasItemModel) {
-        guard let index = layers.index(id: item.id) else { return }
-        let copy = item.copy()
-        layers.remove(item)
-        layers.insert(copy, at: index)
-    }
 
     func delete(_ item: CanvasItemModel) {
         let id = item.id
@@ -245,17 +238,27 @@ extension CanvasLayersDataViewModel {
 
 // Work with sound
 extension CanvasLayersDataViewModel {
-    func set(sound: Float, for item: CanvasItemModel) {
-        guard let item = layers[id: item.id] else { return }
+    func set(sound: Float, for item: CanvasItemModel) -> CanvasItemModel {
+        func copyReplaceWithOrder(_ item: CanvasItemModel) -> CanvasItemModel{
+            guard let index = layers.index(id: item.id) else { return item }
+            let copy = item.copy()
+            layers.remove(item)
+            layers.insert(copy, at: index)
+            return copy
+        }
+        
+        guard let item = layers[id: item.id] else { return item }
         
         if let item: CanvasVideoModel = CanvasItemModel.toTypeOptional(model: item) {
             item.update(volume: sound)
-            copyReplaceWithOrder(item)
+            return copyReplaceWithOrder(item)
         }
         
         if let item: CanvasVideoPlaceholderModel = CanvasItemModel.toTypeOptional(model: item) {
             item.update(volume: sound)
-            copyReplaceWithOrder(item)
+            return copyReplaceWithOrder(item)
         }
+        
+        return item
     }
 }

@@ -303,8 +303,9 @@ struct ToolsAreaView: View {
         } onMerge: { items in
             vm.onMergeMedia(items)
         } onVolume: { item, volume in
-            vm.tools.closeTools()
-            vm.data.set(sound: volume, for: item)
+            vm.tools.closeTools(false)
+            let itemWithNewSound = vm.data.set(sound: volume, for: item)
+            vm.tools.currentCloseActionFor(itemWithNewSound)
         }
     }
 }

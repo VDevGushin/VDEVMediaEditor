@@ -111,17 +111,15 @@ struct ToolsConcreteItemHorizontal: View {
                                     title: strings.removeBack) { removeBackgroundML(item) }
                             
                         case .video:
-                            let video1: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
-                            let video2: CanvasVideoPlaceholderModel? = CanvasItemModel.toTypeOptional(model: item)
-                            
-                            if let volume = video1?.volume ?? video2?.volume {
+                            let video: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
+                            if let volume = video?.volume {
                                 if volume <= 0.0 {
-                                    ToolRow(image: UIImage(systemName: "speaker")!,
+                                    ToolRow(image: images.currentItem.currentItemTexture,
                                             title: strings.sound) {
                                         onVolume(item, 1.0)
                                     }
                                 } else {
-                                    ToolRow(image: UIImage(systemName: "speaker.slash")!,
+                                    ToolRow(image: images.currentItem.currentItemTexture,
                                             title: strings.sound) {
                                         onVolume(item, 0.0)
                                     }
