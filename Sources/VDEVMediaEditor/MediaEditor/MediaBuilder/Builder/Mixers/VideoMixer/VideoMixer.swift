@@ -31,7 +31,7 @@ final class VideoMixer {
         self.progressObserver = progressObserver
     }
     
-    func composeVideo(data: [CombinerAsset], withAudio: Bool = true) async throws -> CombinerOutput {
+    func composeVideo(data: [CombinerAsset], withAudio: Bool = false) async throws -> CombinerOutput {
         let mixComposition = AVMutableComposition()
         let audioMix = AVMutableAudioMix()
         
