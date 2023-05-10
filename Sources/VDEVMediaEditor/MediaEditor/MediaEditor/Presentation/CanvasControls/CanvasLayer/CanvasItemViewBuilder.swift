@@ -19,7 +19,8 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         ZStack {
             VideoPlayerView(assetURL: item.videoURL,
                             videoComposition: item.avVideoComposition,
-                            thumbnail: item.thumbnail)
+                            thumbnail: item.thumbnail,
+                            volume: item.volume)
             .frame(width: canvasSize.width)
             
             if item.inProgress {

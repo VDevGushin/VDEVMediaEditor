@@ -33,6 +33,11 @@ extension CanvasItemModel {
         guard let obj = model as? T else  { fatalError("Error layer item type") }
         return obj
     }
+    
+    static func toTypeOptional<T, Input>(model: Input) -> T? {
+        guard let obj = model as? T else  { return nil }
+        return obj
+    }
 }
 
 extension CanvasItemModel {

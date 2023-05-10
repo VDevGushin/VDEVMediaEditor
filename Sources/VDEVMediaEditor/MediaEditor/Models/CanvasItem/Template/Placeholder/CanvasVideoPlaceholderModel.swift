@@ -12,6 +12,7 @@ import Photos
 
 final class CanvasVideoPlaceholderModel: CanvasItemModel {
     private(set) var asset: CanvasItemAsset?
+    private(set) var volume: Float
     
     private var originalVideoURL: URL
 
@@ -38,11 +39,13 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
          avVideoComposition: AVVideoComposition?,
          maskVideoComposition: AVVideoComposition?,
          asset: CanvasItemAsset?,
+         volume: Float = 0.0,
          thumbnail: UIImage?,
          maskImageFromTemplate: UIImage?,
          size: CGSize,
          aspect: CGFloat,
          filters: [EditorFilter]) {
+        self.volume = volume
         self.size = size
         self.asset = asset
         self.aspect = aspect
@@ -60,6 +63,10 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     deinit {
         storage.cancelAll()
         Log.d("❌ Deinit: CanvasVideoPlaceholderModel")
+    }
+    
+    func update(volume: Float) {
+        self.volume = volume
     }
 
     override func apply(textures: EditorFilter?) {

@@ -222,4 +222,5 @@ struct Strings: VDEVMediaEditorStrings {
     let settings = "SETTINGS"
     let quality = "QUALITY"
     let questionQualityImage = "AUTO"
+    let sound = "SOUND"
 }

@@ -14,14 +14,14 @@ struct ResultVideoPlayer: View {
     @State private var isPlaying: Bool = false
     
     let videoComposition: AVVideoComposition?
-    let volume: Double
+    let volume: Float
     let thumbnail: UIImage?
     let cornerRadius: CGFloat
     let aspectRatio: CGFloat?
     
     init(avAsset: AVAsset,
          videoComposition: AVVideoComposition? = nil,
-         volume: Double = 0.0,
+         volume: Float = 0.0,
          thumbnail: UIImage? = nil,
          cornerRadius: CGFloat,
          aspectRatio: CGFloat? = nil) {
@@ -35,7 +35,7 @@ struct ResultVideoPlayer: View {
     
     init(assetURL: URL,
          videoComposition: AVVideoComposition? = nil,
-         volume: Double = 0.0,
+         volume: Float = 0.0,
          thumbnail: UIImage? = nil,
          cornerRadius: CGFloat,
          aspectRatio: CGFloat? = nil) {
@@ -73,14 +73,14 @@ struct ResultVideoPlayer: View {
 struct VideoPlayerView: View {
     @State private(set) var avAsset: AVAsset
     @State private var isPlaying: Bool = false
+    @State var volume: Float
     
     let videoComposition: AVVideoComposition?
-    let volume: Double
     let thumbnail: UIImage?
     
     init(avAsset: AVAsset,
          videoComposition: AVVideoComposition?,
-         volume: Double = 0.0,
+         volume: Float,
          thumbnail: UIImage?) {
         self.avAsset = avAsset
         self.videoComposition = videoComposition
@@ -90,8 +90,8 @@ struct VideoPlayerView: View {
     
     init(assetURL: URL,
          videoComposition: AVVideoComposition?,
-         volume: Double = 0.0,
-         thumbnail: UIImage?) {
+         thumbnail: UIImage?,
+         volume: Float) {
         self.init(avAsset: AVAsset(url: assetURL),
                   videoComposition: videoComposition,
                   volume: volume,
@@ -120,7 +120,7 @@ private struct PlayerView: UIViewRepresentable {
     let asset: AVAsset
     var videoComposition: AVVideoComposition?
     @Binding var isPlaying: Bool
-    let volume: Double
+    var volume: Float
     let cornerRadius: CGFloat?
     
     func makeUIView(context: Context) -> _PlayerView {
@@ -193,8 +193,8 @@ final class _PlayerView: UIView {
     }
     
     @discardableResult
-    func setVolume(_ volume: Double) -> Self {
-        player?.volume = Float(volume)
+    func setVolume(_ volume: Float) -> Self {
+        player?.volume = volume
         return self
     }
     

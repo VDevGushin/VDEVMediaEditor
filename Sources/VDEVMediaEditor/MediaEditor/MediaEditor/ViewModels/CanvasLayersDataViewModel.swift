@@ -67,6 +67,13 @@ final class CanvasLayersDataViewModel: ObservableObject {
         layers.remove(item)
         layers.append(copy)
     }
+    
+    func copyReplaceWithOrder(_ item: CanvasItemModel) {
+        guard let index = layers.index(id: item.id) else { return }
+        let copy = item.copy()
+        layers.remove(item)
+        layers.insert(copy, at: index)
+    }
 
     func delete(_ item: CanvasItemModel) {
         let id = item.id
@@ -233,5 +240,22 @@ extension CanvasLayersDataViewModel {
         guard let currentIndex = layers.index(id: itemInCanvas.id) else { return false }
     
         return currentIndex < checkIndex
+    }
+}
+
+// Work with sound
+extension CanvasLayersDataViewModel {
+    func set(sound: Float, for item: CanvasItemModel) {
+        guard let item = layers[id: item.id] else { return }
+        
+        if let item: CanvasVideoModel = CanvasItemModel.toTypeOptional(model: item) {
+            item.update(volume: sound)
+            copyReplaceWithOrder(item)
+        }
+        
+        if let item: CanvasVideoPlaceholderModel = CanvasItemModel.toTypeOptional(model: item) {
+            item.update(volume: sound)
+            copyReplaceWithOrder(item)
+        }
     }
 }

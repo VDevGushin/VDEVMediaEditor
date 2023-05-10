@@ -31,6 +31,7 @@ struct ToolsConcreteItemHorizontal: View {
     private var onDublicate: (CanvasItemModel) -> Void
     private var removeBackgroundML: (CanvasItemModel) -> Void
     private var onMerge: ([CanvasItemModel]) -> Void
+    private var onVolume: (CanvasItemModel, Float) -> Void
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
@@ -54,7 +55,8 @@ struct ToolsConcreteItemHorizontal: View {
          onBack: @escaping (CanvasItemModel) -> Void,
          onDublicate: @escaping (CanvasItemModel) -> Void,
          removeBackgroundML: @escaping (CanvasItemModel) -> Void,
-         onMerge: @escaping ([CanvasItemModel]) -> Void) {
+         onMerge: @escaping ([CanvasItemModel]) -> Void,
+         onVolume: @escaping (CanvasItemModel, Float) -> Void) {
         self.item = item
         self.onClose = onClose
         self.onBringToBack = onBringToBack
@@ -72,6 +74,7 @@ struct ToolsConcreteItemHorizontal: View {
         self.onDublicate = onDublicate
         self.removeBackgroundML = removeBackgroundML
         self.onMerge = onMerge
+        self.onVolume = onVolume
     }
     
     var body: some View {
@@ -108,6 +111,23 @@ struct ToolsConcreteItemHorizontal: View {
                                     title: strings.removeBack) { removeBackgroundML(item) }
                             
                         case .video:
+                            let video1: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
+                            let video2: CanvasVideoPlaceholderModel? = CanvasItemModel.toTypeOptional(model: item)
+                            
+                            if let volume = video1?.volume ?? video2?.volume {
+                                if volume <= 0.0 {
+                                    ToolRow(image: UIImage(systemName: "speaker")!,
+                                            title: strings.sound) {
+                                        onVolume(item, 1.0)
+                                    }
+                                } else {
+                                    ToolRow(image: UIImage(systemName: "speaker.slash")!,
+                                            title: strings.sound) {
+                                        onVolume(item, 0.0)
+                                    }
+                                }
+                            }
+                            
                             ToolRow(image: images.currentItem.currentItemMask,
                                     title: strings.mask) { onMaskFilter(item) }
                             

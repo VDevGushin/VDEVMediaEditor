@@ -13,6 +13,7 @@ import Photos
 // MARK: - Video
 final class CanvasVideoModel: CanvasItemModel {
     private(set) var asset: CanvasItemAsset?
+    private(set) var volume: Float
     
     private var originalVideoURL: URL
     @Published private(set) var avVideoComposition: AVVideoComposition?
@@ -27,6 +28,7 @@ final class CanvasVideoModel: CanvasItemModel {
          thumbnail: UIImage?,
          originalVideoURL: URL? = nil,
          asset: CanvasItemAsset?,
+         volume: Float = 0.0,
          avVideoComposition: AVVideoComposition? = nil,
          adjustmentSettings: AdjustmentSettings? = nil,
          colorFilter: EditorFilter? = nil,
@@ -38,6 +40,7 @@ final class CanvasVideoModel: CanvasItemModel {
         self.videoURL = videoURL
         self.originalVideoURL = originalVideoURL ?? videoURL
         self.avVideoComposition = avVideoComposition
+        self.volume = volume
 
         super.init(type: .video,
                    adjustmentSettings: adjustmentSettings,
@@ -51,6 +54,10 @@ final class CanvasVideoModel: CanvasItemModel {
         thumbnail = nil
         avVideoComposition = nil
         Log.d("❌ Deinit: CanvasVideoModel")
+    }
+    
+    func update(volume: Float) {
+        self.volume = volume
     }
 
     override func apply(colorFilter: EditorFilter?) {
@@ -108,6 +115,7 @@ final class CanvasVideoModel: CanvasItemModel {
                                    textures: textures,
                                    masks: masks)
         new.update(offset: offset, scale: scale, rotation: rotation)
+        new.update(volume: volume)
         return new
     }
 }
