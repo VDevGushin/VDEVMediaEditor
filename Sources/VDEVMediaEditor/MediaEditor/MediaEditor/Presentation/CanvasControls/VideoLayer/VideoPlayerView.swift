@@ -69,8 +69,8 @@ struct ResultVideoPlayer: View {
     }
 }
 
-// MARK: - Fight video player
-struct VideoPlayerView: View {
+// MARK: - PlayerForTemplate
+struct VideoPlayerViewForTempates: View {
     @State private(set) var avAsset: AVAsset
     @State private(set) var isPlaying: Bool = false
     @Binding private(set) var volume: Float
@@ -94,6 +94,59 @@ struct VideoPlayerView: View {
          videoComposition: AVVideoComposition?,
          thumbnail: UIImage?,
          volume: Binding<Float>) {
+        self.init(avAsset: AVAsset(url: assetURL),
+                  videoComposition: videoComposition,
+                  volume: volume,
+                  thumbnail: thumbnail)
+    }
+    
+    var body: some View {
+        PlayerView(asset: avAsset,
+                   videoComposition: videoComposition,
+                   isPlaying: $isPlaying,
+                   volume: $volume,
+                   cornerRadius: nil)
+            .aspectRatio(avAsset.tracks(withMediaType: .video).first?.aspectRatio ?? 1,
+                         contentMode: .fill)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    isPlaying = true
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { (_) in
+                isPlaying = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { (_) in
+                isPlaying = false
+            }
+    }
+}
+
+// MARK: - PlayerForLayer
+struct VideoPlayerViewForLayers: View {
+    @State private(set) var avAsset: AVAsset
+    @State private(set) var isPlaying: Bool = false
+    @State private(set) var volume: Float
+    
+    let videoComposition: AVVideoComposition?
+    let thumbnail: UIImage?
+    
+    init(avAsset: AVAsset,
+         videoComposition: AVVideoComposition?,
+         volume: Float,
+         thumbnail: UIImage?) {
+        self.avAsset = avAsset
+        self.videoComposition = videoComposition
+        self.volume = volume
+        self.thumbnail = thumbnail
+        
+        print("====>", volume)
+    }
+    
+    init(assetURL: URL,
+         videoComposition: AVVideoComposition?,
+         thumbnail: UIImage?,
+         volume: Float) {
         self.init(avAsset: AVAsset(url: assetURL),
                   videoComposition: videoComposition,
                   volume: volume,

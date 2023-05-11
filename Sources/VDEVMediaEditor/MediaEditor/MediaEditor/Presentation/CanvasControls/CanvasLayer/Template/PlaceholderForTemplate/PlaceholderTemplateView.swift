@@ -84,7 +84,7 @@ private extension PlaceholderTemplateView {
                     
                     MovableContentView(item: videoModel, size: proxy.size,
                                        isInManipulation: $isInManipulation) {
-                        VideoPlayerView(assetURL: videoModel.videoURL,
+                        VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
                                         videoComposition: videoModel.avVideoComposition,
                                         thumbnail: videoModel.thumbnail,
                                         volume: binding)
@@ -98,7 +98,7 @@ private extension PlaceholderTemplateView {
                         vm.openEditVariants()
                     }.modifier(
                         TemplateMask(itemForShow: videoModel.maskVideoComposition) {
-                            VideoPlayerView(assetURL: videoModel.videoURL,
+                            VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
                                             videoComposition: $0,
                                             thumbnail: videoModel.thumbnail,
                                             volume: .constant(0.0))

@@ -17,10 +17,10 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
     case .video:
         let item: CanvasVideoModel = CanvasItemModel.toType(model: item)
         ZStack {
-            VideoPlayerView(assetURL: item.videoURL,
+            VideoPlayerViewForLayers(assetURL: item.videoURL,
                             videoComposition: item.avVideoComposition,
                             thumbnail: item.thumbnail,
-                            volume: .constant(item.volume))
+                            volume: item.volume)
             .frame(width: canvasSize.width)
             
             if item.inProgress {
