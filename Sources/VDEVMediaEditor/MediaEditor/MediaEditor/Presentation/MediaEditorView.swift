@@ -195,7 +195,7 @@ fileprivate extension MediaEditorView {
                             .shadow(color: AppColors.whiteWithOpacity, radius: vm.ui.canvasCornerRadius)
                     )
                     .background(
-                        AnimatedGradientView(color: AppColors.whiteWithOpacity.opacity(0.2), duration: 5)
+                        AnimatedGradientView(color: AppColors.whiteWithOpacity, duration: 3)
                     )
                     .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
                     .padding(20.0)
