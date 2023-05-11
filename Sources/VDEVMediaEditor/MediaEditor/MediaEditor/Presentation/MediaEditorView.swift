@@ -189,11 +189,6 @@ fileprivate extension MediaEditorView {
                     .foregroundColor(AppColors.whiteWithOpacity)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .padding(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: vm.ui.canvasCornerRadius)
-                            .strokeBorder(AppColors.whiteWithOpacity,lineWidth: 1.0)
-                            .shadow(color: AppColors.whiteWithOpacity, radius: vm.ui.canvasCornerRadius)
-                    )
                     .background(
                         AnimatedGradientView(color: AppColors.whiteWithOpacity, duration: 3)
                     )
