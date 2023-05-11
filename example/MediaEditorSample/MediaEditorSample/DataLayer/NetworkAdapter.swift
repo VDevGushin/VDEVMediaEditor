@@ -15,15 +15,14 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
         self.client = client
     }
     
-    func startMeta(forChallenge baseChallengeId: String) async -> (String, Bool)? {
+    func startMeta(forChallenge baseChallengeId: String) async -> StartMetaConfig? {
         guard let result = try? await client.challengeMeta(for: baseChallengeId) else {
             return nil
         }
-        
         let title = result.titleLocalized
+        let subTitle = result.subtitleLocalized
         let isAttachedTemplate = result.appAttachedEditorTemplate != nil
-        
-        return (title, isAttachedTemplate)
+        return .init(isAttachedTemplate: isAttachedTemplate, title: title, subTitle: subTitle)
     }
     
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {

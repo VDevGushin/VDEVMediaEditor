@@ -12,6 +12,7 @@ struct ToolsConcreteItemHorizontal: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     
     private weak var item: CanvasItemModel?
     
@@ -111,17 +112,20 @@ struct ToolsConcreteItemHorizontal: View {
                                     title: strings.removeBack) { removeBackgroundML(item) }
                             
                         case .video:
-                            let video: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
-                            if let volume = video?.volume {
-                                if volume <= 0.0 {
-                                    ToolRow(image: images.currentItem.currentItemSoundON,
-                                            title: strings.sound) {
-                                        onVolume(item, 1.0)
-                                    }
-                                } else {
-                                    ToolRow(image: images.currentItem.currentItemSoundOFF,
-                                            title: strings.sound) {
-                                        onVolume(item, 0.0)
+                            
+                            if resultSettings.needSound {
+                                let video: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
+                                if let volume = video?.volume {
+                                    if volume <= 0.0 {
+                                        ToolRow(image: images.currentItem.currentItemSoundON,
+                                                title: strings.sound) {
+                                            onVolume(item, 1.0)
+                                        }
+                                    } else {
+                                        ToolRow(image: images.currentItem.currentItemSoundOFF,
+                                                title: strings.sound) {
+                                            onVolume(item, 0.0)
+                                        }
                                     }
                                 }
                             }

@@ -24,6 +24,9 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published var showRemoveAllAlert: Bool = false
     @Published private(set) var resultResolution: MediaResolution = .fullHD
     
+    @Published private(set) var addMediaButtonTitle: String = ""
+    @Published private(set) var addMediaButtonVisible: Bool = false
+    
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
     
@@ -48,6 +51,7 @@ final class CanvasEditorViewModel: ObservableObject {
         observeOnMain(nested: self.data).store(in: &storage)
         
         resultResolution = resultSettings.resolution.value
+        addMediaButtonTitle = strings.hint
         
         deviceOrientationService.$isFaceDown
             .removeDuplicates()
@@ -124,7 +128,10 @@ final class CanvasEditorViewModel: ObservableObject {
             .map { return !$0.0 && ($0.1 != .zero) && $0.2}
             .removeDuplicates()
             .sink { [weak self] value in
-                if value { self?.getStartTemplate() }
+                if value {
+                    self?.addMediaButtonTitle = self?.settings.subTitle ?? self?.strings.hint ?? ""
+                    self?.getStartTemplate()
+                }
             }
             .store(in: &storage)
         
@@ -138,6 +145,16 @@ final class CanvasEditorViewModel: ObservableObject {
                 case .ultraHD4k, .ultraHD8k: self.set(resolution: .fullHD)
                 default: break
                 }
+            }
+            .store(in: &storage)
+        
+        // Показываь или не показывать кнопку
+        data.$layers.map { $0.isEmpty }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                guard let self = self else { return }
+                self.addMediaButtonVisible = value
             }
             .store(in: &storage)
     }

@@ -116,6 +116,7 @@ fileprivate extension MediaEditorView {
         .fetchSize($vm.ui.editorSize)
         .overlay(content: CenterAxes)
         .overlay(content: Grids)
+        .overlay(content: AddMediaButton)
         .onChange(of: vm.ui.showHorizontalCenter) {
             if $0 { haptics(.light) }
         }
@@ -171,6 +172,36 @@ fileprivate extension MediaEditorView {
                 }
             }
             .allowsHitTesting(false)
+        }
+    }
+    
+    @ViewBuilder
+    func AddMediaButton() -> some View {
+        if vm.addMediaButtonVisible {
+            Button(action: {
+                makeHaptics()
+                vm.tools.openLayersList(false)
+                vm.tools.showAddItemSelector(true)
+                Log.d("Add new layer")
+            }) {
+                Text(vm.addMediaButtonTitle)
+                    .font(AppFonts.elmaTrioRegular(13))
+                    .foregroundColor(AppColors.whiteWithOpacity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .padding(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: vm.ui.canvasCornerRadius)
+                            .strokeBorder(AppColors.whiteWithOpacity,lineWidth: 1.0)
+                            .shadow(color: AppColors.whiteWithOpacity, radius: vm.ui.canvasCornerRadius)
+                    )
+                    .background(
+                        AnimatedGradientView(color: AppColors.whiteWithOpacity.opacity(0.2), duration: 5)
+                    )
+                    .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
+                    .padding(20.0)
+            }
+        } else {
+            EmptyView()
         }
     }
 }

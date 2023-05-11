@@ -7,6 +7,18 @@
 
 import UIKit
 
+public struct StartMetaConfig {
+    public let isAttachedTemplate: Bool
+    public let title: String
+    public let subTitle: String
+    
+    public init(isAttachedTemplate: Bool, title: String, subTitle: String) {
+        self.isAttachedTemplate = isAttachedTemplate
+        self.title = title
+        self.subTitle = subTitle.uppercased()
+    }
+}
+
 public protocol VDEVMediaEditorSourceService {
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter]
     
@@ -18,5 +30,5 @@ public protocol VDEVMediaEditorSourceService {
     
     func stickersPack(forChallenge baseChallengeId: String) async throws -> [(String, [StickerItem])]
     
-    func startMeta(forChallenge baseChallengeId: String) async -> (String, Bool)?
+    func startMeta(forChallenge baseChallengeId: String) async -> StartMetaConfig?
 }

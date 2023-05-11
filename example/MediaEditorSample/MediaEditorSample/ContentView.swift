@@ -43,12 +43,13 @@ final class ResultSettings: VDEVMediaEditorResultSettings {
     var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(true)
     var resolution: VDEVMediaResolution { .fullHD }
     var maximumVideoDuration: Double { 15.0 }
+    var needSound: Bool { false }
 }
 
 final class EditorSettings: VDEVMediaEditorSettings {
-    
     private(set) var baseChallengeId: String
     private(set) var title: String = ""
+    private(set) var subTitle: String? = nil
     private(set) var withAttach: Bool = false
     private(set) var needGuideLinesGrid = true
     private(set) var sourceService: VDEVMediaEditorSourceService
@@ -68,12 +69,13 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private func getMeta() {
         isLoading.send(true)
         Task {
-            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? ("", false)
+            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
             
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
-                self.title = meta.0
-                self.withAttach = meta.1
+                self.title = meta.title
+                self.subTitle = meta.subTitle
+                self.withAttach = meta.isAttachedTemplate
                 self.isLoading.send(false)
             }
         }
@@ -225,4 +227,5 @@ struct Strings: VDEVMediaEditorStrings {
     let quality = "QUALITY"
     let questionQualityImage = "AUTO"
     let sound = "SOUND"
+    let hint = "+ ADD MEDIA"
 }

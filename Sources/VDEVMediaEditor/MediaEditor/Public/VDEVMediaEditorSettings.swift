@@ -12,6 +12,7 @@ public protocol VDEVMediaEditorResultSettings: AnyObject {
     var needAutoEnhance: CurrentValueSubject<Bool, Never> { get set }
     var maximumVideoDuration: Double { get }
     var resolution: VDEVMediaResolution { get }
+    var needSound: Bool { get }
 }
 
 public protocol VDEVMediaEditorSettings {
@@ -21,6 +22,7 @@ public protocol VDEVMediaEditorSettings {
     
     var baseChallengeId: String { get }
     var title: String { get }
+    var subTitle: String? { get }
     var withAttach: Bool { get }
     var sourceService: VDEVMediaEditorSourceService { get }
     

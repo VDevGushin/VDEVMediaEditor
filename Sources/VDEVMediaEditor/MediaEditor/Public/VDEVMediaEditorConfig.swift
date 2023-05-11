@@ -163,4 +163,5 @@ public protocol VDEVMediaEditorStrings {
     var quality: String { get }
     var questionQualityImage: String { get }
     var sound: String { get }
+    var hint: String { get }
 }

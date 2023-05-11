@@ -197,6 +197,7 @@ private struct EditVariants: View {
 private struct ItemEditVariantsView: View {
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
@@ -257,18 +258,20 @@ private struct ItemEditVariantsView: View {
                         }
                     case .video:
                         
-                        let video: CanvasVideoPlaceholderModel? = CanvasItemModel.toTypeOptional(model: item)
-                        
-                        if let videoTemplate = video {
-                            if videoTemplate.volume <= 0.0 {
-                                ToolRow(image: images.currentItem.currentItemSoundON,
-                                        title: strings.sound) {
-                                    onVolume(videoTemplate, 1.0)
-                                }
-                            } else {
-                                ToolRow(image: images.currentItem.currentItemSoundOFF,
-                                        title: strings.sound) {
-                                    onVolume(videoTemplate, 0.0)
+                        if resultSettings.needSound {
+                            let video: CanvasVideoPlaceholderModel? = CanvasItemModel.toTypeOptional(model: item)
+                            
+                            if let videoTemplate = video {
+                                if videoTemplate.volume <= 0.0 {
+                                    ToolRow(image: images.currentItem.currentItemSoundON,
+                                            title: strings.sound) {
+                                        onVolume(videoTemplate, 1.0)
+                                    }
+                                } else {
+                                    ToolRow(image: images.currentItem.currentItemSoundOFF,
+                                            title: strings.sound) {
+                                        onVolume(videoTemplate, 0.0)
+                                    }
                                 }
                             }
                         }
