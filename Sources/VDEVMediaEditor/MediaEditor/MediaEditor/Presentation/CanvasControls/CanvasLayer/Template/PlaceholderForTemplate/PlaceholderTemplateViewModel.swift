@@ -16,14 +16,14 @@ final class PlaceholderTemplateViewModel: ObservableObject {
     @Published private(set) var inProgress: Bool = false
     @Published private(set) var imageModel: CanvasImagePlaceholderModel?
     @Published private(set) var videoModel: CanvasVideoPlaceholderModel?
-    
     @Published private(set) var showSelection: Bool = false
+    
+    @Published var volume: Float = 0.0
+    @Published private(set) var isEmpty: Bool = true
 
     private let aplayer: CanvasApplayer = .init()
     
     var size: CGSize { imageModel?.imageSize ?? videoModel?.size ?? .zero }
-    
-    var isEmpty: Bool { imageModel == nil && videoModel == nil }
     
     private var storage: Set<AnyCancellable> = Set()
 
@@ -60,17 +60,9 @@ extension PlaceholderTemplateViewModel {
             
             delegate?.changeSound = { [weak self] item, volume in
                 guard let self = self else { return }
-                
                 self.showSelection = false
-                guard let videoModel = self.videoModel,
-                      videoModel.id == item.id else { return }
-                
-                let videoItem = CanvasVideoPlaceholderModel.changeVolume(from: item, volume: volume)
-                
-                Task {
-                    await self.reset()
-                    await self.setVideo(model: videoItem)
-                }
+                self.videoModel?.update(volume: volume)
+                self.volume = volume
             }
             
             delegate?.showMediaEditor(item: canvasItem)
@@ -141,17 +133,17 @@ fileprivate extension PlaceholderTemplateViewModel {
         videoModel = nil
         item.update(imageModel: nil)
         item.update(videoModel: nil)
+        isEmpty = imageModel == nil && videoModel == nil
     }
 
     @MainActor
     func setImage(model: CanvasImagePlaceholderModel?) async {
         inProgress = false
         imageModel = model
-
         guard let iModel = imageModel else { return }
-
         item.update(imageModel: iModel)
         observe(nested: iModel).store(in: &storage)
+        isEmpty = false
     }
 
     @MainActor
@@ -161,6 +153,8 @@ fileprivate extension PlaceholderTemplateViewModel {
         guard let vModel = videoModel else { return }
         item.update(videoModel: vModel)
         observe(nested: vModel).store(in: &storage)
+        volume = vModel.volume
+        isEmpty = false
     }
 }
 

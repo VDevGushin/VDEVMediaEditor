@@ -14,8 +14,6 @@ typealias MixerThrowsCallback = () throws -> CombinerOutput
 
 // Render one video from others
 final class VideoMixer {
-    @Injected private var resultSettings: VDEVMediaEditorResultSettings
-    
     enum MixerError: Error {
         case couldNotGenerateThumbnail
         case couldNotMakeExporter
@@ -31,7 +29,7 @@ final class VideoMixer {
         self.progressObserver = progressObserver
     }
     
-    func composeVideo(data: [CombinerAsset], withAudio: Bool = false) async throws -> CombinerOutput {
+    func composeVideo(data: [CombinerAsset], withAudio: Bool = true) async throws -> CombinerOutput {
         let mixComposition = AVMutableComposition()
         let audioMix = AVMutableAudioMix()
         
@@ -117,12 +115,8 @@ final class VideoMixer {
                         }
                     }
                 case .image(let imageBody):
-                    var image = imageBody.ciImage
-                    
-                    if resultSettings.needAutoEnhance.value {
-                        image = image.autoEnhance()
-                    }
-                    
+                    let image = imageBody.ciImage
+                
                     let instruction = VideoCompositorWithImageInstruction.LayerInstruction(
                         ciImage: image,
                         transform: element.transform

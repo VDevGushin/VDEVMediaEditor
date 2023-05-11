@@ -41,8 +41,6 @@ final class VideoCompositorWithImageInstruction: NSObject, AVVideoCompositionIns
 }
 
 final class VideoCompositorWithImage: NSObject, AVVideoCompositing {
-    @Injected private var resultSettings: VDEVMediaEditorResultSettings
-    
     enum CompositorError: Error {
         case compositorSupportsOnlySelfInstructions
         case problemWithPixelBufferInit
@@ -98,10 +96,6 @@ final class VideoCompositorWithImage: NSObject, AVVideoCompositing {
                         transform: layerInstruction.transform
                     )
             }
-        }
-        
-        if resultSettings.needAutoEnhance.value {
-            outImage = outImage.autoEnhance()
         }
         
         outImage = outImage

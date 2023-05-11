@@ -81,7 +81,7 @@ private extension PlaceholderTemplateView {
                         VideoPlayerView(assetURL: videoModel.videoURL,
                                         videoComposition: videoModel.avVideoComposition,
                                         thumbnail: videoModel.thumbnail,
-                                        volume: videoModel.volume)
+                                        volume: $vm.volume)
                         .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
                     } onTap: {
                         haptics(.light)
@@ -91,14 +91,12 @@ private extension PlaceholderTemplateView {
                         haptics(.light)
                         vm.openEditVariants()
                     }.modifier(
-                        TemplateMask(itemForShow: videoModel.maskVideoComposition) { _ in
-                            Color.red
-                                .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
-//                            VideoPlayerView(assetURL: videoModel.videoURL,
-//                                            videoComposition: $0,
-//                                            thumbnail: videoModel.thumbnail,
-//                                            volume: videoModel.volume)
-//                            .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
+                        TemplateMask(itemForShow: videoModel.maskVideoComposition) {
+                            VideoPlayerView(assetURL: videoModel.videoURL,
+                                            videoComposition: $0,
+                                            thumbnail: videoModel.thumbnail,
+                                            volume: .constant(0.0))
+                            .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
                         }
                     )
                     .overlay {

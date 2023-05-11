@@ -20,7 +20,7 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
             VideoPlayerView(assetURL: item.videoURL,
                             videoComposition: item.avVideoComposition,
                             thumbnail: item.thumbnail,
-                            volume: item.volume)
+                            volume: .constant(item.volume))
             .frame(width: canvasSize.width)
             
             if item.inProgress {

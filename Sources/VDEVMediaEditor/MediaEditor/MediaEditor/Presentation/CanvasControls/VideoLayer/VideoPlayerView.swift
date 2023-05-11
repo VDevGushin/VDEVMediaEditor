@@ -72,26 +72,28 @@ struct ResultVideoPlayer: View {
 // MARK: - Fight video player
 struct VideoPlayerView: View {
     @State private(set) var avAsset: AVAsset
-    @State private var isPlaying: Bool = false
-    @State var volume: Float
+    @State private(set) var isPlaying: Bool = false
+    @Binding private(set) var volume: Float
     
     let videoComposition: AVVideoComposition?
     let thumbnail: UIImage?
     
     init(avAsset: AVAsset,
          videoComposition: AVVideoComposition?,
-         volume: Float,
+         volume: Binding<Float>,
          thumbnail: UIImage?) {
         self.avAsset = avAsset
         self.videoComposition = videoComposition
-        self.volume = volume
+        self._volume = volume
         self.thumbnail = thumbnail
+        
+        print("====>", volume)
     }
     
     init(assetURL: URL,
          videoComposition: AVVideoComposition?,
          thumbnail: UIImage?,
-         volume: Float) {
+         volume: Binding<Float>) {
         self.init(avAsset: AVAsset(url: assetURL),
                   videoComposition: videoComposition,
                   volume: volume,
@@ -99,7 +101,11 @@ struct VideoPlayerView: View {
     }
     
     var body: some View {
-        PlayerView(asset: avAsset, videoComposition: videoComposition, isPlaying: $isPlaying, volume: $volume, cornerRadius: nil)
+        PlayerView(asset: avAsset,
+                   videoComposition: videoComposition,
+                   isPlaying: $isPlaying,
+                   volume: $volume,
+                   cornerRadius: nil)
             .aspectRatio(avAsset.tracks(withMediaType: .video).first?.aspectRatio ?? 1,
                          contentMode: .fill)
             .onAppear {
@@ -117,11 +123,21 @@ struct VideoPlayerView: View {
 }
 
 private struct PlayerView: UIViewRepresentable {
-    let asset: AVAsset
-    var videoComposition: AVVideoComposition?
-    @Binding var isPlaying: Bool
-    @Binding var volume: Float
-    let cornerRadius: CGFloat?
+    @Binding private var isPlaying: Bool
+    @Binding private var volume: Float
+    private let asset: AVAsset
+    private var videoComposition: AVVideoComposition?
+    private let cornerRadius: CGFloat?
+    
+    init(asset: AVAsset,
+         videoComposition: AVVideoComposition?,
+         isPlaying: Binding<Bool>, volume: Binding<Float>, cornerRadius: CGFloat?) {
+        self.asset = asset
+        self.videoComposition = videoComposition
+        self._isPlaying = isPlaying
+        self._volume = volume
+        self.cornerRadius = cornerRadius
+    }
     
     func makeUIView(context: Context) -> _PlayerView {
         let view = _PlayerView()
@@ -129,6 +145,11 @@ private struct PlayerView: UIViewRepresentable {
         view.layer.cornerRadius = cornerRadius ?? 0.0
         view.playerLayer.cornerRadius = cornerRadius ?? 0.0
         return view
+    }
+    
+    static func dismantleUIView(_ uiView: _PlayerView, coordinator: ()) {
+        uiView.setPlaying(false)
+        uiView.removeFromSuperview()
     }
     
     func updateUIView(_ uiView: _PlayerView, context: Context) {
@@ -145,41 +166,39 @@ final class _PlayerView: UIView {
     
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
     
+    deinit {
+        Log.d("❌ Deinit: _PlayerView")
+    }
+    
     var player: AVPlayer? {
         get { playerLayer.player }
         set { playerLayer.player = newValue }
     }
     
-    @discardableResult
     func replaceIfNeeded(with asset: AVAsset) -> Self {
         if player?.currentItem?.asset != asset {
-            replaceCurrentItem(with: asset)
+            return replaceCurrentItem(with: asset)
         }
         
         return self
     }
     
-    @discardableResult
     func replaceCurrentItem(with asset: AVAsset) -> Self {
         try? AVAudioSession.sharedInstance().setCategory(.playback)
         let playerItem = AVPlayerItem(asset: asset)
         let player = AVPlayer(playerItem: playerItem)
         playerLayer.player = player
-        setItemToLoop()
-        return self
+        return setItemToLoop()
     }
     
-    @discardableResult
-    func setPlaying(_ isPlaying: Bool) -> Self {
+    func setPlaying(_ isPlaying: Bool){
         if isPlaying {
             player?.play()
         } else {
             player?.pause()
         }
-        return self
     }
     
-    @discardableResult
     func setVideoComposition(videoComposition: AVVideoComposition?) -> Self {
         player?.currentItem?.videoComposition = videoComposition
         
@@ -192,16 +211,16 @@ final class _PlayerView: UIView {
         return self
     }
     
-    @discardableResult
     func setVolume(_ volume: Float) -> Self {
         player?.volume = volume
         return self
     }
     
     // MARK: Loop mechanism
-    private func setItemToLoop() {
+    private func setItemToLoop() -> Self {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime), name: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+        return self
     }
     
     @objc private func playerItemDidPlayToEndTime() {
