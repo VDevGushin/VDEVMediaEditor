@@ -261,12 +261,12 @@ private struct ItemEditVariantsView: View {
                         
                         if let videoTemplate = video {
                             if videoTemplate.volume <= 0.0 {
-                                ToolRow(image: images.currentItem.currentItemTexture,
+                                ToolRow(image: images.currentItem.currentItemSoundON,
                                         title: strings.sound) {
                                     onVolume(videoTemplate, 1.0)
                                 }
                             } else {
-                                ToolRow(image: images.currentItem.currentItemTexture,
+                                ToolRow(image: images.currentItem.currentItemSoundOFF,
                                         title: strings.sound) {
                                     onVolume(videoTemplate, 0.0)
                                 }

@@ -114,12 +114,12 @@ struct ToolsConcreteItemHorizontal: View {
                             let video: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
                             if let volume = video?.volume {
                                 if volume <= 0.0 {
-                                    ToolRow(image: images.currentItem.currentItemTexture,
+                                    ToolRow(image: images.currentItem.currentItemSoundON,
                                             title: strings.sound) {
                                         onVolume(item, 1.0)
                                     }
                                 } else {
-                                    ToolRow(image: images.currentItem.currentItemTexture,
+                                    ToolRow(image: images.currentItem.currentItemSoundOFF,
                                             title: strings.sound) {
                                         onVolume(item, 0.0)
                                     }

@@ -122,6 +122,8 @@ struct Images: VDEVImageConfig {
         var currentItemTexture: UIImage = .init(named: "CurrentItemTexture")!
         var currentItemUp: UIImage = .init(named: "CurrentItemUp")!
         var currentItemMerge: UIImage = .init(named: "CurrentItemMerge")!
+        var currentItemSoundON: UIImage = .init(named: "CurrentItemSoundON")!
+        var currentItemSoundOFF: UIImage = .init(named: "CurrentItemSoundOFF")!
     }
     
     struct TextEdit: VDEVMediaEditorButtonsTextEditingImages {
