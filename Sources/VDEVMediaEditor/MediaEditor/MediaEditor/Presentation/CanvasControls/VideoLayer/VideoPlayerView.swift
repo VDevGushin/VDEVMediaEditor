@@ -212,7 +212,9 @@ final class _PlayerView: UIView {
     }
     
     func setVolume(_ volume: Float) -> Self {
-        player?.volume = volume
+        if volume != player?.volume {
+            player?.volume = volume
+        }
         return self
     }
     

@@ -75,13 +75,19 @@ private extension PlaceholderTemplateView {
                     }
                 }
 
-                vm.videoModel.map { videoModel in
+                if let videoModel = vm.videoModel {
+                    
+                    let binding = Binding(
+                        get: { videoModel.volume },
+                        set: { videoModel.update(volume: $0) }
+                    )
+                    
                     MovableContentView(item: videoModel, size: proxy.size,
                                        isInManipulation: $isInManipulation) {
                         VideoPlayerView(assetURL: videoModel.videoURL,
                                         videoComposition: videoModel.avVideoComposition,
                                         thumbnail: videoModel.thumbnail,
-                                        volume: $vm.volume)
+                                        volume: binding)
                         .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
                     } onTap: {
                         haptics(.light)
@@ -107,6 +113,9 @@ private extension PlaceholderTemplateView {
                         }
                     }
                 }
+//                vm.videoModel.map { videoModel in
+//
+//                }
             }
         }
         .overlay {

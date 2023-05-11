@@ -43,7 +43,7 @@ final class ResultSettings: VDEVMediaEditorResultSettings {
     var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(true)
     var resolution: VDEVMediaResolution { .fullHD }
     var maximumVideoDuration: Double { 15.0 }
-    var needSound: Bool { false }
+    var needSound: Bool { true }
 }
 
 final class EditorSettings: VDEVMediaEditorSettings {

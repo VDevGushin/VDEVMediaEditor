@@ -17,8 +17,6 @@ final class PlaceholderTemplateViewModel: ObservableObject {
     @Published private(set) var imageModel: CanvasImagePlaceholderModel?
     @Published private(set) var videoModel: CanvasVideoPlaceholderModel?
     @Published private(set) var showSelection: Bool = false
-    
-    @Published var volume: Float = 0.0
     @Published private(set) var isEmpty: Bool = true
 
     private let aplayer: CanvasApplayer = .init()
@@ -60,9 +58,9 @@ extension PlaceholderTemplateViewModel {
             
             delegate?.changeSound = { [weak self] item, volume in
                 guard let self = self else { return }
-                self.showSelection = false
                 self.videoModel?.update(volume: volume)
-                self.volume = volume
+                //self.volume = volume
+                self.showSelection = false
             }
             
             delegate?.showMediaEditor(item: canvasItem)
@@ -153,7 +151,6 @@ fileprivate extension PlaceholderTemplateViewModel {
         guard let vModel = videoModel else { return }
         item.update(videoModel: vModel)
         observe(nested: vModel).store(in: &storage)
-        volume = vModel.volume
         isEmpty = false
     }
 }

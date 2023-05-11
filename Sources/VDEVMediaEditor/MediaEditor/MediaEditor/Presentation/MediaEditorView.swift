@@ -188,12 +188,10 @@ fileprivate extension MediaEditorView {
                     .font(AppFonts.elmaTrioRegular(13))
                     .foregroundColor(AppColors.whiteWithOpacity)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .padding(12)
                     .background(
                         AnimatedGradientView(color: AppColors.whiteWithOpacity, duration: 3)
                     )
                     .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
-                    .padding(20.0)
             }
         } else {
             EmptyView()

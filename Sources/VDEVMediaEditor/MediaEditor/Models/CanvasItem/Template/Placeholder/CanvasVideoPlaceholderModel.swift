@@ -17,7 +17,6 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     @Published private(set) var volume: Float
     @Published private(set) var avVideoComposition: AVVideoComposition?
     @Published private(set) var maskVideoComposition: AVVideoComposition?
-
     @Published var inProgress: Bool = false
     
     private(set) var thumbnail: UIImage?
