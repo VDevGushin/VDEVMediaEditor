@@ -128,9 +128,12 @@ final class CanvasEditorViewModel: ObservableObject {
             .map { return !$0.0 && ($0.1 != .zero) && $0.2}
             .removeDuplicates()
             .sink { [weak self] value in
-                if value {
-                    self?.addMediaButtonTitle = self?.settings.subTitle ?? self?.strings.hint ?? ""
-                    self?.getStartTemplate()
+                guard let self = self else { return }
+                
+                if value {  
+                    self.addMediaButtonTitle = self.settings.subTitle ?? self.strings.hint
+                    if self.addMediaButtonTitle == "" { self.addMediaButtonTitle = self.strings.hint}
+                    self.getStartTemplate()
                 }
             }
             .store(in: &storage)
