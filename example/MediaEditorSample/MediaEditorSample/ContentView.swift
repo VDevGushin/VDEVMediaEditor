@@ -68,17 +68,22 @@ final class EditorSettings: VDEVMediaEditorSettings {
 
     private func getMeta() {
         isLoading.send(true)
-        Task {
-            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-            
-            await MainActor.run { [weak self] in
-                guard let self = self else { return }
-                self.title = meta.title
-                self.subTitle = meta.subTitle
-                self.withAttach = meta.isAttachedTemplate
-                self.isLoading.send(false)
-            }
-        }
+        title = "SHARE YOUR RESULT!"
+        subTitle = "+ ADD MEDIA"
+        withAttach = false
+        self.isLoading.send(false)
+        
+//        Task {
+//            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+//
+//            await MainActor.run { [weak self] in
+//                guard let self = self else { return }
+//                self.title = meta.title
+//                self.subTitle = meta.subTitle
+//                self.withAttach = meta.isAttachedTemplate
+//                self.isLoading.send(false)
+//            }
+//        }
     }
     
     func getStartTemplate(for size: CGSize,

@@ -31,7 +31,10 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
                 await TemplatePack(from: $0, challengeTitle: challengeTitle)
             }
     }
+}
 
+// MARK: - Stikers
+extension NetworkAdapter {
     func stickersPack(forChallenge baseChallengeId: String) async throws -> [(String, [StickerItem])] {
         await VDEVDataBuilder.stickers()
 //        try await client.stickers(forChallenge: baseChallengeId).map { stickerPack -> (String, [StickerItem]) in
