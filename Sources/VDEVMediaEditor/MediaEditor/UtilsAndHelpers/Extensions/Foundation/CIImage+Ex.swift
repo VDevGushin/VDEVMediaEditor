@@ -12,7 +12,8 @@ extension CIImage {
     func autoEnhance() -> CIImage {
         var ciImage = self
         
-        let adjustments = ciImage.autoAdjustmentFilters()
+        //let adjustments = ciImage.autoAdjustmentFilters()
+        let adjustments = ciImage.autoAdjustmentFilters(options: [.redEye: false, .enhance: true, .crop: false, .level: false])
         
         for filter in adjustments {
             
