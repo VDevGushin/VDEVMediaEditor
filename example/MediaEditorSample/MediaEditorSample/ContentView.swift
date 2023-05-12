@@ -180,7 +180,7 @@ struct Strings: VDEVMediaEditorStrings {
     let crop = "CROP"
     let removeBack = "REMOVE BG"
     let editText = "EDIT"
-    let dublicate = "DUBLICATE"
+    let dublicate = "DUPLICATE"
     let reset = "RESET"
     let remove = "REMOVE"
     let up = "UP"

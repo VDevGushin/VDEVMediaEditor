@@ -10,14 +10,14 @@ import UIKit
 
 public struct StickerItem: GridToolItem {
     static let cellAspect: CGFloat = 1
-
+    
     var url: URL
+    
     var coverUrl: URL? { url }
+    
     static var contentMode: UIView.ContentMode { .scaleAspectFit }
     
-    public init(url: URL) {
-        self.url = url
-    }
+    public init(url: URL) { self.url = url }
 }
 
 final class StickersDataSource: SectionedDataSource, ObservableObject {

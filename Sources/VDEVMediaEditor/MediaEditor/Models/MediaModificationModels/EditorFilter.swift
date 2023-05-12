@@ -8,6 +8,14 @@
 import Foundation
 import SwiftUI
 
+// FOR UI
+extension EditorFilter: GridToolItem {
+    var coverUrl: URL? { cover }
+    static var cellAspect: CGFloat { 16/9 }
+    static var contentMode: UIView.ContentMode { .scaleAspectFill }
+}
+
+// Public model
 public struct EditorFilter: Equatable {
     var id: String
     var name: String
@@ -25,14 +33,12 @@ public struct EditorFilter: Equatable {
     }
 
     public static func == (lhs: EditorFilter,
-                           rhs: EditorFilter) -> Bool {
-        lhs.id == rhs.id
-    }
+                           rhs: EditorFilter) -> Bool { lhs.id == rhs.id }
     
     public struct Step {
         var type: StepType
         var url: URL?
-        var settings: StepSettings?
+        var settings: StepSettings? // RAW JSON
         
         public init(type: StepType,
                     url: URL? = nil,
@@ -48,9 +54,7 @@ public struct EditorFilter: Equatable {
             case texture
             
             public init?(value: String) {
-                guard let value = StepType(rawValue: value) else {
-                    return nil
-                }
+                guard let value = StepType(rawValue: value) else { return nil }
                 self = value
             }
         }
@@ -123,15 +127,9 @@ extension Array where Element == EditorFilter.Step {
     }
 }
 
-extension EditorFilter: GridToolItem {
-    var coverUrl: URL? { cover }
-    static var cellAspect: CGFloat { 16/9 }
-    static var contentMode: UIView.ContentMode { .scaleAspectFill }
-}
-
+// MARK: - MASK Filter
 extension Array where Element ==  EditorFilter.Step {
     var noMask: [Element] { self.filter { $0.type != .mask } }
-
     var mask: [Element] { self.filter { $0.type == .mask } }
 }
 

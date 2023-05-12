@@ -26,7 +26,9 @@ public protocol VDEVMediaEditorSourceService {
     
     func masks(forChallenge baseChallengeId: String) async throws -> [EditorFilter]
     
-    func editorTemplates(forChallenge baseChallengeId: String, challengeTitle: String, renderSize: CGSize) async throws -> [TemplatePack]
+    func editorTemplates(forChallenge baseChallengeId: String,
+                         challengeTitle: String,
+                         renderSize: CGSize) async throws -> [TemplatePack]
     
     func stickersPack(forChallenge baseChallengeId: String) async throws -> [(String, [StickerItem])]
     
