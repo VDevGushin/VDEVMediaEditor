@@ -33,24 +33,25 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
     }
 
     func stickersPack(forChallenge baseChallengeId: String) async throws -> [(String, [StickerItem])] {
-        try await client.stickers(forChallenge: baseChallengeId).map { stickerPack -> (String, [StickerItem]) in
-
-            let name = stickerPack.titleLocalized
-
-            let items = stickerPack.stickersFull.compactMap { sticker -> StickerItem? in
-                guard let url = sticker.uri.url else { return nil }
-                return StickerItem(url: url)
-            }
-
-            return (name, items)
-        }
+        await VDEVDataBuilder.stickers()
+//        try await client.stickers(forChallenge: baseChallengeId).map { stickerPack -> (String, [StickerItem]) in
+//
+//            let name = stickerPack.titleLocalized
+//
+//            let items = stickerPack.stickersFull.compactMap { sticker -> StickerItem? in
+//                guard let url = sticker.uri.url else { return nil }
+//                return StickerItem(url: url)
+//            }
+//
+//            return (name, items)
+//        }
     }
 }
 
 // MARK: - Masks
 extension NetworkAdapter {
     func masks(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {
-        return await MockBuilder.masks()
+        return await VDEVDataBuilder.masks()
 //        do {
 //            let result =  try await client.masks(forChallenge: baseChallengeId).compactMap { editorFilter -> EditorFilter? in
 //                guard let coverUrl = editorFilter.cover?.url else { return nil }
@@ -74,7 +75,7 @@ extension NetworkAdapter {
 // MARK: - Textures
 extension NetworkAdapter {
     func textures(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {
-        return await MockBuilder.textures()
+        return await VDEVDataBuilder.textures()
 //        do {
 //            let result = try await client.textures(forChallenge: baseChallengeId).compactMap { editorFilter -> EditorFilter? in
 //                guard let coverUrl = editorFilter.cover?.url else { return nil }
@@ -100,7 +101,7 @@ extension NetworkAdapter {
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {
         // OLD get from network
         // return try await client.filters(forChallenge: baseChallengeId).compactMap { filter -> EditorFilter? in
-        return await MockBuilder.filters()
+        return await VDEVDataBuilder.filters()
     }
 }
 
