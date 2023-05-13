@@ -11,6 +11,7 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
+    @Injected private var settings: VDEVMediaEditorSettings
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -189,9 +190,10 @@ fileprivate extension MediaEditorView {
                     .foregroundColor(AppColors.whiteWithOpacity)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .background(
-                        AnimatedGradientView(color: AppColors.whiteWithOpacity, duration: 3)
+                        AnimatedGradientView(color: AppColors.whiteWithOpacity2, duration: 3)
                     )
                     .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
+                    .padding(settings.isInternalModule == true ? 0: 20)
             }
         } else {
             EmptyView()

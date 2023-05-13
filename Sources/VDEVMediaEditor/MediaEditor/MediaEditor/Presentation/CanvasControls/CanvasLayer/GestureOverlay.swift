@@ -34,6 +34,13 @@ protocol _UIHostingViewDelegate: AnyObject {
     func zoomOut()
 }
 
+fileprivate extension UIEdgeInsets {
+    func inverted() -> UIEdgeInsets {
+        return UIEdgeInsets(top: -top, left: -left,
+                            bottom: -bottom, right: -right)
+    }
+}
+
 final class _UIHostingView<Content: View>: UIHostingView<Content>{
     weak var delegate: _UIHostingViewDelegate?
     
