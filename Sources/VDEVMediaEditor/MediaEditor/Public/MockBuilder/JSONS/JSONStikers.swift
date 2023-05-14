@@ -7,26 +7,26 @@
 
 import Foundation
 
-// MARK: - Welcome
 struct StickersData: Codable {
-    let data: DataClass
+    let stickers: [Sticker]
 }
 
-// MARK: - DataClass
-struct DataClass: Codable {
-    let baseChallenges: [BaseChallenge]
-}
-
-// MARK: - BaseChallenge
-struct BaseChallenge: Codable {
+// MARK: - Sticker
+struct Sticker: Codable {
     let attachedStickerPacks: [AttachedStickerPack]
 }
 
 // MARK: - AttachedStickerPack
-struct AttachedStickerPack: Codable {
-    let id: String
-    let titleLocalized: String
+struct AttachedStickerPack: Codable, Equatable, Hashable {
+    let id, titleLocalized: String
     let stickersFull: [StickersFull]
+    
+    static func == (lhs: AttachedStickerPack,
+                           rhs: AttachedStickerPack) -> Bool { lhs.id == rhs.id }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 // MARK: - StickersFull
@@ -36,8 +36,7 @@ struct StickersFull: Codable {
 
 let stickersJSON: String = """
 {
-  "data": {
-    "baseChallenges": [
+    "stickers": [
       {
         "attachedStickerPacks": []
       },
@@ -3390,5 +3389,4 @@ let stickersJSON: String = """
       }
     ]
   }
-}
 """
