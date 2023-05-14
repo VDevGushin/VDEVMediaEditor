@@ -61,7 +61,7 @@ final class CanvasEditorViewModel: ObservableObject {
                 guard let self = self else { return }
                 if self.showRemoveAllAlert { return }
                 if self.data.isEmpty { return }
-                
+                makeHaptics()
                 self.showRemoveAllAlert = value
             }
             .store(in: &storage)
@@ -152,9 +152,11 @@ final class CanvasEditorViewModel: ObservableObject {
             .store(in: &storage)
         
         // Показываь или не показывать кнопку
-        data.$layers.map { $0.isEmpty }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
+        data.$layers
+            .combineLatest(tools.$currentToolItem)
+            .map {
+                $0.0.isEmpty && $0.1 != .drawing
+            }
             .sink { [weak self] value in
                 guard let self = self else { return }
                 self.addMediaButtonVisible = value
