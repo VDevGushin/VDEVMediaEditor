@@ -157,9 +157,9 @@ final class CanvasEditorViewModel: ObservableObject {
             .map {
                 $0.0.isEmpty && $0.1 != .drawing
             }
+            .removeDuplicates()
             .sink { [weak self] value in
-                guard let self = self else { return }
-                self.addMediaButtonVisible = value
+                self?.addMediaButtonVisible = value
             }
             .store(in: &storage)
     }
@@ -177,9 +177,7 @@ final class CanvasEditorViewModel: ObservableObject {
         merger.merge(layers: layers, on: ui.editorSize)
     }
     
-    func contentViewDidLoad() {
-        self.contentPreviewDidLoad = true
-    }
+    func contentViewDidLoad() { self.contentPreviewDidLoad = true }
 }
 
 // FIXME: - Перенести в другое место

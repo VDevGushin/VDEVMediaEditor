@@ -15,7 +15,7 @@ struct AnimatedGradientView: View {
     private var duration: Double
 
     private var colors: [Color] {
-        [color, .clear]
+        [color.opacity(0.2), .clear]
     }
     
     init(color: Color, duration: Double = 2) {
@@ -27,7 +27,7 @@ struct AnimatedGradientView: View {
         LinearGradient(gradient: Gradient(colors: colors), startPoint: start, endPoint: end)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
-                withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses:true)) {
+                withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
                     start = nextPointFrom(self.start)
                     end = nextPointFrom(self.end)
                 }
@@ -38,24 +38,23 @@ struct AnimatedGradientView: View {
     func nextPointFrom(_ currentPoint: UnitPoint) -> UnitPoint {
         switch currentPoint {
         case .top:
-            return .topLeading
-        case .topLeading:
-            return .leading
-        case .leading:
-            return .bottomLeading
-        case .bottomLeading:
-            return .bottom
-        case .bottom:
-            return .bottomTrailing
-        case .bottomTrailing:
-            return .trailing
-        case .trailing:
             return .topTrailing
         case .topTrailing:
+            return .trailing
+        case .trailing:
+            return .bottomTrailing
+        case .bottomTrailing:
+            return .bottom
+        case .bottom:
+            return .bottomLeading
+        case .bottomLeading:
+            return .leading
+        case .leading:
+            return .topLeading
+        case .topLeading:
             return .top
         default:
-            print("Unknown point")
-            return .top
+            return currentPoint
         }
     }
 }

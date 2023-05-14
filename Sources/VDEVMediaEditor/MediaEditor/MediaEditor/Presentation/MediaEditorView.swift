@@ -193,7 +193,7 @@ fileprivate extension MediaEditorView {
                         AnimatedGradientView(color: AppColors.whiteWithOpacity2, duration: 3)
                     )
                     .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
-                    .padding(settings.isInternalModule == true ? 0: 20)
+                    .padding(settings.isInternalModule == true ? 0: 12)
             }
         } else {
             EmptyView()
