@@ -24,12 +24,19 @@ struct ToolAdjustments: View {
 
     init(_ item: CanvasItemModel) {
         self.item = item
+        
+        let colorFilters = CIFilter(name: "CIColorControls")!
+        
+        let currentContrastValue: Double = colorFilters.value(forKey: kCIInputContrastKey) as? Double ?? 0.0
+        let currentBrightnessValue: Double = colorFilters.value(forKey: kCIInputBrightnessKey) as? Double ?? 0.0
+        let currentSaturationValue: Double = colorFilters.value(forKey: kCIInputSaturationKey) as? Double ?? 1.0
+        
         toolItems = [
-            AdjustToolItem(title: strings.brightness, min: -0.1, max: 0.1, normal: 0),
-            AdjustToolItem(title: strings.contrast, min: 0.9, max: 1, normal: 1),
-            AdjustToolItem(title: strings.saturation, min: 0.0, max: 2, normal: 1),
-            AdjustToolItem(title: strings.highlight, min: 0.0, max: 1, normal: 1),
-            AdjustToolItem(title: strings.shadow, min: 0.0, max: 1, normal: 0)
+            AdjustToolItem(title: strings.brightness, min: -0.5, max: 0.5, normal: currentBrightnessValue),
+            AdjustToolItem(title: strings.contrast, min: 0, max: 2, normal: currentContrastValue),
+            AdjustToolItem(title: strings.saturation, min: 0, max: 2, normal: currentSaturationValue),
+            AdjustToolItem(title: strings.highlight, min: 0, max: 1, normal: 0.5),
+            AdjustToolItem(title: strings.shadow, min: -1, max: 1, normal: 0)
         ]
     }
 

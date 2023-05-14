@@ -131,7 +131,7 @@ private struct PickMediaContainer: View {
 fileprivate extension MediaEditorToolsForTemplateView {
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: strings.adjustments, fullScreen: false) {
+        ToolWrapper(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
         } tool: {

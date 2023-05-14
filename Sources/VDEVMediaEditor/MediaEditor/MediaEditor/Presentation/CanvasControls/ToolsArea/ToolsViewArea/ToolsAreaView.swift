@@ -450,7 +450,7 @@ fileprivate extension ToolsAreaView {
     // добавление аджастментов
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: strings.adjustments, fullScreen: false) {
+        ToolWrapper(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             ToolAdjustments(item)
