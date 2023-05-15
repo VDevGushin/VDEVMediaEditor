@@ -46,7 +46,6 @@ struct ToolWrapper<Tool: View>: View {
                 BlurView(style: .systemChromeMaterialDark)
                     .clipShape(RoundedCorner(radius: 16, corners: [.topLeft, .topRight]))
                     .edgesIgnoringSafeArea([.bottom, .trailing, .leading])
-                    .opacity(withBackground ? 1.0 : 0.5)
             )
         }
     }
