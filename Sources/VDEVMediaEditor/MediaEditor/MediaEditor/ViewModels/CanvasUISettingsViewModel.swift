@@ -12,7 +12,7 @@ import Combine
 final class CanvasUISettingsViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
     
-    @Published var mainLayerBackgroundColor: Color = .init(hexadecimal: "18191A")
+    @Published var mainLayerBackgroundColor: Color = .init(hexadecimal: "0d0e0e")
     @Published var showVerticalCenter: Bool = false
     @Published var showHorizontalCenter: Bool = false
     

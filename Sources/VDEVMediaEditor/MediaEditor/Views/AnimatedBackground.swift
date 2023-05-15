@@ -15,7 +15,7 @@ struct AnimatedGradientView: View {
     private var duration: Double
 
     private var colors: [Color] {
-        [color.opacity(0.2), .clear]
+        [color, .clear]
     }
     
     init(color: Color, duration: Double = 2) {

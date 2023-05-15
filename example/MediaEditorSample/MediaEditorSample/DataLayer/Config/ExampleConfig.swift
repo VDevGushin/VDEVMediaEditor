@@ -10,7 +10,7 @@ import Combine
 import VDEVMediaEditor
 
 extension VDEVMediaEditorConfig {
-    static var exampleConfig: VDEVMediaEditorConfig {
+    static var exampleConfig: Self {
         let source = NetworkAdapter(client: NetworkClientImpl())
         let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
         //let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
