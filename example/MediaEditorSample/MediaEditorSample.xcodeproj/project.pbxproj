@@ -32,6 +32,7 @@
 		3C3AFBBA29EDD207008D0D46 /* getChallengeEditorMasksFilters.gql in Resources */ = {isa = PBXBuildFile; fileRef = 3C3AFBA729EDD207008D0D46 /* getChallengeEditorMasksFilters.gql */; };
 		3C3AFBBB29EDD207008D0D46 /* FilePlistStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFBA929EDD207008D0D46 /* FilePlistStorage.swift */; };
 		3C3AFBBC29EDD207008D0D46 /* NetworkAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AFBAA29EDD207008D0D46 /* NetworkAdapter.swift */; };
+		3C9E7D672A128F2D00C110C3 /* ExampleConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9E7D662A128F2D00C110C3 /* ExampleConfig.swift */; };
 		3CB00FCD29F06AFC00BC087A /* Poteha-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9529F06AFC00BC087A /* Poteha-Regular.otf */; };
 		3CB00FCE29F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9629F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf */; };
 		3CB00FCF29F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CB00F9729F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf */; };
@@ -117,6 +118,7 @@
 		3C3AFBA729EDD207008D0D46 /* getChallengeEditorMasksFilters.gql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = getChallengeEditorMasksFilters.gql; sourceTree = "<group>"; };
 		3C3AFBA929EDD207008D0D46 /* FilePlistStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilePlistStorage.swift; sourceTree = "<group>"; };
 		3C3AFBAA29EDD207008D0D46 /* NetworkAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkAdapter.swift; sourceTree = "<group>"; };
+		3C9E7D662A128F2D00C110C3 /* ExampleConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleConfig.swift; sourceTree = "<group>"; };
 		3CB00F9529F06AFC00BC087A /* Poteha-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poteha-Regular.otf"; sourceTree = "<group>"; };
 		3CB00F9629F06AFC00BC087A /* ElmaTrio-RegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-RegularItalic.ttf"; sourceTree = "<group>"; };
 		3CB00F9729F06AFC00BC087A /* ElmaTrio-ExtraLightSlanted.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ElmaTrio-ExtraLightSlanted.ttf"; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 		3C3AFB9629EDD206008D0D46 /* DataLayer */ = {
 			isa = PBXGroup;
 			children = (
+				3C9E7D652A128F1E00C110C3 /* Config */,
 				3C3AFB9729EDD206008D0D46 /* Network */,
 				3C3AFBA829EDD207008D0D46 /* Utils */,
 				3C3AFBAA29EDD207008D0D46 /* NetworkAdapter.swift */,
@@ -288,6 +291,14 @@
 				3CD743112A0E246700567CEB /* URL+NetworkAdapter.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		3C9E7D652A128F1E00C110C3 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				3C9E7D662A128F2D00C110C3 /* ExampleConfig.swift */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		3CB00F9429F06AFC00BC087A /* Fonts */ = {
@@ -494,6 +505,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C9E7D672A128F2D00C110C3 /* ExampleConfig.swift in Sources */,
 				3CD743122A0E246700567CEB /* URL+NetworkAdapter.swift in Sources */,
 				3C3AFBB929EDD207008D0D46 /* Apollo+async.swift in Sources */,
 				3C3AFB7F29EDCFB5008D0D46 /* ContentView.swift in Sources */,
