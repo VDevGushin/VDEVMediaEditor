@@ -37,7 +37,11 @@ public struct VDEVDataBuilder {
     }
     
     public static func filters() async -> [EditorFilter] {
-        [
+        //UIImage(named: "favourite", in: Bundle.module, compatibleWith: nil)
+        //let filePath = Bundle.main.path(forResource: "fileName", ofType: "m4a")!
+        //let filePath = Bundle.module.path(forResource: "k3Cover", ofType: "png")!
+        //let fileUrl = URL(fileURLWithPath: filePath)
+        return [
             EditorFilter(id: "9aef8fa2-da7f-42cd-8b32-58f81eb7581a",
                          name: "K3",
                          cover: URL(string: "https://ucarecdn.com/cef311f6-499c-43ff-bada-114d9d3a2048/"),

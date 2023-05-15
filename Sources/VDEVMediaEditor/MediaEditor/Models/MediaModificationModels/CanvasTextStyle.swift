@@ -80,9 +80,16 @@ public struct CanvasTextStyle: CaseIterable, Equatable {
         kern: 0,
         uppercased: false
     )
-
+    
+    public static let t1 = CanvasTextStyle(
+        fontFamily: "Poteha-Regular",
+        lineHeightMultiple: 32/30,
+        kern: 0,
+        uppercased: false
+    )
+    
     public static var allCases: [CanvasTextStyle] {
-        [basicText, boldText, serifText, mono]
+        [basicText, boldText, serifText, mono, t1]
     }
 }
 
