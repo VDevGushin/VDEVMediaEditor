@@ -62,7 +62,7 @@ fileprivate extension MediaEditorView {
             GeometryReader { proxy in
                 ParentView {
                     ZStack {
-                        InvisibleTapZoneView(tapCount: 2) {
+                        InvisibleTapZoneView(tapCount: 1) {
                             if vm.tools.currentToolItem != .empty {
                                 haptics(.light)
                                 vm.tools.closeTools(false)
