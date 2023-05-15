@@ -12,7 +12,8 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
                               dataService: config.networkService,
                               images: config.images,
                               strings: config.strings,
-                              resultSettings: config.resultSettings)
+                              resultSettings: config.resultSettings,
+                              logger: config.logger)
     }
     
     deinit {

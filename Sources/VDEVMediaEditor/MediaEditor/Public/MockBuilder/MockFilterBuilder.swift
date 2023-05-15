@@ -13,6 +13,7 @@ public struct VDEVDataBuilder {
             let result: StickersData = try DomainConverter.makeFrom(stickersJSON)
             return DomainConverter.convertToDomain(result)
         } catch {
+            Log.e(error.localizedDescription)
             return []
         }
     }
@@ -22,6 +23,7 @@ public struct VDEVDataBuilder {
             let result: MasksData = try DomainConverter.makeFrom(masksJSON)
             return DomainConverter.convertToDomain(result)
         } catch {
+            Log.e(error.localizedDescription)
             return []
         }
     }

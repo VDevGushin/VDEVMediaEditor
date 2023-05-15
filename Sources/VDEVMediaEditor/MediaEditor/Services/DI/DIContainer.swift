@@ -39,5 +39,13 @@ final class DIContainer {
         return service
     }
     
+    func resolveOptional<Service>(_ type: Service.Type) -> Service? {
+        guard let service = services["\(type)"] as? Service else {
+            _ = String(describing: Service.self)
+            return nil
+        }
+        return service
+    }
+    
     func clean() { services.removeAll() }
 }

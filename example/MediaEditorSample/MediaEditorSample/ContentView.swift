@@ -23,7 +23,8 @@ struct ContentView: View {
                   networkService: source,
                   images: Images(),
                   strings: Strings(),
-                resultSettings: ResultSettings())
+                  resultSettings: ResultSettings(),
+                  logger: Logger())
         
         vm = .init(config: config)
     }
@@ -36,6 +37,32 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+final class Logger: VDEVLogger {
+    func e(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func i(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func d(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func v(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func w(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func s(_ message: Any) {
+        print("===>", message)
     }
 }
 
@@ -58,14 +85,14 @@ final class EditorSettings: VDEVMediaEditorSettings {
     //nil //9/16
     var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
-
+    
     init(_ baseChallengeId: String,
          sourceService: VDEVMediaEditorSourceService) {
         self.baseChallengeId = baseChallengeId
         self.sourceService = sourceService
         getMeta()
     }
-
+    
     private func getMeta() {
         isLoading.send(true)
         title = "SHARE YOUR RESULT!"
@@ -73,17 +100,17 @@ final class EditorSettings: VDEVMediaEditorSettings {
         withAttach = false
         self.isLoading.send(false)
         
-//        Task {
-//            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-//
-//            await MainActor.run { [weak self] in
-//                guard let self = self else { return }
-//                self.title = meta.title
-//                self.subTitle = meta.subTitle
-//                self.withAttach = meta.isAttachedTemplate
-//                self.isLoading.send(false)
-//            }
-//        }
+        //        Task {
+        //            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+        //
+        //            await MainActor.run { [weak self] in
+        //                guard let self = self else { return }
+        //                self.title = meta.title
+        //                self.subTitle = meta.subTitle
+        //                self.withAttach = meta.isAttachedTemplate
+        //                self.isLoading.send(false)
+        //            }
+        //        }
     }
     
     func getStartTemplate(for size: CGSize,
@@ -106,11 +133,11 @@ final class EditorSettings: VDEVMediaEditorSettings {
 
 struct Images: VDEVImageConfig {
     let common: VDEVMediaEditorButtonsCommonImages = Common()
-
+    
     var currentItem: VDEVMediaEditorButtonsCurrentItemImages = CurrentItem()
-
+    
     var textEdit: VDEVMediaEditorButtonsTextEditingImages = TextEdit()
-
+    
     var typed: VDEVMediaEditorButtonsTypedImages = Typed()
     
     struct CurrentItem: VDEVMediaEditorButtonsCurrentItemImages {
@@ -140,7 +167,7 @@ struct Images: VDEVImageConfig {
         var textEditingColorSelectIcon: UIImage = .init(named: "TextEditingColorSelectIcon")!
         var textEditingRemoveText: UIImage = .init(named: "TextEditingRemoveText")!
     }
-
+    
     struct Typed: VDEVMediaEditorButtonsTypedImages {
         var typeCamera: UIImage = .init(named: "TypeCamera")!
         var typeDraw: UIImage = .init(named: "TypeDraw")!

@@ -113,6 +113,7 @@ final class CanvasLayersDataViewModel: ObservableObject {
     
     func getStartTemplate(size: CGSize, completion: @escaping () -> Void) {
         guard size != .zero else {
+            Log.e("Editor size is zero...")
             completion()
             return
         }
@@ -122,10 +123,12 @@ final class CanvasLayersDataViewModel: ObservableObject {
             if let template = template {
                 DispatchQueue.main.async {
                     self.addTemplate(.init(variants: template, editorSize: size))
+                    Log.d("Start template is ready")
                     completion()
                 }
                 return
             }
+            Log.d("Start template is empty")
             completion()
         }
     }

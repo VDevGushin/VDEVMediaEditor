@@ -8,8 +8,7 @@
 import UIKit
 import CollectionConcurrencyKit
 
-
-class TemplatesDataSource: SectionedDataSource, ObservableObject {
+final class TemplatesDataSource: SectionedDataSource, ObservableObject {
     typealias ItemModel = TemplatePack
     
     @Injected private var sourceService: VDEVMediaEditorSourceService
@@ -31,6 +30,7 @@ class TemplatesDataSource: SectionedDataSource, ObservableObject {
 
     @MainActor func load() async {
         await MainActor.run { sections = [.init(items: [])] }
+        
         isLoading = true
         
         let newItems = try? await sourceService.editorTemplates(

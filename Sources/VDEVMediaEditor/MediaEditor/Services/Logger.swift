@@ -30,6 +30,27 @@ enum LogEvent: String {
 ///
 /// - Parameter object: The object which is to be logged
 ///
+///
+
+func externalLog(logEvent: LogEvent, object: Any) {
+    if let logger = DIContainer.shared.resolveOptional(VDEVLogger.self) {
+        switch logEvent {
+        case .e:
+            logger.e(object)
+        case .i:
+            logger.i(object)
+        case .d:
+            logger.d(object)
+        case .v:
+            logger.v(object)
+        case .w:
+            logger.w(object)
+        case .s:
+            logger.s(object)
+        }
+    }
+}
+
 func print(_ object: Any) {
     // Only allowing in DEBUG mode
     #if DEBUG
@@ -37,8 +58,7 @@ func print(_ object: Any) {
     #endif
 }
 
-class Log {
-
+final class Log {
     //static var dateFormat = "yyyy-MM-dd hh:mm:ssSSS"
     static var dateFormat = "hh:mm:ssSSS"
     static var dateFormatter: DateFormatter {
@@ -69,8 +89,12 @@ class Log {
     ///   - column: Column number of the log message
     ///   - funcName: Name of the function from where the logging is done
     class func e( _ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+        let message = "\(Date().toString()) \(LogEvent.e.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)"
+        
+        externalLog(logEvent: .e, object: message)
+        
         if isLoggingEnabled {
-            print("\(Date().toString()) \(LogEvent.e.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            print(message)
         }
     }
 
@@ -83,8 +107,12 @@ class Log {
     ///   - column: Column number of the log message
     ///   - funcName: Name of the function from where the logging is done
     class func i ( _ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+        let message = "\(Date().toString()) \(LogEvent.i.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)"
+        
+        externalLog(logEvent: .i, object: message)
+        
         if isLoggingEnabled {
-            print("\(Date().toString()) \(LogEvent.i.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            print(message)
         }
     }
 
@@ -97,8 +125,13 @@ class Log {
     ///   - column: Column number of the log message
     ///   - funcName: Name of the function from where the logging is done
     class func d( _ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+        
+        let message = "\(Date().toString()) \(LogEvent.d.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)"
+        
+        externalLog(logEvent: .d, object: message)
+        
         if isLoggingEnabled {
-            print("\(Date().toString()) \(LogEvent.d.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            print(message)
         }
     }
 
@@ -111,8 +144,13 @@ class Log {
     ///   - column: Column number of the log message
     ///   - funcName: Name of the function from where the logging is done
     class func v( _ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+        
+        let message = "\(Date().toString()) \(LogEvent.v.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)"
+        
+        externalLog(logEvent: .v, object: message)
+        
         if isLoggingEnabled {
-            print("\(Date().toString()) \(LogEvent.v.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            print(message)
         }
     }
 
@@ -125,8 +163,13 @@ class Log {
     ///   - column: Column number of the log message
     ///   - funcName: Name of the function from where the logging is done
     class func w( _ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+        
+        let message = "\(Date().toString()) \(LogEvent.w.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)"
+        
+        externalLog(logEvent: .w, object: message)
+        
         if isLoggingEnabled {
-            print("\(Date().toString()) \(LogEvent.w.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            print(message)
         }
     }
 
@@ -139,8 +182,13 @@ class Log {
     ///   - column: Column number of the log message
     ///   - funcName: Name of the function from where the logging is done
     class func s( _ object: Any, filename: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+        
+        let message = "\(Date().toString()) \(LogEvent.s.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)"
+        
+        externalLog(logEvent: .s, object: message)
+        
         if isLoggingEnabled {
-            print("\(Date().toString()) \(LogEvent.s.rawValue)[\(sourceFileName(filePath: filename))]:\(line) \(column) \(funcName) -> \(object)")
+            print(message)
         }
     }
 

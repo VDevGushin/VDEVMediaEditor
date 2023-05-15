@@ -7,8 +7,7 @@
 
 import UIKit
 
-
-class TextureDataSource: SectionedDataSource, ObservableObject {
+final class TextureDataSource: SectionedDataSource, ObservableObject {
     typealias ItemModel = EditorFilter
     
     @Injected private var sourceService: VDEVMediaEditorSourceService

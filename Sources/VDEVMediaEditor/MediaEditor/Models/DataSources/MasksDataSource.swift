@@ -7,8 +7,7 @@
 
 import UIKit
 
-
-class MasksDataSource: SectionedDataSource, ObservableObject {
+final class MasksDataSource: SectionedDataSource, ObservableObject {
     typealias ItemModel = EditorFilter
     
     @Injected private var sourceService: VDEVMediaEditorSourceService

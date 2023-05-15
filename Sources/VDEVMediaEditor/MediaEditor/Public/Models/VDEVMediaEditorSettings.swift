@@ -27,5 +27,6 @@ public protocol VDEVMediaEditorSettings {
     var sourceService: VDEVMediaEditorSourceService { get }
     
     var isLoading: CurrentValueSubject<Bool, Never> { get }
-    func getStartTemplate(for size: CGSize, completion: @escaping ([TemplatePack.Variant.Item]?) -> Void)
+    func getStartTemplate(for size: CGSize,
+                          completion: @escaping ([TemplatePack.Variant.Item]?) -> Void)
 }

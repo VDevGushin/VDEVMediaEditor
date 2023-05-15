@@ -95,6 +95,7 @@ final class CanvasEditorViewModel: ObservableObject {
                     self?.isLoading = .false
                 case .error(let error):
                     makeHaptics(.light)
+                    Log.e(error)
                     self?.isLoading = .false
                     self?.contentPreview = nil
                     self?.alertData = .init(error)
@@ -117,6 +118,7 @@ final class CanvasEditorViewModel: ObservableObject {
                     self?.isLoading = .false
                 case .error(let error):
                     makeHaptics(.light)
+                    Log.e(error)
                     self?.isLoading = .false
                     self?.contentPreview = nil
                     self?.alertData = .init(error)
