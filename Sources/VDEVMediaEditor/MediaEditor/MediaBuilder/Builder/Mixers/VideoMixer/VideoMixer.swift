@@ -171,19 +171,22 @@ final class VideoMixer {
         } as Void
         
         return try await MainActor.run {
-            let thumbUrl = try VideoMixer.generateThumbnail(videoUrl: url)
+            let thumbUrl = try VideoMixer.generateThumbnail(videoUrl: url, videoName: videoName)
             Log.d("Resutl video URL: \(url)")
             return CombinerOutput(cover: thumbUrl, url: url)
         }
     }
     
-    private static func generateThumbnail(videoUrl: URL) throws -> URL {
-        let asset = AVURLAsset(url: videoUrl, options: nil)
+    private static func generateThumbnail(videoUrl: URL, videoName: String) throws -> URL {
+        let asset = AVURLAsset(url: videoUrl)
         let imgGenerator = AVAssetImageGenerator(asset: asset)
+       /// imgGenerator.appliesPreferredTrackTransform = true
         let cgImage = try imgGenerator.copyCGImage(at: .zero, actualTime: nil)
+        
         let url = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("thumbnail")
+            .appendingPathComponent("\(videoName)thumbnail")
             .appendingPathExtension("jpeg")
+        
         let uiImage = UIImage(cgImage: cgImage)
         try uiImage.jpegData(compressionQuality: 1.0)!.write(to: url, options: .atomic)
         return url

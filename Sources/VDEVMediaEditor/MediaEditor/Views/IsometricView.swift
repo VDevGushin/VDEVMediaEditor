@@ -12,8 +12,8 @@ struct IsometricVideo: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     
     @State private var animate: Bool = true
-    @State private var b: CGFloat = 0
-    @State private var c: CGFloat = 0
+    @State private var b: CGFloat = -0.2
+    @State private var c: CGFloat = -0.3
     
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
@@ -61,7 +61,9 @@ struct IsometricVideo: View {
         .scaleEffect(animate == true ? 0.3: 1)
         .offset(x: animate == true ? 12: 0)
         .onAppear {
-            withAnimation(.interactiveSpring(response: 0.4, dampingFraction: 0.6, blendDuration: 0.6).delay(0.3)){
+            withAnimation(.interactiveSpring(response: 0.4,
+                                             dampingFraction: 0.6,
+                                             blendDuration: 0.6)){
                 animate = false
                 b = 0
                 c = 0
@@ -70,13 +72,17 @@ struct IsometricVideo: View {
         .onTapGesture {
             makeHaptics()
             if animate == true {
-                withAnimation(.interactiveSpring(response: 0.4, dampingFraction: 0.9, blendDuration: 0.6)){
+                withAnimation(.interactiveSpring(response: 0.4,
+                                                 dampingFraction: 0.9,
+                                                 blendDuration: 0.6)){
                     animate = false
                     b = 0
                     c = 0
                 }
             } else {
-                withAnimation(.interactiveSpring(response: 0.4, dampingFraction: 0.6, blendDuration: 0.6)){
+                withAnimation(.interactiveSpring(response: 0.4,
+                                                 dampingFraction: 0.6,
+                                                 blendDuration: 0.6)){
                     animate = true
                     b = -0.2
                     c = -0.3
@@ -89,9 +95,9 @@ struct IsometricVideo: View {
 struct IsometricImage: View {
     let image: UIImage
     @State private var animate: Bool = true
-    @State private var b: CGFloat = 0
-    @State private var c: CGFloat = 0
-    
+    @State private var b: CGFloat = -0.2
+    @State private var c: CGFloat = -0.3
+
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
             Image(uiImage: image)
@@ -114,7 +120,9 @@ struct IsometricImage: View {
         .scaleEffect(animate == true ? 0.3: 1)
         .offset(x: animate == true ? 12: 0)
         .onAppear {
-            withAnimation(.interactiveSpring(response: 0.4, dampingFraction: 0.6, blendDuration: 0.6).delay(0.5)){
+            withAnimation(.interactiveSpring(response: 0.4,
+                                             dampingFraction: 0.6,
+                                             blendDuration: 0.6)){
                 animate = false
                 b = 0
                 c = 0
@@ -123,13 +131,17 @@ struct IsometricImage: View {
         .onTapGesture {
             makeHaptics()
             if animate == true {
-                withAnimation(.interactiveSpring(response: 0.4, dampingFraction: 0.9, blendDuration: 0.6)){
+                withAnimation(.interactiveSpring(response: 0.4,
+                                                 dampingFraction: 0.9,
+                                                 blendDuration: 0.6)){
                     animate = false
                     b = 0
                     c = 0
                 }
             } else {
-                withAnimation(.interactiveSpring(response: 0.4, dampingFraction: 0.6, blendDuration: 0.6)){
+                withAnimation(.interactiveSpring(response: 0.4,
+                                                 dampingFraction: 0.6,
+                                                 blendDuration: 0.6)){
                     animate = true
                     b = -0.2
                     c = -0.3
@@ -211,7 +223,7 @@ struct TestIsometric_Previews: PreviewProvider {
     }
 }
 
-struct IsometricView<Content: View, Bottom: View, Side: View> : View {
+private struct IsometricView<Content: View, Bottom: View, Side: View> : View {
     var content: Content
     var bottom: Bottom
     var side: Side

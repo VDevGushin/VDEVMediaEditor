@@ -23,22 +23,22 @@ struct PhotoPickerView: UIViewControllerRepresentable {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = context.coordinator
         imagePicker.sourceType = .photoLibrary
-        
         switch type {
         case .image:
             imagePicker.mediaTypes = [UTType.image.identifier]
             imagePicker.videoExportPreset = AVAssetExportPreset640x480
             imagePicker.videoQuality = .type640x480
+            imagePicker.overrideUserInterfaceStyle = .dark
+            return imagePicker
         case .video:
-            imagePicker.allowsEditing = true
             imagePicker.videoMaximumDuration = resultSettings.maximumVideoDuration
             imagePicker.mediaTypes = [UTType.movie.identifier]
             imagePicker.videoExportPreset = AVAssetExportPreset640x480
-            imagePicker.videoQuality = .type640x480
+            imagePicker.videoQuality = .typeIFrame1280x720
+            imagePicker.overrideUserInterfaceStyle = .dark
+            imagePicker.allowsEditing = true
+            return imagePicker
         }
-
-        imagePicker.overrideUserInterfaceStyle = .dark
-        return imagePicker
     }
 
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
@@ -77,7 +77,7 @@ struct PhotoPickerView: UIViewControllerRepresentable {
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             emptyResult()
         }
-
+        
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
          
             picker.dismiss()

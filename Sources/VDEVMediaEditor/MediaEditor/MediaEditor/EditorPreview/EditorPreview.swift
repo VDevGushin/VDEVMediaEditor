@@ -100,10 +100,6 @@ struct EditorPreview: View {
                 case .video:
                     IsometricVideo(model: model)
                         .clipShape(RoundedCorner(radius: cornerRadius))
-//                    ResultVideoPlayer(assetURL: model.url,
-//                                      cornerRadius: cornerRadius,
-//                                      aspectRatio: vm.ui.aspectRatio)
-//
                 case .image:
                     AsyncImageView(url: model.url) { img in
                         IsometricImage(image: img)

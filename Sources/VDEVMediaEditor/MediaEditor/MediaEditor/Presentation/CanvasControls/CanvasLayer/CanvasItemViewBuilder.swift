@@ -33,10 +33,11 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
     case .image:
         let item: CanvasImageModel = CanvasItemModel.toType(model: item)
         
+        
         ZStack {
             Image(uiImage: item.image)
-                .resizable()
-                .aspectRatio(item.image.aspectRatio, contentMode: .fill)
+            .resizable()
+            .aspectRatio(item.image.aspectRatio, contentMode: .fill)
             
             if item.inProgress {
                 ActivityIndicator(isAnimating: true, style: .large, color: .init(guideLinesColor))

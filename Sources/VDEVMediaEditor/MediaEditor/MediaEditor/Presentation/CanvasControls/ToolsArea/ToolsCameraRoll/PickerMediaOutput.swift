@@ -52,7 +52,7 @@ final class MediaPickerGetter {
     
     @GetMediaActor
     func makeResult(info: [UIImagePickerController.InfoKey : Any]) async -> PickerMediaOutput? {
-        guard let mediaType = info[.mediaType] as? String else { return nil }
+        guard let mediaType = info[UIImagePickerController.InfoKey.mediaType] as? String else { return nil }
         
         switch mediaType {
         case String(UTType.image.identifier):
@@ -69,11 +69,9 @@ final class MediaPickerGetter {
         case String(UTType.movie.identifier):
             guard let videoURL = info[.mediaURL] as? URL else { return nil }
             let thumbnail = await generateThumbnail(path: videoURL)
-            
-            if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
-                return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: asset, url: nil))
-            }
-            
+//            if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
+//                return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: asset, url: nil))
+//            }
             return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: nil, url: videoURL))
         default:
             return nil
