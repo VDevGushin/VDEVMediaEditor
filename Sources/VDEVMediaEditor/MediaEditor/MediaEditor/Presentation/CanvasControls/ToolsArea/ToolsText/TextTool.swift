@@ -444,9 +444,12 @@ private struct VSlider<V: BinaryFloatingPoint>: View {
                     .fill(AppColors.white.opacity(0.4))
                     .frame(width: geometry.size.width, height: geometry.size.height)
                     .mask(alignment: .bottom) {
-                        Rectangle()
-                            .frame(width: geometry.size.width,
-                                   height: geometry.size.height - self.getPoint(in: geometry).y)
+                        let width = geometry.size.width
+                        let height = geometry.size.height - self.getPoint(in: geometry).y
+                        if width > 0 && height > 0{
+                            Rectangle()
+                                .frame(width: width,height: height)
+                        }
                     }
                     .clipShape(Capsule())
             

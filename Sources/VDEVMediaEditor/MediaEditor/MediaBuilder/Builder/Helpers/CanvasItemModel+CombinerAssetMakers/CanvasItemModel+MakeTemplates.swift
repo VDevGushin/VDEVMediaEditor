@@ -179,7 +179,7 @@ extension CanvasItemModel {
         let item: CanvasTextModel = boxItem.text
         
         var ciImage = TextView.makeLabelImage(
-            naturalContainerWidth: item.bounds.width * scaleFactor,
+            naturalContainerWidth: frameFetchedSize.width * scaleFactor,
             scale: scaleFactor,
             text: item.text,
             textAlignment: item.textAlignment,
@@ -188,18 +188,20 @@ extension CanvasItemModel {
             textColor: item.color,
             needTextBG: item.needTextBG
         )
-        
-        let size = item.bounds.size  * scaleFactor
-        
+
+        let size = frameFetchedSize * scaleFactor
+
         if ciImage.extent.height > size.height {
             ciImage = ciImage
                 .resized(to: size, withContentMode: .scaleAspectFit)
         } else {
+            
             let contentMode = UIView.ContentMode(verticalAlignment: item.alignment, horizontalAlignment: item.textAlignment)
             
             ciImage = ciImage
                 .resized(to: size, withContentMode: contentMode)
         }
+
         
         return CombinerAsset(
             body: .image(.init(ciImage: ciImage)),

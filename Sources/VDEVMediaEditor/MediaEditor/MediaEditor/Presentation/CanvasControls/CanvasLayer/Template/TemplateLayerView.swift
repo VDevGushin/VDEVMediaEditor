@@ -47,7 +47,7 @@ struct TemplateLayerView: View {
             
         case .text:
             let item: CanvasTextModel = CanvasItemModel.toType(model: item)
-            FullSizeTextView(
+            FullSizeTextView2(
                 text: .constant(item.textStyle.uppercased ?
                                 item.text.uppercased() :
                                     item.text),
@@ -57,6 +57,7 @@ struct TemplateLayerView: View {
                 textStyle: item.textStyle,
                 needTextBG: item.needTextBG,
                 backgroundColor: .clear,
+                rect: item.bounds.size,
                 isEditing: .constant(false)
             )
             .frame(item.bounds.size)

@@ -26,11 +26,17 @@ final class TextForTemplateViewModel: ObservableObject {
         
         delegate?.editText = {
             [weak self] newModel in
-            self?.item.text = newModel
-            self?.text = newModel
+            guard let self = self else { return }
+            self.text = newModel
+            self.item.text = self.text
         }
         
         delegate?.showTextEditor(item: item.text)
+    }
+    
+    func updateSize(_ size: CGSize) {
+        self.text.update(frameFetchedSize: size)
+        self.item.update(frameFetchedSize: size)
     }
 }
 

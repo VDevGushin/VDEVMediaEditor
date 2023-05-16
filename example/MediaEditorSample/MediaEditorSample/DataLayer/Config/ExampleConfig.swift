@@ -14,7 +14,7 @@ extension VDEVMediaEditorConfig {
         let source = NetworkAdapter(client: NetworkClientImpl())
         let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
         //let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
-        
+        //let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
         return .init(settings: EditorSettings(id, sourceService: source),
                   networkService: source,
                   images: Images(),
@@ -85,17 +85,17 @@ final class EditorSettings: VDEVMediaEditorSettings {
         withAttach = false
         self.isLoading.send(false)
         
-        //        Task {
-        //            let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-        //
-        //            await MainActor.run { [weak self] in
-        //                guard let self = self else { return }
-        //                self.title = meta.title
-        //                self.subTitle = meta.subTitle
-        //                self.withAttach = meta.isAttachedTemplate
-        //                self.isLoading.send(false)
-        //            }
-        //        }
+//                Task {
+//                    let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+//
+//                    await MainActor.run { [weak self] in
+//                        guard let self = self else { return }
+//                        self.title = meta.title
+//                        self.subTitle = meta.subTitle
+//                        self.withAttach = meta.isAttachedTemplate
+//                        self.isLoading.send(false)
+//                    }
+//                }
     }
     
     func getStartTemplate(for size: CGSize,
