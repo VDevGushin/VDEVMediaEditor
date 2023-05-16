@@ -17,14 +17,31 @@ struct IsometricVideo: View {
     
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
-            ResultVideoPlayer(assetURL: model.url,
-                              cornerRadius: 15,
-                              aspectRatio: vm.ui.aspectRatio)
+            if animate {
+                ZStack {
+                    AsyncImageView(url: model.cover) { img in
+                        Image(uiImage: img)
+                            .resizable()
+                            .aspectRatio(vm.ui.aspectRatio, contentMode: .fill)
+                            .clipped()
+                    } placeholder: {
+                        AppColors.blackWithOpacity
+                    }
+                    
+                    ResultVideoPlayer(assetURL: model.url,
+                                      cornerRadius: 0,
+                                      aspectRatio: vm.ui.aspectRatio)
+                }
+            } else {
+                ResultVideoPlayer(assetURL: model.url,
+                                  cornerRadius: 15,
+                                  aspectRatio: vm.ui.aspectRatio)
+            }
         } bottom: {
             AsyncImageView(url: model.cover) { img in
                 Image(uiImage: img)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(vm.ui.aspectRatio, contentMode: .fill)
                     .clipped()
             } placeholder: {
                 AppColors.blackWithOpacity
@@ -33,7 +50,7 @@ struct IsometricVideo: View {
             AsyncImageView(url: model.cover) { img in
                 Image(uiImage: img)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(vm.ui.aspectRatio, contentMode: .fill)
                     .clipped()
             } placeholder: {
                 AppColors.blackWithOpacity
@@ -245,7 +262,7 @@ struct IsometricView<Content: View, Bottom: View, Side: View> : View {
                     .frame(maxHeight: .infinity, alignment: .bottom)
             } else {
                 side
-                    .scaleEffect(y: depth, anchor: .trailing)
+                    .scaleEffect(x: depth, anchor: .trailing)
                     .frame(width: depth, alignment: .trailing)
                     .overlay {
                         Rectangle()
