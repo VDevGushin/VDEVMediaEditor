@@ -187,6 +187,7 @@ fileprivate extension MediaEditorView {
                 Text(vm.addMediaButtonTitle)
                     .font(AppFonts.elmaTrioRegular(13))
                     .foregroundColor(AppColors.whiteWithOpacity)
+                    .padding()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .background(
                         AnimatedGradientView(color: AppColors.whiteWithOpacity2, duration: 3)
