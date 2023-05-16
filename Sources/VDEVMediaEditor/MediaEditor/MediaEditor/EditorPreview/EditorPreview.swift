@@ -98,15 +98,15 @@ struct EditorPreview: View {
             Group {
                 switch model.type {
                 case .video:
-                    ResultVideoPlayer(assetURL: model.url,
-                                      cornerRadius: cornerRadius,
-                                      aspectRatio: vm.ui.aspectRatio)
-                    .clipShape(RoundedCorner(radius: cornerRadius))
+                    IsometricVideo(model: model)
+                        .clipShape(RoundedCorner(radius: cornerRadius))
+//                    ResultVideoPlayer(assetURL: model.url,
+//                                      cornerRadius: cornerRadius,
+//                                      aspectRatio: vm.ui.aspectRatio)
+//
                 case .image:
                     AsyncImageView(url: model.url) { img in
-                        Image(uiImage: img)
-                            .resizable()
-                            .scaledToFit()
+                        IsometricImage(image: img)
                     } placeholder: {
                         LoadingView(inProgress: true, style: .medium)
                     }
@@ -188,6 +188,7 @@ extension EditorPreview {
         
         var id: String { model.url.absoluteString }
         var url: URL { model.url }
+        var cover: URL { model.cover }
         
         public static func == (lhs: Content, rhs: Content) -> Bool {
             lhs.id == rhs.id
