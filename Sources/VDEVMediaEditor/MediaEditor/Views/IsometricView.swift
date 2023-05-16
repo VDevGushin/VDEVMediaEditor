@@ -9,8 +9,6 @@ import SwiftUI
 
 struct IsometricVideo: View {
     let model: EditorPreview.Content
-    @EnvironmentObject private var vm: CanvasEditorViewModel
-    
     @State private var animate: Bool = true
     @State private var b: CGFloat = -0.2
     @State private var c: CGFloat = -0.3
@@ -18,43 +16,34 @@ struct IsometricVideo: View {
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
             if animate {
-                ZStack {
-                    AsyncImageView(url: model.cover) { img in
-                        Image(uiImage: img)
-                            .resizable()
-                            .aspectRatio(vm.ui.aspectRatio, contentMode: .fill)
-                            .clipped()
-                    } placeholder: {
-                        AppColors.blackWithOpacity
-                    }
-                    
-                    ResultVideoPlayer(assetURL: model.url,
-                                      cornerRadius: 0,
-                                      aspectRatio: vm.ui.aspectRatio)
-                }
+                ResultVideoPlayer(assetURL: model.url,
+                                  cornerRadius: 0,
+                                  aspectRatio: model.aspect)
             } else {
                 ResultVideoPlayer(assetURL: model.url,
                                   cornerRadius: 15,
-                                  aspectRatio: vm.ui.aspectRatio)
+                                  aspectRatio: model.aspect)
             }
         } bottom: {
             AsyncImageView(url: model.cover) { img in
                 Image(uiImage: img)
                     .resizable()
-                    .aspectRatio(vm.ui.aspectRatio, contentMode: .fill)
+                    .aspectRatio(model.aspect, contentMode: .fill)
                     .clipped()
             } placeholder: {
                 AppColors.blackWithOpacity
             }
+            .opacity(animate == true ? 1.0 : 0.0)
         } side: {
             AsyncImageView(url: model.cover) { img in
                 Image(uiImage: img)
                     .resizable()
-                    .aspectRatio(vm.ui.aspectRatio, contentMode: .fill)
+                    .aspectRatio(model.aspect, contentMode: .fill)
                     .clipped()
             } placeholder: {
                 AppColors.blackWithOpacity
             }
+            .opacity(animate == true ? 1.0 : 0.0)
         }
         .modifier(CustomProjection(b: b, c: c))
         .rotation3DEffect(.degrees(animate == true ? 45: 0), axis: (x: 0, y: 0, z: 1))
@@ -97,7 +86,7 @@ struct IsometricImage: View {
     @State private var animate: Bool = true
     @State private var b: CGFloat = -0.2
     @State private var c: CGFloat = -0.3
-
+    
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
             Image(uiImage: image)

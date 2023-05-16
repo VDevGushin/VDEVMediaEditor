@@ -95,22 +95,26 @@ struct EditorPreview: View {
             
             Spacer()
             
-            Group {
+          
                 switch model.type {
                 case .video:
                     IsometricVideo(model: model)
-                        .clipShape(RoundedCorner(radius: cornerRadius))
+                        .aspectRatio(model.aspect, contentMode: .fit)
+                        .padding(.horizontal, 15)
+                        .withParallaxCardEffect()
                 case .image:
                     AsyncImageView(url: model.url) { img in
                         IsometricImage(image: img)
                     } placeholder: {
                         LoadingView(inProgress: true, style: .medium)
                     }
+                    .aspectRatio(model.aspect, contentMode: .fit)
                     .clipShape(RoundedCorner(radius: cornerRadius))
+                    .padding(.horizontal, 15)
+                    .withParallaxCardEffect()
                 }
-            }
-            .padding(.horizontal, 15)
-            .withParallaxCardEffect()
+           
+            
             
             Spacer()
             
@@ -171,9 +175,11 @@ extension EditorPreview {
         
         let type: ResultType
         let model: CombinerOutput
+        let aspect: CGFloat
         
         init(model: CombinerOutput) {
             self.model = model
+            self.aspect = model.aspect
             
             if model.url.absoluteString.lowercased().hasSuffix("mov") {
                 self.type = .video

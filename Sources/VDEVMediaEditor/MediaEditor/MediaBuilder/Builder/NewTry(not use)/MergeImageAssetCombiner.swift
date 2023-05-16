@@ -76,7 +76,7 @@ final class MergeImageAssetCombiner {
         
         let resultURL = try FilteringProcessor.shared.generateAndSavePNGImage(ciImage: bufferImage)
         
-        return CombinerOutput(cover: resultURL, url: resultURL)
+        return CombinerOutput(cover: resultURL, url: resultURL, aspect: canvasNativeSize.width / canvasNativeSize.height)
     }
 }
 

@@ -28,7 +28,7 @@ class AssetCombiner {
         } else {
             let mixer = ImageMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
             let resultPack = try mixer.combineAndStore(assets: input, alsoSaveToPhotos: false)
-            return CombinerOutput(cover: resultPack.cover, url: resultPack.uri)
+            return CombinerOutput(cover: resultPack.cover, url: resultPack.uri, aspect: canvasNativeSize.width / canvasNativeSize.height)
         }
     }
     
@@ -48,7 +48,7 @@ class AssetCombiner {
         } else {
             let mixer = ImageMixerPng(renderSize: canvasNativeSize, progressObserver: progressObserver)
             let resultPack = try mixer.combineAndStore(assets: input, alsoSaveToPhotos: false)
-            return CombinerOutput(cover: resultPack.cover, url: resultPack.uri)
+            return CombinerOutput(cover: resultPack.cover, url: resultPack.uri, aspect: canvasNativeSize.width / canvasNativeSize.height)
         }
     }
 }

@@ -173,7 +173,7 @@ final class VideoMixer {
         return try await MainActor.run {
             let thumbUrl = try VideoMixer.generateThumbnail(videoUrl: url, videoName: videoName)
             Log.d("Resutl video URL: \(url)")
-            return CombinerOutput(cover: thumbUrl, url: url)
+            return CombinerOutput(cover: thumbUrl, url: url, aspect: renderSize.width / renderSize.height)
         }
     }
     

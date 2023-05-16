@@ -12,6 +12,7 @@ public struct CombinerOutput {
     public let cover: URL
     public let url: URL
     public var featuresUsageData: FeaturesUsageData?
+    public var aspect: CGFloat
 }
 
 public extension CombinerOutput {
