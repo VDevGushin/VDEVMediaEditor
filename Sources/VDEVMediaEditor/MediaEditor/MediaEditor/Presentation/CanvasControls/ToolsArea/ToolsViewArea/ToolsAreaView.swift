@@ -21,6 +21,7 @@ struct ToolsAreaView: View {
     @State private var showVideoPicker = false
     @State private var showCamera = false
     @State private var showImageCropper = false
+    @State private var showMusicPicker = false
     
     init(rootMV: CanvasEditorViewModel) {
         self.vm = rootMV
@@ -115,6 +116,7 @@ struct ToolsAreaView: View {
             case .camera: EmptyView()
             case .photoPicker: EmptyView()
             case .videoPicker: EmptyView()
+            case .musicPiker: EmptyView()
             }
         }
         .onReceive(vm.tools.$currentToolItem, perform: { value in
@@ -123,11 +125,13 @@ struct ToolsAreaView: View {
             case .camera: showCamera = true
             case .photoPicker: showPhoroPicker = true
             case .videoPicker: showVideoPicker = true
+            case .musicPiker: showMusicPicker = true
             default:
                 showVideoPicker = false
                 showPhoroPicker = false
                 showCamera = false
                 showImageCropper = false
+                showMusicPicker = false
             }
         })
         .fullScreenCover(isPresented: $showCamera) {
@@ -173,6 +177,13 @@ struct ToolsAreaView: View {
                 }
             }
             .edgesIgnoringSafeArea(.all)
+        })
+        .fullScreenCover(isPresented: $showMusicPicker, content: {
+            NativeMusicPicker { model in
+                vm.tools.closeTools(false)
+                guard let model = model else { return }
+                vm.data.add(model)
+            }
         })
         .imageCropper(show: $showImageCropper,
                       item: vm.tools.currentToolItem) { new in

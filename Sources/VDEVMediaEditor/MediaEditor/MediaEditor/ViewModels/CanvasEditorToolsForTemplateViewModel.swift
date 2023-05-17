@@ -33,7 +33,7 @@ protocol CanvasEditorDelegate: AnyObject {
 final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEditorDelegate {
     @Injected private var settings: VDEVMediaEditorSettings
     
-    var baseChallengeId: String { settings.baseChallengeId }
+    var baseChallengeId: String { settings.resourceID }
     
     @Published var state: State = .empty
     @Published var showPhotoPicker: Bool = false

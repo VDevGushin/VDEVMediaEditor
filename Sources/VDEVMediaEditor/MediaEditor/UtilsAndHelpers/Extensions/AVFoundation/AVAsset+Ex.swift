@@ -60,6 +60,7 @@ extension AVAsset {
         guard let firstTrack = tracks(withMediaType: .video).first else {
             return false
         }
+        
         return firstTrack.naturalSize.width > 1 && firstTrack.naturalSize.height > 1
     }
 

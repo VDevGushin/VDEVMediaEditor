@@ -140,6 +140,7 @@ public protocol VDEVMediaEditorStrings {
     var stickersCustom: String { get }
     var addPhoto: String { get }
     var addVideo: String { get }
+    var addMusic: String { get }
     var camera: String { get }
     var drawing: String { get }
     var background: String { get }

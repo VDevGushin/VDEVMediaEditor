@@ -15,6 +15,7 @@ enum CanvasItemType {
     case image
     case sticker
     case video
+    case audio
     case drawing
     case text
     case template

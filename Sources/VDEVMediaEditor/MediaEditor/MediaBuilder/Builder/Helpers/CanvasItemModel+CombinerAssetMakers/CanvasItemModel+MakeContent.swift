@@ -87,6 +87,34 @@ extension CanvasItemModel {
             )
         )
     }
+    
+    func makeAudioAsset(canvasNativeSize: CGSize,
+                        scaleFactor: CGFloat,
+                        layerIndex i: Int,
+                        progressObserver: ProgressObserver? = nil) async -> CombinerAsset? {
+        guard self.type == .audio else { return nil }
+        
+        Log.d("Begin to make audio asset")
+        
+        progressObserver?.setMessage(value: "Подготовка аудио...")
+        
+        let item: CanvasAudioModel = CanvasItemModel.toType(model: self)
+        
+        let asset = AVAsset(url: item.audioURL)
+        
+        return CombinerAsset(
+            body: .init(asset: asset,
+                        preferredVolume: item.volume,
+                        cycleMode: .loopToLongestVideo),
+            transform: Transform(
+                zIndex: Double(i),
+                offset: offset * scaleFactor,
+                scale: scale,
+                degrees: rotation.degrees,
+                blendingMode: blendingMode
+            )
+        )
+    }
 
     func makeVideoAsset(canvasNativeSize: CGSize,
                         scaleFactor: CGFloat,

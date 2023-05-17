@@ -197,7 +197,7 @@ private struct EditVariants: View {
 private struct ItemEditVariantsView: View {
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
-    @Injected private var resultSettings: VDEVMediaEditorResultSettings
+    @Injected private var settings: VDEVMediaEditorSettings
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
@@ -258,7 +258,7 @@ private struct ItemEditVariantsView: View {
                         }
                     case .video:
                         
-                        if resultSettings.needSound {
+                        if settings.canTurnOnSoundInVideos {
                             let video: CanvasVideoPlaceholderModel? = CanvasItemModel.toTypeOptional(model: item)
                             
                             if let videoTemplate = video {

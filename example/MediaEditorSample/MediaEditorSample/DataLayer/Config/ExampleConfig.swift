@@ -55,25 +55,29 @@ final class ResultSettings: VDEVMediaEditorResultSettings {
     var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(true)
     var resolution: VDEVMediaResolution { .fullHD }
     var maximumVideoDuration: Double { 15.0 }
-    var needSound: Bool { true }
 }
 
 final class EditorSettings: VDEVMediaEditorSettings {
-    private(set) var baseChallengeId: String
+    private(set) var resourceID: String
     private(set) var title: String = ""
     private(set) var subTitle: String? = nil
     private(set) var withAttach: Bool = false
-    private(set) var needGuideLinesGrid = true
+    
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
-    //nil //9/16
     var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
     
-    init(_ baseChallengeId: String,
+    var needGuideLinesGrid: Bool { true }
+    var showCommonSettings: Bool { true }
+    var showAspectRatioSettings: Bool { true }
+    var canTurnOnSoundInVideos: Bool { true }
+    var canAddMusic: Bool { true }
+    
+    init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {
-        self.baseChallengeId = baseChallengeId
+        self.resourceID = resourceID
         self.sourceService = sourceService
         getMeta()
     }
@@ -85,17 +89,17 @@ final class EditorSettings: VDEVMediaEditorSettings {
         withAttach = false
         self.isLoading.send(false)
         
-//                Task {
-//                    let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-//
-//                    await MainActor.run { [weak self] in
-//                        guard let self = self else { return }
-//                        self.title = meta.title
-//                        self.subTitle = meta.subTitle
-//                        self.withAttach = meta.isAttachedTemplate
-//                        self.isLoading.send(false)
-//                    }
-//                }
+        //                Task {
+        //                    let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+        //
+        //                    await MainActor.run { [weak self] in
+        //                        guard let self = self else { return }
+        //                        self.title = meta.title
+        //                        self.subTitle = meta.subTitle
+        //                        self.withAttach = meta.isAttachedTemplate
+        //                        self.isLoading.send(false)
+        //                    }
+        //                }
     }
     
     func getStartTemplate(for size: CGSize,
@@ -103,7 +107,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
         guard withAttach else { return completion(nil) }
         
         Task {
-            guard let templatesDataSource = try? await sourceService.editorTemplates(forChallenge: baseChallengeId, challengeTitle: title, renderSize: size) else {
+            guard let templatesDataSource = try? await sourceService.editorTemplates(forChallenge: resourceID, challengeTitle: title, renderSize: size) else {
                 await MainActor.run { completion(nil) }
                 return
             }
@@ -245,4 +249,5 @@ struct Strings: VDEVMediaEditorStrings {
     let questionQualityImage = "AUTO"
     let sound = "SOUND"
     let hint = "+ ADD MEDIA"
+    let addMusic = "MUSIC"
 }

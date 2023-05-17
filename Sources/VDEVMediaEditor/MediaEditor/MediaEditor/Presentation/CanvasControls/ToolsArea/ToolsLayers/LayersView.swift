@@ -79,7 +79,7 @@ struct LayersView: View {
                             Log.d("Select tool backgroundColor")
                         }.scaleEffect(0.95)
                         
-                        if !settings.isInternalModule {
+                        if settings.showAspectRatioSettings {
                             //Aspect ratio
                             NoShadowRoundButtonSystem(image: Image(systemName: "aspectratio"),
                                                       size: 40,
@@ -90,6 +90,9 @@ struct LayersView: View {
                                 Log.d("Select tool aspect ratio")
                             }.scaleEffect(0.95)
                             
+                        }
+                        
+                        if settings.showCommonSettings {
                             //Format
                             NoShadowRoundButtonSystem(image: Image(systemName: "gearshape"),
                                                       size: 40,

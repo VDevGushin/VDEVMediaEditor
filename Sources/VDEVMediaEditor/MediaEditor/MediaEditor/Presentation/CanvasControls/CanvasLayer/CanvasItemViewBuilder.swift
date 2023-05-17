@@ -14,13 +14,61 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
                            guideLinesColor: Color,
                            delegate: CanvasEditorDelegate?) -> some View {
     switch item.type {
+    case .audio:
+        let item: CanvasAudioModel = CanvasItemModel.toType(model: item)
+        
+        ZStack {
+            VideoPlayerViewForLayers(assetURL: item.audioURL,
+                                     videoComposition: nil,
+                                     thumbnail: item.thumbnail,
+                                     volume: item.volume)
+            .frame(.init(width: 20, height: 20))
+            .opacity(0.0)
+            
+            if let image = item.thumbnail {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(image.aspectRatio, contentMode: .fit)
+                    .blur(radius: 2)
+                    .overlay {
+                        AppColors.blackWithOpacity
+                    }
+            } else {
+                Rectangle()
+                    .fill(AppColors.blackWithOpacity)
+                    .aspectRatio(1, contentMode: .fit)
+            }
+            
+            VStack(spacing: 12) {
+                item.title.map {
+                    Text($0)
+                        .font(.gramatika(size: 18))
+                        .foregroundColor(AppColors.whiteWithOpacity1)
+                }
+                
+                item.albumArtist.map {
+                    Text($0)
+                        .font(.gramatika(size: 16))
+                        .foregroundColor(AppColors.whiteWithOpacity)
+                }
+                
+                item.albumTitle.map {
+                    Text($0)
+                        .font(.gramatika(size: 16))
+                        .foregroundColor(AppColors.whiteWithOpacity)
+                }
+            }
+        }
+        .frame(width: canvasSize.width / 1.2)
+        .clipShape(RoundedCorner(radius: 12))
+        
     case .video:
         let item: CanvasVideoModel = CanvasItemModel.toType(model: item)
         ZStack {
             VideoPlayerViewForLayers(assetURL: item.videoURL,
-                            videoComposition: item.avVideoComposition,
-                            thumbnail: item.thumbnail,
-                            volume: item.volume)
+                                     videoComposition: item.avVideoComposition,
+                                     thumbnail: item.thumbnail,
+                                     volume: item.volume)
             .frame(width: canvasSize.width)
             
             if item.inProgress {
@@ -36,8 +84,8 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         
         ZStack {
             Image(uiImage: item.image)
-            .resizable()
-            .aspectRatio(item.image.aspectRatio, contentMode: .fill)
+                .resizable()
+                .aspectRatio(item.image.aspectRatio, contentMode: .fill)
             
             if item.inProgress {
                 ActivityIndicator(isAnimating: true, style: .large, color: .init(guideLinesColor))
@@ -94,6 +142,33 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
 func CanvasItemPreiviewViewBuilder(_ item: CanvasItemModel,
                                    size: CGFloat) -> some View {
     switch item.type {
+    case .audio:
+        let item: CanvasAudioModel = CanvasItemModel.toType(model: item)
+        if let image = item.thumbnail {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: size, height: size)
+                .clipped(antialiased: true)
+                .overlay(alignment: .center) {
+                    ZStack {
+                        AppColors.blackWithOpacity
+                        Image(systemName: "music.note")
+                            .scaledToFit()
+                            .foregroundColor(AppColors.white)
+                            .scaleEffect(0.8)
+                    }
+                }
+        } else {
+            Image(systemName: "music.quarternote.3")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: size, height: size)
+                .clipped(antialiased: true)
+                .foregroundColor(AppColors.white)
+                .scaleEffect(0.8)
+        }
+        
     case .video:
         let item: CanvasVideoModel = CanvasItemModel.toType(model: item)
         

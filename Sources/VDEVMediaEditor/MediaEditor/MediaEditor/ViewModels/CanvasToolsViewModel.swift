@@ -12,7 +12,7 @@ import Kingfisher
 final class CanvasToolsViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
     
-    var baseChallengeId: String { settings.baseChallengeId }
+    var baseChallengeId: String { settings.resourceID }
 
     // Открыть/закрыть показ развернутых слоев
     @Published private(set) var openLayersList: Bool = false

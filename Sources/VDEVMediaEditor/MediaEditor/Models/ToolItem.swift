@@ -13,13 +13,14 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case stickers
     case photoPicker // выбор только фоток
     case videoPicker // выбор только видео
+    case musicPiker // Выбор музыки
     case camera
     case drawing
     case backgroundColor
     case text(CanvasTextModel?)
     case aspectRatio
     case settings
-
+    
     // Тулзы для редактирования конкретных объектов слоя
     case concreteItem(CanvasItemModel)
     case imageCropper(CanvasImageModel)
@@ -28,20 +29,35 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case masksFilter(CanvasItemModel)
     case adjustment(CanvasItemModel)
     case empty
-
+    
     var id: String { self.title }
-
+    
     // То, что показываем в меню выбора нового слоя
     static var allCases: [ToolItem] {
-       [
-            .photoPicker,
-            .videoPicker,
-            .camera,
-            .template,
-            .stickers,
-            .text(nil),
-            .drawing,
-        ]
+        let settings = DI.resolve(VDEVMediaEditorSettings.self)
+        
+        if settings.canAddMusic {
+            return  [
+                .photoPicker,
+                .videoPicker,
+                .musicPiker,
+                .camera,
+                .template,
+                .stickers,
+                .text(nil),
+                .drawing,
+            ]
+        } else {
+            return [
+                .photoPicker,
+                .videoPicker,
+                .camera,
+                .template,
+                .stickers,
+                .text(nil),
+                .drawing,
+            ]
+        }
     }
     
     var innerCanvasModel: CanvasItemModel? {
@@ -50,6 +66,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .stickers: return nil
         case .photoPicker: return nil
         case .videoPicker: return nil
+        case .musicPiker: return nil
         case .camera: return nil
         case .drawing: return nil
         case .backgroundColor: return nil
@@ -65,7 +82,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .empty: return nil
         }
     }
-
+    
     var title: String {
         let Strings = DI.resolve(VDEVMediaEditorStrings.self)
         switch self {
@@ -79,6 +96,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.addPhoto
         case .videoPicker:
             return Strings.addVideo
+        case .musicPiker:
+            return Strings.addMusic
         case .camera:
             return Strings.camera
         case .drawing:
@@ -102,6 +121,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .photoPicker:
             return images.typed.typePhoto
         case .videoPicker:
+            return images.typed.typeVideo
+        case .musicPiker:
             return images.typed.typeVideo
         case .camera:
             return images.typed.typeCamera

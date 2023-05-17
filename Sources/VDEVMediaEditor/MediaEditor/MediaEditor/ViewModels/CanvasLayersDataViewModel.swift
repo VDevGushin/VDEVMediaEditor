@@ -257,6 +257,11 @@ extension CanvasLayersDataViewModel {
             return copyReplaceWithOrder(item)
         }
         
+        if let item: CanvasAudioModel = CanvasItemModel.toTypeOptional(model: item) {
+            item.update(volume: sound)
+            return copyReplaceWithOrder(item)
+        }
+        
         if let item: CanvasVideoPlaceholderModel = CanvasItemModel.toTypeOptional(model: item) {
             item.update(volume: sound)
             return copyReplaceWithOrder(item)

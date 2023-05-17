@@ -48,6 +48,7 @@ final class CombinerAssetBuilder {
         var images = [CombinerAsset]()
         var videos = [CombinerAsset]()
         var labels = [CombinerAsset]()
+        var audios = [CombinerAsset]()
         
         var zIndex = 1
         for i in 0..<layers.count {
@@ -83,6 +84,16 @@ final class CombinerAssetBuilder {
                 videos.append(videoAsset)
                 progressObserver?.addProgress()
             }
+            
+            if let audioAsset = await element.makeAudioAsset(
+                canvasNativeSize: canvasNativeSize,
+                scaleFactor: scaleFactor,
+                layerIndex: zIndex,
+                progressObserver: progressObserver
+            ) {
+                audios.append(audioAsset)
+                progressObserver?.addProgress()
+            }
 
             if let labelsAsset = await element.makeLabelAsset(
                 canvasNativeSize: canvasNativeSize,
@@ -100,8 +111,9 @@ final class CombinerAssetBuilder {
         Log.d("Images combine asset [count: \(images.count)]")
         Log.d("Videos combine asset [count: \(videos.count)]")
         Log.d("Labels combine asset [count: \(labels.count)]")
+        Log.d("Audio combine asset [count: \(audios.count)]")
 
-        let res = [bg] + templates + images + videos + labels
+        let res = [bg] + templates + images + videos + labels + audios
         
         Log.d("Combine assets [count: \(res.count)]")
         

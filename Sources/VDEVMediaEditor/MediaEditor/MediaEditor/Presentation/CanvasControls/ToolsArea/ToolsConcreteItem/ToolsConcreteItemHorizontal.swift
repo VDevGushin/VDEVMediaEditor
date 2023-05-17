@@ -12,7 +12,7 @@ struct ToolsConcreteItemHorizontal: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
-    @Injected private var resultSettings: VDEVMediaEditorResultSettings
+    @Injected private var settings: VDEVMediaEditorSettings
     
     private weak var item: CanvasItemModel?
     
@@ -111,9 +111,24 @@ struct ToolsConcreteItemHorizontal: View {
                             ToolRow(image: images.currentItem.currentItemRMBack,
                                     title: strings.removeBack) { removeBackgroundML(item) }
                             
-                        case .video:
+                        case .audio:
+                            let video: CanvasAudioModel? = CanvasItemModel.toTypeOptional(model: item)
+                            if let volume = video?.volume {
+                                if volume <= 0.0 {
+                                    ToolRow(image: images.currentItem.currentItemSoundON,
+                                            title: strings.sound) {
+                                        onVolume(item, 1.0)
+                                    }
+                                } else {
+                                    ToolRow(image: images.currentItem.currentItemSoundOFF,
+                                            title: strings.sound) {
+                                        onVolume(item, 0.0)
+                                    }
+                                }
+                            }
                             
-                            if resultSettings.needSound {
+                        case .video:
+                            if settings.canTurnOnSoundInVideos {
                                 let video: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
                                 if let volume = video?.volume {
                                     if volume <= 0.0 {
