@@ -19,7 +19,7 @@ extension View {
             self.fullScreenCover(isPresented: show, content: {
                 ImageCropperWrapper(show: show, item: item) { cropped in
                     let newItem = CanvasImageModel(image: cropped ?? item.image,
-                                                   asset: item.asset)
+                                                   asset: nil)
 
                     newItem.update(offset: item.offset,
                                    scale: item.scale,
