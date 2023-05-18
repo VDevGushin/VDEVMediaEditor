@@ -94,7 +94,6 @@ struct EditorPreview: View {
             .padding()
             
             Spacer()
-            
           
                 switch model.type {
                 case .video:
@@ -114,8 +113,6 @@ struct EditorPreview: View {
                     .withParallaxCardEffect()
                 }
            
-            
-            
             Spacer()
             
             HStack {
@@ -181,7 +178,8 @@ extension EditorPreview {
             self.model = model
             self.aspect = model.aspect
             
-            if model.url.absoluteString.lowercased().hasSuffix("mov") {
+            if model.url.absoluteString.lowercased().hasSuffix("mov") ||
+               model.url.absoluteString.lowercased().hasSuffix("mp4"){
                 self.type = .video
             } else {
                 self.type = .image

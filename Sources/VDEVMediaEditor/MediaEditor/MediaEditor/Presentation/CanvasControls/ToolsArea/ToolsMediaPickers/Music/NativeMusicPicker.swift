@@ -157,7 +157,7 @@ struct NativeMusicPicker: UIViewControllerRepresentable {
             
             export.outputFileType = .mov
             export.outputURL = outURL
-            export.shouldOptimizeForNetworkUse = true
+            export.shouldOptimizeForNetworkUse = false
             
             do {
                 return try await withCheckedThrowingContinuation { c in

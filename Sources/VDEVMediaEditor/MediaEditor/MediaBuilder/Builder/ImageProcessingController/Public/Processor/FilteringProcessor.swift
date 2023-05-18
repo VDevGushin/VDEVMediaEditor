@@ -175,10 +175,9 @@ extension FilteringProcessor {
         return generatedImagePath
     }
     
-    private func processAndExportComposition(
-        _ composition: AVVideoComposition,
-        ofAsset asset: AVAsset,
-        exportQuality: ExportQuality
+    private func processAndExportComposition(_ composition: AVVideoComposition,
+                                             ofAsset asset: AVAsset,
+                                             exportQuality: ExportQuality
     ) async throws -> URL {
         
         guard let export = AVAssetExportSession(asset: asset,
@@ -187,7 +186,6 @@ extension FilteringProcessor {
         }
         
         let outURL = try generateURLInCacheDir(withExtension: "mp4")
-        
         export.outputFileType = .mp4
         export.outputURL = outURL
         export.videoComposition = composition
@@ -241,7 +239,6 @@ extension FilteringProcessor {
             case .HEVCHighest: return AVAssetExportPresetHEVCHighestQuality
             case .HEVCHighestWithAlpha: return AVAssetExportPresetHEVCHighestQualityWithAlpha
             case .default: return AVAssetExportPresetPassthrough
-                
             }
         }
     }

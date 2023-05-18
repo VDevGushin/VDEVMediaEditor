@@ -14,6 +14,7 @@ typealias MixerThrowsCallback = () throws -> CombinerOutput
 
 // Render one video from others
 final class VideoMixer {
+    @Injected private var settings: VDEVMediaEditorResultSettings
     enum MixerError: Error {
         case couldNotGenerateThumbnail
         case couldNotMakeExporter
@@ -144,16 +145,27 @@ final class VideoMixer {
         let videoName = UUID().uuidString
         let url = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(videoName)
-            .appendingPathExtension("MOV")
+            .appendingPathExtension("mp4")
         
         try? FileManager.default.removeItem(at: url)
         
-        guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: AVAssetExportPresetHighestQuality) else {
+        var presetName: String = ""
+        switch settings.resolution {
+        case .hd:
+            presetName = AVAssetExportPreset1280x720
+        case .sd:
+            presetName = AVAssetExportPreset640x480
+        default:
+            presetName = AVAssetExportPreset1920x1080
+        }
+        
+        guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: presetName) else {
             throw MixerError.couldNotMakeExporter
         }
+        
         exportSession.audioMix = audioMix
         exportSession.outputURL = url
-        exportSession.outputFileType = .mov
+        exportSession.outputFileType = .mp4
         exportSession.shouldOptimizeForNetworkUse = false
         exportSession.videoComposition = mainComposition
         exportSession.fileLengthLimit =  10 * 100000 * 10 // 10MB
