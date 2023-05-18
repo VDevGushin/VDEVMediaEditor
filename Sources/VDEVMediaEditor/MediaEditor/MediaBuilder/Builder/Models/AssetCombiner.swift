@@ -11,6 +11,7 @@ import Photos
 import CollectionConcurrencyKit
 
 class AssetCombiner {
+    @Injected private var settings: VDEVMediaEditorSettings
     // MARK: - public
     func combine(_ input: [CombinerAsset],
                  canvasSize: CGSize,
@@ -22,7 +23,7 @@ class AssetCombiner {
         // Создание видео
         if input.contains(where: { $0.body.videoBody != nil }) {
             let videoMixer = VideoMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
-            return try await videoMixer.composeVideo(data: input)
+            return try await videoMixer.composeVideo(data: input, withAudio: settings.canTurnOnSoundInVideos)
             
             // Создание картиртинки
         } else {
