@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVKit
 
 public enum VDEVMediaResolution {
     case ultraHD8k
@@ -21,6 +22,17 @@ public enum VDEVMediaResolution {
         case .fullHD: return .fullHD
         case .hd: return .hd
         case .sd: return .sd
+        }
+    }
+    
+    var videoExportPreset: String {
+        switch self {
+        case .hd:
+            return AVAssetExportPreset1280x720
+        case .sd:
+            return AVAssetExportPreset640x480
+        default:
+            return AVAssetExportPreset1920x1080
         }
     }
 }

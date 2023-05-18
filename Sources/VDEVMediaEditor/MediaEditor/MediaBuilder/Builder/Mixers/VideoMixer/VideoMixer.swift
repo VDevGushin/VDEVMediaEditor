@@ -149,15 +149,7 @@ final class VideoMixer {
         
         try? FileManager.default.removeItem(at: url)
         
-        var presetName: String = ""
-        switch settings.resolution {
-        case .hd:
-            presetName = AVAssetExportPreset1280x720
-        case .sd:
-            presetName = AVAssetExportPreset640x480
-        default:
-            presetName = AVAssetExportPreset1920x1080
-        }
+        let presetName = settings.resolution.videoExportPreset
         
         guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: presetName) else {
             throw MixerError.couldNotMakeExporter

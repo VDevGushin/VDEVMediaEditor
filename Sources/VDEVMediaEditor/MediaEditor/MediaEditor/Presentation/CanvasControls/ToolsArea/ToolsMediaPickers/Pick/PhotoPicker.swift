@@ -33,8 +33,8 @@ struct PhotoPickerView: UIViewControllerRepresentable {
         case .video:
             imagePicker.videoMaximumDuration = resultSettings.maximumVideoDuration
             imagePicker.mediaTypes = [UTType.movie.identifier]
-            imagePicker.videoExportPreset = AVAssetExportPreset640x480
-            imagePicker.videoQuality = .typeIFrame1280x720
+            imagePicker.videoExportPreset = resultSettings.resolution.videoExportPreset
+            imagePicker.videoQuality = .typeHigh
             imagePicker.overrideUserInterfaceStyle = .dark
             imagePicker.allowsEditing = true
             return imagePicker
