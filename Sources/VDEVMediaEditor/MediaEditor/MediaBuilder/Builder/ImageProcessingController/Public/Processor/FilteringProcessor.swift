@@ -232,12 +232,13 @@ extension FilteringProcessor {
         case `default`
         
         var presetId: String {
+            let canExportHEVCWithAlpha = AVAssetExportSession.allExportPresets().contains(AVAssetExportPresetHEVCHighestQualityWithAlpha)
             switch self {
             case .low: return AVAssetExportPresetLowQuality
             case .medium: return AVAssetExportPresetMediumQuality
             case .highest: return AVAssetExportPresetHighestQuality
             case .HEVCHighest: return AVAssetExportPresetHEVCHighestQuality
-            case .HEVCHighestWithAlpha: return AVAssetExportPresetHEVCHighestQualityWithAlpha
+            case .HEVCHighestWithAlpha: return  canExportHEVCWithAlpha ?  AVAssetExportPresetHEVCHighestQualityWithAlpha : AVAssetExportPresetHighestQuality
             case .default: return AVAssetExportPresetPassthrough
             }
         }

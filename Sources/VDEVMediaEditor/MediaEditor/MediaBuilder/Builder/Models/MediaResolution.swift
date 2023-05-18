@@ -46,8 +46,7 @@ enum MediaResolution {
 
     func getScale(for width: CGFloat) -> CGFloat {
         let rWidth = self.resolution.width
-        //let resultScale = max(rWidth / width, UIScreen.main.scale)
-        let resultScale = max(rWidth / width, 1)
+        let resultScale = max(rWidth / width, UIScreen.main.scale)
         return resultScale
     }
 
