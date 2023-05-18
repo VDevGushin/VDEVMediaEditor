@@ -13,6 +13,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
     @Injected private var resultSettings: VDEVMediaEditorResultSettings
+    @Injected private var resolutionService: ResolutionService
     
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
@@ -23,7 +24,6 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published private var contentPreviewDidLoad: Bool = false
     @Published var showRemoveAllAlert: Bool = false
     @Published private(set) var resultResolution: MediaResolution = .fullHD
-    
     @Published private(set) var addMediaButtonTitle: String = ""
     @Published private(set) var addMediaButtonVisible: Bool = false
     
@@ -50,11 +50,15 @@ final class CanvasEditorViewModel: ObservableObject {
         
         observeOnMain(nested: self.data).store(in: &storage)
         
-        resultResolution = resultSettings.resolution.value
         addMediaButtonTitle = strings.hint
         
-        deviceOrientationService.$isFaceDown
+        resolutionService.resolution
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in self?.resultResolution = value }
+            .store(in: &storage)
+        
+        deviceOrientationService.$isFaceDown
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
@@ -220,7 +224,7 @@ extension CanvasEditorViewModel {
 // MARK: - Resolution
 extension CanvasEditorViewModel {
     func set(resolution: MediaResolution) {
-        resultResolution = resolution
+        resolutionService.set(resolution: resolution)
     }
 }
 

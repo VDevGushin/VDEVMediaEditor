@@ -24,15 +24,4 @@ public enum VDEVMediaResolution {
         case .sd: return .sd
         }
     }
-    
-    var videoExportPreset: String {
-        switch self {
-        case .hd:
-            return AVAssetExportPreset1280x720
-        case .sd:
-            return AVAssetExportPreset640x480
-        default:
-            return AVAssetExportPreset1920x1080
-        }
-    }
 }

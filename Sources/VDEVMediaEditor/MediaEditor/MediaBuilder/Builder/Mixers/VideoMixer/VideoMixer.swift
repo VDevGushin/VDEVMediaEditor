@@ -14,7 +14,8 @@ typealias MixerThrowsCallback = () throws -> CombinerOutput
 
 // Render one video from others
 final class VideoMixer {
-    @Injected private var settings: VDEVMediaEditorResultSettings
+    @Injected private var resolution: ResolutionService
+    
     enum MixerError: Error {
         case couldNotGenerateThumbnail
         case couldNotMakeExporter
@@ -149,8 +150,7 @@ final class VideoMixer {
         
         try? FileManager.default.removeItem(at: url)
         
-        let presetName = settings.resolution.videoExportPreset
-        
+        let presetName = resolution.videoExportPreset()
         guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: presetName) else {
             throw MixerError.couldNotMakeExporter
         }

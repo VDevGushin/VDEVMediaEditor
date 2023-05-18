@@ -21,6 +21,7 @@ struct DiController {
         container.register(type: VDEVImageConfig.self, service: images)
         container.register(type: VDEVMediaEditorStrings.self, service: strings)
         container.register(type: PasteboardService.self, service: PasteboardService())
+        container.register(type: ResolutionService.self, service: ResolutionService(resolution: resultSettings.resolution))
         
         if let logger = logger {
             container.register(type: VDEVLogger.self, service: logger)
