@@ -43,7 +43,7 @@ class AssetCombiner {
         // Создание видео
         if input.contains(where: { $0.body.videoBody != nil }) {
             let videoMixer = VideoMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
-            return try await videoMixer.composeVideo(data: input)
+            return try await videoMixer.composeVideo(data: input, withAudio: false)
             
         // Создание картиртинки
         } else {
