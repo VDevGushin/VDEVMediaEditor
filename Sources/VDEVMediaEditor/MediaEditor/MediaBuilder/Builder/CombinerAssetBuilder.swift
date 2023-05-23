@@ -20,13 +20,14 @@ final class CombinerAssetBuilder {
          canvasSize: CGSize,
          scaleFactor: CGFloat,
          bgColor: UIColor,
+         canvasNativeSize: CGSize,
          progressObserver: ProgressObserver?) {
         self.layers = layers
         self.canvasSize = canvasSize
         self.scaleFactor = scaleFactor
         self.bgColor = bgColor
         self.progressObserver = progressObserver
-        self.canvasNativeSize = canvasSize * scaleFactor
+        self.canvasNativeSize = canvasNativeSize
     }
     
     func execute() async -> [CombinerAsset]  {

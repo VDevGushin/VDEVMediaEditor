@@ -28,6 +28,7 @@ struct ToolsAreaView: View {
     }
     
     var body: some View {
+        let _ = Self._printChanges()
         ZStack {
             toolsOverlay()
             
@@ -55,9 +56,9 @@ struct ToolsAreaView: View {
                 }
             default: EmptyView()
             }
-            
+        
             MediaEditorToolsForTemplateView(vm: vm.tools.overlay,
-                                            backColor: $vm.ui.mainLayerBackgroundColor)
+                                            backColor: $vm.ui.mainLayerBackgroundColor.removeDuplicates())
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
             switch vm.tools.currentToolItem {
@@ -202,7 +203,7 @@ struct ToolsAreaView: View {
                     vm.tools.closeTools(false)
                 }
                 
-                TrashButton {
+                TrashButton { [item] in
                     delete(item: item)
                 }
             }
@@ -414,7 +415,7 @@ fileprivate extension ToolsAreaView {
         TemplateSelectorView(vm.ui.roundedEditorSize, challengeId: vm.tools.baseChallengeId) { variants in
             vm.tools.closeTools(false)
             if variants.isEmpty { return }
-            vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.editorSize))
+            vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.roundedEditorSize))
         }
     }
 }

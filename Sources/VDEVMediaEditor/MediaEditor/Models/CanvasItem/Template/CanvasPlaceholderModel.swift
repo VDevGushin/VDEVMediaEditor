@@ -38,7 +38,7 @@ final class CanvasPlaceholderModel: CanvasItemModel {
     }
 
     deinit {
-        Log.d("❌ Deinit: CanvasPlaceholderModel")
+        Log.d("❌ Deinit[TEMPLATE]: CanvasPlaceholderModel")
     }
 
     func update(imageModel: CanvasImagePlaceholderModel?) {

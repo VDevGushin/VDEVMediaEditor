@@ -26,19 +26,16 @@ struct ParentView<Content: View>: UIViewRepresentable {
     func updateUIView(_ uiView: UIHostingView<Content>, context: Context) {
         uiView.rootView = content
     }
+    
+    static func dismantleUIView(_ uiView: UIHostingView<Content>, coordinator: ()) {
+        uiView.removeFromSuperview()
+    }
 }
 
 protocol _UIHostingViewDelegate: AnyObject {
     func touches(inProgress: Bool)
     func zoomIn()
     func zoomOut()
-}
-
-fileprivate extension UIEdgeInsets {
-    func inverted() -> UIEdgeInsets {
-        return UIEdgeInsets(top: -top, left: -left,
-                            bottom: -bottom, right: -right)
-    }
 }
 
 final class _UIHostingView<Content: View>: UIHostingView<Content>{
@@ -75,7 +72,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
     
-    private let content: Content
+    private let content: () -> Content
     private let itemType: CanvasItemType
     
     private(set) var onLongPress: () -> Void
@@ -95,7 +92,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   isCenterHorizontal: Binding<Bool>,
                   tapScaleFactor: Binding<CGFloat>,
                   itemType: CanvasItemType,
-                  content: Content,
+                  @ViewBuilder content: @escaping () -> Content,
                   onLongPress: @escaping () -> Void,
                   onDoubleTap: @escaping () -> Void,
                   onTap: @escaping () -> Void,
@@ -120,7 +117,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> _UIHostingView<Content> {
-        let hView = _UIHostingView(rootView: content)
+        let hView = _UIHostingView(rootView: content())
         hView.isOpaque = false
         hView.backgroundColor = .clear
         hView.clipsToBounds = true
@@ -157,11 +154,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         hView.addGestureRecognizer(Pinchgesture)
         Pinchgesture.cancelsTouchesInView = false
         context.coordinator.pinchGest = Pinchgesture
-        
-        let DoubleTapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleDoubleTap))
-        DoubleTapRecognizer.numberOfTapsRequired = 2
-        hView.addGestureRecognizer(DoubleTapRecognizer)
-        context.coordinator.doubleTapGest = DoubleTapRecognizer
         
         context.coordinator.tapGest = nil
         context.coordinator.longTapGest = nil
@@ -238,16 +230,15 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: _UIHostingView<Content>, context: Context) {
-        uiView.rootView = content
+        uiView.rootView = content()
     }
     
     func makeCoordinator() -> Coordinator<Content> {
-        Coordinator(content: content, parent: self)
+        Coordinator(parent: self)
     }
     
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
 
-        private(set) var content: Content
         private let parent: GestureOverlay
         
         private var lastScale: CGFloat!
@@ -293,9 +284,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
         
-        init(content: Content, parent: GestureOverlay) {
+        init(parent: GestureOverlay) {
             self.parent = parent
-            self.content = content
         }
         
         @objc

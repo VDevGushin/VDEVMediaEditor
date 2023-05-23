@@ -30,19 +30,8 @@ final class PlaceholderTemplateViewModel: ObservableObject {
         self.delegate = delegate
     }
     
-    func update(offset: CGSize, scale: CGFloat, rotation: Angle) {
-        print("===> x", offset.width)
-        print("===> y", offset.height)
-        imageModel?.update(offset: offset, scale: scale, rotation: rotation)
-        videoModel?.update(offset: offset, scale: scale, rotation: rotation)
-        
-        if let imageModel = imageModel {
-            item.update(imageModel: imageModel)
-        }
-        
-        if let videoModel = videoModel {
-            item.update(videoModel: videoModel)
-        }
+    deinit {
+        Log.d("❌ Deinit[TEMPLATE]: PlaceholderTemplateViewModel")
     }
 }
 
@@ -50,6 +39,7 @@ final class PlaceholderTemplateViewModel: ObservableObject {
 extension PlaceholderTemplateViewModel {
     func hideAllOverlayViews() {
         delegate?.hideAllOverlayViews()
+        showSelection = false
     }
     
     func openEditVariants() {
@@ -89,10 +79,8 @@ extension PlaceholderTemplateViewModel {
 
         self.delegate?.pickSelector = { [weak self] model in
             guard let self = self else { return }
-            
-            self.delegate?.hideMediaPicker()
-
             guard let model = model else { return }
+           // self.delegate?.hideMediaPicker()
             
             self.storage.removeAll()
 

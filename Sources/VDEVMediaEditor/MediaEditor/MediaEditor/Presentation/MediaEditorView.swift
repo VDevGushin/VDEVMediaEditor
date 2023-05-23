@@ -18,11 +18,12 @@ struct MediaEditorView: View {
     }
     
     var body: some View {
+        let _ = Self._printChanges()
         ZStack {
             AppColors.black
             
             VStack(spacing: 0) {
-                Content()
+                EditorArea()
                     .viewDidLoad(vm.contentViewDidLoad)
                     .padding(.bottom, 4)
                 
@@ -54,58 +55,64 @@ struct MediaEditorView: View {
 
 fileprivate extension MediaEditorView {
     @ViewBuilder
-    func Content() -> some View {
+    func EditorArea() -> some View {
         ZStack(alignment: .center) {
             vm.ui.mainLayerBackgroundColor
             
             GeometryReader { proxy in
-                ParentView {
-                    ZStack {
-                        InvisibleTapZoneView(tapCount: 1) {
-                            if vm.tools.currentToolItem != .empty {
-                                haptics(.light)
-                                vm.tools.closeTools(false)
-                            }
-                        }
-                        
-                        ForEach(vm.data.layers, id: \.self) { item in
-                            CanvasLayerView(item: item) { contentItem in
-                                CanvasItemViewBuilder(item: contentItem,
-                                                      canvasSize: proxy.size,
-                                                      guideLinesColor: vm.ui.guideLinesColor,
-                                                      delegate: vm.tools.overlay)
-                            } onSelect: { item in
-                                if vm.tools.currentToolItem == .empty {
-                                    // Выбрать конкретный итем
-                                    vm.tools.openLayersList(true)
-                                    vm.data.bringToFront(item)
-                                    vm.tools.seletedTool(.concreteItem(item))
-                                } else {
-                                    // Отменить выборку
+                let size = proxy.size
+                if vm.data.layers.isEmpty {
+                    vm.ui.mainLayerBackgroundColor
+                        .frame(size)
+                } else {
+                    ParentView {
+                        ZStack {
+                            InvisibleTapZoneView(tapCount: 1) {
+                                if vm.tools.currentToolItem != .empty {
+                                    haptics(.light)
                                     vm.tools.closeTools(false)
-                                    //vm.tools.layerInManipulation = item
                                 }
-                            } onDelete: { item in
-                                vm.data.delete(item)
-                            } onShowCenterV: { value in
-                                vm.ui.showVerticalCenter = value
-                            } onShowCenterH: { value in
-                                vm.ui.showHorizontalCenter = value
-                            } onManipulated: { item in
-                                vm.tools.layerInManipulation = item
-                            } onEndManipulated: { item in
-                                vm.tools.layerInManipulation = nil
-                            } onEdit: { item in
-                                if vm.tools.tryToEdit(item) {
-                                    vm.tools.layerInManipulation = nil
-                                } else {
+                            }
+                            
+                            ForEach(vm.data.layers, id: \.self) { item in
+                                CanvasLayerView(item: item) {
+                                    CanvasItemViewBuilder(item: item,
+                                                          canvasSize: size,
+                                                          guideLinesColor: vm.ui.guideLinesColor,
+                                                          delegate: vm.tools.overlay)
+                                } onSelect: { item in
+                                    if vm.tools.currentToolItem == .empty {
+                                        // Выбрать конкретный итем
+                                        vm.tools.openLayersList(true)
+                                        vm.data.bringToFront(item)
+                                        vm.tools.seletedTool(.concreteItem(item))
+                                    } else {
+                                        // Отменить выборку
+                                        vm.tools.closeTools(false)
+                                        //vm.tools.layerInManipulation = item
+                                    }
+                                } onDelete: { item in
+                                    vm.data.delete(item)
+                                } onShowCenterV: { value in
+                                    vm.ui.showVerticalCenter = value
+                                } onShowCenterH: { value in
+                                    vm.ui.showHorizontalCenter = value
+                                } onManipulated: { item in
                                     vm.tools.layerInManipulation = item
+                                } onEndManipulated: { item in
+                                    vm.tools.layerInManipulation = nil
+                                } onEdit: { item in
+                                    if vm.tools.tryToEdit(item) {
+                                        vm.tools.layerInManipulation = nil
+                                    } else {
+                                        vm.tools.layerInManipulation = item
+                                    }
                                 }
                             }
                         }
                     }
+                    .frame(size)
                 }
-                .frame(proxy.size)
             }
             .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.5 : 1.0)
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)

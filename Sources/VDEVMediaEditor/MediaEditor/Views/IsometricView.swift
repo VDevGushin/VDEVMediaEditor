@@ -15,15 +15,9 @@ struct IsometricVideo: View {
     
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
-            if animate {
-                ResultVideoPlayer(assetURL: model.url,
-                                  cornerRadius: 0,
-                                  aspectRatio: model.aspect)
-            } else {
-                ResultVideoPlayer(assetURL: model.url,
-                                  cornerRadius: 15,
-                                  aspectRatio: model.aspect)
-            }
+            ResultVideoPlayer(assetURL: model.url,
+                              cornerRadius: 0,
+                              aspectRatio: model.aspect)
         } bottom: {
             AsyncImageView(url: model.cover) { img in
                 Image(uiImage: img)

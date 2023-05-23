@@ -5,13 +5,13 @@
 //  Created by Vladislav Gushin on 20.02.2023.
 //
 
-
 import SwiftUI
 import UIKit
 
 struct MovableContentView<Content: View>: View {
     private let content: () -> Content
     private let size: CGSize
+    private unowned let item: CanvasItemModel
 
     @State private var position: CGSize = .zero
     @State private var scale: CGFloat = 1
@@ -19,78 +19,65 @@ struct MovableContentView<Content: View>: View {
     @State private var startZoom: CGFloat!
     @State private var contentSize: CGSize = .zero
     @GestureState private var isManipulation: Bool = false
+    @GestureState private var showSelection: Bool = false
+    
     @Binding var isInManipulation: Bool
+    @Binding var isShowSelection: Bool
 
     private let onTap: () -> Void
     private let onDoubleTap: () -> Void
-    private let onUpdate: (CGSize, CGFloat, Angle) -> Void
 
-    init(size: CGSize,
+    init(item: CanvasItemModel,
+         size: CGSize,
          isInManipulation: Binding<Bool>,
+         isShowSelection: Binding<Bool>,
          @ViewBuilder content: @escaping () -> Content,
          onTap: @escaping () -> Void,
-         onDoubleTap: @escaping () -> Void,
-         onUpdate: @escaping (CGSize, CGFloat, Angle) -> Void) {
-        defer {
-            onUpdate(position, scale, .zero)
-        }
-        self.onUpdate = onUpdate
+         onDoubleTap: @escaping () -> Void) {
+        self.item = item
         self.size = size
         self.content = content
         self.onTap = onTap
         self.onDoubleTap = onDoubleTap
         self._isInManipulation = isInManipulation
+        self._isShowSelection = isShowSelection
     }
 
     var body: some View {
         ZStack {
             Color.clear
-            let gestures1 = drugGesture.simultaneously(with: zoomGesture)
-            let gestures2 = SimultaneousGesture(TapGesture(count: 1), TapGesture(count: 2))
-                .onEnded { gestures in
-                    guard !isManipulation else { return }
-                    if gestures.second != nil {
-                        onDoubleTap()
-                        haptics(.light)
-                    } else if gestures.first != nil {
-                        onTap()
-                        haptics(.light)
-                    }
-                }
-            let gestures3 = gestures1.exclusively(before: gestures2)
-
+            
             content()
                 .scaleEffect(scale)
                 .offset(position)
                 .fetchSize($contentSize)
-                .gesture(gestures3)
-                .onChange(of: isManipulation) {
-                    isInManipulation = $0
-                }
+                .gesture(mainGesture.simultaneously(with: tapObserver))
+                .onChange(of: isManipulation) { isInManipulation = $0 }
+                .onChange(of: showSelection) { isShowSelection = $0 }
         }
         .frame(size)
         .onChange(of: position) { value in
-            onUpdate(value, scale, .zero)
+            item.update(offset: value, scale: scale, rotation: .zero)
         }
         .onChange(of: scale) { value in
-            onUpdate(position, value, .zero)
+            item.update(offset: position, scale: value, rotation: .zero)
         }
     }
 }
 
 fileprivate extension MovableContentView {
+    var tapObserver: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .updating($showSelection, body: { _, out, _ in out = true })
+    }
+    
     var drugGesture: some Gesture {
-        DragGesture()
-            .updating($isManipulation, body: { _, out, _ in
-                out = true
-            })
+        DragGesture(minimumDistance: 3)
+            .updating($isManipulation, body: { _, out, _ in out = true })
+            .updating($showSelection, body: { _, out, _ in out = true })
             .onChanged { move in
-                if startPosition == nil {
-                    startPosition = position
-                }
-                withAnimation(.interactiveSpring()) {
-                    updateDrag(move)
-                }
+                if startPosition == nil { startPosition = position }
+                withAnimation(.interactiveSpring()) { updateDrag(move) }
             }
             .onEnded { move in
                 withAnimation(.interactiveSpring()) {
@@ -102,9 +89,8 @@ fileprivate extension MovableContentView {
 
     var zoomGesture: some Gesture {
         MagnificationGesture()
-            .updating($isManipulation, body: { _, out, _ in
-                out = true
-            })
+            .updating($isManipulation, body: { _, out, _ in out = true })
+            .updating($showSelection, body: { _, out, _ in out = true })
             .onChanged { scale in
                 if startZoom == nil {
                     startZoom = self.scale
@@ -120,10 +106,29 @@ fileprivate extension MovableContentView {
                 }
             }
     }
+    
+    private var mainGesture: some Gesture {
+        let drugZoomGesture = drugGesture.simultaneously(with: zoomGesture)
+        
+        let tapDoubleTapGesture = SimultaneousGesture(TapGesture(count: 1), TapGesture(count: 2))
+            .updating($showSelection, body: { _, out, _ in out = true })
+            .onEnded { gestures in
+                guard !isManipulation else { return }
+                if gestures.second != nil {
+                    onDoubleTap()
+                    haptics(.light)
+                } else if gestures.first != nil {
+                    onTap()
+                    haptics(.light)
+                }
+            }
+      
+        return drugZoomGesture.exclusively(before: tapDoubleTapGesture)
+    }
 
     private func updateDrag(_ move: DragGesture.Value) {
         guard let startPosition = startPosition else { return }
-        position = startPosition + move.translation / scale
+        position = startPosition + move.translation
         checkLimits()
     }
 

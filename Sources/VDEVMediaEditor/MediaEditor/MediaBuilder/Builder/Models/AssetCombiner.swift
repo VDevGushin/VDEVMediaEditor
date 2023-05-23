@@ -16,9 +16,8 @@ class AssetCombiner {
     func combine(_ input: [CombinerAsset],
                  canvasSize: CGSize,
                  scaleFactor: CGFloat,
+                 canvasNativeSize: CGSize,
                  progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {
-        
-        let canvasNativeSize = canvasSize * scaleFactor
         
         // Создание видео
         if input.contains(where: { $0.body.videoBody != nil }) {
@@ -34,11 +33,10 @@ class AssetCombiner {
     }
     
     func combineForMerge(_ input: [CombinerAsset],
-                 canvasSize: CGSize,
-                 scaleFactor: CGFloat,
-                 progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {
-        
-        let canvasNativeSize = canvasSize * scaleFactor
+                         canvasSize: CGSize,
+                         scaleFactor: CGFloat,
+                         canvasNativeSize: CGSize,
+                         progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {
         
         // Создание видео
         if input.contains(where: { $0.body.videoBody != nil }) {

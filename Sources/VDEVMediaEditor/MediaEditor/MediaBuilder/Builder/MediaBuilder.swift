@@ -8,19 +8,6 @@
 import Foundation
 import SwiftUI
 
-extension MediaBuilder {
-    enum State {
-        case idle
-        case inProgress(String)
-        case success(CombinerOutput)
-        case error(Error)
-    }
-    
-    enum MediaBuilderError: Error {
-        case selfIsNil
-    }
-}
-
 final class MediaBuilder: NSObject, ObservableObject {
     @Published private(set) var state: State = .idle
     
@@ -39,12 +26,15 @@ final class MediaBuilder: NSObject, ObservableObject {
         }
         
         Log.d("Get scale from media resolution: \(resolution.toString)")
-        let scale = resolution.getScale(for: size.width)
+        
+        let scale: CGFloat = CanvasNativeSizeMaker.makeScale(from: resolution, width: size.width)
+        let canvasNativeSize: CGSize = CanvasNativeSizeMaker.makeSize(from: scale, size: size)
         
         let assetBuilder = CombinerAssetBuilder(layers: layers,
                                                 canvasSize: size,
                                                 scaleFactor: scale,
                                                 bgColor: backgrondColor.uiColor,
+                                                canvasNativeSize: canvasNativeSize,
                                                 progressObserver: progressObserver)
         
         Log.d("Begin construct media")
@@ -64,9 +54,10 @@ final class MediaBuilder: NSObject, ObservableObject {
             
             do  {
                 var result = try await self.combiner.combine(combinerAsset,
-                                                        canvasSize: size,
-                                                        scaleFactor: scale,
-                                                        progressObserver: progressObserver)
+                                                             canvasSize: size,
+                                                             scaleFactor: scale,
+                                                             canvasNativeSize: canvasNativeSize,
+                                                             progressObserver: progressObserver)
                 
                 result.featuresUsageData = .init(from: layers)
                 
@@ -89,3 +80,30 @@ final class MediaBuilder: NSObject, ObservableObject {
         state = .error(error)
     }
 }
+
+// MARK: - Helper
+struct CanvasNativeSizeMaker {
+    static func makeScale(from resolution: MediaResolution, width: CGFloat) -> CGFloat {
+        return resolution.getScale(for: width)
+    }
+    
+    static func makeSize(from scale: CGFloat, size: CGSize) -> CGSize {
+        let width = (size.width * scale).rounded(.down)
+        let height = (size.height * scale).rounded(.down)
+        return .init(width: width, height: height)
+    }
+}
+
+extension MediaBuilder {
+    enum State {
+        case idle
+        case inProgress(String)
+        case success(CombinerOutput)
+        case error(Error)
+    }
+    
+    enum MediaBuilderError: Error {
+        case selfIsNil
+    }
+}
+

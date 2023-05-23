@@ -14,4 +14,8 @@ final class CanvasTextForTemplateItemModel: CanvasItemModel {
         self.text = text
         super.init(type: .textForTemplate)
     }
+    
+    deinit {
+        Log.d("❌ Deinit[TEMPLATE]: CanvasTextForTemplateItemModel")
+    }
 }

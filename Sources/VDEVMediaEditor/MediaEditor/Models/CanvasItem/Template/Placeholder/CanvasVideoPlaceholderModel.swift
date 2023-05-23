@@ -60,7 +60,7 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
 
     deinit {
         storage.cancelAll()
-        Log.d("❌ Deinit: CanvasVideoPlaceholderModel")
+        Log.d("❌ Deinit[TEMPLATE]: CanvasVideoPlaceholderModel")
     }
     
     func update(volume: Float) {

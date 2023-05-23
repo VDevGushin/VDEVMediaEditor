@@ -69,13 +69,12 @@ final class CanvasLayersDataViewModel: ObservableObject {
     }
 
     func delete(_ item: CanvasItemModel) {
-        let id = item.id
-        layers.remove(id: id)
+        layers.remove(id: item.id)
     }
     
     func delete(_ item: CanvasItemModel?) {
-        guard let item = item else { return }
-        delete(item)
+        guard let id = item?.id else { return }
+        layers.remove(id: id)
     }
 
     func up(_ item: CanvasItemModel) {

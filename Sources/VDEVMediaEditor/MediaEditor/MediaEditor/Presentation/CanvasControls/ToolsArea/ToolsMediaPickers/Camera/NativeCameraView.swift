@@ -24,29 +24,30 @@ struct NativeCameraView: View {
 struct CameraVPViewNative: UIViewControllerRepresentable {
     @Injected private var resultSettings: VDEVMediaEditorResultSettings
     let onComplete: (PickerMediaOutput?) -> Void
+    @Environment(\.presentationManager) var presentationManager
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<CameraVPViewNative>) -> UIImagePickerController {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = context.coordinator
-        imagePicker.sourceType = .camera
-        imagePicker.mediaTypes = [UTType.image.identifier, UTType.movie.identifier]
-        imagePicker.cameraCaptureMode = .photo
-        imagePicker.videoMaximumDuration = resultSettings.maximumVideoDuration
-        imagePicker.allowsEditing = false
-        imagePicker.showsCameraControls = true
-        imagePicker.overrideUserInterfaceStyle = .dark
-        imagePicker.cameraFlashMode = .off
-        imagePicker.modalPresentationStyle = .fullScreen
-        imagePicker.videoQuality = .typeHigh
-        imagePicker.videoExportPreset = AVAssetExportPresetPassthrough
-        
         return imagePicker
     }
     
     static func dismantleUIViewController(_ uiViewController: UIImagePickerController, coordinator: Coordinator) {
     }
     
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) { }
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+        uiViewController.sourceType = .camera
+        uiViewController.mediaTypes = [UTType.image.identifier, UTType.movie.identifier]
+        uiViewController.cameraCaptureMode = .photo
+        uiViewController.videoMaximumDuration = resultSettings.maximumVideoDuration
+        uiViewController.allowsEditing = false
+        uiViewController.showsCameraControls = true
+        uiViewController.overrideUserInterfaceStyle = .dark
+        uiViewController.cameraFlashMode = .off
+        uiViewController.modalPresentationStyle = .fullScreen
+        uiViewController.videoQuality = .typeHigh
+        uiViewController.videoExportPreset = AVAssetExportPresetPassthrough
+    }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -75,12 +76,13 @@ struct CameraVPViewNative: UIViewControllerRepresentable {
         }
         
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            defer { parent.presentationManager.dismiss() }
             emptyResult()
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             
-            picker.dismiss()
+            defer { parent.presentationManager.dismiss() }
             
             Task(priority: .high) {
                 guard let result = await mediaPickerGetter.makeResult(info: info) else {

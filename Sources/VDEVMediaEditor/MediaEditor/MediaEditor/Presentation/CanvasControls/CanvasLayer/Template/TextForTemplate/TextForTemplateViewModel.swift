@@ -15,10 +15,15 @@ final class TextForTemplateViewModel: ObservableObject {
     
     weak var delegate: CanvasEditorDelegate?
     
-    init(item: CanvasTextForTemplateItemModel, delegate: CanvasEditorDelegate? = nil) {
+    init(item: CanvasTextForTemplateItemModel,
+         delegate: CanvasEditorDelegate? = nil) {
         self.item = item
         self.text = item.text
         self.delegate = delegate
+    }
+    
+    deinit {
+        Log.d("❌ Deinit[TEMPLATE]: TextForTemplateViewModel")
     }
     
     func editText() {

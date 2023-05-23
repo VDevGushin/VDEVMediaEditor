@@ -67,6 +67,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
+    // var aspectRatio: CGFloat? { 9/16 }
     var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
     

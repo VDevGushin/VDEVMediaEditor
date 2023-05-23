@@ -17,17 +17,16 @@ final class MergeImageAssetCombiner {
     init(layers: [CanvasItemModel],
          canvasSize: CGSize,
          scaleFactor: CGFloat,
+         canvasNativeSize: CGSize,
          backgroundColor: UIColor = .clear) {
         self.layers = layers
         self.canvasSize = canvasSize
         self.scaleFactor = scaleFactor
         self.bgColor = backgroundColor
-        self.canvasNativeSize = canvasSize * scaleFactor
+        self.canvasNativeSize = canvasNativeSize
     }
     
     func execute() async throws -> CombinerOutput {
-        let canvasNativeSize = canvasSize * scaleFactor
-        
         var bufferImage: CIImage = CIImage(color: .clear)
         
         let bgImage = CIImage(color: CIColor(color: bgColor))

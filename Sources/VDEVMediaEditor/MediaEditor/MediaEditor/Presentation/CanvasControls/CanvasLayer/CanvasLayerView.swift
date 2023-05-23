@@ -28,9 +28,10 @@ private final class CanvasLayerViewModel: ObservableObject {
     @Published var rotation: Angle = .zero
     @Published var anchor: UnitPoint = .center
     
+    private(set) var manipulationWatcher: ManipulationWatcher = .shared
+    
     private var operation: AnyCancellable?
     private var watcherOperation: AnyCancellable?
-    
     
     init(item: CanvasItemModel) {
         self.item = item
@@ -55,6 +56,7 @@ private final class CanvasLayerViewModel: ObservableObject {
     }
     
     deinit {
+        manipulationWatcher.clear()
         operation = nil
         Log.d("❌ Deinit: CanvasLayerViewModel")
     }
@@ -66,7 +68,7 @@ struct CanvasLayerView<Content: View>: View {
     
     @EnvironmentObject private var editorVM: CanvasEditorViewModel
     
-    private let content: (CanvasItemModel) -> Content
+    private let content: () -> Content
     
     // Callbacks
     private var onSelect: ((CanvasItemModel) -> Void)?
@@ -93,7 +95,6 @@ struct CanvasLayerView<Content: View>: View {
     
     @State private var tapScaleFactor: CGFloat = 1.0
     
-    private(set) var manipulationWatcher: ManipulationWatcher = .shared
     
     @ViewBuilder
     private var selectionColor: some View {
@@ -146,7 +147,7 @@ struct CanvasLayerView<Content: View>: View {
         if vm.item is CanvasTemplateModel { return maxOpacity }
         
         // Проверка на возможность применить свойство опасити
-        if manipulationWatcher
+        if vm.manipulationWatcher
             .regectOpacityWith(dataModel: editorVM.data,
                                for: vm.item) {
             return maxOpacity
@@ -156,7 +157,7 @@ struct CanvasLayerView<Content: View>: View {
     }
     
     init(item: CanvasItemModel,
-         @ViewBuilder content: @escaping (CanvasItemModel) -> Content,
+         @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
          onDelete: ((CanvasItemModel) -> Void)? = nil,
          onShowCenterV: ((Bool) -> Void)? = nil,
@@ -189,8 +190,9 @@ struct CanvasLayerView<Content: View>: View {
                 isCenterVertical: $isCenterVertical,
                 isCenterHorizontal: $isCenterHorizontal,
                 tapScaleFactor: $tapScaleFactor,
-                itemType: vm.item.type,
-                content: content(vm.item)) {
+                itemType: vm.item.type) {
+                    content()
+                } onLongPress: {
                   // Long tap
                 } onDoubleTap: {
                     onSelect?(vm.item)
@@ -243,17 +245,17 @@ struct CanvasLayerView<Content: View>: View {
                     }
                     
                     if newValue {
-                        manipulationWatcher.setManipulated(item: vm.item)
+                        vm.manipulationWatcher.setManipulated(item: vm.item)
                         onManipulated?(vm.item)
                     } else {
-                        manipulationWatcher.removeManipulated(item: vm.item)
+                        vm.manipulationWatcher.removeManipulated(item: vm.item)
                         onEndManipulated?(vm.item)
                     }
                 }
                 .onChange(of: size) { value in vm.updateSize(value) }
                 .frame($0.size)
         }
-        .onReceive(manipulationWatcher.$current.removeDuplicates()) { value in
+        .onReceive(vm.manipulationWatcher.$current.removeDuplicates()) { value in
             //Если еще не было манипуляций ни с одним элементом нам надо разрешить действие
             guard let value = value else { return isCurrentInManipulation = true }
             
@@ -360,6 +362,8 @@ final class ManipulationWatcher: ObservableObject {
     func setManipulated(item: CanvasItemModel) { if current == nil { current = item } }
     
     func removeManipulated(item: CanvasItemModel) { if isSame(item) { current = nil } }
+    
+    func clear() { current = nil }
     
     func regectOpacityWith(dataModel: CanvasLayersDataViewModel,
                            for item: CanvasItemModel) -> Bool {

@@ -9,7 +9,6 @@ import Foundation
 import Combine
 import SwiftUI
 
-
 protocol CanvasEditorDelegate: AnyObject {
     // Select media from camera rall
     var pickSelector: ((PickerMediaOutput?) -> Void)? { get set }
@@ -41,7 +40,6 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
     @Published private(set) var isAnyViewOpen: Bool = false
 
     private var storage: Set<AnyCancellable> = Set()
-    
 
     init() {
         // Если у на вообще, что либо открыто на оверлее
@@ -104,6 +102,18 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         if state.id != 5 { set(.filter(item: item)) }
     }
     
+    func set(showPhotoPicker value: Bool) {
+        if self.showPhotoPicker != value {
+            showPhotoPicker = value
+        }
+    }
+    
+    func set(showVideoPicker value: Bool) {
+        if self.showVideoPicker != value {
+            showVideoPicker = value
+        }
+    }
+
     // MARK: - Sound
     
     var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)?

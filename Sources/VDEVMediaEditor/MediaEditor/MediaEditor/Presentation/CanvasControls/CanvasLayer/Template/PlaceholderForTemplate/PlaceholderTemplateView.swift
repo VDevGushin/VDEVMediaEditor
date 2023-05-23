@@ -14,6 +14,7 @@ struct PlaceholderTemplateView: View {
 
     //для того, чтобы узнать манипулируем мы с картинкой или видосом
     @State private var isInManipulation: Bool = false
+    @State private var isShowSelection: Bool = false
 
     init(item: CanvasPlaceholderModel, delegate: CanvasEditorDelegate?) {
         _vm = .init(wrappedValue: .init(item: item, delegate: delegate))
@@ -47,8 +48,10 @@ private extension PlaceholderTemplateView {
             GeometryReader { proxy in
                 let size = proxy.size
                 vm.imageModel.map { imageModel in
-                    MovableContentView(size: size,
-                                       isInManipulation: $isInManipulation) {
+                    MovableContentView(item: imageModel,
+                                       size: size,
+                                       isInManipulation: $isInManipulation,
+                                       isShowSelection: $isShowSelection) {
                         Image(uiImage: imageModel.image)
                             .resizable()
                             .frame(imageModel.imageSize.aspectFill(minimumSize: size))
@@ -59,16 +62,18 @@ private extension PlaceholderTemplateView {
                     } onDoubleTap: {
                         haptics(.light)
                         vm.openEditVariants()
-                    } onUpdate: { size, position, angle in
-                        vm.update(offset: size, scale: position, rotation: angle)
-                    }
-                     
-                    .modifier (
+                    }.modifier (
                         TemplateMask(itemForShow: imageModel.templatedImage) {
                             Image(uiImage: $0)
                                 .resizable()
                                 .aspectRatio(imageModel.aspectRatio, contentMode: .fill)
-                                .allowsHitTesting(false)
+                                .gesture(
+                                    DragGesture(minimumDistance: 0)
+                                        .onEnded { value in
+                                            let location = value.location
+                                            print("==>", location)
+                                        }
+                                )
                         }
                     )
                     .overlay {
@@ -87,12 +92,14 @@ private extension PlaceholderTemplateView {
                         set: { videoModel.update(volume: $0) }
                     )
                     
-                    MovableContentView(size: size,
-                                       isInManipulation: $isInManipulation) {
+                    MovableContentView(item: videoModel,
+                                       size: size,
+                                       isInManipulation: $isInManipulation,
+                                       isShowSelection: $isShowSelection) {
                         VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
-                                        videoComposition: videoModel.avVideoComposition,
-                                        thumbnail: videoModel.thumbnail,
-                                        volume: binding)
+                                                   videoComposition: videoModel.avVideoComposition,
+                                                   thumbnail: videoModel.thumbnail,
+                                                   volume: binding)
                         .frame(videoModel.size.aspectFill(minimumSize: size))
                     } onTap: {
                         haptics(.light)
@@ -101,9 +108,7 @@ private extension PlaceholderTemplateView {
                     } onDoubleTap: {
                         haptics(.light)
                         vm.openEditVariants()
-                    } onUpdate: { size, position, angle in
-                        vm.update(offset: size, scale: position, rotation: angle)
-                    } .modifier(
+                    }.modifier(
                         TemplateMask(itemForShow: videoModel.maskVideoComposition) {
                             VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
                                             videoComposition: $0,
@@ -125,8 +130,13 @@ private extension PlaceholderTemplateView {
 //                }
             }
         .overlay {
-            if vm.showSelection {
+            if vm.showSelection || isShowSelection {
                 Selection()
+            }
+        }
+        .background {
+            if isShowSelection {
+                AnimatedGradientView(color: guideLinesColor.opacity(0.3))
             }
         }
     }
@@ -189,7 +199,9 @@ private struct TemplateMask<T, MaskContent: View>: ViewModifier {
 
     func body(content: Content) -> some View {
         if let iShow = itemForShow {
-            content.mask { maskContent(iShow) }
+            content.mask {
+                maskContent(iShow)
+            }
         } else {
             content
         }

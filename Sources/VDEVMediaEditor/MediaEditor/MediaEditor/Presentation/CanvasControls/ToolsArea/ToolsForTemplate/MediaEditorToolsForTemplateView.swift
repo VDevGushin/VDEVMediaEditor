@@ -19,6 +19,7 @@ struct MediaEditorToolsForTemplateView: View {
     }
     
     var body: some View {
+        let _ = Self._printChanges()
         ZStack{
             switch vm.state {
             case .mediaPick:
@@ -50,16 +51,20 @@ struct MediaEditorToolsForTemplateView: View {
         }
         .fullScreenCover(isPresented: $vm.showPhotoPicker) {
             PhotoPickerView(type: .image) { result in
-                vm.showPhotoPicker = false
+                vm.set(showPhotoPicker: false)
                 vm.hideMediaPicker()
-                vm.pickSelector?(result)
+                if let result = result {
+                    vm.pickSelector?(result)
+                }
             }
         }
         .fullScreenCover(isPresented: $vm.showVideoPicker) {
             PhotoPickerView(type: .video) { result in
-                vm.showVideoPicker = false
+                vm.set(showVideoPicker: false)
                 vm.hideMediaPicker()
-                vm.pickSelector?(result)
+                if let result = result {
+                    vm.pickSelector?(result)
+                }
             }
         }
     }
@@ -96,9 +101,9 @@ private struct PickMediaContainer: View {
             vm.hideAllOverlayViews()
             vm.pickSelector?(result)
         } pickPhoto: {
-            vm.showPhotoPicker = true
+            vm.set(showPhotoPicker: true)
         } pickVideo: {
-            vm.showVideoPicker = true
+            vm.set(showVideoPicker: true)
         }
     }
     

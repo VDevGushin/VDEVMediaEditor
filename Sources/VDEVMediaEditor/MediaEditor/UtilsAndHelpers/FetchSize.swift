@@ -12,8 +12,30 @@ extension View {
         modifier(FetchSize(size: size))
     }
     
+    func fetchSizeRound(_ size: Binding<CGSize>) -> some View {
+        modifier(FetchSizeRound(size: size))
+    }
+    
     func fetchSize(_ callBack: @escaping (CGSize) -> Void) -> some View {
         modifier(FetchSizeWithCallBack(callBack: callBack))
+    }
+}
+
+private struct FetchSizeRound: ViewModifier {
+    @Binding var size: CGSize
+    
+    func body(content: Content) -> some View {
+        content
+            .background {
+                GeometryReader { geometryProxy in
+                    Color.clear.preference(key: SizeKey.self, value: geometryProxy.size)
+                }.onPreferenceChange(SizeKey.self) { preferences in
+                    let prefs = preferences.rounded(.down)
+                    if size != prefs {
+                        size = prefs
+                    }
+                }
+            }
     }
 }
 

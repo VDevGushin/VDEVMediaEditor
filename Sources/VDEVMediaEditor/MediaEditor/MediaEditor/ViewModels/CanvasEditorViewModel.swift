@@ -174,7 +174,7 @@ final class CanvasEditorViewModel: ObservableObject {
     
     func onBuildMedia() {
         builder.makeMediaItem(layers: data.layers.elements,
-                              size: ui.roundedEditorSize,
+                              size: ui.editorSize,
                               backgrondColor: ui.mainLayerBackgroundColor,
                               resolution: resultResolution)
     }

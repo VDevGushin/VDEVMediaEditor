@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct ToolsConcreteItemHorizontal: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
@@ -159,6 +158,9 @@ struct ToolsConcreteItemHorizontal: View {
                         case .text:
                             ToolRow(image: images.currentItem.currentItemEditText,
                                     title: strings.editText) { onEditText(item) }
+                        case .sticker:
+                            ToolRow(image: images.currentItem.currentItemAdjustments,
+                                    title: strings.adjustments) { onAdjustments(item) }
                         default: EmptyView()
                         }
                         

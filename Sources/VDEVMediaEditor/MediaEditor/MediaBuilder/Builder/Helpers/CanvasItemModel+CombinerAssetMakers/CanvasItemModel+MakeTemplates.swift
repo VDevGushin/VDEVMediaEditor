@@ -242,7 +242,7 @@ extension CanvasItemModel {
         }
         
         ciImage = ciImage
-            .frame(bounds.size * scaleFactor, contentMode: .scaleAspectFill)
+            .frame(bounds.size * scaleFactor, contentMode: .scaleAspectFit)
             .cropped(to: CGRect(origin: .zero, size: bounds.size * scaleFactor))
         
         
@@ -339,7 +339,7 @@ fileprivate extension CanvasItemModel {
             
             // Реальная картинка в контейнере(плейсхолдер)
             ciImage = ciImage.resized(to: size, withContentMode: .scaleAspectFill)
-            //.frame(size, contentMode: .scaleAspectFill)
+                //.frame(size, contentMode: .scaleAspectFill)
             
             // Контейнер для хранения плейсхолдера
             let container = CIImage(color: .clear)
@@ -348,7 +348,7 @@ fileprivate extension CanvasItemModel {
             // Вписываем с трансофрмами плейсхолдер в контейнер
             ciImage = ciImage
                 .composited(with: container, canvasSize: containerSize, transform: trasform)
-                .cropped(to: .init(origin: .zero, size: containerSize.rounded(.up)))
+                .cropped(to: .init(origin: .zero, size: containerSize))
             
             // ресайзим маску под нужный размер
             // пытаемся применить маску на всем контейнере (контейнер теперь просто картинка)
@@ -385,15 +385,13 @@ fileprivate extension CanvasItemModel {
             
             let asset = AVAsset(url: processedUrl)
             
-            guard let _ = await asset.getSize() else {
+            guard let originalAssetSize = await asset.getSize() else {
                 Log.e("Can't detect original asset size")
                 return nil
             }
             
-            // Размер самого контейнера для хранения плейсхолдера картинки
-            let containerSize = item.bounds.size * scaleFactor
-            
-            let videoSize = videoItem.size * scaleFactor
+            let containerSize = (item.bounds.size * scaleFactor).rounded(.up)
+            let videoSize = (originalAssetSize * scaleFactor).rounded(.up)
             
             // Вписываем видео
             let size = videoSize.aspectFill(minimumSize: containerSize)
@@ -409,7 +407,7 @@ fileprivate extension CanvasItemModel {
             // пытаемся применить маску на всем контейнере (контейнер теперь просто картинка)
             var maskCGImage: CGImage?
             
-            if let resizeMask = videoItem.maskImageFromTemplate?.resized(to: containerSize),
+            if let resizeMask = videoItem.maskImageFromTemplate?.resized(to: containerSize.rounded(.up)),
                let maskCG = resizeMask.cgImage {
                 maskCGImage = maskCG
             }

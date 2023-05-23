@@ -86,8 +86,6 @@ struct VideoPlayerViewForTempates: View {
         self.videoComposition = videoComposition
         self._volume = volume
         self.thumbnail = thumbnail
-        
-        print("====>", volume)
     }
     
     init(assetURL: URL,
@@ -139,8 +137,6 @@ struct VideoPlayerViewForLayers: View {
         self.videoComposition = videoComposition
         self.volume = volume
         self.thumbnail = thumbnail
-        
-        print("====>", volume)
     }
     
     init(assetURL: URL,

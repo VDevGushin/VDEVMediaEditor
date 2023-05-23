@@ -12,11 +12,13 @@ import Kingfisher
 import CollectionConcurrencyKit
 
 final class TemplateLayerViewModel: ObservableObject {
-    private(set) var item: CanvasTemplateModel
+    private(set) unowned var item: CanvasTemplateModel
     
     @Published private(set) var isLoading = false
     @Published var templateLayers: IdentifiedArrayOf<CanvasItemModel> = []
+    
     private var operation: Task<Void, Never>?
+    
     weak var delegate: CanvasEditorDelegate?
 
     init(item: CanvasTemplateModel, delegate: CanvasEditorDelegate?) {
@@ -28,8 +30,8 @@ final class TemplateLayerViewModel: ObservableObject {
     deinit {
         operation?.cancel()
         operation = nil
-        self.templateLayers.removeAll()
-        Log.d("❌ Deinit: TemplateLayerViewModel")
+        templateLayers.removeAll()
+        Log.d("❌ Deinit[TEMPLATE]: TemplateLayerViewModel")
     }
 }
 

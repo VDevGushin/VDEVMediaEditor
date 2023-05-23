@@ -49,7 +49,7 @@ final class CanvasImagePlaceholderModel: CanvasItemModel {
     
     deinit {
         storage.cancelAll()
-        Log.d("❌ Deinit: CanvasImagePlaceholderModel")
+        Log.d("❌ Deinit[TEMPLATE]: CanvasImagePlaceholderModel")
     }
     
     override func apply(textures: EditorFilter?) {

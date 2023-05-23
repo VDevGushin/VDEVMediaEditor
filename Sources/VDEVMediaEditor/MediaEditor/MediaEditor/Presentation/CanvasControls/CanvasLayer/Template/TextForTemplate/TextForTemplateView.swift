@@ -14,8 +14,10 @@ struct TextForTemplateView: View {
     
     @State private var size: CGSize = .zero
     
-    init(item: CanvasTextForTemplateItemModel, delegate: CanvasEditorDelegate?) {
-        _vm = .init(wrappedValue: .init(item: item, delegate: delegate))
+    init(item: CanvasTextForTemplateItemModel,
+         delegate: CanvasEditorDelegate?) {
+        _vm = .init(wrappedValue: .init(item: item,
+                                        delegate: delegate))
     }
     
     var body: some View {

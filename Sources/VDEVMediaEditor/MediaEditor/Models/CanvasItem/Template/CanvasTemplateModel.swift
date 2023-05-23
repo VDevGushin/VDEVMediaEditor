@@ -22,7 +22,9 @@ final class CanvasTemplateModel: CanvasItemModel {
         self.layerItems = layerItems.elements
     }
 
-    deinit { Log.d("❌ Deinit: CanvasTemplateModel") }
+    deinit {
+        Log.d("❌ Deinit[TEMPLATE]: CanvasTemplateModel")
+    }
 
     override func copy() -> CanvasTemplateModel {
         return CanvasTemplateModel(variants: variants, editorSize: bounds.size)

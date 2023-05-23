@@ -18,6 +18,7 @@ enum AppColors {
     static let blackWithOpacity = Color.black.opacity(0.5)
     static let blackWithOpacity1 = Color.black.opacity(0.3)
     static let blackWithOpacity2 = Color.black.opacity(0.1)
+    static let blackWithOpacity3 = Color.black.opacity(0.8)
     static let whiteWithOpacity = Color.white.opacity(0.5)
     static let whiteWithOpacity1 = Color.white.opacity(0.8)
     static let whiteWithOpacity2 = Color.white.opacity(0.3)

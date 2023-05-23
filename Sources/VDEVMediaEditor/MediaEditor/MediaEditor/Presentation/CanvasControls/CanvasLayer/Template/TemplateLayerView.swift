@@ -10,13 +10,15 @@ import Kingfisher
 
 struct TemplateLayerView: View {
     @StateObject private var vm: TemplateLayerViewModel
+    @EnvironmentObject private var editorVM: CanvasEditorViewModel
     
-    init(item: CanvasTemplateModel, delegate: CanvasEditorDelegate?) {
+    init(item: CanvasTemplateModel,
+         delegate: CanvasEditorDelegate?) {
         _vm = .init(wrappedValue: .init(item: item, delegate: delegate))
     }
     
     var body: some View {
-        ZStack() {
+        ZStack {
             ZStack {
                 ForEach(vm.templateLayers, id: \.self) { item in
                     ItemBuilder(item, width: vm.item.bounds.size.width, delegate: vm.delegate)
@@ -26,7 +28,30 @@ struct TemplateLayerView: View {
             
             LoadingView(inProgress: vm.isLoading, style: .large)
         }
+        .overlay {
+            toolsOverlay()
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    @ViewBuilder
+    private func toolsOverlay() -> some View {
+        VStack(alignment: .trailing, spacing: 6) {
+            TrashButton2 { [editorVM] in
+                editorVM.tools.closeTools()
+                editorVM.tools.overlay.hideAllOverlayViews()
+                editorVM.data.delete(vm.item)
+            }
+            
+            ChangeTemplateButton { [editorVM] in
+                editorVM.tools.closeTools()
+                editorVM.tools.overlay.hideAllOverlayViews()
+                editorVM.tools.seletedTool(.template)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .frame(maxHeight: .infinity, alignment: .top)
     }
     
     @ViewBuilder
@@ -38,7 +63,7 @@ struct TemplateLayerView: View {
             let item: CanvasImageModel = CanvasItemModel.toType(model: item)
             Image(uiImage: item.image)
                 .resizable()
-                .aspectRatio(item.image.aspectRatio, contentMode: .fit)
+                //.aspectRatio(item.image.aspectRatio, contentMode: .fit)
                 .blendMode(item.blendingMode.swiftUI)
                 .frame(item.bounds.size)
                 .offset(item.offset)
@@ -67,8 +92,8 @@ struct TemplateLayerView: View {
         case .textForTemplate:
             let item: CanvasTextForTemplateItemModel = CanvasItemModel.toType(model: item)
             TextForTemplateView(item: item, delegate: delegate)
-                .frame(item.text.bounds.size)
-                .offset(item.text.offset)
+            .frame(item.text.bounds.size)
+            .offset(item.text.offset)
         case .placeholder:
             // Meсто загрузки медии в темплейт!
             let item: CanvasPlaceholderModel = CanvasItemModel.toType(model: item)

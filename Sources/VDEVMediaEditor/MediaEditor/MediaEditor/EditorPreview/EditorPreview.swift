@@ -71,8 +71,6 @@ struct EditorPreview: View {
     @State var challengeTitle: String = ""
     @State var needShare: Bool = false
     
-    private var cornerRadius: CGFloat { 15 }
-    
     var onPublish: (CombinerOutput) -> Void
     var onClose: () -> Void
     
@@ -108,7 +106,7 @@ struct EditorPreview: View {
                         LoadingView(inProgress: true, style: .medium)
                     }
                     .aspectRatio(model.aspect, contentMode: .fit)
-                    .clipShape(RoundedCorner(radius: cornerRadius))
+                    //.clipShape(RoundedCorner(radius: cornerRadius))
                     .padding(.horizontal, 15)
                     .withParallaxCardEffect()
                 }

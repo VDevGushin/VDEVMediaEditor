@@ -67,6 +67,7 @@ struct ToolsAspectRatioView: View {
     
     init(onSelected: @escaping (CGFloat?) -> Void) {
         self.onSelected = onSelected
+        //variants = [.type1, .type2, .type3, .type4, .type5, .type6, .type7]
         if let userAspect = settings.aspectRatio {
             variants = [.custom(userAspect), .full, .type1, .type2, .type3, .type4, .type5, .type6, .type7]
         } else {
