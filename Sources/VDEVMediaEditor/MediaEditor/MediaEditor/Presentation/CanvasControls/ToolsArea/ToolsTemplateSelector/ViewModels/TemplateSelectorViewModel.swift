@@ -87,7 +87,7 @@ final class TemplateSelectorViewModel: ObservableObject {
     private func rebuildTemplatesDataSource() {
         self.templatesDataSource = TemplatesDataSource(challengeId: self.challengeId,
                                                        challengeTitle: self.challengeTitle,
-                                                    renderSize: self.fitCanvasSize)
+                                                       renderSize: self.fitCanvasSize)
     }
 }
 

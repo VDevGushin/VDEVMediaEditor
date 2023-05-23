@@ -9,6 +9,8 @@ import Foundation
 import Combine
 import AVKit
 
+// Сервис для выбора разрешения результата
+
 final class ResolutionService {
     var resolution: CurrentValueSubject<MediaResolution, Never> = .init(.fullHD)
     

@@ -11,9 +11,6 @@ import UIKit
 
 struct MovableContentView<Content: View>: View {
     private let content: () -> Content
-
-    private unowned let item: CanvasItemModel
-
     private let size: CGSize
 
     @State private var position: CGSize = .zero
@@ -26,14 +23,18 @@ struct MovableContentView<Content: View>: View {
 
     private let onTap: () -> Void
     private let onDoubleTap: () -> Void
+    private let onUpdate: (CGSize, CGFloat, Angle) -> Void
 
-    init(item: CanvasItemModel,
-         size: CGSize,
+    init(size: CGSize,
          isInManipulation: Binding<Bool>,
          @ViewBuilder content: @escaping () -> Content,
          onTap: @escaping () -> Void,
-         onDoubleTap: @escaping () -> Void) {
-        self.item = item
+         onDoubleTap: @escaping () -> Void,
+         onUpdate: @escaping (CGSize, CGFloat, Angle) -> Void) {
+        defer {
+            onUpdate(position, scale, .zero)
+        }
+        self.onUpdate = onUpdate
         self.size = size
         self.content = content
         self.onTap = onTap
@@ -44,9 +45,7 @@ struct MovableContentView<Content: View>: View {
     var body: some View {
         ZStack {
             Color.clear
-
             let gestures1 = drugGesture.simultaneously(with: zoomGesture)
-            
             let gestures2 = SimultaneousGesture(TapGesture(count: 1), TapGesture(count: 2))
                 .onEnded { gestures in
                     guard !isManipulation else { return }
@@ -58,11 +57,9 @@ struct MovableContentView<Content: View>: View {
                         haptics(.light)
                     }
                 }
-
             let gestures3 = gestures1.exclusively(before: gestures2)
 
             content()
-                .aspectRatio(contentMode: .fill)
                 .scaleEffect(scale)
                 .offset(position)
                 .fetchSize($contentSize)
@@ -70,14 +67,13 @@ struct MovableContentView<Content: View>: View {
                 .onChange(of: isManipulation) {
                     isInManipulation = $0
                 }
-
         }
         .frame(size)
-        .onChange(of: scale) { value in
-            item.update(offset: position, scale: value, rotation: .zero)
-        }
         .onChange(of: position) { value in
-            item.update(offset: value, scale: scale, rotation: .zero)
+            onUpdate(value, scale, .zero)
+        }
+        .onChange(of: scale) { value in
+            onUpdate(position, value, .zero)
         }
     }
 }
@@ -127,45 +123,64 @@ fileprivate extension MovableContentView {
 
     private func updateDrag(_ move: DragGesture.Value) {
         guard let startPosition = startPosition else { return }
-        position = startPosition + move.translation
+        position = startPosition + move.translation / scale
         checkLimits()
     }
 
     private func updateZoom(_ scale: CGFloat) {
         guard let startZoom = startZoom else { return }
         self.scale = startZoom * abs(scale)
-        
-        if self.scale < 1 { self.scale = 1 }
-        
         checkLimits()
     }
 
     private func checkLimits() {
         scale = max(1, scale)
+    
+        let newSize = contentSize * scale
+        // CGSize(width: contentSize.width * scale, height: contentSize.height * scale)
 
-        let newSize = CGSize(width: contentSize.width * scale, height: contentSize.height * scale)
-
-        let minWidth = -(newSize.width - size.width) / 2
-        let maxWidth = (newSize.width - size.width) / 2
+        let minWidth = (-(newSize.width - size.width) / 2)
+        let maxWidth = ((newSize.width - size.width) / 2)
+        
         let minHeight = -(newSize.height - size.height) / 2
         let maxHeight = (newSize.height - size.height) / 2
 
-        let x = clamp(position.width,
-                      min: minWidth,
-                      max: maxWidth)
-
-        let y = clamp(position.height,
-                      min: minHeight,
-                      max: maxHeight)
-
+        var x: CGFloat = 0
+        if newSize.width > size.width {
+            if position.width > 0 {
+                x = min(maxWidth, position.width)
+            } else if position.width < 0 {
+                x = max(minWidth, position.width)
+            } else {
+                x = position.width
+            }
+//            x = clamp(position.width,
+//                       min: minWidth + 1,
+//                       max: maxWidth - 1)
+        }
+        
+        var y: CGFloat = 0
+        if newSize.height > size.height {
+            if position.height > 0 {
+                y = min(maxHeight, position.height)
+            } else if position.height < 0 {
+                y = max(minHeight, position.height)
+            } else {
+                y = position.height
+            }
+            
+//            y = clamp(position.height,
+//                           min: minHeight + 1,
+//                           max: maxHeight - 1)
+        }
 
         position = .init(width: x, height: y)
     }
-
+    
     private func clamp<T: Comparable>(_ value: T, min: T, max: T) -> T {
-        if value <= min {
+        if value < min {
             return min
-        } else if value >= max {
+        } else if value > max {
             return max
         } else {
             return value

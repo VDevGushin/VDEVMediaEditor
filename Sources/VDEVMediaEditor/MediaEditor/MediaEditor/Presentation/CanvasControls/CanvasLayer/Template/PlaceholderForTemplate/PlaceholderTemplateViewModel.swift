@@ -29,6 +29,21 @@ final class PlaceholderTemplateViewModel: ObservableObject {
         self.item = item
         self.delegate = delegate
     }
+    
+    func update(offset: CGSize, scale: CGFloat, rotation: Angle) {
+        print("===> x", offset.width)
+        print("===> y", offset.height)
+        imageModel?.update(offset: offset, scale: scale, rotation: rotation)
+        videoModel?.update(offset: offset, scale: scale, rotation: rotation)
+        
+        if let imageModel = imageModel {
+            item.update(imageModel: imageModel)
+        }
+        
+        if let videoModel = videoModel {
+            item.update(videoModel: videoModel)
+        }
+    }
 }
 
 // MARK: - Work with delegate

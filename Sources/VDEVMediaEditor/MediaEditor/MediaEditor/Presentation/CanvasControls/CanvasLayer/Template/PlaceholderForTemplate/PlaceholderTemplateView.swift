@@ -23,7 +23,9 @@ struct PlaceholderTemplateView: View {
         ZStack {
             Color.clear
             if !vm.isEmpty {
-                Item()
+                ZStack {
+                    Item()
+                }
             } else {
                 AddMediaButton()
             }
@@ -42,15 +44,14 @@ struct PlaceholderTemplateView: View {
 private extension PlaceholderTemplateView {
     @ViewBuilder
     func Item() -> some View {
-        ZStack {
-            Color.clear
             GeometryReader { proxy in
+                let size = proxy.size
                 vm.imageModel.map { imageModel in
-                    MovableContentView(item: imageModel, size: proxy.size,
+                    MovableContentView(size: size,
                                        isInManipulation: $isInManipulation) {
                         Image(uiImage: imageModel.image)
                             .resizable()
-                            .frame(imageModel.imageSize.aspectFill(minimumSize: proxy.size))
+                            .frame(imageModel.imageSize.aspectFill(minimumSize: size))
                     } onTap: {
                         vm.hideAllOverlayViews()
                         // haptics(.light)
@@ -58,7 +59,11 @@ private extension PlaceholderTemplateView {
                     } onDoubleTap: {
                         haptics(.light)
                         vm.openEditVariants()
-                    }.modifier (
+                    } onUpdate: { size, position, angle in
+                        vm.update(offset: size, scale: position, rotation: angle)
+                    }
+                     
+                    .modifier (
                         TemplateMask(itemForShow: imageModel.templatedImage) {
                             Image(uiImage: $0)
                                 .resizable()
@@ -82,13 +87,13 @@ private extension PlaceholderTemplateView {
                         set: { videoModel.update(volume: $0) }
                     )
                     
-                    MovableContentView(item: videoModel, size: proxy.size,
+                    MovableContentView(size: size,
                                        isInManipulation: $isInManipulation) {
                         VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
                                         videoComposition: videoModel.avVideoComposition,
                                         thumbnail: videoModel.thumbnail,
                                         volume: binding)
-                        .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
+                        .frame(videoModel.size.aspectFill(minimumSize: size))
                     } onTap: {
                         haptics(.light)
                         vm.hideAllOverlayViews()
@@ -96,13 +101,15 @@ private extension PlaceholderTemplateView {
                     } onDoubleTap: {
                         haptics(.light)
                         vm.openEditVariants()
-                    }.modifier(
+                    } onUpdate: { size, position, angle in
+                        vm.update(offset: size, scale: position, rotation: angle)
+                    } .modifier(
                         TemplateMask(itemForShow: videoModel.maskVideoComposition) {
                             VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
                                             videoComposition: $0,
                                             thumbnail: videoModel.thumbnail,
                                             volume: .constant(0.0))
-                            .frame(videoModel.size.aspectFill(minimumSize: proxy.size))
+                            .frame(videoModel.size.aspectFill(minimumSize: size))
                         }
                     )
                     .overlay {
@@ -117,7 +124,6 @@ private extension PlaceholderTemplateView {
 //
 //                }
             }
-        }
         .overlay {
             if vm.showSelection {
                 Selection()

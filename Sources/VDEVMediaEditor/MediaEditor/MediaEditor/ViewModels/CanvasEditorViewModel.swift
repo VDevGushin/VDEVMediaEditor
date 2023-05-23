@@ -174,7 +174,7 @@ final class CanvasEditorViewModel: ObservableObject {
     
     func onBuildMedia() {
         builder.makeMediaItem(layers: data.layers.elements,
-                              size: ui.editorSize,
+                              size: ui.roundedEditorSize,
                               backgrondColor: ui.mainLayerBackgroundColor,
                               resolution: resultResolution)
     }
@@ -204,7 +204,7 @@ extension CanvasEditorViewModel {
 extension CanvasEditorViewModel {
     func getStartTemplate() {
         isLoading = .init(value: true, message: strings.loading)
-        data.getStartTemplate(size: ui.editorSize) { [weak self] in
+        data.getStartTemplate(size: ui.roundedEditorSize) { [weak self] in
             self?.isLoading = .false
         }
     }

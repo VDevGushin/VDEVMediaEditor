@@ -196,9 +196,15 @@ struct ToolsAreaView: View {
     @ViewBuilder
     private func toolsOverlay() -> some View {
         switch vm.tools.currentToolItem {
-        case .concreteItem:
-            CloseButton {
-                vm.tools.closeTools(false)
+        case .concreteItem(let item):
+            VStack(spacing: 6) {
+                CloseButton {
+                    vm.tools.closeTools(false)
+                }
+                
+                TrashButton {
+                    delete(item: item)
+                }
             }
             .padding()
             .rightTool()
@@ -272,8 +278,7 @@ struct ToolsAreaView: View {
         } onBringToBack: { item in
             vm.data.bringToBack(item)
         } onDelete: { item in
-            vm.tools.closeTools()
-            vm.data.delete(item)
+            delete(item: item)
         } onCropImage: { item in
             vm.tools.closeTools()
             let image: CanvasImageModel = CanvasItemModel.toType(model: item)
@@ -406,7 +411,7 @@ fileprivate extension ToolsAreaView {
     // Выбор и добалвение шаблона
     @ViewBuilder
     func templatesTool() -> some View {
-        TemplateSelectorView(vm.ui.editorSize.rounded(.up), challengeId: vm.tools.baseChallengeId) { variants in
+        TemplateSelectorView(vm.ui.roundedEditorSize, challengeId: vm.tools.baseChallengeId) { variants in
             vm.tools.closeTools(false)
             if variants.isEmpty { return }
             vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.editorSize))
@@ -496,5 +501,12 @@ extension ToolsAreaView {
             ToolsSettings(vm: vm)
                 .padding(.horizontal)
         }
+    }
+}
+
+extension ToolsAreaView {
+    func delete(item: CanvasItemModel) {
+        vm.tools.closeTools()
+        vm.data.delete(item)
     }
 }

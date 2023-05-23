@@ -158,6 +158,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         Pinchgesture.cancelsTouchesInView = false
         context.coordinator.pinchGest = Pinchgesture
         
+        let DoubleTapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleDoubleTap))
+        DoubleTapRecognizer.numberOfTapsRequired = 2
+        hView.addGestureRecognizer(DoubleTapRecognizer)
+        context.coordinator.doubleTapGest = DoubleTapRecognizer
+        
         context.coordinator.tapGest = nil
         context.coordinator.longTapGest = nil
         context.coordinator.doubleTapGest = nil

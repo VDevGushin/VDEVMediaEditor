@@ -190,7 +190,8 @@ struct CanvasLayerView<Content: View>: View {
                 isCenterHorizontal: $isCenterHorizontal,
                 tapScaleFactor: $tapScaleFactor,
                 itemType: vm.item.type,
-                content: content(vm.item)) { // long tap
+                content: content(vm.item)) {
+                  // Long tap
                 } onDoubleTap: {
                     onSelect?(vm.item)
                     haptics(.light)

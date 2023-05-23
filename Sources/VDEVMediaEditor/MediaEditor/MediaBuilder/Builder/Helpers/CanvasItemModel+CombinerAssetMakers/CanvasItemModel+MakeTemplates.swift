@@ -333,13 +333,13 @@ fileprivate extension CanvasItemModel {
             
             let trasform = Transform(zIndex: Double(i + 1),
                                      offset: imageModel.offset * scaleFactor,
-                                     scale: imageModel.scale,
+                                     scale: imageModel.scale + 0.1,
                                      degrees: imageModel.rotation.degrees,
                                      blendingMode: imageModel.blendingMode)
             
             // Реальная картинка в контейнере(плейсхолдер)
-            ciImage = ciImage
-                .frame(size, contentMode: .scaleAspectFill)
+            ciImage = ciImage.resized(to: size, withContentMode: .scaleAspectFill)
+            //.frame(size, contentMode: .scaleAspectFill)
             
             // Контейнер для хранения плейсхолдера
             let container = CIImage(color: .clear)
@@ -348,7 +348,7 @@ fileprivate extension CanvasItemModel {
             // Вписываем с трансофрмами плейсхолдер в контейнер
             ciImage = ciImage
                 .composited(with: container, canvasSize: containerSize, transform: trasform)
-                .cropped(to: .init(origin: .zero, size: containerSize))
+                .cropped(to: .init(origin: .zero, size: containerSize.rounded(.up)))
             
             // ресайзим маску под нужный размер
             // пытаемся применить маску на всем контейнере (контейнер теперь просто картинка)
@@ -385,13 +385,15 @@ fileprivate extension CanvasItemModel {
             
             let asset = AVAsset(url: processedUrl)
             
-            guard let originalAssetSize = await asset.getSize() else {
+            guard let _ = await asset.getSize() else {
                 Log.e("Can't detect original asset size")
                 return nil
             }
             
+            // Размер самого контейнера для хранения плейсхолдера картинки
             let containerSize = item.bounds.size * scaleFactor
-            let videoSize = originalAssetSize * scaleFactor
+            
+            let videoSize = videoItem.size * scaleFactor
             
             // Вписываем видео
             let size = videoSize.aspectFill(minimumSize: containerSize)
@@ -399,7 +401,7 @@ fileprivate extension CanvasItemModel {
             // Применяем трансформацию элемент
             let trasform = Transform(zIndex: Double(i + 1),
                                      offset: videoItem.offset * scaleFactor,
-                                     scale: videoItem.scale,
+                                     scale: videoItem.scale + 0.1,
                                      degrees: videoItem.rotation.degrees,
                                      blendingMode: videoItem.blendingMode)
             

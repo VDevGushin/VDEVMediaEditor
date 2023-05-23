@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-
 final class CanvasUISettingsViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
     
@@ -20,7 +19,10 @@ final class CanvasUISettingsViewModel: ObservableObject {
     @Published var editorSize: CGSize = .zero
     @Published private(set) var guideLinesColor: Color = AppColors.white
     @Published private(set) var aspectRatio: CGFloat? = nil
-
+    
+    //Round editor size for templates and results
+    @Published var roundedEditorSize: CGSize = .zero
+    
     var canvasCornerRadius: CGFloat { 16 }
     var bottomBarHeight: CGFloat { 76 }
     
@@ -43,6 +45,14 @@ final class CanvasUISettingsViewModel: ObservableObject {
                 let color = Color(uiColor: value.contrast(dark: .orange))
                 self.guideLinesColor = color
             }
+        
+        $editorSize
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.roundedEditorSize = value.rounded(.up)
+            }
+            .store(in: &storage)
         
         aspectRatio = settings.aspectRatio
     }

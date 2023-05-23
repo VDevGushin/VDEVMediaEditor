@@ -1,17 +1,15 @@
 //
-//  CloseButton.swift
-//  MediaEditor
+//  TrashButton.swift
+//  
 //
-//  Created by Vladislav Gushin on 07.04.2023.
+//  Created by Vladislav Gushin on 23.05.2023.
 //
 
 import SwiftUI
 
-struct CloseButton: View {
-    @Injected private var images: VDEVImageConfig
-    
+struct TrashButton: View {
     private let size: CGSize = .init(width: 35, height: 35)
-    private let imageSize: CGSize = .init(width: 12, height: 12)
+    private let imageSize: CGSize = .init(width: 16, height: 16)
     private let action: () -> Void
     
     init(action: @escaping () -> Void) {
@@ -25,10 +23,11 @@ struct CloseButton: View {
         } label: {
             ZStack {
                 AppColors.blackInvisible
-                Image(uiImage: images.common.xmark)
+                Image(systemName: "trash")
                     .resizable()
                     .scaledToFit()
                     .frame(imageSize)
+                    .foregroundColor(AppColors.red)
             }
             .contentShape(Circle())
             .clipShape(Circle())
@@ -38,9 +37,9 @@ struct CloseButton: View {
     }
 }
 
-struct CloseButton_Previews: PreviewProvider {
+struct TrashButton_Previews: PreviewProvider {
     static var previews: some View {
-        CloseButton(action: {
+        TrashButton(action: {
             print("test")
         })
         .previewLayout(.sizeThatFits)

@@ -12,7 +12,8 @@ import VDEVMediaEditor
 extension VDEVMediaEditorConfig {
     static var exampleConfig: Self {
         let source = NetworkAdapter(client: NetworkClientImpl())
-        let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
+        //let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
+        let id = "9b22fbb1-554c-4e6b-94a6-96793028c20b"
         //let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
         //let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
         return .init(settings: EditorSettings(id, sourceService: source),
@@ -73,7 +74,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var showCommonSettings: Bool { true }
     var showAspectRatioSettings: Bool { true }
     var canTurnOnSoundInVideos: Bool { true }
-    var canAddMusic: Bool { true }
+    var canAddMusic: Bool { false }
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {
@@ -88,18 +89,17 @@ final class EditorSettings: VDEVMediaEditorSettings {
         subTitle = "+ ADD MEDIA"
         withAttach = false
         self.isLoading.send(false)
-        
-        //                Task {
-        //                    let meta = await sourceService.startMeta(forChallenge: baseChallengeId) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-        //
-        //                    await MainActor.run { [weak self] in
-        //                        guard let self = self else { return }
-        //                        self.title = meta.title
-        //                        self.subTitle = meta.subTitle
-        //                        self.withAttach = meta.isAttachedTemplate
-        //                        self.isLoading.send(false)
-        //                    }
-        //                }
+//        Task {
+//            let meta = await sourceService.startMeta(forChallenge: resourceID) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+//
+//            await MainActor.run { [weak self] in
+//                guard let self = self else { return }
+//                self.title = meta.title
+//                self.subTitle = meta.subTitle
+//                self.withAttach = meta.isAttachedTemplate
+//                self.isLoading.send(false)
+//            }
+//        }
     }
     
     func getStartTemplate(for size: CGSize,
