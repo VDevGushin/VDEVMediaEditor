@@ -31,6 +31,7 @@ struct TextTool: View {
     private var backgroundColor: Color = AppColors.black
     private var textItem: CanvasTextModel?
     private let fromTemplate: Bool
+    
     private let labelContainerToCanvasWidthRatio: CGFloat
     private let doneAction: (CanvasTextModel) -> ()
     private let deleteAction: () -> ()

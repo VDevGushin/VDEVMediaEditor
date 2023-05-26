@@ -58,9 +58,10 @@ struct ToolsAreaView: View {
             default: EmptyView()
             }
         
+            
             MediaEditorToolsForTemplateView(vm: vm.tools.overlay,
                                             backColor: $vm.ui.mainLayerBackgroundColor.removeDuplicates())
-            .frame(toolsAreaSize)
+            .frame(maxWidth: toolsAreaSize.width, maxHeight: toolsAreaSize.height)
             
             switch vm.tools.currentToolItem {
             case .template:
