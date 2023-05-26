@@ -41,16 +41,13 @@ private extension LayersMerger {
     func makeMediaItem(layers: [CanvasItemModel],
                        size: CGSize,
                        resolution: MediaResolution) {
-
-        let scale = CanvasNativeSizeMaker.makeScale(from: resolution, width: size.width)
-        let canvasNativeSize: CGSize = CanvasNativeSizeMaker.makeSize(from: scale, size: size)
         
+        let sizeModel = CanvasNativeSizeMaker.make(from: resolution, size: size)
         
         let assetBuilder = CombinerAssetBuilder(layers: layers,
-                                                canvasSize: size,
-                                                scaleFactor: scale,
+                                                scaleFactor: sizeModel.finalScale,
                                                 bgColor: .clear,
-                                                canvasNativeSize: canvasNativeSize,
+                                                canvasNativeSize: sizeModel.finalCanvasSize,
                                                 progressObserver: nil)
         
         
@@ -65,9 +62,8 @@ private extension LayersMerger {
             
             do  {
                 let result = try await combiner.combineForMerge(combinerAsset,
-                                                                canvasSize: size,
-                                                                scaleFactor: scale,
-                                                                canvasNativeSize: canvasNativeSize)
+                                                                scaleFactor: sizeModel.finalScale,
+                                                                canvasNativeSize: sizeModel.finalCanvasSize)
                 
                 let model = await self.proccess(result)
                 await self.set(model)

@@ -27,14 +27,12 @@ final class MediaBuilder: NSObject, ObservableObject {
         
         Log.d("Get scale from media resolution: \(resolution.toString)")
         
-        let scale: CGFloat = CanvasNativeSizeMaker.makeScale(from: resolution, width: size.width)
-        let canvasNativeSize: CGSize = CanvasNativeSizeMaker.makeSize(from: scale, size: size)
+        let sizeModel = CanvasNativeSizeMaker.make(from: resolution, size: size)
         
         let assetBuilder = CombinerAssetBuilder(layers: layers,
-                                                canvasSize: size,
-                                                scaleFactor: scale,
+                                                scaleFactor: sizeModel.finalScale,
                                                 bgColor: backgrondColor.uiColor,
-                                                canvasNativeSize: canvasNativeSize,
+                                                canvasNativeSize: sizeModel.finalCanvasSize,
                                                 progressObserver: progressObserver)
         
         Log.d("Begin construct media")
@@ -54,9 +52,8 @@ final class MediaBuilder: NSObject, ObservableObject {
             
             do  {
                 var result = try await self.combiner.combine(combinerAsset,
-                                                             canvasSize: size,
-                                                             scaleFactor: scale,
-                                                             canvasNativeSize: canvasNativeSize,
+                                                             scaleFactor: sizeModel.finalScale,
+                                                             canvasNativeSize: sizeModel.finalCanvasSize,
                                                              progressObserver: progressObserver)
                 
                 result.featuresUsageData = .init(from: layers)
@@ -83,11 +80,22 @@ final class MediaBuilder: NSObject, ObservableObject {
 
 // MARK: - Helper
 struct CanvasNativeSizeMaker {
-    static func makeScale(from resolution: MediaResolution, width: CGFloat) -> CGFloat {
+    struct SizeMakerResult {
+        let finalScale: CGFloat
+        let finalCanvasSize: CGSize
+    }
+    
+    static func make(from resolution: MediaResolution, size: CGSize) -> SizeMakerResult {
+        let scale = makeScale(from: resolution, width: size.width)
+        let size = makeSize(from: scale, size: size)
+        return .init(finalScale: scale, finalCanvasSize: size)
+    }
+    
+    private static func makeScale(from resolution: MediaResolution, width: CGFloat) -> CGFloat {
         return resolution.getScale(for: width)
     }
     
-    static func makeSize(from scale: CGFloat, size: CGSize) -> CGSize {
+    private static func makeSize(from scale: CGFloat, size: CGSize) -> CGSize {
         let width = (size.width * scale).rounded(.down)
         let height = (size.height * scale).rounded(.down)
         return .init(width: width, height: height)

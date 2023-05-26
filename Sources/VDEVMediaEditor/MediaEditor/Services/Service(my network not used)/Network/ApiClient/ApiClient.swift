@@ -13,7 +13,7 @@ protocol ApiClient: BaseApiClient {
     func execute<Operation: ApiOperationWithBody>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error>
 }
 
-class ApiClientImpl: ApiClient {
+final class ApiClientImpl: ApiClient {
     private(set) var host: String
 
     var decoder: JSONDecoder { JSONDecoder() }

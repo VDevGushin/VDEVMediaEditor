@@ -10,11 +10,10 @@ import AVFoundation
 import Photos
 import CollectionConcurrencyKit
 
-class AssetCombiner {
+final class AssetCombiner {
     @Injected private var settings: VDEVMediaEditorSettings
     // MARK: - public
     func combine(_ input: [CombinerAsset],
-                 canvasSize: CGSize,
                  scaleFactor: CGFloat,
                  canvasNativeSize: CGSize,
                  progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {
@@ -33,7 +32,6 @@ class AssetCombiner {
     }
     
     func combineForMerge(_ input: [CombinerAsset],
-                         canvasSize: CGSize,
                          scaleFactor: CGFloat,
                          canvasNativeSize: CGSize,
                          progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {

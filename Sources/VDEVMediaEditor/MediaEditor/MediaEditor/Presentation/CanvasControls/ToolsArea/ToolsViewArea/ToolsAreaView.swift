@@ -22,6 +22,7 @@ struct ToolsAreaView: View {
     @State private var showCamera = false
     @State private var showImageCropper = false
     @State private var showMusicPicker = false
+    @State private var toolsAreaSize: CGSize = .zero
     
     init(rootMV: CanvasEditorViewModel) {
         self.vm = rootMV
@@ -59,7 +60,7 @@ struct ToolsAreaView: View {
         
             MediaEditorToolsForTemplateView(vm: vm.tools.overlay,
                                             backColor: $vm.ui.mainLayerBackgroundColor.removeDuplicates())
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(toolsAreaSize)
             
             switch vm.tools.currentToolItem {
             case .template:
@@ -120,6 +121,7 @@ struct ToolsAreaView: View {
             case .musicPiker: EmptyView()
             }
         }
+        .fetchSize($toolsAreaSize)
         .onReceive(vm.tools.$currentToolItem, perform: { value in
             switch value {
             case .imageCropper: showImageCropper = true

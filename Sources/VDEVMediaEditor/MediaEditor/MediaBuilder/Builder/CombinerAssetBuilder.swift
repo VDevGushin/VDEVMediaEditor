@@ -10,20 +10,17 @@ import Foundation
 
 final class CombinerAssetBuilder {
     private let layers: [CanvasItemModel]
-    private let canvasSize: CGSize
     private let scaleFactor: CGFloat
     private let bgColor: UIColor
     private let progressObserver: ProgressObserver?
     private let canvasNativeSize: CGSize
 
     init(layers: [CanvasItemModel],
-         canvasSize: CGSize,
          scaleFactor: CGFloat,
          bgColor: UIColor,
          canvasNativeSize: CGSize,
          progressObserver: ProgressObserver?) {
         self.layers = layers
-        self.canvasSize = canvasSize
         self.scaleFactor = scaleFactor
         self.bgColor = bgColor
         self.progressObserver = progressObserver
