@@ -20,7 +20,7 @@ final class CanvasLayersDataViewModel: ObservableObject {
 
     var isLimit: Bool { layers.count >= maximumLayers }
     
-    private let maximumLayers: Int = 15
+    private let maximumLayers: Int = 25
 
     private var subscriptions = Set<AnyCancellable>()
     private var storage = Set<AnyCancellable>()

@@ -60,3 +60,11 @@ extension URL {
     }
 }
 
+extension URL {
+    static func getLocal(fileName: String, ofType: String) -> URL? {
+        guard let filePath = Bundle.module.path(forResource: fileName, ofType: ofType) else {
+            return nil
+        }
+        return URL(fileURLWithPath: filePath)
+    }
+}

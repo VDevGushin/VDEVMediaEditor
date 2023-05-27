@@ -88,7 +88,8 @@ struct ColorFilterTool: View {
             } label: {
                 ZStack(alignment: .bottomLeading) {
                     Group {
-                        if let url = imageURL?.uc.resized(width: width) {
+                        // ?.uc.resized(width: width)
+                        if let url = imageURL {
                             AsyncImageView(url: url) {
                                 Image(uiImage: $0)
                                     .resizable()
