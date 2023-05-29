@@ -162,21 +162,23 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     private func setupGest(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePan(sender:)))
+        Pangesture.minimumNumberOfTouches = 2
+        Pangesture.maximumNumberOfTouches = 2
+        Pangesture.cancelsTouchesInView = true
         Pangesture.delegate = context.coordinator
         hView.addGestureRecognizer(Pangesture)
-        Pangesture.cancelsTouchesInView = false
         context.coordinator.panGest = Pangesture
         
         let RotationGesture = UIRotationGestureRecognizer(target: context.coordinator, action:     #selector(context.coordinator.handleRotate(sender:)))
+        RotationGesture.cancelsTouchesInView = true
         RotationGesture.delegate = context.coordinator
         hView.addGestureRecognizer(RotationGesture)
-        RotationGesture.cancelsTouchesInView = false
         context.coordinator.rotGest = RotationGesture
         
         let Pinchgesture = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinch(sender:)))
+        Pinchgesture.cancelsTouchesInView = true
         Pinchgesture.delegate = context.coordinator
         hView.addGestureRecognizer(Pinchgesture)
-        Pinchgesture.cancelsTouchesInView = false
         context.coordinator.pinchGest = Pinchgesture
         
         // Если шаблон, то нам ничего не нужно (просто следим за манипуляциями)
@@ -238,7 +240,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     }
     
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
-
+        
         private let parent: GestureOverlay
         
         private var lastScale: CGFloat!
@@ -313,8 +315,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         func handlePan(sender: UIPanGestureRecognizer) {
             guard canManipulate() else { return }
             
-            sender.maximumNumberOfTouches = 2
-            
             guard let piece = sender.view else { return }
             
             let translation = sender.translation(in: piece.superview)
@@ -382,11 +382,29 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                     return
                 }
                 
-                let zoom = max(CGFloat(0.1), min(CGFloat(2.0), (lastScale * abs(sender.scale))))
+                guard let view = viewFrom(sender: sender) else {
+                    parent.scale = parent.scale
+                    sender.cancel()
+                    return
+                }
                 
+                let touchPoint1 = sender.location(ofTouch: 0, in: view)
+                let touchPoint2 = sender.location(ofTouch: 1, in: view)
+                
+                let center = CGPoint(x: (touchPoint1.x + touchPoint2.x) / 2,
+                                     y: (touchPoint1.y + touchPoint2.y) / 2)
+                
+                let pinchCenter = CGPoint(x: center.x - view.bounds.midX,
+                                          y: center.y - view.bounds.midY)
+                
+                parent.offset = .init(width: parent.offset.width + (pinchCenter.x * parent.scale),
+                                      height: parent.offset.height + (pinchCenter.y * parent.scale))
+                let zoom = max(CGFloat(0.1), (lastScale * abs(sender.scale)))
                 parent.scale = zoom
-            } else if sender.state == .ended ||
-                        sender.state == .cancelled {
+                parent.offset = .init(width: parent.offset.width - (pinchCenter.x * parent.scale) ,
+                                      height: parent.offset.height - (pinchCenter.y * parent.scale))
+                
+            } else if sender.state == .ended || sender.state == .cancelled {
                 lastScale = nil
             }
         }
@@ -427,11 +445,18 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             true
         }
         
+        private func viewFrom(sender: UIGestureRecognizer) -> UIView? {
+            if sender.numberOfTouches == 2 {
+                return sender.view?.superview
+            }
+            return nil
+        }
+        
         private func checkInView(sender: UIGestureRecognizer,
                                  scale: CGFloat?,
                                  forCancel: UIGestureRecognizer?...) -> Bool {
             func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
-                guard let view = sender.view else { return false }
+                guard let view = sender.view?.superview else { return false }
                 
                 let point = sender.location(in: view)
                 let scaledSize = view.bounds.size
@@ -441,9 +466,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             }
             
             if !_check(sender: sender, scale: scale) {
-                forCancel.forEach {
-                    $0?.cancel()
-                }
+                forCancel.forEach { $0?.cancel() }
                 return false
             }
             return true
