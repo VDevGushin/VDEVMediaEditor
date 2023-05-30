@@ -8,72 +8,6 @@
 import SwiftUI
 import SwiftUIX
 
-struct ParentView<Content: View>: UIViewRepresentable {
-    @Binding private var inTouch: Bool
-    let content: Content
-    
-    init(inTouch: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) {
-        self.content = content()
-        self._inTouch = inTouch
-    }
-    
-    func makeUIView(context: Context) -> UIHostingView<Content> {
-        let view = _UIHostingView(rootView: content)
-        view.isOpaque = false
-        view.backgroundColor = .clear
-        view.clipsToBounds = true
-        view.delegate = context.coordinator
-        return view
-    }
-    
-    func updateUIView(_ uiView: UIHostingView<Content>, context: Context) {
-        uiView.rootView = content
-    }
-    
-    static func dismantleUIView(_ uiView: UIHostingView<Content>, coordinator: ()) {
-        uiView.removeFromSuperview()
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
-    
-    final class Coordinator: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
-        private let parent: ParentView
-        
-        init(parent: ParentView) {
-            self.parent = parent
-        }
-        
-        func touches(inProgress: Bool) {
-            parent.inTouch = inProgress
-        }
-    }
-}
-
-protocol _UIHostingViewDelegate: AnyObject {
-    func touches(inProgress: Bool)
-}
-
-final class _UIHostingView<Content: View>: UIHostingView<Content>{
-    weak var delegate: _UIHostingViewDelegate?
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        delegate?.touches(inProgress: true)
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesCancelled(touches, with: event)
-        delegate?.touches(inProgress: false)
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        delegate?.touches(inProgress: false)
-    }
-}
-
 struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var offset: CGSize
     @Binding var scale: CGFloat
@@ -86,6 +20,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
     @Binding var globalContainerInTouch: Bool
+    @Binding var containerSize: CGSize
     
     private let content: () -> Content
     private let itemType: CanvasItemType
@@ -107,6 +42,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   isCenterHorizontal: Binding<Bool>,
                   tapScaleFactor: Binding<CGFloat>,
                   globalContainerInTouch: Binding<Bool>,
+                  containerSize: Binding<CGSize>,
                   itemType: CanvasItemType,
                   @ViewBuilder content: @escaping () -> Content,
                   onLongPress: @escaping () -> Void,
@@ -126,6 +62,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         self._isCenterVertical = isCenterVertical
         self._isCenterHorizontal = isCenterHorizontal
         self._globalContainerInTouch = globalContainerInTouch
+        self._containerSize = containerSize
         self.onLongPress = onLongPress
         self.onDoubleTap = onDoubleTap
         self.onTap = onTap
@@ -179,8 +116,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     private func setupGest(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePan(sender:)))
-        Pangesture.minimumNumberOfTouches = 1
-        Pangesture.maximumNumberOfTouches = 2
+        //Pangesture.minimumNumberOfTouches = 1
+        //Pangesture.maximumNumberOfTouches = 2
         Pangesture.cancelsTouchesInView = true
         Pangesture.delegate = context.coordinator
         hView.addGestureRecognizer(Pangesture)
@@ -347,16 +284,16 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 var height = lastStoreOffset.height + rotatedY * parent.scale
                 
                 if centerRange.contains(width) {
-                    width = 0
+                    if !scaleInProgress  { width = 0 }
                     parent.isCenterVertical = true
                 } else {
                     parent.isCenterVertical = false
                 }
                 
                 if centerRange.contains(height) {
-                    height = 0
+                    if !scaleInProgress  { height = 0 }
                     parent.isCenterHorizontal = true
-                }else {
+                } else {
                     parent.isCenterHorizontal = false
                 }
                 
@@ -387,30 +324,38 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             } else if sender.state == .changed {
                 guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
                     parent.scale = parent.scale
-                    return
-                }
-                
-                guard let view = viewFrom(sender: sender) else {
-                    parent.scale = parent.scale
                     sender.cancel()
                     return
                 }
+//                guard let _ = viewFrom(sender: sender) else {
+//                    parent.scale = parent.scale
+//                    //sender.cancel()
+//                    return
+//                }
+//                let center = sender.location(in: view)
+//
+//                let touchPoint1 = sender.location(ofTouch: 0, in: view)
+//                let touchPoint2 = sender.location(ofTouch: 1, in: view)
+//
+//                let center = CGPoint(x: (touchPoint1.x + touchPoint2.x) / 2,
+//                                     y: (touchPoint1.y + touchPoint2.y) / 2)
                 
-                let touchPoint1 = sender.location(ofTouch: 0, in: view)
-                let touchPoint2 = sender.location(ofTouch: 1, in: view)
+//                let pinchCenter = CGPoint(x: (center.x) - (view.bounds.midX),
+//                                          y: (center.y) - (view.bounds.midY))
                 
-                let center = CGPoint(x: (touchPoint1.x + touchPoint2.x) / 2,
-                                     y: (touchPoint1.y + touchPoint2.y) / 2)
+
                 
-                let pinchCenter = CGPoint(x: center.x - view.bounds.midX,
-                                          y: center.y - view.bounds.midY)
-                
-                parent.offset = .init(width: parent.offset.width + (pinchCenter.x * parent.scale),
-                                      height: parent.offset.height + (pinchCenter.y * parent.scale))
                 let zoom = max(CGFloat(0.1), (lastScale * abs(sender.scale)))
+                
+          
+//                let const = parent.scale / zoom
+//
+//
+//                parent.offset = .init(width: parent.offset.width / zoom / const,
+//                                      height: parent.offset.height / zoom / const)
                 parent.scale = zoom
-                parent.offset = .init(width: parent.offset.width - (pinchCenter.x * parent.scale) ,
-                                      height: parent.offset.height - (pinchCenter.y * parent.scale))
+//                parent.offset = .init(width: parent.offset.width * zoom * const,
+//                                      height: parent.offset.height * zoom * const)
                 
             } else if sender.state == .ended || sender.state == .cancelled {
                 lastScale = nil
@@ -450,7 +395,10 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         }
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            true
+            let simultaneousRecognizers = [panGest, pinchGest, rotGest]
+            let result = simultaneousRecognizers.contains(gestureRecognizer) &&
+            simultaneousRecognizers.contains(otherGestureRecognizer)
+            return result
         }
         
         private func viewFrom(sender: UIGestureRecognizer) -> UIView? {
@@ -467,11 +415,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 let scaledSize = view.bounds.size
                 
                 return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
-                (CGFloat(0.0)...scaledSize.height).contains(point.y)
+                (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
+                sender.numberOfTouches == 2
             }
             
             if !_check(sender: sender, scale: scale) {
-                forCancel.forEach { $0?.cancel() }
                 return false
             }
             return true

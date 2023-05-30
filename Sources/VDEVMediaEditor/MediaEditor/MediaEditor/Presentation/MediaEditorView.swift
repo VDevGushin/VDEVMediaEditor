@@ -77,7 +77,8 @@ fileprivate extension MediaEditorView {
                             
                             ForEach(vm.data.layers, id: \.self) { item in
                                 CanvasLayerView(item: item,
-                                                globalContainerInTouch: $globalContainerInTouch) {
+                                                globalContainerInTouch: $globalContainerInTouch,
+                                                containerSize: $vm.ui.editorSize) {
                                     CanvasItemViewBuilder(item: item,
                                                           canvasSize: size,
                                                           guideLinesColor: vm.ui.guideLinesColor,

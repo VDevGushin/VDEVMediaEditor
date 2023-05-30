@@ -85,7 +85,6 @@ struct CanvasLayerView<Content: View>: View {
     @State private var isCenterVertical = false
     @State private var isCenterHorizontal = false
     @State private var isLongTap: Bool = false
-    
     @State private var phase = 0.0 // for border animation
     
     // фактический размер итема на канвасе(для комбайна видосов)
@@ -94,9 +93,9 @@ struct CanvasLayerView<Content: View>: View {
     @State private var isCurrentInManipulation: Bool = true
     
     @State private var tapScaleFactor: CGFloat = 1.0
-    
     // Детектим малейшее нажатие на глобальный контейнер
     @Binding private var globalContainerInTouch: Bool
+    @Binding private var containerSize: CGSize
     
     @ViewBuilder
     private var selectionColor: some View {
@@ -160,6 +159,7 @@ struct CanvasLayerView<Content: View>: View {
     
     init(item: CanvasItemModel,
          globalContainerInTouch: Binding<Bool>,
+         containerSize: Binding<CGSize>,
          @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
          onDelete: ((CanvasItemModel) -> Void)? = nil,
@@ -169,6 +169,7 @@ struct CanvasLayerView<Content: View>: View {
          onEndManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEdit: ((CanvasItemModel) -> Void)? = nil) {
         self._globalContainerInTouch = globalContainerInTouch
+        self._containerSize = containerSize
         self.onSelect = onSelect
         self.onDelete = onDelete
         self.onShowCenterV = onShowCenterV
@@ -194,6 +195,7 @@ struct CanvasLayerView<Content: View>: View {
                 isCenterHorizontal: $isCenterHorizontal,
                 tapScaleFactor: $tapScaleFactor,
                 globalContainerInTouch: $globalContainerInTouch,
+                containerSize: $containerSize,
                 itemType: vm.item.type) {
                     content()
                 } onLongPress: {
