@@ -9,17 +9,20 @@ import SwiftUI
 import SwiftUIX
 
 struct ParentView<Content: View>: UIViewRepresentable {
+    @Binding private var inTouch: Bool
     let content: Content
     
-    init(@ViewBuilder content: @escaping () -> Content) {
+    init(inTouch: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) {
         self.content = content()
+        self._inTouch = inTouch
     }
     
     func makeUIView(context: Context) -> UIHostingView<Content> {
-        let view = UIHostingView(rootView: content)
+        let view = _UIHostingView(rootView: content)
         view.isOpaque = false
         view.backgroundColor = .clear
         view.clipsToBounds = true
+        view.delegate = context.coordinator
         return view
     }
     
@@ -30,12 +33,26 @@ struct ParentView<Content: View>: UIViewRepresentable {
     static func dismantleUIView(_ uiView: UIHostingView<Content>, coordinator: ()) {
         uiView.removeFromSuperview()
     }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+    
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
+        private let parent: ParentView
+        
+        init(parent: ParentView) {
+            self.parent = parent
+        }
+        
+        func touches(inProgress: Bool) {
+            parent.inTouch = inProgress
+        }
+    }
 }
 
 protocol _UIHostingViewDelegate: AnyObject {
     func touches(inProgress: Bool)
-    func zoomIn()
-    func zoomOut()
 }
 
 final class _UIHostingView<Content: View>: UIHostingView<Content>{
@@ -44,19 +61,16 @@ final class _UIHostingView<Content: View>: UIHostingView<Content>{
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         delegate?.touches(inProgress: true)
-        delegate?.zoomIn()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
         delegate?.touches(inProgress: false)
-        delegate?.zoomOut()
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         delegate?.touches(inProgress: false)
-        delegate?.zoomOut()
     }
 }
 
@@ -71,6 +85,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var isCenterHorizontal: Bool
     @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
+    @Binding var globalContainerInTouch: Bool
     
     private let content: () -> Content
     private let itemType: CanvasItemType
@@ -91,6 +106,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   isCenterVertical: Binding<Bool>,
                   isCenterHorizontal: Binding<Bool>,
                   tapScaleFactor: Binding<CGFloat>,
+                  globalContainerInTouch: Binding<Bool>,
                   itemType: CanvasItemType,
                   @ViewBuilder content: @escaping () -> Content,
                   onLongPress: @escaping () -> Void,
@@ -109,6 +125,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         self._isVerticalOrientation = isVerticalOrientation
         self._isCenterVertical = isCenterVertical
         self._isCenterHorizontal = isCenterHorizontal
+        self._globalContainerInTouch = globalContainerInTouch
         self.onLongPress = onLongPress
         self.onDoubleTap = onDoubleTap
         self.onTap = onTap
@@ -162,7 +179,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     private func setupGest(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePan(sender:)))
-        Pangesture.minimumNumberOfTouches = 2
+        Pangesture.minimumNumberOfTouches = 1
         Pangesture.maximumNumberOfTouches = 2
         Pangesture.cancelsTouchesInView = true
         Pangesture.delegate = context.coordinator
@@ -268,13 +285,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         // _UIHostingViewDelegate
         func touches(inProgress: Bool) { touchesInProgress = inProgress }
         
-        func zoomIn() {}
-        
-        func zoomOut() {}
-        
         private func updateInProgressState() {
             guard canManipulate() else { return }
-            
             self.parent.gestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
@@ -286,9 +298,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
         
-        init(parent: GestureOverlay) {
-            self.parent = parent
-        }
+        init(parent: GestureOverlay) { self.parent = parent }
         
         @objc
         func handleDoubleTap(sender: UITapGestureRecognizer) {
@@ -373,9 +383,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             gestureStatus(state: &scaleInProgress, sender: sender)
             
             if sender.state == .began {
-                if lastScale == nil {
-                    lastScale = parent.scale
-                }
+                if lastScale == nil { lastScale = parent.scale }
             } else if sender.state == .changed {
                 guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
                     parent.scale = parent.scale
@@ -446,10 +454,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         }
         
         private func viewFrom(sender: UIGestureRecognizer) -> UIView? {
-            if sender.numberOfTouches == 2 {
-                return sender.view?.superview
-            }
-            return nil
+            sender.numberOfTouches == 2 ? sender.view?.superview : nil
         }
         
         private func checkInView(sender: UIGestureRecognizer,

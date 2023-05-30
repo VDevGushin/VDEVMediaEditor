@@ -11,6 +11,7 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
+    @State private var globalContainerInTouch: Bool = false
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -65,7 +66,7 @@ fileprivate extension MediaEditorView {
                     vm.ui.mainLayerBackgroundColor
                         .frame(size)
                 } else {
-                    ParentView {
+                    ParentView(inTouch: $globalContainerInTouch) {
                         ZStack {
                             InvisibleTapZoneView(tapCount: 1) {
                                 if vm.tools.currentToolItem != .empty {
@@ -75,7 +76,8 @@ fileprivate extension MediaEditorView {
                             }
                             
                             ForEach(vm.data.layers, id: \.self) { item in
-                                CanvasLayerView(item: item) {
+                                CanvasLayerView(item: item,
+                                                globalContainerInTouch: $globalContainerInTouch) {
                                     CanvasItemViewBuilder(item: item,
                                                           canvasSize: size,
                                                           guideLinesColor: vm.ui.guideLinesColor,

@@ -95,6 +95,8 @@ struct CanvasLayerView<Content: View>: View {
     
     @State private var tapScaleFactor: CGFloat = 1.0
     
+    // Детектим малейшее нажатие на глобальный контейнер
+    @Binding private var globalContainerInTouch: Bool
     
     @ViewBuilder
     private var selectionColor: some View {
@@ -157,6 +159,7 @@ struct CanvasLayerView<Content: View>: View {
     }
     
     init(item: CanvasItemModel,
+         globalContainerInTouch: Binding<Bool>,
          @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
          onDelete: ((CanvasItemModel) -> Void)? = nil,
@@ -165,7 +168,7 @@ struct CanvasLayerView<Content: View>: View {
          onManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEndManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEdit: ((CanvasItemModel) -> Void)? = nil) {
-        
+        self._globalContainerInTouch = globalContainerInTouch
         self.onSelect = onSelect
         self.onDelete = onDelete
         self.onShowCenterV = onShowCenterV
@@ -190,6 +193,7 @@ struct CanvasLayerView<Content: View>: View {
                 isCenterVertical: $isCenterVertical,
                 isCenterHorizontal: $isCenterHorizontal,
                 tapScaleFactor: $tapScaleFactor,
+                globalContainerInTouch: $globalContainerInTouch,
                 itemType: vm.item.type) {
                     content()
                 } onLongPress: {
