@@ -111,6 +111,7 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         let item: CanvasDrawModel = CanvasItemModel.toType(model: item)
         Image(uiImage: item.image)
             .frame(item.bounds.size)
+            .padding(100)
         
     case .text:
         let item: CanvasTextModel = CanvasItemModel.toType(model: item)
