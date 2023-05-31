@@ -53,7 +53,7 @@ final class Logger: VDEVLogger {
 }
 
 final class ResultSettings: VDEVMediaEditorResultSettings {
-    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(true)
+    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(false)
     var resolution: VDEVMediaResolution { .fullHD }
     var maximumVideoDuration: Double { 15.0 }
 }

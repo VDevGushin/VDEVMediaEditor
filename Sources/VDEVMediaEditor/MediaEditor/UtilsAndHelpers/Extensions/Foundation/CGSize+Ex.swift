@@ -82,9 +82,34 @@ extension CGSize {
 
 
 extension CGSize {
+    func checkSize() -> CGSize {
+        let etalonNumber: CGFloat = 100
+        if self < CGSize(width: etalonNumber, height: etalonNumber) {
+            if self.width < etalonNumber && self.height < etalonNumber {
+                return CGSize(width: etalonNumber, height: etalonNumber)
+            }
+            
+            if self.width < etalonNumber {
+                let mult = self.width * 100 / etalonNumber
+                return CGSize(width: etalonNumber, height: height * mult)
+            }
+            
+            if self.height < etalonNumber {
+                let mult = self.height * 100 / etalonNumber
+                return CGSize(width: width * mult, height: etalonNumber)
+            }
+        }
+        
+        return self
+    }
+    
     static func + (lhs: Self, rhs: Self) -> Self {
         .init(width: lhs.width + rhs.width,
               height: lhs.height + rhs.height)
+    }
+    
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.width < rhs.width || rhs.height < rhs.width
     }
 
     static func - (lhs: Self, rhs: Self) -> Self {

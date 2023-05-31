@@ -327,36 +327,9 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                     sender.cancel()
                     return
                 }
-//                guard let _ = viewFrom(sender: sender) else {
-//                    parent.scale = parent.scale
-//                    //sender.cancel()
-//                    return
-//                }
-//                let center = sender.location(in: view)
-//
-//                let touchPoint1 = sender.location(ofTouch: 0, in: view)
-//                let touchPoint2 = sender.location(ofTouch: 1, in: view)
-//
-//                let center = CGPoint(x: (touchPoint1.x + touchPoint2.x) / 2,
-//                                     y: (touchPoint1.y + touchPoint2.y) / 2)
-                
-//                let pinchCenter = CGPoint(x: (center.x) - (view.bounds.midX),
-//                                          y: (center.y) - (view.bounds.midY))
-                
-
                 
                 let zoom = max(CGFloat(0.1), (lastScale * abs(sender.scale)))
-                
-          
-//                let const = parent.scale / zoom
-//
-//
-//                parent.offset = .init(width: parent.offset.width / zoom / const,
-//                                      height: parent.offset.height / zoom / const)
                 parent.scale = zoom
-//                parent.offset = .init(width: parent.offset.width * zoom * const,
-//                                      height: parent.offset.height * zoom * const)
-                
             } else if sender.state == .ended || sender.state == .cancelled {
                 lastScale = nil
             }
