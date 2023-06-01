@@ -12,6 +12,7 @@ import Combine
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
     @State private var globalContainerInTouch: Bool = false
+    @State private var globalTouchLocation: CGPoint? = nil
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -66,7 +67,8 @@ fileprivate extension MediaEditorView {
                     vm.ui.mainLayerBackgroundColor
                         .frame(size)
                 } else {
-                    ParentView(inTouch: $globalContainerInTouch) {
+                    ParentView(inTouch: $globalContainerInTouch,
+                               touchLocation: $globalTouchLocation) {
                         ZStack {
                             InvisibleTapZoneView(tapCount: 1) {
                                 if vm.tools.currentToolItem != .empty {
@@ -115,6 +117,9 @@ fileprivate extension MediaEditorView {
                         }
                     }
                     .frame(size)
+                    .onChange(of: globalTouchLocation) { value in
+                        print("===>", value)
+                    }
                 }
             }
             .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.5 : 1.0)

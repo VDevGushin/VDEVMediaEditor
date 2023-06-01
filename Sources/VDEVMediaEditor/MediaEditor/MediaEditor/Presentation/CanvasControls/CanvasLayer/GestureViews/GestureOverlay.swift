@@ -398,6 +398,21 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             return true
         }
         
+        private func canManipulate() -> Bool {
+            guard parent.canManipulate() else {
+                parent.gestureInProgress = false
+                return false
+            }
+            return true
+        }
+        
+        private func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
+            if sender.state == .began { state = true }
+            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
+                state = false
+            }
+        }
+        
         // MARK: - For template to detect manipulations
         @objc
         func handlePanForTemplate(sender: UIPanGestureRecognizer) {
@@ -412,21 +427,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         @objc
         func handleRotateForTemplate(sender: UIRotationGestureRecognizer) {
             gestureStatus(state: &rotInProgress, sender: sender)
-        }
-        
-        private func canManipulate() -> Bool {
-            guard parent.canManipulate() else {
-                parent.gestureInProgress = false
-                return false
-            }
-            return true
-        }
-        
-        private func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
-            if sender.state == .began { state = true }
-            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
-                state = false
-            }
         }
     }
 }

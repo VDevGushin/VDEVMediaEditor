@@ -118,7 +118,6 @@ class CanvasItemModel: Identifiable, ObservableObject {
     @discardableResult
     func update(frameFetchedSize: CGSize) -> Self {
         self.frameFetchedSize = frameFetchedSize
-        self.frameFetchedSize = self.frameFetchedSize - CGSize(width: 200, height: 200)
         return self
     }
 
