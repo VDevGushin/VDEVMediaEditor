@@ -19,7 +19,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var isCenterHorizontal: Bool
     @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
-    @Binding var globalContainerInTouch: Bool
+    @Binding var contanerTouchLocation: ParentTouchResult
     @Binding var containerSize: CGSize
     
     private let content: () -> Content
@@ -41,7 +41,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   isCenterVertical: Binding<Bool>,
                   isCenterHorizontal: Binding<Bool>,
                   tapScaleFactor: Binding<CGFloat>,
-                  globalContainerInTouch: Binding<Bool>,
+                  contanerTouchLocation: Binding<ParentTouchResult>,
                   containerSize: Binding<CGSize>,
                   itemType: CanvasItemType,
                   @ViewBuilder content: @escaping () -> Content,
@@ -61,7 +61,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         self._isVerticalOrientation = isVerticalOrientation
         self._isCenterVertical = isCenterVertical
         self._isCenterHorizontal = isCenterHorizontal
-        self._globalContainerInTouch = globalContainerInTouch
+        self._contanerTouchLocation = contanerTouchLocation
         self._containerSize = containerSize
         self.onLongPress = onLongPress
         self.onDoubleTap = onDoubleTap
@@ -222,6 +222,24 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         // _UIHostingViewDelegate
         func touches(inProgress: Bool) { touchesInProgress = inProgress }
         
+        func touchIn(_ view: UIView) -> CGPoint? {
+            switch parent.contanerTouchLocation {
+            case .noTouch: return nil
+            case .touch(let point):
+                let scaleFrame = view.bounds.size * parent.scale
+                let xOffset = parent.offset.width
+                let x = xOffset - scaleFrame.width...xOffset + scaleFrame.width
+                let yOffset = parent.offset.height
+                let y = yOffset - scaleFrame.height...yOffset + scaleFrame.height
+                
+                if x.contains(point.x) && y.contains(point.y) {
+                    return nil
+                } else {
+                    return point
+                }
+            }
+        }
+        
         private func updateInProgressState() {
             guard canManipulate() else { return }
             self.parent.gestureInProgress = panInProgress ||
@@ -264,13 +282,17 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             guard let piece = sender.view else { return }
             
+            if let point = touchIn(piece) {
+                parent.scale = parent.scale * 1.2
+                parent.offset = parent.offset
+                return
+            }
+
             let translation = sender.translation(in: piece.superview)
             
             gestureStatus(state: &panInProgress, sender: sender)
             
-            if sender.state == .began {
-                lastStoreOffset = parent.offset
-            }
+            if sender.state == .began { lastStoreOffset = parent.offset }
             
             if sender.state != .cancelled {
                 let x = translation.x
