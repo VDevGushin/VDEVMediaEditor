@@ -39,7 +39,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
         LongPressRecognizer.delegate = context.coordinator
         LongPressRecognizer.minimumPressDuration = 0.0
         hView.addGestureRecognizer(LongPressRecognizer)
-        hView.addGestureRecognizer(PinchRecognizer)
+        //hView.addGestureRecognizer(PinchRecognizer)
         context.coordinator.longPressGest = LongPressRecognizer
         context.coordinator.pinchGest = PinchRecognizer
     }

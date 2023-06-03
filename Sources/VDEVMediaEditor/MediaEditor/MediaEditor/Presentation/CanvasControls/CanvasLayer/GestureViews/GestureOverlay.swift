@@ -285,53 +285,55 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             if let point = touchIn(piece) {
                 parent.scale = parent.scale * 1.2
                 parent.offset = parent.offset
-                return
-            }
-
-            let translation = sender.translation(in: piece.superview)
-            
-            gestureStatus(state: &panInProgress, sender: sender)
-            
-            if sender.state == .began { lastStoreOffset = parent.offset }
-            
-            if sender.state != .cancelled {
-                let x = translation.x
-                let y = translation.y
-                let B = parent.rotation.radians
-                
-                let rotatedX = (CoreGraphics.cos(B) * x) - (sin(B) * y)
-                let rotatedY = (CoreGraphics.sin(B) * x) + (cos(B) * y)
-                
-                var width = lastStoreOffset.width + rotatedX * parent.scale
-                var height = lastStoreOffset.height + rotatedY * parent.scale
-                
-                if centerRange.contains(width) {
-                    if !scaleInProgress  { width = 0 }
-                    parent.isCenterVertical = true
-                } else {
-                    parent.isCenterVertical = false
-                }
-                
-                if centerRange.contains(height) {
-                    if !scaleInProgress  { height = 0 }
-                    parent.isCenterHorizontal = true
-                } else {
-                    parent.isCenterHorizontal = false
-                }
-                
-                withAnimation(.interactiveSpring()) {
-                    parent.offset = CGSize(
-                        width: width,
-                        height: height
-                    )
-                }
-            } else {
-                withAnimation(.interactiveSpring()) {
-                    parent.offset = lastStoreOffset
-                }
-            }
-            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
                 panInProgress = false
+                return
+            } else {
+                
+                let translation = sender.translation(in: piece.superview)
+                
+                gestureStatus(state: &panInProgress, sender: sender)
+                
+                if sender.state == .began { lastStoreOffset = parent.offset }
+                
+                if sender.state != .cancelled {
+                    let x = translation.x
+                    let y = translation.y
+                    let B = parent.rotation.radians
+                    
+                    let rotatedX = (CoreGraphics.cos(B) * x) - (sin(B) * y)
+                    let rotatedY = (CoreGraphics.sin(B) * x) + (cos(B) * y)
+                    
+                    var width = lastStoreOffset.width + rotatedX * parent.scale
+                    var height = lastStoreOffset.height + rotatedY * parent.scale
+                    
+                    if centerRange.contains(width) {
+                        if !scaleInProgress  { width = 0 }
+                        parent.isCenterVertical = true
+                    } else {
+                        parent.isCenterVertical = false
+                    }
+                    
+                    if centerRange.contains(height) {
+                        if !scaleInProgress  { height = 0 }
+                        parent.isCenterHorizontal = true
+                    } else {
+                        parent.isCenterHorizontal = false
+                    }
+                    
+                    withAnimation(.interactiveSpring()) {
+                        parent.offset = CGSize(
+                            width: width,
+                            height: height
+                        )
+                    }
+                } else {
+                    withAnimation(.interactiveSpring()) {
+                        parent.offset = lastStoreOffset
+                    }
+                }
+                if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
+                    panInProgress = false
+                }
             }
         }
         

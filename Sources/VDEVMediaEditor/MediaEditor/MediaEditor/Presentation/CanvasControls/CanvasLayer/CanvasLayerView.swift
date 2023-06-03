@@ -197,7 +197,16 @@ struct CanvasLayerView<Content: View>: View {
                 contanerTouchLocation: $contanerTouchLocation,
                 containerSize: $containerSize,
                 itemType: vm.item.type) {
-                    content()
+                    
+                    if borderType == .manipulated {
+                        ZStack {
+                            Color.red
+                                .frame(width: 400, height: 400)
+                            content()
+                        }
+                    } else {
+                        content()
+                    }
                 } onLongPress: {
                   // Long tap
                 } onDoubleTap: {
