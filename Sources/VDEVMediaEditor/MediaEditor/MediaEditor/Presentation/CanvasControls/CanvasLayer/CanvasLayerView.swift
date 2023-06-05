@@ -93,8 +93,6 @@ struct CanvasLayerView<Content: View>: View {
     @State private var isCurrentInManipulation: Bool = true
     
     @State private var tapScaleFactor: CGFloat = 1.0
-    // Детектим малейшее нажатие на глобальный контейнер
-    @Binding private var contanerTouchLocation: ParentTouchResult
     @Binding private var containerSize: CGSize
     
     @ViewBuilder
@@ -158,7 +156,6 @@ struct CanvasLayerView<Content: View>: View {
     }
     
     init(item: CanvasItemModel,
-         contanerTouchLocation: Binding<ParentTouchResult>,
          containerSize: Binding<CGSize>,
          @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
@@ -168,7 +165,6 @@ struct CanvasLayerView<Content: View>: View {
          onManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEndManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEdit: ((CanvasItemModel) -> Void)? = nil) {
-        self._contanerTouchLocation = contanerTouchLocation
         self._containerSize = containerSize
         self.onSelect = onSelect
         self.onDelete = onDelete
@@ -194,7 +190,6 @@ struct CanvasLayerView<Content: View>: View {
                 isCenterVertical: $isCenterVertical,
                 isCenterHorizontal: $isCenterHorizontal,
                 tapScaleFactor: $tapScaleFactor,
-                contanerTouchLocation: $contanerTouchLocation,
                 containerSize: $containerSize,
                 itemType: vm.item.type) {
                     content()

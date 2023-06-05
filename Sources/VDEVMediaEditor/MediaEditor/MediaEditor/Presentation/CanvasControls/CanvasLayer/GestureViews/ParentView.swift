@@ -13,14 +13,25 @@ enum ParentTouchResult: Equatable {
     case touch(points: [CGPoint], scale: CGFloat, state: UIGestureRecognizer.State)
 }
 
+final class ParentTouchResultHolder {
+    private(set) var value: ParentTouchResult
+    
+    private init() {
+        value = .noTouch
+    }
+    
+    func set(_ value: ParentTouchResult) {
+        self.value = value
+    }
+    
+    static let shared = ParentTouchResultHolder()
+}
+
 struct ParentView<Content: View>: UIViewRepresentable {
     let content: Content
-    @Binding private var touchLocation: ParentTouchResult
     
-    init(touchLocation: Binding<ParentTouchResult>,
-         @ViewBuilder content: @escaping () -> Content) {
+    init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content()
-        self._touchLocation = touchLocation
     }
     
     func makeUIView(context: Context) -> UIHostingView<Content> {
@@ -71,7 +82,10 @@ struct ParentView<Content: View>: UIViewRepresentable {
             } else if sender.state == .changed {
                 makePoints(sender, scale: sender.scale, view: view, state: .changed)
             } else if sender.state == .ended || sender.state == .cancelled {
-                parent.touchLocation = .touch(points: [], scale: sender.scale, state: .ended)
+                ParentTouchResultHolder.shared.set(.touch(points: [], scale: sender.scale, state: .ended))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    ParentTouchResultHolder.shared.set(.noTouch)
+                }
             }
         }
         
@@ -82,7 +96,10 @@ struct ParentView<Content: View>: UIViewRepresentable {
             } else if sender.state == .changed {
                 makePoints(sender, scale: 1.0, view: view, state: .changed)
             } else if sender.state == .ended || sender.state == .cancelled {
-                parent.touchLocation = .touch(points: [], scale: 1.0, state: .ended)
+                ParentTouchResultHolder.shared.set(.touch(points: [], scale: 1.0, state: .ended))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    ParentTouchResultHolder.shared.set(.noTouch)
+                }
             }
         }
         
@@ -102,7 +119,9 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 points.append(location)
             }
             
-            parent.touchLocation = .touch(points: points, scale: scale, state: state)
+            ParentTouchResultHolder.shared.set(
+                .touch(points: points, scale: scale, state: state)
+            )
         }
     }
 }

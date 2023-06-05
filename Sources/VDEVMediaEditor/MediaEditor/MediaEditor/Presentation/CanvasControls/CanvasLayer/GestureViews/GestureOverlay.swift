@@ -19,7 +19,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var isCenterHorizontal: Bool
     @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
-    @Binding var contanerTouchLocation: ParentTouchResult
     @Binding var containerSize: CGSize
     
     private let content: () -> Content
@@ -41,7 +40,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   isCenterVertical: Binding<Bool>,
                   isCenterHorizontal: Binding<Bool>,
                   tapScaleFactor: Binding<CGFloat>,
-                  contanerTouchLocation: Binding<ParentTouchResult>,
                   containerSize: Binding<CGSize>,
                   itemType: CanvasItemType,
                   @ViewBuilder content: @escaping () -> Content,
@@ -61,7 +59,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         self._isVerticalOrientation = isVerticalOrientation
         self._isCenterVertical = isCenterVertical
         self._isCenterHorizontal = isCenterHorizontal
-        self._contanerTouchLocation = contanerTouchLocation
         self._containerSize = containerSize
         self.onLongPress = onLongPress
         self.onDoubleTap = onDoubleTap
@@ -214,6 +211,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var rotInProgress = false { didSet { updateInProgressState() } }
         private var scaleInProgress = false { didSet { updateInProgressState() } }
         private var touchesInProgress = false { didSet { updateInProgressState() } }
+        private var externalScaleInProgress = false { didSet { updateInProgressState() } }
         
         // _UIHostingViewDelegate
         func touches(inProgress: Bool) {
@@ -228,12 +226,15 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             longTapInProgress ||
             tapInProgress ||
             doubleTapInProgress ||
-            touchesInProgress
+            touchesInProgress ||
+            externalScaleInProgress
         }
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
         
-        init(parent: GestureOverlay) { self.parent = parent }
+        init(parent: GestureOverlay) {
+            self.parent = parent
+        }
         
         @objc
         func handleDoubleTap(sender: UITapGestureRecognizer) {
@@ -261,14 +262,16 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             guard let piece = sender.view else { return }
-            
-            if externalZoom(piece) {
-               return
-            } else {
+            gestureStatus(state: &scaleInProgress, sender: sender)
+            externalZoom(piece) { value in
                 
+                defer { gestureStatus(state: &scaleInProgress, sender: sender) }
+                
+                guard value else {
+                    return sender.cancel()
+                }
+                 
                 let translation = sender.translation(in: piece.superview)
-                
-                gestureStatus(state: &panInProgress, sender: sender)
                 
                 if sender.state == .began { lastStoreOffset = parent.offset }
                 
@@ -319,6 +322,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             gestureStatus(state: &scaleInProgress, sender: sender)
+            defer { gestureStatus(state: &scaleInProgress, sender: sender) }
             
             if sender.state == .began {
                 if lastScale == nil { lastScale = parent.scale }
@@ -430,70 +434,35 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             gestureStatus(state: &rotInProgress, sender: sender)
         }
         
-        func externalZoom(_ view: UIView) -> Bool {
-            //parent.scale = parent.scale * 1.2
-            //parent.offset = parent.offset
-            //panInProgress = false
-            //return
-            
-            switch parent.contanerTouchLocation {
-            case .noTouch: return false
-            case let .touch(points, scale, gestireState):
-                func getViewXYRangex(_ view: UIView) -> (ClosedRange<CGFloat>, ClosedRange<CGFloat>){
-                    let scaleFrame = view.bounds.size * parent.scale
-                    let xOffset = parent.offset.width
-                    let x = xOffset - scaleFrame.width...xOffset + scaleFrame.width
-                    let yOffset = parent.offset.height
-                    let y = yOffset - scaleFrame.height...yOffset + scaleFrame.height
-                    return (x, y)
-                }
-                
-                let range = getViewXYRangex(view)
-                
-                var canZoom = false
-                
-                for point in points {
-                    if !(range.0.contains(point.x) && range.1.contains(point.y)) {
-                        canZoom = true
-                        break
-                    }
-                }
-           
-                if canZoom {
-                    defer {
-                        switch gestireState {
-                        case .began:
-                            if lastScale == nil { lastScale = parent.scale }
-                        case .changed:
-                          
-                            let zoom = max(CGFloat(0.1), (lastScale * abs(scale)))
-                            parent.scale = zoom
-                        default:
-                            lastScale = nil
-                        }
-                    }
-                    return true
-                } else {
-                    return false
-                }
+        func externalZoom(_ view: UIView, completion: (Bool) -> Void) {
+            func somePointOutView(_ points: [CGPoint], _ view: UIView) -> Bool {
+                let scaleFrame = view.bounds.size
+                let xOffset = parent.offset.width * parent.scale
+                let xRange = xOffset - scaleFrame.width / 2...xOffset + scaleFrame.width / 2
+                let yOffset = parent.offset.height
+                let yRange = yOffset - scaleFrame.height / 2...yOffset + scaleFrame.height / 2
+                return points.first {
+                    !(xRange.contains($0.x) && yRange.contains($0.y))
+                } != nil
             }
             
-            /*
-             if sender.state == .began {
-                 if lastScale == nil { lastScale = parent.scale }
-             } else if sender.state == .changed {
-                 guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
-                     parent.scale = parent.scale
-                     sender.cancel()
-                     return
-                 }
-                 
-                 let zoom = max(CGFloat(0.1), (lastScale * abs(sender.scale)))
-                 parent.scale = zoom
-             } else if sender.state == .ended || sender.state == .cancelled {
-                 lastScale = nil
-             }
-             */
+            switch ParentTouchResultHolder.shared.value {
+            case .noTouch: completion(true)
+            case let .touch(points, scale, gestireState):
+                switch gestireState {
+                case .began:
+                    guard somePointOutView(points, view) else { return completion(true) }
+                    if lastScale == nil { lastScale = parent.scale }
+                case .changed:
+                    guard somePointOutView(points, view) else { return completion(true) }
+                    if lastScale == nil { lastScale = parent.scale }
+                    let zoom = max(CGFloat(0.1), (lastScale * abs(scale)))
+                    parent.scale = zoom
+                default:
+                    lastScale = nil
+                    completion(false)
+                }
+            }
         }
     }
 }
