@@ -116,8 +116,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     private func setupGest(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePan(sender:)))
-        //Pangesture.minimumNumberOfTouches = 1
-        //Pangesture.maximumNumberOfTouches = 2
         Pangesture.cancelsTouchesInView = true
         Pangesture.delegate = context.coordinator
         hView.addGestureRecognizer(Pangesture)
@@ -194,9 +192,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     }
     
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
-        
         private let parent: GestureOverlay
-        
         private var lastScale: CGFloat!
         private var lastStoreOffset: CGSize = .zero
         private var lastRotation: Angle!
@@ -220,24 +216,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var touchesInProgress = false { didSet { updateInProgressState() } }
         
         // _UIHostingViewDelegate
-        func touches(inProgress: Bool) { touchesInProgress = inProgress }
-        
-        func touchIn(_ view: UIView) -> CGPoint? {
-            switch parent.contanerTouchLocation {
-            case .noTouch: return nil
-            case .touch(let point):
-                let scaleFrame = view.bounds.size * parent.scale
-                let xOffset = parent.offset.width
-                let x = xOffset - scaleFrame.width...xOffset + scaleFrame.width
-                let yOffset = parent.offset.height
-                let y = yOffset - scaleFrame.height...yOffset + scaleFrame.height
-                
-                if x.contains(point.x) && y.contains(point.y) {
-                    return nil
-                } else {
-                    return point
-                }
-            }
+        func touches(inProgress: Bool) {
+            touchesInProgress = inProgress
         }
         
         private func updateInProgressState() {
@@ -282,11 +262,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             guard let piece = sender.view else { return }
             
-            if let point = touchIn(piece) {
-                parent.scale = parent.scale * 1.2
-                parent.offset = parent.offset
-                panInProgress = false
-                return
+            if externalZoom(piece) {
+               return
             } else {
                 
                 let translation = sender.translation(in: piece.superview)
@@ -451,6 +428,72 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         @objc
         func handleRotateForTemplate(sender: UIRotationGestureRecognizer) {
             gestureStatus(state: &rotInProgress, sender: sender)
+        }
+        
+        func externalZoom(_ view: UIView) -> Bool {
+            //parent.scale = parent.scale * 1.2
+            //parent.offset = parent.offset
+            //panInProgress = false
+            //return
+            
+            switch parent.contanerTouchLocation {
+            case .noTouch: return false
+            case let .touch(points, scale, gestireState):
+                func getViewXYRangex(_ view: UIView) -> (ClosedRange<CGFloat>, ClosedRange<CGFloat>){
+                    let scaleFrame = view.bounds.size * parent.scale
+                    let xOffset = parent.offset.width
+                    let x = xOffset - scaleFrame.width...xOffset + scaleFrame.width
+                    let yOffset = parent.offset.height
+                    let y = yOffset - scaleFrame.height...yOffset + scaleFrame.height
+                    return (x, y)
+                }
+                
+                let range = getViewXYRangex(view)
+                
+                var canZoom = false
+                
+                for point in points {
+                    if !(range.0.contains(point.x) && range.1.contains(point.y)) {
+                        canZoom = true
+                        break
+                    }
+                }
+           
+                if canZoom {
+                    defer {
+                        switch gestireState {
+                        case .began:
+                            if lastScale == nil { lastScale = parent.scale }
+                        case .changed:
+                          
+                            let zoom = max(CGFloat(0.1), (lastScale * abs(scale)))
+                            parent.scale = zoom
+                        default:
+                            lastScale = nil
+                        }
+                    }
+                    return true
+                } else {
+                    return false
+                }
+            }
+            
+            /*
+             if sender.state == .began {
+                 if lastScale == nil { lastScale = parent.scale }
+             } else if sender.state == .changed {
+                 guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
+                     parent.scale = parent.scale
+                     sender.cancel()
+                     return
+                 }
+                 
+                 let zoom = max(CGFloat(0.1), (lastScale * abs(sender.scale)))
+                 parent.scale = zoom
+             } else if sender.state == .ended || sender.state == .cancelled {
+                 lastScale = nil
+             }
+             */
         }
     }
 }

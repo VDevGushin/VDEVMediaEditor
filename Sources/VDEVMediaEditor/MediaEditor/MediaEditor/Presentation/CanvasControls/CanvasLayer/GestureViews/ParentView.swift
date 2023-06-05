@@ -10,7 +10,7 @@ import SwiftUIX
 
 enum ParentTouchResult: Equatable {
     case noTouch
-    case touch(CGPoint)
+    case touch(points: [CGPoint], scale: CGFloat, state: UIGestureRecognizer.State)
 }
 
 struct ParentView<Content: View>: UIViewRepresentable {
@@ -38,8 +38,8 @@ struct ParentView<Content: View>: UIViewRepresentable {
         PinchRecognizer.delegate = context.coordinator
         LongPressRecognizer.delegate = context.coordinator
         LongPressRecognizer.minimumPressDuration = 0.0
-        hView.addGestureRecognizer(LongPressRecognizer)
-        //hView.addGestureRecognizer(PinchRecognizer)
+        //hView.addGestureRecognizer(LongPressRecognizer)
+        hView.addGestureRecognizer(PinchRecognizer)
         context.coordinator.longPressGest = LongPressRecognizer
         context.coordinator.pinchGest = PinchRecognizer
     }
@@ -67,35 +67,42 @@ struct ParentView<Content: View>: UIViewRepresentable {
         func handlePinch(sender: UIPinchGestureRecognizer) {
             guard let view = sender.view?.superview else { return }
             if sender.state == .began {
-                let pinchCenter = CGPoint(x: sender.location(in: view).x - view.bounds.midX,
-                                          y: sender.location(in: view).y - view.bounds.midY)
-                parent.touchLocation = .touch(pinchCenter)
+                makePoints(sender, scale: sender.scale, view: view, state: .began)
             } else if sender.state == .changed {
-                let pinchCenter = CGPoint(x: sender.location(in: view).x - view.bounds.midX,
-                                          y: sender.location(in: view).y - view.bounds.midY)
-                parent.touchLocation = .touch(pinchCenter)
+                makePoints(sender, scale: sender.scale, view: view, state: .changed)
             } else if sender.state == .ended || sender.state == .cancelled {
-                parent.touchLocation = .noTouch
+                parent.touchLocation = .touch(points: [], scale: sender.scale, state: .ended)
             }
         }
         
         @objc func handleLongPress(sender: UILongPressGestureRecognizer) {
             guard let view = sender.view?.superview else { return }
             if sender.state == .began {
-                let pinchCenter = CGPoint(x: sender.location(in: view).x - view.bounds.midX,
-                                          y: sender.location(in: view).y - view.bounds.midY)
-                parent.touchLocation = .touch(pinchCenter)
+                makePoints(sender, scale: 1.0, view: view, state: .began)
             } else if sender.state == .changed {
-                let pinchCenter = CGPoint(x: sender.location(in: view).x - view.bounds.midX,
-                                          y: sender.location(in: view).y - view.bounds.midY)
-                parent.touchLocation = .touch(pinchCenter)
+                makePoints(sender, scale: 1.0, view: view, state: .changed)
             } else if sender.state == .ended || sender.state == .cancelled {
-                parent.touchLocation = .noTouch
+                parent.touchLocation = .touch(points: [], scale: 1.0, state: .ended)
             }
         }
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
             return true
+        }
+        
+        private func makePoints(_ sender: UIGestureRecognizer,
+                                scale: CGFloat,
+                                view: UIView,
+                                state: UIGestureRecognizer.State) {
+            var points: [CGPoint] = []
+            for touchNumber in 0..<sender.numberOfTouches {
+                let _location = sender.location(ofTouch: touchNumber, in: view)
+                let location = CGPoint(x: _location.x - view.bounds.midX,
+                                          y: _location.y - view.bounds.midY)
+                points.append(location)
+            }
+            
+            parent.touchLocation = .touch(points: points, scale: scale, state: state)
         }
     }
 }
