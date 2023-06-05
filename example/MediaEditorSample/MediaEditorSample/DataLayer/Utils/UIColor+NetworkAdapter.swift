@@ -9,25 +9,32 @@ import UIKit
 
 extension UIColor {
     convenience init(hexString: String) {
-        var cString:String = hexString.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        var hexSanitized = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
         
-        if (cString.hasPrefix("#")) {
-            cString.remove(at: cString.startIndex)
+        var rgb: UInt64 = 0
+        
+        var r: CGFloat = 0.0
+        var g: CGFloat = 0.0
+        var b: CGFloat = 0.0
+        var a: CGFloat = 1.0
+        
+        let length = hexSanitized.count
+
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+        
+        if length == 6 {
+            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(rgb & 0x0000FF) / 255.0
+            
+        } else if length == 8 {
+            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(rgb & 0x000000FF) / 255.0
         }
         
-        if ((cString.count) != 6) {
-            self.init(red: 1, green: 1, blue: 1, alpha: 1)
-            return
-        }
-        
-        var rgbValue:UInt64 = 0
-        Scanner(string: cString).scanHexInt64(&rgbValue)
-        
-        self.init(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
+        self.init(red: r, green: g, blue: b, alpha: a)
     }
 }

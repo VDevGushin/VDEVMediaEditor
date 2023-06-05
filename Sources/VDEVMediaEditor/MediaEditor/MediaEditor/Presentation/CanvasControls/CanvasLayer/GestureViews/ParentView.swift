@@ -13,6 +13,8 @@ enum ParentTouchResult: Equatable {
     case touch(points: [CGPoint], scale: CGFloat, state: UIGestureRecognizer.State)
 }
 
+let ParentTouchHolder = ParentTouchResultHolder.shared
+
 final class ParentTouchResultHolder {
     private(set) var value: ParentTouchResult
     
@@ -22,6 +24,10 @@ final class ParentTouchResultHolder {
     
     func set(_ value: ParentTouchResult) {
         self.value = value
+    }
+    
+    func reset() {
+        self.value = .noTouch
     }
     
     static let shared = ParentTouchResultHolder()
@@ -82,10 +88,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
             } else if sender.state == .changed {
                 makePoints(sender, scale: sender.scale, view: view, state: .changed)
             } else if sender.state == .ended || sender.state == .cancelled {
-                ParentTouchResultHolder.shared.set(.touch(points: [], scale: sender.scale, state: .ended))
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    ParentTouchResultHolder.shared.set(.noTouch)
-                }
+                ParentTouchHolder.set(.touch(points: [], scale: sender.scale, state: .ended))
             }
         }
         
@@ -96,10 +99,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
             } else if sender.state == .changed {
                 makePoints(sender, scale: 1.0, view: view, state: .changed)
             } else if sender.state == .ended || sender.state == .cancelled {
-                ParentTouchResultHolder.shared.set(.touch(points: [], scale: 1.0, state: .ended))
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    ParentTouchResultHolder.shared.set(.noTouch)
-                }
+                ParentTouchHolder.set(.touch(points: [], scale: 1.0, state: .ended))
             }
         }
         
@@ -119,7 +119,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 points.append(location)
             }
             
-            ParentTouchResultHolder.shared.set(
+            ParentTouchHolder.set(
                 .touch(points: points, scale: scale, state: state)
             )
         }
