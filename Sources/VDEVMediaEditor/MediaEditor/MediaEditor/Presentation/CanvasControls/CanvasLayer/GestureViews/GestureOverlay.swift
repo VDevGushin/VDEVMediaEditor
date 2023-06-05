@@ -211,7 +211,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var rotInProgress = false { didSet { updateInProgressState() } }
         private var scaleInProgress = false { didSet { updateInProgressState() } }
         private var touchesInProgress = false { didSet { updateInProgressState() } }
-        private var externalScaleInProgress = false { didSet { updateInProgressState() } }
         
         // _UIHostingViewDelegate
         func touches(inProgress: Bool) {
@@ -220,14 +219,21 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         private func updateInProgressState() {
             guard canManipulate() else { return }
+            print("panInProgress:", panInProgress,
+                  "rotInProgress:", rotInProgress,
+                  "scaleInProgress:", scaleInProgress,
+                  "longTapInProgress:", longTapInProgress,
+                  "tapInProgress:", tapInProgress,
+                  "doubleTapInProgress:", doubleTapInProgress,
+                  "touchesInProgress:", touchesInProgress)
+            
             self.parent.gestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
             longTapInProgress ||
             tapInProgress ||
             doubleTapInProgress ||
-            touchesInProgress ||
-            externalScaleInProgress
+            touchesInProgress
         }
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
@@ -263,9 +269,9 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             guard let piece = sender.view else { return }
             
-            externalZoom(piece, gesture: sender) {
+            externalZoom(piece, gesture: sender) { needToMove in
                 
-                gestureStatus(state: &scaleInProgress, sender: sender)
+                gestureStatus(state: &panInProgress, sender: sender)
                  
                 let translation = sender.translation(in: piece.superview)
                 
@@ -279,8 +285,15 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                     let rotatedX = (CoreGraphics.cos(B) * x) - (sin(B) * y)
                     let rotatedY = (CoreGraphics.sin(B) * x) + (cos(B) * y)
                     
-                    var width = lastStoreOffset.width + rotatedX * parent.scale
-                    var height = lastStoreOffset.height + rotatedY * parent.scale
+                    var width: CGFloat
+                    var height: CGFloat
+                    if needToMove {
+                        width = lastStoreOffset.width + rotatedX * parent.scale
+                        height = lastStoreOffset.height + rotatedY * parent.scale
+                    } else {
+                        width = parent.offset.width
+                        height = parent.offset.height
+                    }
                     
                     if centerRange.contains(width) {
                         if !scaleInProgress  { width = 0 }
@@ -296,14 +309,20 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                         parent.isCenterHorizontal = false
                     }
                     
-                    withAnimation(.interactiveSpring()) {
-                        parent.offset = CGSize(
-                            width: width,
-                            height: height
-                        )
+                    if needToMove {
+                        withAnimation(.interactiveSpring()) {
+                            parent.offset = CGSize(
+                                width: width,
+                                height: height
+                            )
+                        }
                     }
                 } else {
-                    withAnimation(.interactiveSpring()) {
+                    if needToMove {
+                        withAnimation(.interactiveSpring()) {
+                            parent.offset = lastStoreOffset
+                        }
+                    } else {
                         parent.offset = lastStoreOffset
                     }
                 }
@@ -318,7 +337,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             gestureStatus(state: &scaleInProgress, sender: sender)
-            defer { gestureStatus(state: &scaleInProgress, sender: sender) }
             
             if sender.state == .began {
                 if lastScale == nil { lastScale = parent.scale }
@@ -363,15 +381,14 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                         self.parent.isVerticalOrientation = false
                     }
                 }
-            } else if sender.state == .ended {
+            } else if sender.state == .ended, sender.state == .cancelled {
                 lastRotation = nil
             }
         }
         
         func externalZoom(_ view: UIView,
                           gesture: UIGestureRecognizer,
-                          completion: () -> Void) {
-            
+                          completion: (Bool) -> Void) {
             func somePointOutView(_ points: [CGPoint], _ view: UIView) -> Bool {
                 let scaleFrame = view.bounds.size
                 let xOffset = parent.offset.width * parent.scale
@@ -383,32 +400,25 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             switch ParentTouchHolder.value {
             case .noTouch:
-                externalScaleInProgress = false
-                completion()
+                completion(true)
             case let .touch(points, scale, gestireState):
                 switch gestireState {
                 case .began:
                     guard somePointOutView(points, view) else {
-                        externalScaleInProgress = false
-                        completion()
-                        return
+                        return completion(true)
                     }
-                    externalScaleInProgress = true
                     if lastScale == nil { lastScale = parent.scale }
                 case .changed:
                     guard somePointOutView(points, view) else {
-                        externalScaleInProgress = false
-                        completion()
-                        return
+                        return completion(true)
                     }
-                    externalScaleInProgress = true
                     if lastScale == nil { lastScale = parent.scale }
                     let zoom = max(CGFloat(0.1), (lastScale * abs(scale)))
                     parent.scale = zoom
                 default:
-                    externalScaleInProgress = false
                     lastScale = nil
                     ParentTouchHolder.reset()
+                    completion(false)
                 }
             }
         }
