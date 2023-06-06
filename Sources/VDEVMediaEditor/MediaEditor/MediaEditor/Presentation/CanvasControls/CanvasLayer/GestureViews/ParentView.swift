@@ -8,12 +8,12 @@
 import SwiftUI
 import SwiftUIX
 
+let ParentTouchHolder = ParentTouchResultHolder.shared
+
 enum ParentTouchResult: Equatable {
     case noTouch
     case touch(scale: CGFloat, state: UIGestureRecognizer.State)
 }
-
-let ParentTouchHolder = ParentTouchResultHolder.shared
 
 protocol ParentTouchResultHolderDelegate: AnyObject {
     func begin()
@@ -104,12 +104,5 @@ struct ParentView<Content: View>: UIViewRepresentable {
                                 state: UIGestureRecognizer.State) {
             ParentTouchHolder.set(.touch(scale: scale, state: state))
         }
-    }
-}
-
-fileprivate extension UIGestureRecognizer {
-    func cancel() {
-        isEnabled = false
-        isEnabled = true
     }
 }

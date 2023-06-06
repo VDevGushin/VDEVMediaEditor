@@ -259,6 +259,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             gestureStatus(state: &longTapInProgress, sender: sender)
+            
             if sender.state == .began {
                 ParentTouchHolder.delegate = self
             } else if sender.state == .changed {
