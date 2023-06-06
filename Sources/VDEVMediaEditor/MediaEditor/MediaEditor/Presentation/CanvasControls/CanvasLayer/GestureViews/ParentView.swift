@@ -10,12 +10,22 @@ import SwiftUIX
 
 enum ParentTouchResult: Equatable {
     case noTouch
-    case touch(points: [CGPoint], scale: CGFloat, state: UIGestureRecognizer.State)
+    case touch(points: [CGPoint],
+               scale: CGFloat,
+               state: UIGestureRecognizer.State,
+               gesture: UIGestureRecognizer)
 }
 
 let ParentTouchHolder = ParentTouchResultHolder.shared
 
+protocol ParentTouchResultHolderDelegate: AnyObject {
+    func begin()
+    func finish()
+    func inProcess()
+}
+
 final class ParentTouchResultHolder {
+    weak var delegate: ParentTouchResultHolderDelegate?
     private(set) var value: ParentTouchResult
     
     private init() {
@@ -23,6 +33,18 @@ final class ParentTouchResultHolder {
     }
     
     func set(_ value: ParentTouchResult) {
+        switch value {
+        case .noTouch: delegate?.finish()
+        case let .touch(points: _, scale: _, state: state, gesture: _):
+            switch state {
+            case .began:
+                delegate?.begin()
+            case .changed:
+                delegate?.inProcess()
+            default:
+                delegate?.finish()
+            }
+        }
         self.value = value
     }
     
@@ -84,22 +106,22 @@ struct ParentView<Content: View>: UIViewRepresentable {
         func handlePinch(sender: UIPinchGestureRecognizer) {
             guard let view = sender.view?.superview else { return }
             if sender.state == .began {
-                makePoints(sender, scale: sender.scale, view: view, state: .began)
+                makePoints(sender, scale: sender.scale, view: view, state: .began, gesture: sender)
             } else if sender.state == .changed {
-                makePoints(sender, scale: sender.scale, view: view, state: .changed)
+                makePoints(sender, scale: sender.scale, view: view, state: .changed, gesture: sender)
             } else if sender.state == .ended || sender.state == .cancelled {
-                ParentTouchHolder.set(.touch(points: [], scale: sender.scale, state: .ended))
+                ParentTouchHolder.set(.touch(points: [], scale: sender.scale, state: .ended, gesture: sender))
             }
         }
         
         @objc func handleLongPress(sender: UILongPressGestureRecognizer) {
             guard let view = sender.view?.superview else { return }
             if sender.state == .began {
-                makePoints(sender, scale: 1.0, view: view, state: .began)
+                makePoints(sender, scale: 1.0, view: view, state: .began, gesture: sender)
             } else if sender.state == .changed {
-                makePoints(sender, scale: 1.0, view: view, state: .changed)
+                makePoints(sender, scale: 1.0, view: view, state: .changed, gesture: sender)
             } else if sender.state == .ended || sender.state == .cancelled {
-                ParentTouchHolder.set(.touch(points: [], scale: 1.0, state: .ended))
+                ParentTouchHolder.set(.touch(points: [], scale: 1.0, state: .ended, gesture: sender))
             }
         }
         
@@ -110,7 +132,8 @@ struct ParentView<Content: View>: UIViewRepresentable {
         private func makePoints(_ sender: UIGestureRecognizer,
                                 scale: CGFloat,
                                 view: UIView,
-                                state: UIGestureRecognizer.State) {
+                                state: UIGestureRecognizer.State,
+                                gesture: UIGestureRecognizer) {
             var points: [CGPoint] = []
             for touchNumber in 0..<sender.numberOfTouches {
                 let _location = sender.location(ofTouch: touchNumber, in: view)
@@ -120,7 +143,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
             }
             
             ParentTouchHolder.set(
-                .touch(points: points, scale: scale, state: state)
+                .touch(points: points, scale: scale, state: state, gesture: gesture)
             )
         }
     }

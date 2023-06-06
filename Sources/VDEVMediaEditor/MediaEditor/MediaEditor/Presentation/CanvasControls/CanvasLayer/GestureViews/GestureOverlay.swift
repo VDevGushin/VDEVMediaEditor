@@ -191,6 +191,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
         private let parent: GestureOverlay
         private var lastScale: CGFloat!
+        private var externalLastScale: CGFloat!
         private var lastStoreOffset: CGSize = .zero
         private var lastRotation: Angle!
         private let centerRange = CGFloat(-5.0)...CGFloat(5.0)
@@ -211,6 +212,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var rotInProgress = false { didSet { updateInProgressState() } }
         private var scaleInProgress = false { didSet { updateInProgressState() } }
         private var touchesInProgress = false { didSet { updateInProgressState() } }
+        private var externalScaleInProgress = false { didSet { updateInProgressState() } }
         
         // _UIHostingViewDelegate
         func touches(inProgress: Bool) {
@@ -225,7 +227,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   "longTapInProgress:", longTapInProgress,
                   "tapInProgress:", tapInProgress,
                   "doubleTapInProgress:", doubleTapInProgress,
-                  "touchesInProgress:", touchesInProgress)
+                  "touchesInProgress:", touchesInProgress,
+                  "externalScaleInProgress:", externalScaleInProgress)
             
             self.parent.gestureInProgress = panInProgress ||
             rotInProgress ||
@@ -233,13 +236,16 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             longTapInProgress ||
             tapInProgress ||
             doubleTapInProgress ||
-            touchesInProgress
+            touchesInProgress ||
+            externalScaleInProgress
         }
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
         
         init(parent: GestureOverlay) {
             self.parent = parent
+            super.init()
+            ParentTouchHolder.delegate = self
         }
         
         @objc
@@ -386,87 +392,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             }
         }
         
-        func externalZoom(_ view: UIView,
-                          gesture: UIGestureRecognizer,
-                          completion: (Bool) -> Void) {
-            func somePointOutView(_ points: [CGPoint], _ view: UIView) -> Bool {
-                let scaleFrame = view.bounds.size
-                let xOffset = parent.offset.width * parent.scale
-                let xRange = xOffset - scaleFrame.width / 2...xOffset + scaleFrame.width / 2
-                let yOffset = parent.offset.height
-                let yRange = yOffset - scaleFrame.height / 2...yOffset + scaleFrame.height / 2
-                return points.first { !(xRange.contains($0.x) && yRange.contains($0.y)) } != nil
-            }
-            
-            switch ParentTouchHolder.value {
-            case .noTouch:
-                completion(true)
-            case let .touch(points, scale, gestireState):
-                switch gestireState {
-                case .began:
-                    guard somePointOutView(points, view) else {
-                        return completion(true)
-                    }
-                    if lastScale == nil { lastScale = parent.scale }
-                case .changed:
-                    guard somePointOutView(points, view) else {
-                        return completion(true)
-                    }
-                    if lastScale == nil { lastScale = parent.scale }
-                    let zoom = max(CGFloat(0.1), (lastScale * abs(scale)))
-                    parent.scale = zoom
-                default:
-                    lastScale = nil
-                    ParentTouchHolder.reset()
-                    completion(false)
-                }
-            }
-        }
-        
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
             let simultaneousRecognizers = [panGest, pinchGest, rotGest]
             let result = simultaneousRecognizers.contains(gestureRecognizer) &&
             simultaneousRecognizers.contains(otherGestureRecognizer)
             return result
-        }
-        
-        private func viewFrom(sender: UIGestureRecognizer) -> UIView? {
-            sender.numberOfTouches == 2 ? sender.view?.superview : nil
-        }
-        
-        private func checkInView(sender: UIGestureRecognizer,
-                                 scale: CGFloat?,
-                                 forCancel: UIGestureRecognizer?...) -> Bool {
-            func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
-                guard let view = sender.view?.superview else { return false }
-                
-                let point = sender.location(in: view)
-                let scaledSize = view.bounds.size
-                
-                return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
-                (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
-                sender.numberOfTouches == 2
-            }
-            
-            if !_check(sender: sender, scale: scale) {
-                return false
-            }
-            return true
-        }
-        
-        private func canManipulate() -> Bool {
-            guard parent.canManipulate() else {
-                parent.gestureInProgress = false
-                return false
-            }
-            return true
-        }
-        
-        private func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
-            if sender.state == .began { state = true }
-            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
-                state = false
-            }
         }
         
         // MARK: - For template to detect manipulations
@@ -483,6 +413,99 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         @objc
         func handleRotateForTemplate(sender: UIRotationGestureRecognizer) {
             gestureStatus(state: &rotInProgress, sender: sender)
+        }
+    }
+}
+
+// MARK: - Helpers
+
+extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
+    func begin() { }
+    
+    func finish() {
+        externalScaleInProgress = false
+        externalLastScale = nil
+    }
+    
+    func inProcess() { }
+}
+
+fileprivate extension GestureOverlay.Coordinator {
+    func canManipulate() -> Bool {
+        guard parent.canManipulate() else {
+            parent.gestureInProgress = false
+            return false
+        }
+        return true
+    }
+    
+    func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
+        if sender.state == .began { state = true }
+        if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
+            state = false
+        }
+    }
+    
+    func checkInView(sender: UIGestureRecognizer,
+                             scale: CGFloat?,
+                             forCancel: UIGestureRecognizer?...) -> Bool {
+        func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
+            guard let view = sender.view?.superview else { return false }
+            
+            let point = sender.location(in: view)
+            let scaledSize = view.bounds.size
+            
+            return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
+            (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
+            sender.numberOfTouches == 2
+        }
+        
+        if !_check(sender: sender, scale: scale) {
+            return false
+        }
+        return true
+    }
+    
+    func externalZoom(_ view: UIView,
+                      gesture: UIGestureRecognizer,
+                      completion: (Bool) -> Void) {
+        func somePointOutView(_ points: [CGPoint], _ view: UIView) -> Bool {
+            let scaleFrame = view.bounds.size
+            let xOffset = parent.offset.width * parent.scale
+            let xRange = xOffset - scaleFrame.width / 2...xOffset + scaleFrame.width / 2
+            let yOffset = parent.offset.height
+            let yRange = yOffset - scaleFrame.height / 2...yOffset + scaleFrame.height / 2
+            return points.first { !(xRange.contains($0.x) && yRange.contains($0.y)) } != nil
+        }
+        
+        externalScaleInProgress = false
+        switch ParentTouchHolder.value {
+        case .noTouch:
+            completion(true)
+        case let .touch(points, scale, gestireState, gesture):
+            switch gestireState {
+            case .began:
+                guard somePointOutView(points, view) else {
+                    gesture.cancel()
+                    return completion(true)
+                }
+                if externalLastScale == nil { externalLastScale = parent.scale }
+            case .changed:
+                guard somePointOutView(points, view) else {
+                    gesture.cancel()
+                    return completion(true)
+                }
+                defer { externalScaleInProgress = false }
+                externalScaleInProgress = true
+                if externalLastScale == nil { externalLastScale = parent.scale }
+                let zoom = max(CGFloat(0.1), (externalLastScale * abs(scale)))
+                parent.scale = zoom
+            default:
+                externalLastScale = nil
+                ParentTouchHolder.reset()
+                gesture.cancel()
+                completion(false)
+            }
         }
     }
 }
