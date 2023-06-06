@@ -137,7 +137,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         context.coordinator.tapGest = TapGestureRecognizer
         
         let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPress(sender:)))
-        LongPressRecognizer.minimumPressDuration = 0.7
+        LongPressRecognizer.minimumPressDuration = 0.0
+        LongPressRecognizer.delaysTouchesBegan = true
         hView.addGestureRecognizer(LongPressRecognizer)
         context.coordinator.longTapGest = LongPressRecognizer
         
@@ -146,6 +147,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         hView.addGestureRecognizer(DoubleTapRecognizer)
         context.coordinator.doubleTapGest = DoubleTapRecognizer
         
+        DoubleTapRecognizer.require(toFail: LongPressRecognizer)
+        TapGestureRecognizer.require(toFail: LongPressRecognizer)
         TapGestureRecognizer.require(toFail: DoubleTapRecognizer)
         TapGestureRecognizer.require(toFail: Pangesture)
         TapGestureRecognizer.require(toFail: RotationGesture)
@@ -258,7 +261,23 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         @objc
         func handleLongPress(sender: UILongPressGestureRecognizer) {
             guard canManipulate() else { return }
+            
             gestureStatus(state: &longTapInProgress, sender: sender)
+            
+
+            if sender.state == .began {
+                print("===> Begin longTap")
+                externalZoom(sender.view, gesture: sender)
+            } else if sender.state == .changed {
+                print("===> changed longTap")
+                externalZoom(sender.view, gesture: sender)
+            } else if sender.state == .ended ||
+                      sender.state == .cancelled ||
+                      sender.state == .failed {
+                print("===> end longTap")
+             //   ParentTouchHolder.reset()
+            }
+            
             parent.onLongPress()
         }
         
@@ -275,66 +294,55 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             guard let piece = sender.view else { return }
             
-            externalZoom(piece, gesture: sender) { needToMove in
+            
+            
+            gestureStatus(state: &panInProgress, sender: sender)
+            
+            let translation = sender.translation(in: piece.superview)
+            
+            if sender.state == .began { lastStoreOffset = parent.offset }
+            
+            if sender.state != .cancelled {
+                let x = translation.x
+                let y = translation.y
+                let B = parent.rotation.radians
                 
-                gestureStatus(state: &panInProgress, sender: sender)
-                 
-                let translation = sender.translation(in: piece.superview)
+                let rotatedX = (CoreGraphics.cos(B) * x) - (sin(B) * y)
+                let rotatedY = (CoreGraphics.sin(B) * x) + (cos(B) * y)
                 
-                if sender.state == .began { lastStoreOffset = parent.offset }
+                var width: CGFloat
+                var height: CGFloat
                 
-                if sender.state != .cancelled {
-                    let x = translation.x
-                    let y = translation.y
-                    let B = parent.rotation.radians
-                    
-                    let rotatedX = (CoreGraphics.cos(B) * x) - (sin(B) * y)
-                    let rotatedY = (CoreGraphics.sin(B) * x) + (cos(B) * y)
-                    
-                    var width: CGFloat
-                    var height: CGFloat
-                    if needToMove {
-                        width = lastStoreOffset.width + rotatedX * parent.scale
-                        height = lastStoreOffset.height + rotatedY * parent.scale
-                    } else {
-                        width = parent.offset.width
-                        height = parent.offset.height
-                    }
-                    
-                    if centerRange.contains(width) {
-                        if !scaleInProgress  { width = 0 }
-                        parent.isCenterVertical = true
-                    } else {
-                        parent.isCenterVertical = false
-                    }
-                    
-                    if centerRange.contains(height) {
-                        if !scaleInProgress  { height = 0 }
-                        parent.isCenterHorizontal = true
-                    } else {
-                        parent.isCenterHorizontal = false
-                    }
-                    
-                    if needToMove {
-                        withAnimation(.interactiveSpring()) {
-                            parent.offset = CGSize(
-                                width: width,
-                                height: height
-                            )
-                        }
-                    }
+                width = lastStoreOffset.width + rotatedX * parent.scale
+                height = lastStoreOffset.height + rotatedY * parent.scale
+                
+                if centerRange.contains(width) {
+                    if !scaleInProgress  { width = 0 }
+                    parent.isCenterVertical = true
                 } else {
-                    if needToMove {
-                        withAnimation(.interactiveSpring()) {
-                            parent.offset = lastStoreOffset
-                        }
-                    } else {
-                        parent.offset = lastStoreOffset
-                    }
+                    parent.isCenterVertical = false
                 }
-                if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
-                    panInProgress = false
+                
+                if centerRange.contains(height) {
+                    if !scaleInProgress  { height = 0 }
+                    parent.isCenterHorizontal = true
+                } else {
+                    parent.isCenterHorizontal = false
                 }
+                
+                withAnimation(.interactiveSpring()) {
+                    parent.offset = CGSize(
+                        width: width,
+                        height: height
+                    )
+                }
+            } else {
+                withAnimation(.interactiveSpring()) {
+                    parent.offset = lastStoreOffset
+                }
+            }
+            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
+                panInProgress = false
             }
         }
         
@@ -387,16 +395,16 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                         self.parent.isVerticalOrientation = false
                     }
                 }
-            } else if sender.state == .ended, sender.state == .cancelled {
+            } else if sender.state == .ended || sender.state == .cancelled {
                 lastRotation = nil
             }
         }
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            let simultaneousRecognizers = [panGest, pinchGest, rotGest]
-            let result = simultaneousRecognizers.contains(gestureRecognizer) &&
-            simultaneousRecognizers.contains(otherGestureRecognizer)
-            return result
+            //let simultaneousRecognizers = [panGest, pinchGest, rotGest, longTapGest, tapGest]
+            //let result = simultaneousRecognizers.contains(gestureRecognizer) &&
+            //simultaneousRecognizers.contains(otherGestureRecognizer)
+            return true
         }
         
         // MARK: - For template to detect manipulations
@@ -447,8 +455,8 @@ fileprivate extension GestureOverlay.Coordinator {
     }
     
     func checkInView(sender: UIGestureRecognizer,
-                             scale: CGFloat?,
-                             forCancel: UIGestureRecognizer?...) -> Bool {
+                     scale: CGFloat?,
+                     forCancel: UIGestureRecognizer?...) -> Bool {
         func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
             guard let view = sender.view?.superview else { return false }
             
@@ -466,9 +474,8 @@ fileprivate extension GestureOverlay.Coordinator {
         return true
     }
     
-    func externalZoom(_ view: UIView,
-                      gesture: UIGestureRecognizer,
-                      completion: (Bool) -> Void) {
+    func externalZoom(_ view: UIView?,
+                      gesture: UIGestureRecognizer) {
         func somePointOutView(_ points: [CGPoint], _ view: UIView) -> Bool {
             let scaleFrame = view.bounds.size
             let xOffset = parent.offset.width * parent.scale
@@ -478,33 +485,36 @@ fileprivate extension GestureOverlay.Coordinator {
             return points.first { !(xRange.contains($0.x) && yRange.contains($0.y)) } != nil
         }
         
+        guard let view = view else { return }
+        
+        guard !scaleInProgress else { return }
+        
         externalScaleInProgress = false
         switch ParentTouchHolder.value {
-        case .noTouch:
-            completion(true)
-        case let .touch(points, scale, gestireState, gesture):
+        case .noTouch: return
+        case let .touch(points, scale, gestireState, _):
             switch gestireState {
             case .began:
-                guard somePointOutView(points, view) else {
-                    gesture.cancel()
-                    return completion(true)
-                }
+//                guard somePointOutView(points, view) else {
+//                    print("===> Zomm pointOut 1")
+//                    return
+//                }
+                print("===> Zomm In progress begin")
                 if externalLastScale == nil { externalLastScale = parent.scale }
             case .changed:
-                guard somePointOutView(points, view) else {
-                    gesture.cancel()
-                    return completion(true)
-                }
+//                guard somePointOutView(points, view) else {
+//                    print("===> Zomm pointOut 2")
+//                    return
+//                }
+                print("===> Zomm In progress changed")
                 defer { externalScaleInProgress = false }
                 externalScaleInProgress = true
                 if externalLastScale == nil { externalLastScale = parent.scale }
                 let zoom = max(CGFloat(0.1), (externalLastScale * abs(scale)))
                 parent.scale = zoom
             default:
+                print("===> Zomm In progress cancel")
                 externalLastScale = nil
-                ParentTouchHolder.reset()
-                gesture.cancel()
-                completion(false)
             }
         }
     }

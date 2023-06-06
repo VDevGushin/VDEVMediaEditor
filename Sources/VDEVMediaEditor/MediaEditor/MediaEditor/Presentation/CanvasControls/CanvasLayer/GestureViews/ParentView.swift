@@ -34,14 +34,20 @@ final class ParentTouchResultHolder {
     
     func set(_ value: ParentTouchResult) {
         switch value {
-        case .noTouch: delegate?.finish()
-        case let .touch(points: _, scale: _, state: state, gesture: _):
+        case .noTouch:
+            print("===> Parent gesture finish")
+            delegate?.finish()
+        case let .touch(points: _, scale: _, state: state, gesture: gesture):
             switch state {
             case .began:
+                print("===> Parent gesture begin")
                 delegate?.begin()
             case .changed:
+                print("===> Parent gesture inProcess")
                 delegate?.inProcess()
             default:
+                print("===> Parent gesture finish")
+                gesture.cancel()
                 delegate?.finish()
             }
         }
@@ -72,21 +78,15 @@ struct ParentView<Content: View>: UIViewRepresentable {
     }
     
     private func setupGest(for hView: UIView, context: Context) {
-        let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPress(sender:)))
         let PinchRecognizer = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinch(sender:)))
         PinchRecognizer.delegate = context.coordinator
-        LongPressRecognizer.delegate = context.coordinator
-        LongPressRecognizer.minimumPressDuration = 0.0
-        //hView.addGestureRecognizer(LongPressRecognizer)
         hView.addGestureRecognizer(PinchRecognizer)
-        context.coordinator.longPressGest = LongPressRecognizer
         context.coordinator.pinchGest = PinchRecognizer
     }
     
     func updateUIView(_ uiView: UIHostingView<Content>, context: Context) { uiView.rootView = content }
     
     static func dismantleUIView(_ uiView: UIHostingView<Content>, coordinator: Coordinator) {
-        if let longPressGest = coordinator.longPressGest { uiView.removeGestureRecognizer(longPressGest) }
         if let pinchGest = coordinator.pinchGest { uiView.removeGestureRecognizer(pinchGest) }
         uiView.removeFromSuperview()
     }
@@ -97,7 +97,6 @@ struct ParentView<Content: View>: UIViewRepresentable {
     
     final class Coordinator: NSObject, UIGestureRecognizerDelegate {
         private let parent: ParentView
-        weak var longPressGest: UIGestureRecognizer?
         weak var pinchGest: UIGestureRecognizer?
         
         init(parent: ParentView) { self.parent = parent }
@@ -111,17 +110,6 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 makePoints(sender, scale: sender.scale, view: view, state: .changed, gesture: sender)
             } else if sender.state == .ended || sender.state == .cancelled {
                 ParentTouchHolder.set(.touch(points: [], scale: sender.scale, state: .ended, gesture: sender))
-            }
-        }
-        
-        @objc func handleLongPress(sender: UILongPressGestureRecognizer) {
-            guard let view = sender.view?.superview else { return }
-            if sender.state == .began {
-                makePoints(sender, scale: 1.0, view: view, state: .began, gesture: sender)
-            } else if sender.state == .changed {
-                makePoints(sender, scale: 1.0, view: view, state: .changed, gesture: sender)
-            } else if sender.state == .ended || sender.state == .cancelled {
-                ParentTouchHolder.set(.touch(points: [], scale: 1.0, state: .ended, gesture: sender))
             }
         }
         
@@ -146,5 +134,12 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 .touch(points: points, scale: scale, state: state, gesture: gesture)
             )
         }
+    }
+}
+
+fileprivate extension UIGestureRecognizer {
+    func cancel() {
+        isEnabled = false
+        isEnabled = true
     }
 }
