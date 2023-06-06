@@ -11,7 +11,6 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
-    @State private var globalContainerInTouch: Bool = false
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -63,10 +62,9 @@ fileprivate extension MediaEditorView {
             GeometryReader { proxy in
                 let size = proxy.size
                 if vm.data.layers.isEmpty {
-                    vm.ui.mainLayerBackgroundColor
-                        .frame(size)
+                    vm.ui.mainLayerBackgroundColor.frame(size)
                 } else {
-                    ParentView(inTouch: $globalContainerInTouch) {
+                    ParentView {
                         ZStack {
                             InvisibleTapZoneView(tapCount: 1) {
                                 if vm.tools.currentToolItem != .empty {
@@ -77,7 +75,6 @@ fileprivate extension MediaEditorView {
                             
                             ForEach(vm.data.layers, id: \.self) { item in
                                 CanvasLayerView(item: item,
-                                                globalContainerInTouch: $globalContainerInTouch,
                                                 containerSize: $vm.ui.editorSize) {
                                     CanvasItemViewBuilder(item: item,
                                                           canvasSize: size,

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 @ViewBuilder
 func CanvasItemViewBuilder(item: CanvasItemModel,
                            canvasSize: CGSize,
@@ -95,6 +94,7 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         
     case .sticker:
         let item: CanvasStickerModel = CanvasItemModel.toType(model: item)
+        let width = canvasSize.width / 1.2
         
         ZStack {
             Image(uiImage: item.image)
@@ -105,7 +105,7 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
                         style: .large,
                         color: .init(guideLinesColor))
         }
-        .frame(width: canvasSize.width / 1.2)
+        .frame(width: width)
         
     case .drawing:
         let item: CanvasDrawModel = CanvasItemModel.toType(model: item)

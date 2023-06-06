@@ -19,7 +19,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var isCenterHorizontal: Bool
     @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
-    @Binding var globalContainerInTouch: Bool
     @Binding var containerSize: CGSize
     
     private let content: () -> Content
@@ -41,7 +40,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   isCenterVertical: Binding<Bool>,
                   isCenterHorizontal: Binding<Bool>,
                   tapScaleFactor: Binding<CGFloat>,
-                  globalContainerInTouch: Binding<Bool>,
                   containerSize: Binding<CGSize>,
                   itemType: CanvasItemType,
                   @ViewBuilder content: @escaping () -> Content,
@@ -61,7 +59,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         self._isVerticalOrientation = isVerticalOrientation
         self._isCenterVertical = isCenterVertical
         self._isCenterHorizontal = isCenterHorizontal
-        self._globalContainerInTouch = globalContainerInTouch
         self._containerSize = containerSize
         self.onLongPress = onLongPress
         self.onDoubleTap = onDoubleTap
@@ -116,8 +113,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     private func setupGest(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePan(sender:)))
-        //Pangesture.minimumNumberOfTouches = 1
-        //Pangesture.maximumNumberOfTouches = 2
         Pangesture.cancelsTouchesInView = true
         Pangesture.delegate = context.coordinator
         hView.addGestureRecognizer(Pangesture)
@@ -142,7 +137,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         context.coordinator.tapGest = TapGestureRecognizer
         
         let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPress(sender:)))
-        LongPressRecognizer.minimumPressDuration = 0.7
+        LongPressRecognizer.minimumPressDuration = 0.1
+        LongPressRecognizer.delaysTouchesBegan = true
         hView.addGestureRecognizer(LongPressRecognizer)
         context.coordinator.longTapGest = LongPressRecognizer
         
@@ -151,6 +147,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         hView.addGestureRecognizer(DoubleTapRecognizer)
         context.coordinator.doubleTapGest = DoubleTapRecognizer
         
+        DoubleTapRecognizer.require(toFail: LongPressRecognizer)
+        TapGestureRecognizer.require(toFail: LongPressRecognizer)
         TapGestureRecognizer.require(toFail: DoubleTapRecognizer)
         TapGestureRecognizer.require(toFail: Pangesture)
         TapGestureRecognizer.require(toFail: RotationGesture)
@@ -194,10 +192,9 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     }
     
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
-        
         private let parent: GestureOverlay
-        
         private var lastScale: CGFloat!
+        private var externalLastScale: CGFloat!
         private var lastStoreOffset: CGSize = .zero
         private var lastRotation: Angle!
         private let centerRange = CGFloat(-5.0)...CGFloat(5.0)
@@ -220,10 +217,21 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var touchesInProgress = false { didSet { updateInProgressState() } }
         
         // _UIHostingViewDelegate
-        func touches(inProgress: Bool) { touchesInProgress = inProgress }
+        func touches(inProgress: Bool) {
+            touchesInProgress = inProgress
+        }
         
         private func updateInProgressState() {
             guard canManipulate() else { return }
+//            print("====>",
+//                  "panInProgress:", panInProgress,
+//                  "rotInProgress:", rotInProgress,
+//                  "scaleInProgress:", scaleInProgress,
+//                  "longTapInProgress:", longTapInProgress,
+//                  "tapInProgress:", tapInProgress,
+//                  "doubleTapInProgress:", doubleTapInProgress,
+//                  "touchesInProgress:", touchesInProgress)
+//
             self.parent.gestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
@@ -235,7 +243,9 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
         
-        init(parent: GestureOverlay) { self.parent = parent }
+        init(parent: GestureOverlay) {
+            self.parent = parent
+        }
         
         @objc
         func handleDoubleTap(sender: UITapGestureRecognizer) {
@@ -247,7 +257,16 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         @objc
         func handleLongPress(sender: UILongPressGestureRecognizer) {
             guard canManipulate() else { return }
+            
             gestureStatus(state: &longTapInProgress, sender: sender)
+            
+            if sender.state == .began {
+                ParentTouchHolder.delegate = self
+            } else if sender.state == .changed {
+            } else {
+                ParentTouchHolder.delegate = nil
+            }
+            
             parent.onLongPress()
         }
         
@@ -264,13 +283,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             guard let piece = sender.view else { return }
             
-            let translation = sender.translation(in: piece.superview)
-            
             gestureStatus(state: &panInProgress, sender: sender)
             
-            if sender.state == .began {
-                lastStoreOffset = parent.offset
-            }
+            let translation = sender.translation(in: piece.superview)
+            
+            if sender.state == .began { lastStoreOffset = parent.offset }
             
             if sender.state != .cancelled {
                 let x = translation.x
@@ -280,8 +297,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 let rotatedX = (CoreGraphics.cos(B) * x) - (sin(B) * y)
                 let rotatedY = (CoreGraphics.sin(B) * x) + (cos(B) * y)
                 
-                var width = lastStoreOffset.width + rotatedX * parent.scale
-                var height = lastStoreOffset.height + rotatedY * parent.scale
+                var width: CGFloat
+                var height: CGFloat
+                
+                width = lastStoreOffset.width + rotatedX * parent.scale
+                height = lastStoreOffset.height + rotatedY * parent.scale
                 
                 if centerRange.contains(width) {
                     if !scaleInProgress  { width = 0 }
@@ -298,15 +318,10 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 }
                 
                 withAnimation(.interactiveSpring()) {
-                    parent.offset = CGSize(
-                        width: width,
-                        height: height
-                    )
+                    parent.offset = CGSize(width: width, height: height)
                 }
             } else {
-                withAnimation(.interactiveSpring()) {
-                    parent.offset = lastStoreOffset
-                }
+                withAnimation(.interactiveSpring()) { parent.offset = lastStoreOffset }
             }
             if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
                 panInProgress = false
@@ -362,39 +377,12 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                         self.parent.isVerticalOrientation = false
                     }
                 }
-            } else if sender.state == .ended {
+            } else if sender.state == .ended || sender.state == .cancelled {
                 lastRotation = nil
             }
         }
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            let simultaneousRecognizers = [panGest, pinchGest, rotGest]
-            let result = simultaneousRecognizers.contains(gestureRecognizer) &&
-            simultaneousRecognizers.contains(otherGestureRecognizer)
-            return result
-        }
-        
-        private func viewFrom(sender: UIGestureRecognizer) -> UIView? {
-            sender.numberOfTouches == 2 ? sender.view?.superview : nil
-        }
-        
-        private func checkInView(sender: UIGestureRecognizer,
-                                 scale: CGFloat?,
-                                 forCancel: UIGestureRecognizer?...) -> Bool {
-            func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
-                guard let view = sender.view?.superview else { return false }
-                
-                let point = sender.location(in: view)
-                let scaledSize = view.bounds.size
-                
-                return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
-                (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
-                sender.numberOfTouches == 2
-            }
-            
-            if !_check(sender: sender, scale: scale) {
-                return false
-            }
             return true
         }
         
@@ -413,21 +401,66 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         func handleRotateForTemplate(sender: UIRotationGestureRecognizer) {
             gestureStatus(state: &rotInProgress, sender: sender)
         }
-        
-        private func canManipulate() -> Bool {
-            guard parent.canManipulate() else {
-                parent.gestureInProgress = false
-                return false
-            }
-            return true
+    }
+}
+
+// MARK: - Helpers
+
+// Работа с внешними гестурами
+extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
+    func begin() {
+        guard !scaleInProgress else { return }
+        guard longTapInProgress else { return }
+        if externalLastScale == nil { externalLastScale = parent.scale }
+    }
+    
+    func finish() {
+        externalLastScale = nil
+    }
+    
+    func inProcess(scale: CGFloat) {
+        guard !scaleInProgress else { return }
+        guard longTapInProgress else { return }
+        if externalLastScale == nil { externalLastScale = parent.scale }
+        let zoom = max(CGFloat(0.1), (externalLastScale * abs(scale)))
+        parent.scale = zoom
+    }
+}
+
+fileprivate extension GestureOverlay.Coordinator {
+    func canManipulate() -> Bool {
+        guard parent.canManipulate() else {
+            parent.gestureInProgress = false
+            return false
+        }
+        return true
+    }
+    
+    func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
+        if sender.state == .began { state = true
+        } else if sender.state == .changed { state = true
+        } else { state = false
+        }
+    }
+    
+    func checkInView(sender: UIGestureRecognizer,
+                     scale: CGFloat?,
+                     forCancel: UIGestureRecognizer?...) -> Bool {
+        func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
+            guard let view = sender.view?.superview else { return false }
+            
+            let point = sender.location(in: view)
+            let scaledSize = view.bounds.size
+            
+            return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
+            (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
+            sender.numberOfTouches == 2
         }
         
-        private func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
-            if sender.state == .began { state = true }
-            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
-                state = false
-            }
+        if !_check(sender: sender, scale: scale) {
+            return false
         }
+        return true
     }
 }
 
