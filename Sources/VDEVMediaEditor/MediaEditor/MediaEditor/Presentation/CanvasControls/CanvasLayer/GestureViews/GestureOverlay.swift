@@ -137,7 +137,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         context.coordinator.tapGest = TapGestureRecognizer
         
         let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPress(sender:)))
-        LongPressRecognizer.minimumPressDuration = 0.0
+        LongPressRecognizer.minimumPressDuration = 0.1
         LongPressRecognizer.delaysTouchesBegan = true
         hView.addGestureRecognizer(LongPressRecognizer)
         context.coordinator.longTapGest = LongPressRecognizer
@@ -215,7 +215,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var rotInProgress = false { didSet { updateInProgressState() } }
         private var scaleInProgress = false { didSet { updateInProgressState() } }
         private var touchesInProgress = false { didSet { updateInProgressState() } }
-        private var externalScaleInProgress = false { didSet { updateInProgressState() } }
         
         // _UIHostingViewDelegate
         func touches(inProgress: Bool) {
@@ -224,31 +223,28 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         private func updateInProgressState() {
             guard canManipulate() else { return }
-            print("panInProgress:", panInProgress,
-                  "rotInProgress:", rotInProgress,
-                  "scaleInProgress:", scaleInProgress,
-                  "longTapInProgress:", longTapInProgress,
-                  "tapInProgress:", tapInProgress,
-                  "doubleTapInProgress:", doubleTapInProgress,
-                  "touchesInProgress:", touchesInProgress,
-                  "externalScaleInProgress:", externalScaleInProgress)
-            
+//            print("====>",
+//                  "panInProgress:", panInProgress,
+//                  "rotInProgress:", rotInProgress,
+//                  "scaleInProgress:", scaleInProgress,
+//                  "longTapInProgress:", longTapInProgress,
+//                  "tapInProgress:", tapInProgress,
+//                  "doubleTapInProgress:", doubleTapInProgress,
+//                  "touchesInProgress:", touchesInProgress)
+//
             self.parent.gestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
             longTapInProgress ||
             tapInProgress ||
             doubleTapInProgress ||
-            touchesInProgress ||
-            externalScaleInProgress
+            touchesInProgress
         }
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
         
         init(parent: GestureOverlay) {
             self.parent = parent
-            super.init()
-            ParentTouchHolder.delegate = self
         }
         
         @objc
@@ -263,19 +259,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             gestureStatus(state: &longTapInProgress, sender: sender)
-            
-
             if sender.state == .began {
-                print("===> Begin longTap")
-                externalZoom(sender.view, gesture: sender)
+                ParentTouchHolder.delegate = self
             } else if sender.state == .changed {
-                print("===> changed longTap")
-                externalZoom(sender.view, gesture: sender)
-            } else if sender.state == .ended ||
-                      sender.state == .cancelled ||
-                      sender.state == .failed {
-                print("===> end longTap")
-             //   ParentTouchHolder.reset()
+            } else {
+                ParentTouchHolder.delegate = nil
             }
             
             parent.onLongPress()
@@ -293,8 +281,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             guard let piece = sender.view else { return }
-            
-            
             
             gestureStatus(state: &panInProgress, sender: sender)
             
@@ -331,15 +317,10 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 }
                 
                 withAnimation(.interactiveSpring()) {
-                    parent.offset = CGSize(
-                        width: width,
-                        height: height
-                    )
+                    parent.offset = CGSize(width: width, height: height)
                 }
             } else {
-                withAnimation(.interactiveSpring()) {
-                    parent.offset = lastStoreOffset
-                }
+                withAnimation(.interactiveSpring()) { parent.offset = lastStoreOffset }
             }
             if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
                 panInProgress = false
@@ -401,9 +382,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         }
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            //let simultaneousRecognizers = [panGest, pinchGest, rotGest, longTapGest, tapGest]
-            //let result = simultaneousRecognizers.contains(gestureRecognizer) &&
-            //simultaneousRecognizers.contains(otherGestureRecognizer)
             return true
         }
         
@@ -427,15 +405,25 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
 
 // MARK: - Helpers
 
+// Работа с внешними гестурами
 extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
-    func begin() { }
+    func begin() {
+        guard !scaleInProgress else { return }
+        guard longTapInProgress else { return }
+        if externalLastScale == nil { externalLastScale = parent.scale }
+    }
     
     func finish() {
-        externalScaleInProgress = false
         externalLastScale = nil
     }
     
-    func inProcess() { }
+    func inProcess(scale: CGFloat) {
+        guard !scaleInProgress else { return }
+        guard longTapInProgress else { return }
+        if externalLastScale == nil { externalLastScale = parent.scale }
+        let zoom = max(CGFloat(0.1), (externalLastScale * abs(scale)))
+        parent.scale = zoom
+    }
 }
 
 fileprivate extension GestureOverlay.Coordinator {
@@ -448,9 +436,9 @@ fileprivate extension GestureOverlay.Coordinator {
     }
     
     func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
-        if sender.state == .began { state = true }
-        if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
-            state = false
+        if sender.state == .began { state = true
+        } else if sender.state == .changed { state = true
+        } else { state = false
         }
     }
     
@@ -472,51 +460,6 @@ fileprivate extension GestureOverlay.Coordinator {
             return false
         }
         return true
-    }
-    
-    func externalZoom(_ view: UIView?,
-                      gesture: UIGestureRecognizer) {
-        func somePointOutView(_ points: [CGPoint], _ view: UIView) -> Bool {
-            let scaleFrame = view.bounds.size
-            let xOffset = parent.offset.width * parent.scale
-            let xRange = xOffset - scaleFrame.width / 2...xOffset + scaleFrame.width / 2
-            let yOffset = parent.offset.height
-            let yRange = yOffset - scaleFrame.height / 2...yOffset + scaleFrame.height / 2
-            return points.first { !(xRange.contains($0.x) && yRange.contains($0.y)) } != nil
-        }
-        
-        guard let view = view else { return }
-        
-        guard !scaleInProgress else { return }
-        
-        externalScaleInProgress = false
-        switch ParentTouchHolder.value {
-        case .noTouch: return
-        case let .touch(points, scale, gestireState, _):
-            switch gestireState {
-            case .began:
-//                guard somePointOutView(points, view) else {
-//                    print("===> Zomm pointOut 1")
-//                    return
-//                }
-                print("===> Zomm In progress begin")
-                if externalLastScale == nil { externalLastScale = parent.scale }
-            case .changed:
-//                guard somePointOutView(points, view) else {
-//                    print("===> Zomm pointOut 2")
-//                    return
-//                }
-                print("===> Zomm In progress changed")
-                defer { externalScaleInProgress = false }
-                externalScaleInProgress = true
-                if externalLastScale == nil { externalLastScale = parent.scale }
-                let zoom = max(CGFloat(0.1), (externalLastScale * abs(scale)))
-                parent.scale = zoom
-            default:
-                print("===> Zomm In progress cancel")
-                externalLastScale = nil
-            }
-        }
     }
 }
 
