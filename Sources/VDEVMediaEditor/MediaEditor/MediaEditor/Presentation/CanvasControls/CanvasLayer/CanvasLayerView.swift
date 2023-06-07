@@ -250,7 +250,7 @@ struct CanvasLayerView<Content: View>: View {
             //Если еще не было манипуляций ни с одним элементом нам надо разрешить действие
             guard let value = value else { return isCurrentInManipulation = true }
             
-            if value.id == vm.item.id {
+            if value == vm.item {
                 isCurrentInManipulation = true
             } else {
                 isCurrentInManipulation = false
