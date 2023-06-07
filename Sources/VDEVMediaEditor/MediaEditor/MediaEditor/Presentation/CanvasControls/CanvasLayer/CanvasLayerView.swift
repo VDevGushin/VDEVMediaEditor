@@ -26,7 +26,6 @@ private final class CanvasLayerViewModel: ObservableObject {
     @Published var offset: CGSize = .zero
     @Published var scale: CGFloat = 1
     @Published var rotation: Angle = .zero
-    @Published var anchor: UnitPoint = .center
     
     private(set) var manipulationWatcher: ManipulationWatcher = .shared
     
@@ -56,7 +55,7 @@ private final class CanvasLayerViewModel: ObservableObject {
     }
     
     deinit {
-        manipulationWatcher.clear()
+        manipulationWatcher.removeManipulated()
         operation = nil
         Log.d("❌ Deinit: CanvasLayerViewModel")
     }
@@ -147,8 +146,7 @@ struct CanvasLayerView<Content: View>: View {
         
         // Проверка на возможность применить свойство опасити
         if vm.manipulationWatcher
-            .regectOpacityWith(dataModel: editorVM.data,
-                               for: vm.item) {
+            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
             return maxOpacity
         }
         
@@ -182,7 +180,6 @@ struct CanvasLayerView<Content: View>: View {
             GestureOverlay(
                 offset: $vm.offset,
                 scale: $vm.scale,
-                anchor: $vm.anchor,
                 rotation: $vm.rotation,
                 gestureInProgress: $gestureInProgress,
                 isHorizontalOrientation: $isHorizontalOrientation,
@@ -229,28 +226,21 @@ struct CanvasLayerView<Content: View>: View {
                         onShowCenterH?(false)
                     }
                 }
-                .onChange(of: isVerticalOrientation) { value in
-                    if value { haptics(.light) }
-                }
-                .onChange(of: isHorizontalOrientation) { value in
-                    if value { haptics(.light) }
-                }
+                .onChange(of: isVerticalOrientation) { value in if value { haptics(.light) } }
+                .onChange(of: isHorizontalOrientation) { value in if value { haptics(.light) } }
                 .onChange(of: gestureInProgress) { newValue in
-                    if !newValue {
+                    if newValue {
+                        vm.manipulationWatcher.setManipulated(item: vm.item)
+                        onManipulated?(vm.item)
+                    } else {
+                        vm.manipulationWatcher.removeManipulated()
+                        onEndManipulated?(vm.item)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             isHorizontalOrientation = false
                             isVerticalOrientation = false
                             onShowCenterV?(false)
                             onShowCenterH?(false)
                         }
-                    }
-                    
-                    if newValue {
-                        vm.manipulationWatcher.setManipulated(item: vm.item)
-                        onManipulated?(vm.item)
-                    } else {
-                        vm.manipulationWatcher.removeManipulated(item: vm.item)
-                        onEndManipulated?(vm.item)
                     }
                 }
                 .onChange(of: size) { value in vm.updateSize(value) }
@@ -353,23 +343,19 @@ fileprivate extension CanvasLayerView {
 
 // MARK: - ManipulationWatcher
 // Следим, чтобы объект манипуляции был только один
-final class ManipulationWatcher: ObservableObject {
+private final class ManipulationWatcher: ObservableObject {
     @Published private(set) var current: CanvasItemModel?
     
     private init() { }
     
     static let shared = ManipulationWatcher()
     
-    func setManipulated(item: CanvasItemModel) { if current == nil { current = item } }
+    func setManipulated(item: CanvasItemModel) { current = item }
     
-    func removeManipulated(item: CanvasItemModel) { if isSame(item) { current = nil } }
-    
-    func clear() { current = nil }
+    func removeManipulated() { current = nil }
     
     func regectOpacityWith(dataModel: CanvasLayersDataViewModel,
                            for item: CanvasItemModel) -> Bool {
         dataModel.rejectOpacityProperty(itemInCanvas: item, itemInManipulation: current)
     }
-    
-    private func isSame(_ item: CanvasItemModel?) -> Bool { current?.id == item?.id }
 }

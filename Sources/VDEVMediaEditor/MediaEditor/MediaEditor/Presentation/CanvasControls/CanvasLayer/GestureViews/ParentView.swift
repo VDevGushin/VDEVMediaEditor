@@ -36,10 +36,10 @@ final class ParentTouchResultHolder {
             switch state {
             case .began:
                 delegate?.begin()
-            case .changed:
-                delegate?.inProcess(scale: scale)
-            default:
+            case .cancelled, .failed, .ended:
                 delegate?.finish()
+            default:
+                delegate?.inProcess(scale: scale)
             }
         }
     }

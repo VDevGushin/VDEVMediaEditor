@@ -17,7 +17,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var isVerticalOrientation: Bool
     @Binding var isCenterVertical: Bool
     @Binding var isCenterHorizontal: Bool
-    @Binding var anchor: UnitPoint
     @Binding var tapScaleFactor: CGFloat
     @Binding var containerSize: CGSize
     
@@ -32,7 +31,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     internal init(offset: Binding<CGSize>,
                   scale: Binding<CGFloat>,
-                  anchor: Binding<UnitPoint>,
                   rotation: Binding<Angle>,
                   gestureInProgress: Binding<Bool>,
                   isHorizontalOrientation: Binding<Bool>,
@@ -48,7 +46,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                   onTap: @escaping () -> Void,
                   canManipulate: @escaping () -> Bool) {
         
-        self._anchor = anchor
         self._offset = offset
         self.itemType = itemType
         self._tapScaleFactor = tapScaleFactor
@@ -73,7 +70,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         hView.backgroundColor = .clear
         hView.clipsToBounds = true
         hView.shouldResizeToFitContent = true
-        hView.delegate = context.coordinator
         
         if itemType != .template {
             setupGest(for: hView, context: context)
@@ -191,7 +187,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         Coordinator(parent: self)
     }
     
-    final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate, _UIHostingViewDelegate {
+    final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate {
         private let parent: GestureOverlay
         private var lastScale: CGFloat!
         private var externalLastScale: CGFloat!
@@ -214,31 +210,25 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private var panInProgress = false { didSet { updateInProgressState() } }
         private var rotInProgress = false { didSet { updateInProgressState() } }
         private var scaleInProgress = false { didSet { updateInProgressState() } }
-        private var touchesInProgress = false { didSet { updateInProgressState() } }
-        
-        // _UIHostingViewDelegate
-        func touches(inProgress: Bool) {
-            touchesInProgress = inProgress
-        }
         
         private func updateInProgressState() {
             guard canManipulate() else { return }
-//            print("====>",
-//                  "panInProgress:", panInProgress,
-//                  "rotInProgress:", rotInProgress,
-//                  "scaleInProgress:", scaleInProgress,
-//                  "longTapInProgress:", longTapInProgress,
-//                  "tapInProgress:", tapInProgress,
-//                  "doubleTapInProgress:", doubleTapInProgress,
-//                  "touchesInProgress:", touchesInProgress)
-//
+            Log.d("""
+                ====>"
+                "panInProgress: \(panInProgress)
+                "rotInProgress: \(rotInProgress)
+                "scaleInProgress: \(scaleInProgress)
+                "longTapInProgress: \(longTapInProgress)
+                "tapInProgress: \(tapInProgress)
+                "doubleTapInProgress: \(doubleTapInProgress)
+            """)
+            
             self.parent.gestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
             longTapInProgress ||
             tapInProgress ||
-            doubleTapInProgress ||
-            touchesInProgress
+            doubleTapInProgress
         }
         
         deinit { Log.d("❌ Deinit: GestureOverlay.Coordinator") }
@@ -336,16 +326,20 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             
             if sender.state == .began {
                 if lastScale == nil { lastScale = parent.scale }
-            } else if sender.state == .changed {
+            }
+            
+            if sender.state != .cancelled {
                 guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
                     parent.scale = parent.scale
                     sender.cancel()
                     return
                 }
                 
-                let zoom = max(CGFloat(0.1), (lastScale * abs(sender.scale)))
+                let zoom = max(CGFloat(0.01), (lastScale * abs(sender.scale)))
                 parent.scale = zoom
-            } else if sender.state == .ended || sender.state == .cancelled {
+            }
+            
+            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
                 lastScale = nil
             }
         }
@@ -361,7 +355,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 if lastRotation == nil {
                     lastRotation = parent.rotation
                 }
-            } else if sender.state == .changed {
+            }
+            if sender.state != .cancelled {
                 let angle: Angle = .radians(lastRotation.radians + sender.rotation)
                 parent.rotation = angle.degrees.makeAngle { [weak self] value in
                     guard let self = self else { return }
@@ -377,7 +372,9 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                         self.parent.isVerticalOrientation = false
                     }
                 }
-            } else if sender.state == .ended || sender.state == .cancelled {
+            }
+            
+            if [UIGestureRecognizer.State.ended, .cancelled, .failed].contains(sender.state) {
                 lastRotation = nil
             }
         }
@@ -422,7 +419,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
         guard !scaleInProgress else { return }
         guard longTapInProgress else { return }
         if externalLastScale == nil { externalLastScale = parent.scale }
-        let zoom = max(CGFloat(0.1), (externalLastScale * abs(scale)))
+        let zoom = max(CGFloat(0.01), (externalLastScale * abs(scale)))
         parent.scale = zoom
     }
 }
@@ -437,9 +434,12 @@ fileprivate extension GestureOverlay.Coordinator {
     }
     
     func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
-        if sender.state == .began { state = true
-        } else if sender.state == .changed { state = true
-        } else { state = false
+        if sender.state == .began {
+            state = true
+        } else if sender.state == .changed {
+            state = true
+        } else {
+            state = false
         }
     }
     
@@ -448,19 +448,13 @@ fileprivate extension GestureOverlay.Coordinator {
                      forCancel: UIGestureRecognizer?...) -> Bool {
         func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
             guard let view = sender.view?.superview else { return false }
-            
             let point = sender.location(in: view)
             let scaledSize = view.bounds.size
-            
             return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
             (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
             sender.numberOfTouches == 2
         }
-        
-        if !_check(sender: sender, scale: scale) {
-            return false
-        }
-        return true
+        return !_check(sender: sender, scale: scale) ? false : true
     }
 }
 
