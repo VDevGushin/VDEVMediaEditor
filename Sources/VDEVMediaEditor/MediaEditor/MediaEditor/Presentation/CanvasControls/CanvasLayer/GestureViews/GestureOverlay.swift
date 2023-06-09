@@ -190,6 +190,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate {
         private let parent: GestureOverlay
         private var lastScale: CGFloat!
+        private var externalScale: CGFloat!
         private var lastStoreOffset: CGSize = .zero
         private var lastRotation: Angle!
         private let centerRange = CGFloat(-5.0)...CGFloat(5.0)
@@ -213,7 +214,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         private func updateInProgressState() {
             guard canManipulate() else { return }
             Log.d("""
-                ====>"
                 "panInProgress: \(panInProgress)
                 "rotInProgress: \(rotInProgress)
                 "scaleInProgress: \(scaleInProgress)
@@ -249,13 +249,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         func handleLongPress(sender: UILongPressGestureRecognizer) {
             guard canManipulate() else { return }
             gestureStatus(state: &longTapInProgress, sender: sender)
-            
             //Начать подписку на внешние гестуры
             //Отписка - когда гестура закончился
-            if sender.state == .began {
+            if longTapInProgress {
                 ParentTouchHolder.delegate = self
             }
-            
             parent.onLongPress()
         }
         
@@ -402,19 +400,23 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     func begin() {
         guard !scaleInProgress else { return }
         guard longTapInProgress else { return }
-        if lastScale == nil { lastScale = parent.scale }
+        if externalScale == nil {
+            externalScale = parent.scale
+        }
     }
     
     func finish() {
-        lastScale = nil
-        ParentTouchHolder.delegate = nil
+        defer { ParentTouchHolder.delegate = nil }
+        externalScale = nil
     }
     
     func inProcess(scale: CGFloat) {
         guard !scaleInProgress else { return }
         guard longTapInProgress else { return }
-        if lastScale == nil { lastScale = parent.scale }
-        let zoom = max(CGFloat(0.01), (lastScale * abs(scale)))
+        if externalScale == nil {
+            externalScale = parent.scale
+        }
+        let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
         parent.scale = zoom
     }
 }
