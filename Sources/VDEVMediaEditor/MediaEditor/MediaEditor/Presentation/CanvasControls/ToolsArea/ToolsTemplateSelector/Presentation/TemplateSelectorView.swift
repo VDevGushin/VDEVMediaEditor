@@ -23,8 +23,9 @@ struct TemplateSelectorView: View {
     var body: some View {
         ZStack(alignment: .top) {
             if !vm.isLoading {
-                AppColors.black.opacity(0.6)
-                    .transition(.opacity)
+                AppColors
+                    .blackWithOpacity4
+                    .clipShape(RoundedCorner(radius: 12))
             }
 
             Color.clear
