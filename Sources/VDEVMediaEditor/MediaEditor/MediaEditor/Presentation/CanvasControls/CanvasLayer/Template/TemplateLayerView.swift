@@ -36,20 +36,19 @@ struct TemplateLayerView: View {
     
     @ViewBuilder
     private func toolsOverlay() -> some View {
-        VStack(alignment: .trailing, spacing: 6) {
-            TrashButton2 { [editorVM] in
-                editorVM.tools.closeTools()
-                editorVM.tools.overlay.hideAllOverlayViews()
-                editorVM.data.delete(vm.item)
-            }
-            
+        HStack(alignment: .center, spacing: 0) {
             ChangeTemplateButton { [editorVM] in
                 editorVM.tools.closeTools()
                 editorVM.tools.overlay.hideAllOverlayViews()
                 editorVM.tools.seletedTool(.template)
             }
+            
+            TrashButton2 { [editorVM] in
+                editorVM.tools.closeTools()
+                editorVM.tools.overlay.hideAllOverlayViews()
+                editorVM.data.delete(vm.item)
+            }
         }
-        .padding()
         .frame(maxWidth: .infinity, alignment: .trailing)
         .frame(maxHeight: .infinity, alignment: .top)
     }
