@@ -24,6 +24,8 @@ protocol ParentTouchResultHolderDelegate: AnyObject {
 final class ParentTouchResultHolder {
     weak var delegate: ParentTouchResultHolderDelegate?
     
+    fileprivate var onCancel: (() -> Void)?
+    
     private init() { }
     
     static let shared = ParentTouchResultHolder()
@@ -32,6 +34,7 @@ final class ParentTouchResultHolder {
         switch value {
         case .noTouch:
             delegate?.finish()
+            onCancel?()
         case let .touch(scale: scale, state: state):
             switch state {
             case .began:
@@ -85,7 +88,13 @@ struct ParentView<Content: View>: UIViewRepresentable {
         private let parent: ParentView
         weak var pinchGest: UIGestureRecognizer?
         
-        init(parent: ParentView) { self.parent = parent }
+        init(parent: ParentView) {
+            self.parent = parent
+            super.init()
+            ParentTouchResultHolder.shared.onCancel = { [weak self] in
+                self?.pinchGest?.cancel()
+            }
+        }
         
         @objc
         func handlePinch(sender: UIPinchGestureRecognizer) {
@@ -106,5 +115,12 @@ struct ParentView<Content: View>: UIViewRepresentable {
                                 state: UIGestureRecognizer.State) {
             ParentTouchHolder.set(.touch(scale: scale, state: state))
         }
+    }
+}
+
+fileprivate extension UIGestureRecognizer {
+    func cancel() {
+        isEnabled = false
+        isEnabled = true
     }
 }

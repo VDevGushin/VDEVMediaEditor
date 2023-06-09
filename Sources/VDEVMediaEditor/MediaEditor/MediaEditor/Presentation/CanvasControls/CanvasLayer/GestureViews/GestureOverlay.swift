@@ -253,6 +253,8 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             //Отписка - когда гестура закончился
             if longTapInProgress {
                 ParentTouchHolder.delegate = self
+            } else {
+                ParentTouchHolder.set(.noTouch)
             }
             parent.onLongPress()
         }
@@ -394,15 +396,13 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
 }
 
 // MARK: - Helpers
-
 // Работа с внешними гестурами
 extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     func begin() {
         guard !scaleInProgress else { return }
         guard longTapInProgress else { return }
-        if externalScale == nil {
-            externalScale = parent.scale
-        }
+        guard ParentTouchHolder.delegate === self else { return }
+        if externalScale == nil { externalScale = parent.scale }
     }
     
     func finish() {
@@ -413,6 +413,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     func inProcess(scale: CGFloat) {
         guard !scaleInProgress else { return }
         guard longTapInProgress else { return }
+        guard ParentTouchHolder.delegate === self else { return }
         if externalScale == nil {
             externalScale = parent.scale
         }
