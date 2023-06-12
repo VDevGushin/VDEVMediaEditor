@@ -219,8 +219,11 @@ public struct VDEVDataBuilder {
     }
     
     public static func templates(canvasSize: CGSize) async -> [TemplatePack] {
-        let templateBuilder = DI.resolve(TemplateBuilder.self)
-        let simpleTemplates = await templateBuilder.buildTemplate(canvasSize: canvasSize)
-        return [simpleTemplates]
+        let simplePack = TemplateBuilderSimplePack()
+        let simpleBorderPack = TemplateBuilderSimpleMarginPack()
+        
+        let p1 = await simplePack.buildTemplate(canvasSize: canvasSize)
+        let p2 = await simpleBorderPack.buildTemplate(canvasSize: canvasSize)
+        return [p1, p2]
     }
 }
