@@ -26,10 +26,11 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
     }
 
     func editorTemplates(forChallenge baseChallengeId: String, challengeTitle: String, renderSize: CGSize) async throws -> [TemplatePack] {
-        try await client.editorTemplates(forChallenge: baseChallengeId, renderSize: renderSize)
-            .asyncMap {
-                await TemplatePack(from: $0, challengeTitle: challengeTitle)
-            }
+        await VDEVDataBuilder.templates(canvasSize: renderSize)
+        //        try await client.editorTemplates(forChallenge: baseChallengeId, renderSize: renderSize)
+        //            .asyncMap {
+        //                await TemplatePack(from: $0, challengeTitle: challengeTitle)
+        //            }
     }
 }
 
