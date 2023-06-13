@@ -93,7 +93,7 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
     private func templatePackVariants(_ templatePack: TemplatePack) -> some View {
         ForEach(0..<templatePack.variants.count, id: \.self) { variantIdx in
             let variant = templatePack.variants[variantIdx]
-            image(url: variant.cover?.uc.resized(width: 120))
+            image(url: variant.cover)
                 .frame(width: 120, height: 210)
                 .overlay(
                     ZStack {
