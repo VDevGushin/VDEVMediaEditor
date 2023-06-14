@@ -84,6 +84,7 @@ final class ToolsSettingsViewModel: ObservableObject {
 struct ToolsSettings: View {
     @StateObject private var vm: ToolsSettingsViewModel
     @Injected private var strings: VDEVMediaEditorStrings
+    @State private var showTutorials: Bool = false
     
     init(vm: CanvasEditorViewModel) {
         _vm = .init(wrappedValue: .init(vm: vm))
@@ -91,6 +92,29 @@ struct ToolsSettings: View {
     
     var body: some View {
         VStack(spacing: 12) {
+            Text("MATERIALS")
+                .font(AppFonts.elmaTrioRegular(18))
+                .foregroundColor(AppColors.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Button {
+                makeHaptics()
+                showTutorials = true
+            } label: {
+                Text("SHOW TUTORIALS")
+                    .font(AppFonts.elmaTrioRegular(15))
+                    .foregroundColor(AppColors.whiteWithOpacity)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .frame(maxWidth: .infinity,
+                   alignment: .leading)
+            .frame(minHeight: 32)
+            .background {
+                InvisibleTapZoneView { showTutorials = true }
+            }
+            
+            Divider().background(AppColors.whiteWithOpacity)
+            
             Text(strings.quality)
                 .font(AppFonts.elmaTrioRegular(18))
                 .foregroundColor(AppColors.white)
@@ -103,6 +127,7 @@ struct ToolsSettings: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical)
             
+            Divider().background(AppColors.whiteWithOpacity)
             
             Text(strings.resolution)
                 .font(AppFonts.elmaTrioRegular(18))
@@ -137,6 +162,9 @@ struct ToolsSettings: View {
             }
         }
         .cornerRadius(8)
+        .fullScreenCover(isPresented: $showTutorials) {
+            TutorialsTableView()
+                .background { BlurView(style: .systemChromeMaterialDark) }
+        }
     }
 }
-

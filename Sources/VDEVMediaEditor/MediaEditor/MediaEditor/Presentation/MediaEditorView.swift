@@ -23,9 +23,9 @@ struct MediaEditorView: View {
             AppColors.black
             
             VStack(spacing: 0) {
-                EditorArea()
-                    .viewDidLoad(vm.contentViewDidLoad)
-                    .padding(.bottom, 4)
+                    EditorArea()
+                        .viewDidLoad(vm.contentViewDidLoad)
+                        .padding(.bottom, 4)
                 
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
             }
@@ -125,6 +125,11 @@ fileprivate extension MediaEditorView {
         .overlay(content: CenterAxes)
         .overlay(content: Grids)
         .overlay(content: AddMediaButton)
+//        .overlay(alignment: .topTrailing, {
+//            if vm.canUndo {
+//                UndoButton { vm.onUndo() }
+//            }
+//        })
         .onChange(of: vm.ui.showHorizontalCenter) {
             if $0 { haptics(.light) }
         }

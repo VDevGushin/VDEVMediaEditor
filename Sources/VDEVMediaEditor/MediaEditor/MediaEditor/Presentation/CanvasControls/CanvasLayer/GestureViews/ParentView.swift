@@ -86,13 +86,14 @@ struct ParentView<Content: View>: UIViewRepresentable {
     
     final class Coordinator: NSObject, UIGestureRecognizerDelegate {
         private let parent: ParentView
-        weak var pinchGest: UIGestureRecognizer?
+        weak var pinchGest: UIPinchGestureRecognizer?
         
         init(parent: ParentView) {
             self.parent = parent
             super.init()
             ParentTouchResultHolder.shared.onCancel = { [weak self] in
-                self?.pinchGest?.cancel()
+                self?.pinchGest?.reset()
+                self?.pinchGest?.scale = 1.0
             }
         }
         
@@ -115,12 +116,5 @@ struct ParentView<Content: View>: UIViewRepresentable {
                                 state: UIGestureRecognizer.State) {
             ParentTouchHolder.set(.touch(scale: scale, state: state))
         }
-    }
-}
-
-fileprivate extension UIGestureRecognizer {
-    func cancel() {
-        isEnabled = false
-        isEnabled = true
     }
 }

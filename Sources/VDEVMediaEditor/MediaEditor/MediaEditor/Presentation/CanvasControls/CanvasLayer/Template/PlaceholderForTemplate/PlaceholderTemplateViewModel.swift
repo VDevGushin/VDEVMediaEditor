@@ -38,15 +38,14 @@ final class PlaceholderTemplateViewModel: ObservableObject {
 // MARK: - Work with delegate
 extension PlaceholderTemplateViewModel {
     func hideAllOverlayViews() {
+        delegate?.endWorkWithItem?()
         delegate?.hideAllOverlayViews()
         showSelection = false
     }
     
     func openEditVariants() {
         if let canvasItem = imageModel ?? videoModel {
-            delegate?.endWorkWithItem?()
-            
-            delegate?.hideAllOverlayViews()
+            hideAllOverlayViews()
             
             showSelection = true
             
@@ -75,24 +74,23 @@ extension PlaceholderTemplateViewModel {
     func openMediaSelector() {
         if inProgress { return }
         
-        delegate?.endWorkWithItem?()
-
+        hideAllOverlayViews()
+        delegate?.endWorkWithItem = { [weak self] in
+            self?.showSelection = false
+        }
+        showSelection = true
+        
         self.delegate?.pickSelector = { [weak self] model in
             guard let self = self else { return }
             guard let model = model else { return }
-           // self.delegate?.hideMediaPicker()
-            
+            showSelection = false
             self.storage.removeAll()
-
             self.inProgress = true
-
             Task {
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
-                    
                     await self.reset()
-                    
                     let model = await CanvasImagePlaceholderModel
                         .applyFilter(applyer: self.aplayer,
                                      image: image,
@@ -103,9 +101,7 @@ extension PlaceholderTemplateViewModel {
                     
                 case .video:
                     guard let url = model.url else { return }
-                    
                     await self.reset()
-                    
                     let model = await CanvasVideoPlaceholderModel
                         .applyFilter(applyer:  self.aplayer,
                                      url: url,
@@ -118,8 +114,7 @@ extension PlaceholderTemplateViewModel {
                 }
             }
         }
-
-        delegate?.hideAllOverlayViews()
+        
         delegate?.showMediaPicker()
     }
 }

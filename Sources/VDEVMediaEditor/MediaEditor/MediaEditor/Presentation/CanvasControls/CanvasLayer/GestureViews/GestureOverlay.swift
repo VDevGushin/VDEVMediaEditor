@@ -21,7 +21,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var containerSize: CGSize
     
     private let content: () -> Content
-    private let itemType: CanvasItemType
+    private(set) var itemType: CanvasItemType
     
     private(set) var onLongPress: () -> Void
     private(set) var onDoubleTap: () -> Void
@@ -129,21 +129,27 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         // Если шаблон, то нам ничего не нужно (просто следим за манипуляциями)
         let TapGestureRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleTap(sender:)))
         TapGestureRecognizer.numberOfTapsRequired = 1
+        TapGestureRecognizer.delegate = context.coordinator
         hView.addGestureRecognizer(TapGestureRecognizer)
         context.coordinator.tapGest = TapGestureRecognizer
         
         let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPress(sender:)))
         LongPressRecognizer.minimumPressDuration = 0.1
         LongPressRecognizer.delaysTouchesBegan = true
+        LongPressRecognizer.delegate = context.coordinator
         hView.addGestureRecognizer(LongPressRecognizer)
         context.coordinator.longTapGest = LongPressRecognizer
         
         let DoubleTapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleDoubleTap))
         DoubleTapRecognizer.numberOfTapsRequired = 2
+        DoubleTapRecognizer.delegate = context.coordinator
         hView.addGestureRecognizer(DoubleTapRecognizer)
         context.coordinator.doubleTapGest = DoubleTapRecognizer
         
         DoubleTapRecognizer.require(toFail: LongPressRecognizer)
+        DoubleTapRecognizer.require(toFail: Pangesture)
+        DoubleTapRecognizer.require(toFail: RotationGesture)
+        DoubleTapRecognizer.require(toFail: Pinchgesture)
         TapGestureRecognizer.require(toFail: LongPressRecognizer)
         TapGestureRecognizer.require(toFail: DoubleTapRecognizer)
         TapGestureRecognizer.require(toFail: Pangesture)
@@ -204,14 +210,14 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         weak var tapGest: UITapGestureRecognizer?
         
         // Gesture status
-        private var tapInProgress = false { didSet { updateInProgressState() } }
-        private var longTapInProgress = false { didSet { updateInProgressState() } }
-        private var doubleTapInProgress = false { didSet { updateInProgressState() } }
-        private var panInProgress = false { didSet { updateInProgressState() } }
-        private var rotInProgress = false { didSet { updateInProgressState() } }
-        private var scaleInProgress = false { didSet { updateInProgressState() } }
+        private var tapInProgress = false { didSet { updateProgressStateAndSetExternalGestures() } }
+        private var longTapInProgress = false { didSet { updateProgressStateAndSetExternalGestures() } }
+        private var doubleTapInProgress = false { didSet { updateProgressStateAndSetExternalGestures() } }
+        private var panInProgress = false { didSet { updateProgressStateAndSetExternalGestures() } }
+        private var rotInProgress = false { didSet { updateProgressStateAndSetExternalGestures() } }
+        private var scaleInProgress = false { didSet { updateProgressStateAndSetExternalGestures() } }
         
-        private func updateInProgressState() {
+        private func updateProgressStateAndSetExternalGestures() {
             guard canManipulate() else { return }
             Log.d("""
                 "panInProgress: \(panInProgress)
@@ -222,12 +228,18 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
                 "doubleTapInProgress: \(doubleTapInProgress)
             """)
             
-            self.parent.gestureInProgress = panInProgress ||
+            let anyGestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
             longTapInProgress ||
             tapInProgress ||
             doubleTapInProgress
+            
+            withAnimation(.interactiveSpring()) {
+                parent.gestureInProgress = anyGestureInProgress
+            }
+            
+            setupExternalZoom(anyGestureInProgress)
         }
         
         deinit {
@@ -249,13 +261,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         func handleLongPress(sender: UILongPressGestureRecognizer) {
             guard canManipulate() else { return }
             gestureStatus(state: &longTapInProgress, sender: sender)
-            //Начать подписку на внешние гестуры
-            //Отписка - когда гестура закончился
-            if longTapInProgress {
-                ParentTouchHolder.delegate = self
-            } else {
-                ParentTouchHolder.set(.noTouch)
-            }
             parent.onLongPress()
         }
         
@@ -398,24 +403,39 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
 // MARK: - Helpers
 // Работа с внешними гестурами
 extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
+    private func setupExternalZoom(_ gestureInProgress: Bool) {
+        //Начать подписку на внешние гестуры
+        //Отписка - когда гестура закончился
+        guard parent.itemType != .template  else { return }
+        
+        guard gestureInProgress else {
+            ParentTouchHolder.set(.noTouch)
+            return
+        }
+        
+        if !(ParentTouchHolder.delegate === self) {
+            ParentTouchHolder.delegate = self
+        }
+    }
+    
     func begin() {
         guard !scaleInProgress else { return }
-        guard longTapInProgress else { return }
         guard ParentTouchHolder.delegate === self else { return }
         if externalScale == nil { externalScale = parent.scale }
     }
     
     func finish() {
-        defer { ParentTouchHolder.delegate = nil }
+        guard ParentTouchHolder.delegate === self else { return }
+        ParentTouchHolder.delegate = nil
         externalScale = nil
     }
     
     func inProcess(scale: CGFloat) {
         guard !scaleInProgress else { return }
-        guard longTapInProgress else { return }
         guard ParentTouchHolder.delegate === self else { return }
         if externalScale == nil {
             externalScale = parent.scale
+            return
         }
         let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
         parent.scale = zoom

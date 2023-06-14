@@ -15,6 +15,14 @@ public protocol VDEVMediaEditorResultSettings: AnyObject {
 }
 
 public protocol VDEVMediaEditorSettings {
+    // Показывать или не показывать онбординг
+    var canShowOnboarding: Bool { get }
+    // Возможность удаление слоев
+    var canRemoveAllLayers: Bool { get }
+    // Кол-во возможных слоев на канвасе
+    var maximumLayers: Int { get }
+    // На сколько шагов назад нужно вернуться по истории
+    var historyLimit: Int { get }
     // Нужна ли сетка в редакторе
     var needGuideLinesGrid: Bool { get }
     // Используется ли модуль, как встроенный

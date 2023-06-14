@@ -78,7 +78,6 @@ fileprivate extension MediaEditorToolsForTemplateView {
             Color.clear
             
             TextTool(textItem: item,
-                     backgroundColor: mainBackgroundColor,
                      labelContainerToCanvasWidthRatio: 0.8,
                      fromTemplate: true) { newModel in
                 vm.editText?(newModel)
@@ -136,11 +135,11 @@ private struct PickMediaContainer: View {
 fileprivate extension MediaEditorToolsForTemplateView {
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: strings.adjustments, fullScreen: false, withBackground: false) {
+        ToolWrapperWithBinding(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
-        } tool: {
-            ToolAdjustments(item)
+        } tool: { state in
+            ToolAdjustments(item, state: state)
                 .padding(.horizontal)
         }
     }

@@ -27,6 +27,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published private(set) var resultResolution: MediaResolution = .fullHD
     @Published private(set) var addMediaButtonTitle: String = ""
     @Published private(set) var addMediaButtonVisible: Bool = false
+    @Published private(set) var canUndo: Bool = false
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
@@ -37,7 +38,8 @@ final class CanvasEditorViewModel: ObservableObject {
     private var storage: Set<AnyCancellable> = Set()
     private let imageProcessingController = ImageProcessingController()
     
-    init(onPublish: (@MainActor (CombinerOutput) -> Void)?, onClose: (@MainActor () -> Void)?) {
+    init(onPublish: (@MainActor (CombinerOutput) -> Void)?,
+         onClose: (@MainActor () -> Void)?) {
         isLoading = .init(value: true, message: strings.loading)
         
         self.onClose = onClose
@@ -50,6 +52,12 @@ final class CanvasEditorViewModel: ObservableObject {
         observeOnMain(nested: self.data).store(in: &storage)
         
         addMediaButtonTitle = strings.hint
+        
+        data.dataModelObserver
+            .$canUndo
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in self?.canUndo = value }
+            .store(in: &storage)
         
         resolutionService.resolution
             .removeDuplicates()
@@ -243,5 +251,12 @@ extension CanvasEditorViewModel {
             isLoading = .init(value: true, message: strings.processing)
             onPublish?(output)
         }
+    }
+}
+
+// MARK: - History
+extension CanvasEditorViewModel {
+    func onUndo() {
+        data.dataModelObserver.undo()
     }
 }

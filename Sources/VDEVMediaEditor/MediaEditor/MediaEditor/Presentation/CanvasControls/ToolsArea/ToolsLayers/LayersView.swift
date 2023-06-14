@@ -70,7 +70,7 @@ struct LayersView: View {
                             .animation(.interactiveSpring(), value: vm.data.layers)
                         }
                         
-                        if !vm.data.isEmpty {
+                        if !vm.data.isEmpty && settings.canRemoveAllLayers {
                             // Удаление всего
                             NoShadowRoundButtonSystem(image: Image(systemName: "rectangle.on.rectangle.slash.fill"),
                                                       size: 40,
@@ -118,10 +118,7 @@ struct LayersView: View {
                     }
                     .padding(.vertical, 15)
                     .frame(maxWidth: .infinity)
-                    .background(
-                        BlurView(style: .systemChromeMaterialDark)
-                    )
-                    //.background(.ultraThinMaterial)
+                    .background(BlurView(style: .systemChromeMaterialDark))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
                 .frame(minHeight: proxy.size.height)

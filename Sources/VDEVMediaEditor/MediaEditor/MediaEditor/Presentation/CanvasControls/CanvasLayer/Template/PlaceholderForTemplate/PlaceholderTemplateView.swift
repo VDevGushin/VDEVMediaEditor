@@ -125,9 +125,6 @@ private extension PlaceholderTemplateView {
                         }
                     }
                 }
-//                vm.videoModel.map { videoModel in
-//
-//                }
             }
         .overlay {
             if vm.showSelection || isShowSelection {
@@ -163,6 +160,11 @@ private extension PlaceholderTemplateView {
         }
         .foregroundColor(AppColors.black)
         .opacity(vm.inProgress ? 0.1 : 1.0)
+        .overlay {
+            if vm.showSelection {
+                Selection()
+            }
+        }
     }
     
     @ViewBuilder

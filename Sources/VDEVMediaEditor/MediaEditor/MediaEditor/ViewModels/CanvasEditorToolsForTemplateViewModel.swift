@@ -71,7 +71,10 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         if state != .mediaPick { set(.mediaPick) }
     }
 
-    func hideMediaPicker() { hideAllOverlayViews() }
+    func hideMediaPicker() {
+        hideAllOverlayViews()
+        endWorkWithItem?()
+    }
 
     // MARK: - Image/Video filters adjustment image
   

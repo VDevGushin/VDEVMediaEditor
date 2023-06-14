@@ -7,23 +7,25 @@
 
 import SwiftUI
 
-
 struct ToolAdjustments: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @EnvironmentObject private var vm: CanvasEditorViewModel
-
+    
     private let item: CanvasItemModel
-
+    
     private var toolItems: [AdjustToolItem] = []
-
+    
     @State private var brightness: Double = 0
     @State private var contrast: Double = 0
     @State private var saturation: Double = 0
     @State private var highlight: Double = 0
     @State private var shadow: Double = 0
-
-    init(_ item: CanvasItemModel) {
+    
+    @Binding private var state: ToolsEditState
+    
+    init(_ item: CanvasItemModel, state: Binding<ToolsEditState>) {
         self.item = item
+        self._state = state
         
         let colorFilters = CIFilter(name: "CIColorControls")!
         
@@ -39,37 +41,37 @@ struct ToolAdjustments: View {
             AdjustToolItem(title: strings.shadow, min: -1, max: 1, normal: 0)
         ]
     }
-
+    
     var body: some View {
         VStack(spacing: 18) {
             ForEach(0..<toolItems.count, id: \.self) { i in
                 let item = toolItems[i]
-
+                
                 HStack {
                     Text(item.title)
                         .font(AppFonts.elmaTrioRegular(12))
                         .foregroundColor(AppColors.whiteWithOpacity)
                         .frame(maxWidth: 80, alignment: .leading)
-
+                    
                     Slider(value: Binding<Double> {
-                            switch i {
-                            case 0: return brightness
-                            case 1: return contrast
-                            case 2: return saturation
-                            case 3: return highlight
-                            case 4: return shadow
-                            default: fatalError()
-                            }
+                        switch i {
+                        case 0: return brightness
+                        case 1: return contrast
+                        case 2: return saturation
+                        case 3: return highlight
+                        case 4: return shadow
+                        default: fatalError()
+                        }
                     } set: { newValue in
-                            switch i {
-                            case 0: brightness = newValue
-                            case 1: contrast = newValue
-                            case 2: saturation = newValue
-                            case 3: highlight = newValue
-                            case 4: shadow = newValue
-                            default: ()
-                            }
-
+                        switch i {
+                        case 0: brightness = newValue
+                        case 1: contrast = newValue
+                        case 2: saturation = newValue
+                        case 3: highlight = newValue
+                        case 4: shadow = newValue
+                        default: ()
+                        }
+                        
                         let settings: AdjustmentSettings = .init(
                             brightness: brightness,
                             contrast: contrast,
@@ -77,15 +79,22 @@ struct ToolAdjustments: View {
                             highlight: highlight,
                             shadow: shadow
                         )
-
+                        
                         self.item.apply(adjustmentSettings: settings)
-
-                    }, in: item.min...item.max)
+                        
+                    }, in: item.min...item.max, onEditingChanged: { value in
+                        if !value {
+                            state = .idle
+                        } else {
+                            state = .edit(i)
+                        }
+                    })
                     .accentColor(AppColors.white)
                     .contentShape(Rectangle())
+                    .opacity(state.getOpacity(for: i))
                 }
             }
-
+            
             Button {
                 haptics(.light)
                 item.apply(adjustmentSettings: nil)
@@ -105,11 +114,12 @@ struct ToolAdjustments: View {
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
             .buttonStyle(PlainButtonStyle())
+            .opacity(state.getOpacity())
         }
         .onAppear { resetState() }
         .padding(.top)
     }
-
+    
     private func resetState() {
         withAnimation(.interactiveSpring()) {
             brightness = item.adjustmentSettings?.brightness ?? toolItems[0].normal

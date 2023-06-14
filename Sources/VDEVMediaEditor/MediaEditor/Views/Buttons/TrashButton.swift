@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TrashButton2: View {
-    private let size: CGSize = .init(width: 35, height: 35)
+    private let size: CGSize = .init(width: 30, height: 30)
     private let imageSize: CGSize = .init(width: 24, height: 24)
     private let action: () -> Void
     

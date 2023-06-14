@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-
 struct UndoButton: View {
     @Injected private var images: VDEVImageConfig
     
     private let size: CGSize = .init(width: 35, height: 35)
-    private let imageSize: CGSize = .init(width: 12, height: 12)
+    private let imageSize: CGSize = .init(width: 16, height: 16)
+    
     private let action: () -> Void
     
     init(action: @escaping () -> Void) {
@@ -26,7 +26,10 @@ struct UndoButton: View {
         } label: {
             ZStack {
                 AppColors.blackInvisible
-                Image(uiImage: images.common.undo)
+                Image(systemName: "arrow.uturn.left")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(imageSize)
             }
             .contentShape(Circle())
             .clipShape(Circle())

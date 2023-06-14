@@ -171,7 +171,7 @@ struct VideoPlayerViewForLayers: View {
     }
 }
 
-private struct PlayerView: UIViewRepresentable {
+struct PlayerView: UIViewRepresentable {
     @Binding private var isPlaying: Bool
     @Binding private var volume: Float
     private let asset: AVAsset

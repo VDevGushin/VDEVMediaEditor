@@ -70,12 +70,15 @@ final class EditorSettings: VDEVMediaEditorSettings {
     // var aspectRatio: CGFloat? { 9/16 }
     var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
-    
     var needGuideLinesGrid: Bool { true }
     var showCommonSettings: Bool { true }
     var showAspectRatioSettings: Bool { true }
     var canTurnOnSoundInVideos: Bool { true }
     var canAddMusic: Bool { false }
+    var historyLimit: Int { 3 }
+    var maximumLayers: Int { 20 }
+    var canRemoveAllLayers: Bool { true }
+    var canShowOnboarding: Bool { true }
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {

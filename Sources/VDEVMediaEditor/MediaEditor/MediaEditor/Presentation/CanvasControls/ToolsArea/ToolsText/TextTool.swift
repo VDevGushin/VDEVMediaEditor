@@ -28,7 +28,6 @@ struct TextTool: View {
     @State private var textFrameSize: CGSize = .zero
     @State private var sliderInManipulation: Bool = false
 
-    private var backgroundColor: Color = AppColors.black
     private var textItem: CanvasTextModel?
     private let fromTemplate: Bool
     
@@ -39,14 +38,12 @@ struct TextTool: View {
 
     init(
         textItem: CanvasTextModel? = nil,
-        backgroundColor: Color,
         labelContainerToCanvasWidthRatio: CGFloat,
         fromTemplate: Bool = false,
         doneAction: @escaping (CanvasTextModel) -> (),
         deleteAction: @escaping () -> ()
     ) {
         self.fromTemplate = fromTemplate
-        self.backgroundColor = backgroundColor
         self.textItem = textItem
         self.labelContainerToCanvasWidthRatio = labelContainerToCanvasWidthRatio
         self.doneAction = doneAction
@@ -156,7 +153,7 @@ struct TextTool: View {
         }
         .padding(.vertical, 8)
         .background(
-            backgroundColor.ignoresSafeArea()
+            BlurView(style: .systemChromeMaterialDark)
         )
     }
 
@@ -232,7 +229,7 @@ struct TextTool: View {
             let deleteStr = DI.resolve(VDEVMediaEditorStrings.self).delete
             let closeStr = DI.resolve(VDEVMediaEditorStrings.self).close
             
-            if isEditable {
+            if isEditable && !fromTemplate {
                 Button {
                     haptics(.light)
                     deletePressed()

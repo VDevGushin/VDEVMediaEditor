@@ -17,6 +17,7 @@ struct ToolsAreaView: View {
     
     @ObservedObject private var vm: CanvasEditorViewModel
     
+    @State private var showOnboarding = false
     @State private var showPhoroPicker = false
     @State private var showVideoPicker = false
     @State private var showCamera = false
@@ -30,6 +31,7 @@ struct ToolsAreaView: View {
     
     var body: some View {
         let _ = Self._printChanges()
+        
         ZStack {
             toolsOverlay()
             
@@ -182,19 +184,25 @@ struct ToolsAreaView: View {
             }
             .edgesIgnoringSafeArea(.all)
         })
-        .fullScreenCover(isPresented: $showMusicPicker, content: {
+        .fullScreenCover(isPresented: $showMusicPicker) {
             NativeMusicPicker { model in
                 vm.tools.closeTools(false)
                 guard let model = model else { return }
                 vm.data.add(model)
             }
-        })
+        }
         .imageCropper(show: $showImageCropper,
                       item: vm.tools.currentToolItem) { new in
             vm.data.delete(vm.tools.currentToolItem.innerCanvasModel)
             vm.data.add(new)
             vm.tools.currentCloseActionFor(new)
         }
+                      .sheet(isPresented: $showOnboarding) {
+                          OnboardingView()
+                      }
+                      .viewDidLoad {
+                          showOnboarding = settings.canShowOnboarding
+                      }
     }
     
     @ViewBuilder
@@ -214,7 +222,17 @@ struct ToolsAreaView: View {
             .rightTool()
             .topTool()
             .transition(.opacity)
-        default: EmptyView()
+        default:
+            if vm.canUndo {
+                UndoButton {
+                    vm.tools.closeTools()
+                    vm.tools.overlay.hideAllOverlayViews()
+                    vm.onUndo()
+                }
+                .rightTool()
+                .topTool()
+                .transition(.opacity)
+            }
         }
     }
     
@@ -399,7 +417,6 @@ fileprivate extension ToolsAreaView {
             Color.clear
             
             TextTool(textItem: item,
-                     backgroundColor: vm.ui.mainLayerBackgroundColor,
                      labelContainerToCanvasWidthRatio: 0.8) { newModel in
                 if let item = item { vm.data.delete(item) }
                 
@@ -470,10 +487,10 @@ fileprivate extension ToolsAreaView {
     // добавление аджастментов
     @ViewBuilder
     func adjustment(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: strings.adjustments, fullScreen: false, withBackground: false) {
+        ToolWrapperWithBinding(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.tools.currentCloseActionFor(item)
-        } tool: {
-            ToolAdjustments(item)
+        } tool: { state in
+            ToolAdjustments(item, state: state)
                 .padding(.horizontal)
         }
     }

@@ -99,13 +99,13 @@ struct CanvasLayerView<Content: View>: View {
         if vm.item.type == .template { EmptyView() }
         
         if editorVM.tools.isItemInSelection(item: vm.item) {
-            AnimatedGradientView(color: guideLinesColor.opacity(0.2))
+            AnimatedGradientView(color: guideLinesColor.opacity(0.1))
         }
         
         if !isCurrentInManipulation { EmptyView() }
         
         if (gestureInProgress || isLongTap) {
-            AnimatedGradientView(color: guideLinesColor.opacity(0.3))
+            AnimatedGradientView(color: guideLinesColor.opacity(0.2))
         } else {
             EmptyView()
         }
@@ -126,6 +126,31 @@ struct CanvasLayerView<Content: View>: View {
     private var canManipulate: Bool {
         if editorVM.tools.overlay.isAnyViewOpen { return vm.item is CanvasTemplateModel }
         return editorVM.tools.isCurrent(item: vm.item) && isCurrentInManipulation
+    }
+    
+    private var itemBlur: CGFloat {
+        let maxBlur: CGFloat = 0.0
+        let minBlur: CGFloat = 15
+        let superMinBlur: CGFloat = 15
+        
+        // Если открыто любое меню операций над шаблонами
+        if editorVM.tools.overlay.isAnyViewOpen {
+            return vm.item is CanvasTemplateModel ? maxBlur : minBlur
+        }
+        
+        // Если это не текущий выбранный элемент
+        if !editorVM.tools.isCurrent(item: vm.item) { return superMinBlur }
+        
+        // Если это шаблон
+        if vm.item is CanvasTemplateModel { return maxBlur }
+        
+        // Проверка на возможность применить свойство опасити
+        if vm.manipulationWatcher
+            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
+            return maxBlur
+        }
+        
+        return isCurrentInManipulation ? maxBlur : minBlur
     }
     
     private var itemOpacity: CGFloat {
@@ -201,7 +226,8 @@ struct CanvasLayerView<Content: View>: View {
                 } canManipulate: { canManipulate }
                 .overlay(content: HorizontOverlay)
                 .background(selectionColor)
-                .border(guideLinesColor.opacity(0.9), width: borderType.border(scale: vm.scale))
+                .border(guideLinesColor.opacity(0.5),
+                        width: borderType.border(scale: vm.scale))
                 .overlay(selectionOverlay)
                 .scaleEffect(vm.scale)
                 .rotationEffect(vm.rotation)
@@ -209,6 +235,7 @@ struct CanvasLayerView<Content: View>: View {
                 .disabled(!canManipulate)
                 .allowsHitTesting(canManipulate)
                 .opacity(itemOpacity)
+                .blur(radius: itemBlur)
                 .fetchSize($size)
                 .onChange(of: isCenterVertical) { value in
                     if value {
