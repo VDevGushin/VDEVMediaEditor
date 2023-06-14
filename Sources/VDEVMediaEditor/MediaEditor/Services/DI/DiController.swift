@@ -25,6 +25,7 @@ struct DiController {
         if let logger = logger {
             container.register(type: VDEVLogger.self, service: logger)
         }
+        container.register(type: RemoveLayersService.self, service: RemoveLayersService())
     }
     
     static func clean(with container: DIContainer = DIContainer.shared) {

@@ -44,10 +44,11 @@ struct MediaEditorView: View {
         }, onClose: {
             vm.contentPreview = nil
         })
-        .showAlert(with: $vm.alertData)
-        .showRemoveAlert(isPresented: $vm.showRemoveAllAlert, onComfirm: {
+        .showRemoveAlert(isPresented: $vm.showRemoveAllAlert) {
             vm.removeAllLayers()
-        })
+        } onCancel: {
+            vm.cancelRemoveAllLayers()
+        }
         .environmentObject(vm)
         .environment(\.guideLinesColor, vm.ui.guideLinesColor)
     }

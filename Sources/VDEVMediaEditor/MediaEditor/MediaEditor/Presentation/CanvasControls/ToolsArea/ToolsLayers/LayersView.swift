@@ -12,6 +12,7 @@ struct LayersView: View {
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var removeLayersService: RemoveLayersService
     
     var body: some View {
         Group {
@@ -69,6 +70,18 @@ struct LayersView: View {
                             .animation(.interactiveSpring(), value: vm.data.layers)
                         }
                         
+                        if !vm.data.isEmpty {
+                            // Удаление всего
+                            NoShadowRoundButtonSystem(image: Image(systemName: "rectangle.on.rectangle.slash.fill"),
+                                                      size: 40,
+                                                      backgroundColor: AppColors.layerButtonsLightBlack,
+                                                      tintColor: AppColors.white) {
+                                removeLayersService.needToRemoveAllLayers()
+                                vm.tools.openLayersList(false)
+                                Log.d("Remove all layeres")
+                            }.scaleEffect(0.95)
+                        }
+                        
                         //Рисовалка заднего фона
                         NoShadowRoundButton(image: images.common.bg,
                                             size: 40,
@@ -89,7 +102,6 @@ struct LayersView: View {
                                 vm.tools.seletedTool(.aspectRatio)
                                 Log.d("Select tool aspect ratio")
                             }.scaleEffect(0.95)
-                            
                         }
                         
                         if settings.showCommonSettings {

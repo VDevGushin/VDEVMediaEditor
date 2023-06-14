@@ -14,6 +14,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
     @Injected private var resultSettings: VDEVMediaEditorResultSettings
     @Injected private var resolutionService: ResolutionService
+    @Injected private var removeLayersService: RemoveLayersService
     
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
@@ -34,8 +35,6 @@ final class CanvasEditorViewModel: ObservableObject {
     private let merger = LayersMerger()
     
     private var storage: Set<AnyCancellable> = Set()
-    
-    private let deviceOrientationService: DeviceOrientationService = .init()
     private let imageProcessingController = ImageProcessingController()
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)?, onClose: (@MainActor () -> Void)?) {
@@ -58,7 +57,7 @@ final class CanvasEditorViewModel: ObservableObject {
             .sink { [weak self] value in self?.resultResolution = value }
             .store(in: &storage)
         
-        deviceOrientationService.$isFaceDown
+        removeLayersService.$isNeedRemoveAllLayers
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
@@ -214,10 +213,15 @@ extension CanvasEditorViewModel {
 // MARK: - Remove all after screen down
 extension CanvasEditorViewModel {
     func removeAllLayers() {
+        defer { removeLayersService.notNeedToRemoveAllLayers() }
         tools.showAddItemSelector(false)
         tools.seletedTool(.empty)
         data.removeAll()
         tools.openLayersList(true)
+    }
+    
+    func cancelRemoveAllLayers() {
+        removeLayersService.notNeedToRemoveAllLayers()
     }
 }
 
