@@ -130,8 +130,8 @@ struct CanvasLayerView<Content: View>: View {
     
     private var itemBlur: CGFloat {
         let maxBlur: CGFloat = 0.0
-        let minBlur: CGFloat = 15
-        let superMinBlur: CGFloat = 15
+        let minBlur: CGFloat = 5
+        let superMinBlur: CGFloat = 5
         
         // Если открыто любое меню операций над шаблонами
         if editorVM.tools.overlay.isAnyViewOpen {
