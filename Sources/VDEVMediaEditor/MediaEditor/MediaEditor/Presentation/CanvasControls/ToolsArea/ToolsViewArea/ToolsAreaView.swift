@@ -223,7 +223,7 @@ struct ToolsAreaView: View {
             .topTool()
             .transition(.opacity)
         default:
-            if vm.canUndo {
+            if vm.canUndo && settings.canUndo {
                 UndoButton {
                     vm.tools.closeTools()
                     vm.tools.overlay.hideAllOverlayViews()

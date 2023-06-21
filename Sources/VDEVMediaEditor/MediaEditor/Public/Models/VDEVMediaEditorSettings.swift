@@ -15,6 +15,8 @@ public protocol VDEVMediaEditorResultSettings: AnyObject {
 }
 
 public protocol VDEVMediaEditorSettings {
+    // Показывать ли кнопку undo
+    var canUndo: Bool { get }
     // Показывать или не показывать онбординг
     var canShowOnboarding: Bool { get }
     // Возможность удаление слоев

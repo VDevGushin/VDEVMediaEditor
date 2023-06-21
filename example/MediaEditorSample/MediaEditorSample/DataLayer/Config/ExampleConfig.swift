@@ -78,7 +78,8 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var historyLimit: Int { 3 }
     var maximumLayers: Int { 20 }
     var canRemoveAllLayers: Bool { true }
-    var canShowOnboarding: Bool { true }
+    var canShowOnboarding: Bool { false }
+    var canUndo: Bool { false }
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {
