@@ -195,7 +195,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate {
         private let parent: GestureOverlay
-        private var lastScale: CGFloat!
+        // private var lastScale: CGFloat!
         private var externalScale: CGFloat!
         private var lastStoreOffset: CGSize = .zero
         private var lastRotation: Angle!
@@ -327,23 +327,23 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             guard canManipulate() else { return }
             
             gestureStatus(state: &scaleInProgress, sender: sender)
-            
-            switch sender.state {
-            case .began:
-                if lastScale == nil { lastScale = parent.scale }
-            case .changed:
-                guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
-                    parent.scale = parent.scale
-                    sender.cancel()
-                    return
-                }
-                let zoom = max(CGFloat(0.01), (lastScale * abs(sender.scale)))
-                parent.scale = zoom
-            case .ended, .cancelled, .failed, .possible:
-                lastScale = nil
-            @unknown default:
-                lastScale = nil
-            }
+//
+//            switch sender.state {
+//            case .began:
+//                if lastScale == nil { lastScale = parent.scale }
+//            case .changed:
+//                guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
+//                    parent.scale = parent.scale
+//                    sender.cancel()
+//                    return
+//                }
+//                let zoom = max(CGFloat(0.01), (lastScale * abs(sender.scale)))
+//                parent.scale = zoom
+//            case .ended, .cancelled, .failed, .possible:
+//                lastScale = nil
+//            @unknown default:
+//                lastScale = nil
+//            }
         }
         
         @objc
@@ -419,7 +419,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     }
     
     func begin() {
-        guard !scaleInProgress else { return }
+        // guard !scaleInProgress else { return }
         guard ParentTouchHolder.delegate === self else { return }
         if externalScale == nil { externalScale = parent.scale }
     }
@@ -431,7 +431,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     }
     
     func inProcess(scale: CGFloat) {
-        guard !scaleInProgress else { return }
+        // guard !scaleInProgress else { return }
         guard ParentTouchHolder.delegate === self else { return }
         if externalScale == nil {
             externalScale = parent.scale
