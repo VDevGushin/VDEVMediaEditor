@@ -112,10 +112,10 @@ final class TutorialsModel: Identifiable, ObservableObject, Equatable {
             .sink { [weak self] status in
                 guard let self = self else { return }
                 if status == .paused {
-                    isPlaying = false
+                    self.isPlaying = false
                 }
                 if status == .playing {
-                    isPlaying = true
+                    self.isPlaying = true
                 }
             }
     }
