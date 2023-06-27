@@ -15,6 +15,7 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var resultSettings: VDEVMediaEditorResultSettings
     @Injected private var resolutionService: ResolutionService
     @Injected private var removeLayersService: RemoveLayersService
+    @Injected private var mementoService: MementoService
     
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
@@ -53,7 +54,7 @@ final class CanvasEditorViewModel: ObservableObject {
         
         addMediaButtonTitle = strings.hint
         
-        data.dataModelObserver
+        mementoService
             .$canUndo
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in self?.canUndo = value }
@@ -255,8 +256,12 @@ extension CanvasEditorViewModel {
 }
 
 // MARK: - History
-extension CanvasEditorViewModel {
-    func onUndo() {
-        data.dataModelObserver.undo()
+extension CanvasEditorViewModel: MementoObject {
+    func undo() {
+        data.undo()
+    }
+    
+    func forceSave() {
+        data.forceSave()
     }
 }

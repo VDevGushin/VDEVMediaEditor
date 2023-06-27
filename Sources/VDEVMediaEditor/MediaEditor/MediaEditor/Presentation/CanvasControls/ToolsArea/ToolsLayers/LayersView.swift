@@ -14,6 +14,8 @@ struct LayersView: View {
     @Injected private var settings: VDEVMediaEditorSettings
     @Injected private var removeLayersService: RemoveLayersService
     
+    private var mementoObject: MementoObject? { vm }
+    
     var body: some View {
         Group {
             if !vm.tools.openLayersList {
@@ -51,6 +53,7 @@ struct LayersView: View {
         GeometryReader { proxy in
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .center) {
+                    
                     Spacer()
                     
                     VStack(alignment: .center) {
@@ -68,6 +71,8 @@ struct LayersView: View {
                                     .overlay(isDragged ? AppColors.white.opacity(0.2) : AppColors.clear)
                             }
                             .animation(.interactiveSpring(), value: vm.data.layers)
+                        } completion: {
+                            mementoObject?.forceSave()
                         }
                         
                         if !vm.data.isEmpty && settings.canRemoveAllLayers {

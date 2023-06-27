@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class CanvasHistory {
+struct CanvasHistory {
     private(set) var history: Stack<LayersMemento>
     
     init(limit: Int) {
@@ -18,41 +18,56 @@ final class CanvasHistory {
         history.isEmpty
     }
     
+    var items: [LayersMemento] {
+        history.items
+    }
+    
     func peek() -> LayersMemento? {
         history.peek()
     }
     
-    func pop() -> LayersMemento? {
+    mutating func pop() -> LayersMemento? {
         history.pop()
     }
     
-    func push(_ element: LayersMemento) {
+    mutating func push(_ element: LayersMemento) {
         history.push(element)
     }
 }
 
-final class LayersMemento: Equatable {
-    let layers: [CanvasItemModel]
-  
+struct LayersMemento: Equatable {
+    private(set) var layers: [CanvasItemModel]
+    
     init(layers: [CanvasItemModel]) {
-        self.layers = layers
+        self.layers = layers.map { $0.copy() }
     }
     
     static func == (lhs: LayersMemento, rhs: LayersMemento) -> Bool {
-        let layers1 = lhs.layers.map { $0.id }
-        let layers2 = rhs.layers.map { $0.id }
-        return layers1 == layers2
+        var result = false
+        outerLoop: for lhsLayer in lhs.layers {
+            for rhsLayer in rhs.layers {
+                if rhsLayer.id == lhsLayer.id &&
+                    rhsLayer.scale == lhsLayer.scale &&
+                    rhsLayer.rotation == lhsLayer.rotation &&
+                    rhsLayer.offset == lhsLayer.offset &&
+                    rhsLayer.type == rhsLayer.type {
+                    result = true
+                    break outerLoop
+                }
+            }
+        }
+        return result
     }
 }
 
 struct Stack<T: Equatable> {
-    private var items: [T] = []
+    private(set) var items: [T] = []
     private let limit: Int
     
     init(limit: Int) {
         self.limit = limit
     }
-    
+    var count: Int { items.count }
     var isEmpty: Bool { items.isEmpty }
     
     func peek() -> T? {
@@ -62,19 +77,15 @@ struct Stack<T: Equatable> {
     
     mutating func pop() -> T? {
         guard !items.isEmpty else { return nil }
-        return items.removeFirst()
+        return items.removeLast()
     }
     
     mutating func push(_ element: T) {
-        let hasElement = items.first { $0 == element }
-        if hasElement != nil { return }
-        
-        items.insert(element, at: 0)
-        
+        guard !items.contains(element) else { return }
+        items.append(element)
         guard items.count > limit else { return }
-        
         while !items.isEmpty && items.count > limit {
-            items.removeLast()
+            items.removeFirst()
         }
     }
 }

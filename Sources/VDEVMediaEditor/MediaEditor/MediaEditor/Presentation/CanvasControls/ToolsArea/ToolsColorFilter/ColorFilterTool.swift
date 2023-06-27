@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-final class ColorFilterToolLoader {
+private final class ColorFilterToolLoader {
     @Injected private var sourceService: VDEVMediaEditorSourceService
     
     @MainActor
@@ -16,7 +16,8 @@ final class ColorFilterToolLoader {
 
     private let challengeId: String
 
-    init(challengeId: String, items: Binding<[EditorFilter]>) {
+    init(challengeId: String,
+         items: Binding<[EditorFilter]>) {
         self._items = items
         self.challengeId = challengeId
     }
@@ -32,15 +33,18 @@ final class ColorFilterToolLoader {
 struct ColorFilterTool: View {
     @State private var items: [EditorFilter] = []
     @State private var update = false
-
     @State private var loader: ColorFilterToolLoader!
+    private weak var memento: MementoObject? // for save state
 
     private var layerModel: CanvasItemModel
     private let challengeId: String
 
-    init(layerModel: CanvasItemModel, challengeId: String) {
+    init(layerModel: CanvasItemModel,
+         challengeId: String,
+         memento: MementoObject? = nil) {
         self.layerModel = layerModel
         self.challengeId = challengeId
+        self.memento = memento
     }
 
     var body: some View {
@@ -56,6 +60,7 @@ struct ColorFilterTool: View {
                     Cell(imageURL: item.cover,
                          text: item.name,
                          selected: layerModel.colorFilter == item) {
+                        memento?.forceSave()
                         layerModel.apply(colorFilter: item)
                         update.toggle()
                     }

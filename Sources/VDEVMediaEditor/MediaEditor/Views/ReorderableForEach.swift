@@ -9,27 +9,26 @@ import SwiftUI
 import UniformTypeIdentifiers
 import IdentifiedCollections
 
-public struct ReorderableForEach<Data: Identifiable, Content>: View
-where Data : Hashable, Content : View {
-    
+public struct ReorderableForEach<Data: Identifiable, Content>:
+    View where Data : Hashable, Content : View {
     @Binding var data: IdentifiedArrayOf<Data>
     @Binding var allowReordering: Bool
-    
-    private let content: (Data, Bool) -> Content
-
     @State private var draggedItem: Data?
     @State private var hasChangedLocation: Bool = false
-
+    
+    private let content: (Data, Bool) -> Content
+    private let completion: () -> Void
+    
     public init(_ data: Binding<IdentifiedArrayOf<Data>>,
                 allowReordering: Binding<Bool>,
-                @ViewBuilder content: @escaping (Data, Bool) -> Content) {
-        
+                @ViewBuilder content: @escaping (Data, Bool) -> Content,
+                completion: @escaping () -> Void) {
         _data = data
         _allowReordering = allowReordering
-        
+        self.completion = completion
         self.content = content
     }
-
+    
     public var body: some View {
         ForEach(data.reversed(), id: \.self) { item in
             if allowReordering {
@@ -42,6 +41,7 @@ where Data : Hashable, Content : View {
                             delegate:
                                 ReorderDropDelegate(
                                     item: item,
+                                    completion: completion,
                                     data: $data,
                                     draggedItem: $draggedItem,
                                     hasChangedLocation: $hasChangedLocation)
@@ -51,13 +51,15 @@ where Data : Hashable, Content : View {
             }
         }
     }
-
+    
     struct ReorderDropDelegate<Data: Identifiable>: DropDelegate where Data : Equatable {
         let item: Data
+        let completion: () -> Void
         @Binding var data: IdentifiedArrayOf<Data>
         @Binding var draggedItem: Data?
         @Binding var hasChangedLocation: Bool
-
+        
+        
         func dropEntered(info: DropInfo) {
             guard item != draggedItem,
                   let current = draggedItem,
@@ -72,13 +74,14 @@ where Data : Hashable, Content : View {
                     data.move(fromOffsets: IndexSet(integer: from),
                               toOffset: (to > from) ? to + 1 : to)
                 }
+                completion()
             }
         }
-
+        
         func dropUpdated(info: DropInfo) -> DropProposal? {
             DropProposal(operation: .move)
         }
-
+        
         func performDrop(info: DropInfo) -> Bool {
             hasChangedLocation = false
             draggedItem = nil
@@ -91,7 +94,7 @@ fileprivate final class Model : NSObject, NSItemProviderWriting {
     static var writableTypeIdentifiersForItemProvider: [String] {
         return []
     }
-
+    
     func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Swift.Void) -> Progress? {
         return nil
     }

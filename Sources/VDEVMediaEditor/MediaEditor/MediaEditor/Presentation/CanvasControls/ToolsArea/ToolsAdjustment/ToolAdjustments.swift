@@ -10,6 +10,7 @@ import SwiftUI
 struct ToolAdjustments: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @EnvironmentObject private var vm: CanvasEditorViewModel
+    private weak var memento: MementoObject? // for save state
     
     private let item: CanvasItemModel
     
@@ -23,9 +24,12 @@ struct ToolAdjustments: View {
     
     @Binding private var state: ToolsEditState
     
-    init(_ item: CanvasItemModel, state: Binding<ToolsEditState>) {
+    init(_ item: CanvasItemModel,
+         state: Binding<ToolsEditState>,
+         memento: MementoObject? = nil) {
         self.item = item
         self._state = state
+        self.memento = memento
         
         let colorFilters = CIFilter(name: "CIColorControls")!
         
@@ -79,13 +83,13 @@ struct ToolAdjustments: View {
                             highlight: highlight,
                             shadow: shadow
                         )
-                        
                         self.item.apply(adjustmentSettings: settings)
                         
                     }, in: item.min...item.max, onEditingChanged: { value in
                         if !value {
                             state = .idle
                         } else {
+                            memento?.forceSave()
                             state = .edit(i)
                         }
                     })

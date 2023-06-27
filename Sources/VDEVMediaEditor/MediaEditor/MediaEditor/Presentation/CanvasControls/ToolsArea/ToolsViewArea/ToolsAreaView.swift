@@ -14,8 +14,9 @@ struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var settings: VDEVMediaEditorSettings
-    
     @ObservedObject private var vm: CanvasEditorViewModel
+    
+    private var mementoObject: MementoObject? { vm }
     
     @State private var showOnboarding = false
     @State private var showPhoroPicker = false
@@ -227,7 +228,7 @@ struct ToolsAreaView: View {
                 UndoButton {
                     vm.tools.closeTools()
                     vm.tools.overlay.hideAllOverlayViews()
-                    vm.onUndo()
+                    vm.undo()
                 }
                 .rightTool()
                 .topTool()
@@ -448,7 +449,8 @@ fileprivate extension ToolsAreaView {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             ColorFilterTool(layerModel: item,
-                            challengeId: vm.tools.baseChallengeId)
+                            challengeId: vm.tools.baseChallengeId,
+                            memento: mementoObject)
         }
     }
     
@@ -461,6 +463,7 @@ fileprivate extension ToolsAreaView {
             GridPickTool(
                 dataSource: TextureDataSource(challengeId: vm.tools.baseChallengeId, item: item)
             ) { texture in
+                mementoObject?.forceSave()
                 item.apply(textures: texture)
                 vm.tools.currentCloseActionFor(item)
             }
@@ -477,6 +480,7 @@ fileprivate extension ToolsAreaView {
             GridPickTool(
                 dataSource: MasksDataSource(challengeId: vm.tools.baseChallengeId, item: item)
             ) { masks in
+                mementoObject?.forceSave()
                 item.apply(masks: masks)
                 vm.tools.currentCloseActionFor(item)
             }
@@ -490,7 +494,9 @@ fileprivate extension ToolsAreaView {
         ToolWrapperWithBinding(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.tools.currentCloseActionFor(item)
         } tool: { state in
-            ToolAdjustments(item, state: state)
+            ToolAdjustments(item,
+                            state: state,
+                            memento: mementoObject)
                 .padding(.horizontal)
         }
     }

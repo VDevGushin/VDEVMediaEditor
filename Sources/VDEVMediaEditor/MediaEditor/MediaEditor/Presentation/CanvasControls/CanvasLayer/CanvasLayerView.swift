@@ -8,49 +8,38 @@
 import SwiftUI
 import Combine
 
-struct CanvasLayerPreview<Content: View>: View {
-    private let content: (CanvasItemModel) -> Content
-    private let item: CanvasItemModel
-    
-    init(item: CanvasItemModel,
-         @ViewBuilder content: @escaping (CanvasItemModel) -> Content) {
-        self.item = item
-        self.content = content
-    }
-    
-    var body: some View { content(item) }
-}
-
 private final class CanvasLayerViewModel: ObservableObject {
-    unowned let item: CanvasItemModel
     @Published var offset: CGSize = .zero
     @Published var scale: CGFloat = 1
     @Published var rotation: Angle = .zero
     
+    unowned let item: CanvasItemModel
+    weak var memento: MementoObject? // for save state
+
     private(set) var manipulationWatcher: ManipulationWatcher = .shared
-    
     private var operation: AnyCancellable?
     private var watcherOperation: AnyCancellable?
     
-    init(item: CanvasItemModel) {
+    init(item: CanvasItemModel, memento: MementoObject) {
         self.item = item
         self.offset = item.offset
         self.scale = item.scale
         self.rotation = item.rotation
+        self.memento = memento
         
         operation = Publishers.CombineLatest3($offset.removeDuplicates(),
                                               $scale.removeDuplicates(),
                                               $rotation.removeDuplicates())
         .receive(on: DispatchQueue.main)
         .sink { [weak self] offset, scale, rotation in
-            self?.item.update(offset: offset, scale: scale, rotation: rotation)
+            guard let self = self else { return }
+            self.item.update(offset: offset, scale: scale, rotation: rotation)
         }
     }
     
     // фактический размер итема на канвасе(для комбайна видосов)
     // расчитывается конда на конве двигаем/крутим/скейлим
     func updateSize(_ frameSize: CGSize) {
-        Log.d("Frame size: \(frameSize)")
         item.update(frameFetchedSize: frameSize)
     }
     
@@ -59,14 +48,18 @@ private final class CanvasLayerViewModel: ObservableObject {
         operation = nil
         Log.d("❌ Deinit: CanvasLayerViewModel")
     }
+    
+    func mementoSave() {
+        guard item.type != .template else { return }
+        self.memento?.forceSave()
+    }
 }
 
 struct CanvasLayerView<Content: View>: View {
     @Environment(\.guideLinesColor) private var guideLinesColor
     @StateObject private var vm: CanvasLayerViewModel
     
-    @EnvironmentObject private var editorVM: CanvasEditorViewModel
-    
+    private unowned var editorVM: CanvasEditorViewModel
     private let content: () -> Content
     
     // Callbacks
@@ -85,25 +78,21 @@ struct CanvasLayerView<Content: View>: View {
     @State private var isCenterHorizontal = false
     @State private var isLongTap: Bool = false
     @State private var phase = 0.0 // for border animation
-    
     // фактический размер итема на канвасе(для комбайна видосов)
     // расчитывается конда на конве двигаем/крутим/скейлим
     @State private var size: CGSize = .zero
     @State private var isCurrentInManipulation: Bool = true
-    
     @State private var tapScaleFactor: CGFloat = 1.0
+    
     @Binding private var containerSize: CGSize
     
     @ViewBuilder
     private var selectionColor: some View {
         if vm.item.type == .template { EmptyView() }
-        
         if editorVM.tools.isItemInSelection(item: vm.item) {
             AnimatedGradientView(color: guideLinesColor.opacity(0.1))
         }
-        
         if !isCurrentInManipulation { EmptyView() }
-        
         if (gestureInProgress || isLongTap) {
             AnimatedGradientView(color: guideLinesColor.opacity(0.2))
         } else {
@@ -113,13 +102,8 @@ struct CanvasLayerView<Content: View>: View {
     
     private var borderType: BorderType {
         if vm.item.type == .template { return .empty }
-        
-        if editorVM.tools.isItemInSelection(item: vm.item) {
-            return .selected
-        }
-        
+        if editorVM.tools.isItemInSelection(item: vm.item) { return .selected }
         if !isCurrentInManipulation { return .empty }
-        
         return (gestureInProgress || isLongTap) ? .manipulated : .empty
     }
     
@@ -132,18 +116,14 @@ struct CanvasLayerView<Content: View>: View {
         let maxBlur: CGFloat = 0.0
         let minBlur: CGFloat = 5
         let superMinBlur: CGFloat = 5
-        
         // Если открыто любое меню операций над шаблонами
         if editorVM.tools.overlay.isAnyViewOpen {
             return vm.item is CanvasTemplateModel ? maxBlur : minBlur
         }
-        
         // Если это не текущий выбранный элемент
         if !editorVM.tools.isCurrent(item: vm.item) { return superMinBlur }
-        
         // Если это шаблон
         if vm.item is CanvasTemplateModel { return maxBlur }
-        
         // Проверка на возможность применить свойство опасити
         if vm.manipulationWatcher
             .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
@@ -157,28 +137,24 @@ struct CanvasLayerView<Content: View>: View {
         let maxOpacity: CGFloat = 1.0
         let minOpacity: CGFloat = 0.6
         let superMinOpacity: CGFloat = 0.2
-        
         // Если открыто любое меню операций над шаблонами
         if editorVM.tools.overlay.isAnyViewOpen {
             return vm.item is CanvasTemplateModel ? maxOpacity : minOpacity
         }
-        
         // Если это не текущий выбранный элемент
         if !editorVM.tools.isCurrent(item: vm.item) { return superMinOpacity }
-        
         // Если это шаблон
         if vm.item is CanvasTemplateModel { return maxOpacity }
-        
         // Проверка на возможность применить свойство опасити
         if vm.manipulationWatcher
             .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
             return maxOpacity
         }
-        
         return isCurrentInManipulation ? maxOpacity : minOpacity
     }
     
     init(item: CanvasItemModel,
+         editorVM: CanvasEditorViewModel,
          containerSize: Binding<CGSize>,
          @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
@@ -189,6 +165,7 @@ struct CanvasLayerView<Content: View>: View {
          onEndManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEdit: ((CanvasItemModel) -> Void)? = nil) {
         self._containerSize = containerSize
+        self.editorVM = editorVM
         self.onSelect = onSelect
         self.onDelete = onDelete
         self.onShowCenterV = onShowCenterV
@@ -197,7 +174,7 @@ struct CanvasLayerView<Content: View>: View {
         self.onEndManipulated = onEndManipulated
         self.onEdit = onEdit
         self.content = content
-        self._vm = .init(wrappedValue: .init(item: item))
+        self._vm = .init(wrappedValue: .init(item: item, memento: editorVM))
     }
     
     var body: some View {
@@ -216,7 +193,6 @@ struct CanvasLayerView<Content: View>: View {
                 itemType: vm.item.type) {
                     content()
                 } onLongPress: {
-                    // Long tap
                 } onDoubleTap: {
                     onSelect?(vm.item)
                     haptics(.light)
@@ -256,10 +232,12 @@ struct CanvasLayerView<Content: View>: View {
                 .onChange(of: isVerticalOrientation) { value in if value { haptics(.light) } }
                 .onChange(of: isHorizontalOrientation) { value in if value { haptics(.light) } }
                 .onChange(of: gestureInProgress) { newValue in
-                    if newValue {
+                    switch newValue {
+                    case true:
                         vm.manipulationWatcher.setManipulated(item: vm.item)
                         onManipulated?(vm.item)
-                    } else {
+                        vm.mementoSave()
+                    case false:
                         vm.manipulationWatcher.removeManipulated()
                         onEndManipulated?(vm.item)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -270,7 +248,9 @@ struct CanvasLayerView<Content: View>: View {
                         }
                     }
                 }
-                .onChange(of: size) { value in vm.updateSize(value) }
+                .onChange(of: size) { value in
+                    vm.updateSize(value)
+                }
                 .frame($0.size)
         }
         .onReceive(vm.manipulationWatcher.$current.removeDuplicates()) { value in
@@ -318,7 +298,6 @@ fileprivate extension CanvasLayerView {
             vm.scale = 1
         }
     }
-    
     func resetCenter() { withAnimation(.interactiveSpring()) { vm.offset = .zero } }
 }
 

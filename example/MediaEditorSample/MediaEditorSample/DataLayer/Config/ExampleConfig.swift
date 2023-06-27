@@ -75,11 +75,11 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var showAspectRatioSettings: Bool { true }
     var canTurnOnSoundInVideos: Bool { true }
     var canAddMusic: Bool { false }
-    var historyLimit: Int { 3 }
+    var historyLimit: Int { 200 }
     var maximumLayers: Int { 20 }
     var canRemoveAllLayers: Bool { true }
     var canShowOnboarding: Bool { false }
-    var canUndo: Bool { false }
+    var canUndo: Bool { true }
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {

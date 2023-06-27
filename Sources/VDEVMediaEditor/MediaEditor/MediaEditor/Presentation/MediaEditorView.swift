@@ -23,7 +23,7 @@ struct MediaEditorView: View {
             AppColors.black
             
             VStack(spacing: 0) {
-                    EditorArea()
+                    EditorArea
                         .viewDidLoad(vm.contentViewDidLoad)
                         .padding(.bottom, 4)
                 
@@ -56,13 +56,13 @@ struct MediaEditorView: View {
 
 fileprivate extension MediaEditorView {
     @ViewBuilder
-    func EditorArea() -> some View {
+    var EditorArea: some View {
         ZStack(alignment: .center) {
             vm.ui.mainLayerBackgroundColor
             
             GeometryReader { proxy in
                 let size = proxy.size
-                if vm.data.layers.isEmpty {
+                if vm.addMediaButtonVisible {
                     vm.ui.mainLayerBackgroundColor.frame(size)
                 } else {
                     ParentView {
@@ -76,6 +76,7 @@ fileprivate extension MediaEditorView {
                             
                             ForEach(vm.data.layers, id: \.self) { item in
                                 CanvasLayerView(item: item,
+                                                editorVM: vm,
                                                 containerSize: $vm.ui.editorSize) {
                                     CanvasItemViewBuilder(item: item,
                                                           canvasSize: size,

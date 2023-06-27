@@ -12,8 +12,9 @@ import IdentifiedCollections
 
 final class CanvasLayersDataViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var mementoService: MementoService
     
-    private(set) lazy var dataModelObserver: CanvasLayersDataViewModelObserver = .init(dataModel: self)
+    private var canSave = true
     
     @Published var layers: IdentifiedArrayOf<CanvasItemModel> = []
     
@@ -21,9 +22,7 @@ final class CanvasLayersDataViewModel: ObservableObject {
     
     var isLimit: Bool { layers.count >= maximumLayers }
     
-    private var maximumLayers: Int {
-        settings.maximumLayers
-    }
+    private var maximumLayers: Int { settings.maximumLayers }
     
     private var subscriptions = Set<AnyCancellable>()
     private var storage = Set<AnyCancellable>()
@@ -45,19 +44,19 @@ final class CanvasLayersDataViewModel: ObservableObject {
     }
     
     func removeAll() {
-        dataModelObserver.onChange()
+        forceSave()
         layers.removeAll()
     }
     
     func add(_ item: CanvasItemModel) {
         guard !isLimit else { return }
-        dataModelObserver.onChange()
+        forceSave()
         layers.updateOrAppend(item)
     }
     
     @discardableResult
     func reset(_ item: CanvasItemModel) -> CanvasItemModel {
-        dataModelObserver.onChange()
+        forceSave()
         guard let index = layers.index(id: item.id) else { return item }
         let copy = item.copy()
         copy.update(offset: .zero, scale: 1, rotation: .zero)
@@ -67,20 +66,20 @@ final class CanvasLayersDataViewModel: ObservableObject {
     }
     
     func copyReplace(_ item: CanvasItemModel) {
-        dataModelObserver.onChange()
+        forceSave()
         let copy = item.copy()
         layers.remove(item)
         layers.append(copy)
     }
     
     func delete(_ item: CanvasItemModel) {
-        dataModelObserver.onChange()
+        forceSave()
         layers.remove(id: item.id)
     }
     
     func delete(_ item: CanvasItemModel?) {
         guard let id = item?.id else { return }
-        dataModelObserver.onChange()
+        forceSave()
         layers.remove(id: id)
     }
     
@@ -88,21 +87,21 @@ final class CanvasLayersDataViewModel: ObservableObject {
         guard let index = layers.index(id: item.id) else { return }
         // Если этот слой самый верхний
         if index >= (layers.count - 1) { return }
-        dataModelObserver.onChange()
+        forceSave()
         (layers[index], layers[index + 1]) = (layers[index + 1], layers[index])
     }
     
     func back(_ item: CanvasItemModel) {
         guard let index = layers.index(id: item.id) else { return }
         if index <= 0 { return }
-        dataModelObserver.onChange()
+        forceSave()
         (layers[index], layers[index - 1]) = (layers[index - 1], layers[index])
     }
     
     func bringToBack(_ item: CanvasItemModel) {
         let id = item.id
         if layers.index(id: id) == 0 { return }
-        dataModelObserver.onChange()
+        forceSave()
         if let replaceItem = layers.remove(id: id) {
             
             layers.insert(replaceItem, at: 0)
@@ -112,7 +111,7 @@ final class CanvasLayersDataViewModel: ObservableObject {
     func bringToFront(_ item: CanvasItemModel) {
         let id = item.id
         if layers.index(id: id) == layers.count - 1 { return }
-        dataModelObserver.onChange()
+        forceSave()
         if let replaceItem = layers.remove(id: id) {
             layers.append(replaceItem)
         }
@@ -161,7 +160,7 @@ extension CanvasLayersDataViewModel {
 extension CanvasLayersDataViewModel {
     // возможность вставить только 1 шаблон
     func addTemplate(_ item: CanvasTemplateModel) {
-        dataModelObserver.onChange()
+        forceSave()
         layers.removeAll {
             $0 is CanvasTemplateModel
         }
@@ -280,42 +279,15 @@ extension CanvasLayersDataViewModel {
 }
 
 // - MARK: MEMENTO
-extension CanvasLayersDataViewModel {
-    func forceSave() {
-        dataModelObserver.onChange()
-    }
-    
-    func saveState() -> LayersMemento {
-        .init(layers: self.layers.elements)
-    }
-    
-    func restoreState(_ memento: LayersMemento) {
-        self.layers = .init(uniqueElements: memento.layers)
-    }
-}
-
-final class CanvasLayersDataViewModelObserver: ObservableObject {
-    @Published private(set) var canUndo: Bool = false
-    @Injected private var settings: VDEVMediaEditorSettings
-    
-    private lazy var historyService = CanvasHistory(limit: settings.historyLimit)
-    private weak var dataModel: CanvasLayersDataViewModel?
-    
-    init(dataModel: CanvasLayersDataViewModel) {
-        self.dataModel = dataModel
-        self.canUndo = false
-    }
-    
-    func onChange() {
-        guard let dataModel = dataModel else { return }
-        historyService.push(dataModel.saveState())
-        canUndo = !historyService.isEmpty
-    }
-    
+extension CanvasLayersDataViewModel: MementoObject {
     func undo() {
-        guard let dataModel = dataModel,
-              let element = historyService.pop() else { return }
-        dataModel.restoreState(element)
-        canUndo = !historyService.isEmpty
+        layers.removeAll()
+        if let layers = mementoService.undo()?.layers {
+            self.layers = .init(uniqueElements: layers)
+        }
+    }
+    
+    func forceSave() {
+        mementoService.save(newElement: LayersMemento(layers: self.layers.elements))
     }
 }
