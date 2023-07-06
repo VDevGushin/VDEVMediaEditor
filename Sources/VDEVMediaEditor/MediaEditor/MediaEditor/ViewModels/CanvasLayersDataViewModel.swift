@@ -48,9 +48,9 @@ final class CanvasLayersDataViewModel: ObservableObject {
         layers.removeAll()
     }
     
-    func add(_ item: CanvasItemModel) {
+    func add(_ item: CanvasItemModel, withSave: Bool = true) {
         guard !isLimit else { return }
-        forceSave()
+        if withSave { forceSave() }
         layers.updateOrAppend(item)
     }
     
@@ -72,14 +72,14 @@ final class CanvasLayersDataViewModel: ObservableObject {
         layers.append(copy)
     }
     
-    func delete(_ item: CanvasItemModel) {
-        forceSave()
+    func delete(_ item: CanvasItemModel, withSave: Bool = true) {
+        if withSave { forceSave() }
         layers.remove(id: item.id)
     }
     
-    func delete(_ item: CanvasItemModel?) {
+    func delete(_ item: CanvasItemModel?, withSave: Bool = true) {
         guard let id = item?.id else { return }
-        forceSave()
+        if withSave { forceSave() }
         layers.remove(id: id)
     }
     

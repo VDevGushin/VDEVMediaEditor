@@ -199,9 +199,10 @@ extension CanvasEditorViewModel {
     func removeBackground(on item: CanvasItemModel,
                           completion: @escaping (CanvasItemModel) -> Void) {
         isLoading = .init(value: true, message: strings.processing)
+        forceSave()
         imageProcessingController.removeBackground(on: item) { [weak self] new in
-            self?.data.delete(item)
-            self?.data.add(new)
+            self?.data.delete(item, withSave: false)
+            self?.data.add(new, withSave: false)
             self?.isLoading = .false
             completion(new)
         }

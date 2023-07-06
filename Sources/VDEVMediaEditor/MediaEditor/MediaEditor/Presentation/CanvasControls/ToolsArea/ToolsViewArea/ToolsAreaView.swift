@@ -194,16 +194,16 @@ struct ToolsAreaView: View {
         }
         .imageCropper(show: $showImageCropper,
                       item: vm.tools.currentToolItem) { new in
-            vm.data.delete(vm.tools.currentToolItem.innerCanvasModel)
-            vm.data.add(new)
+            mementoObject?.forceSave()
+            vm.data.delete(vm.tools.currentToolItem.innerCanvasModel, withSave: false)
+            vm.data.add(new, withSave: false)
             vm.tools.currentCloseActionFor(new)
+        }.sheet(isPresented: $showOnboarding) {
+            OnboardingView()
         }
-                      .sheet(isPresented: $showOnboarding) {
-                          OnboardingView()
-                      }
-                      .viewDidLoad {
-                          showOnboarding = settings.canShowOnboarding
-                      }
+        .viewDidLoad {
+            showOnboarding = settings.canShowOnboarding
+        }
     }
     
     @ViewBuilder
