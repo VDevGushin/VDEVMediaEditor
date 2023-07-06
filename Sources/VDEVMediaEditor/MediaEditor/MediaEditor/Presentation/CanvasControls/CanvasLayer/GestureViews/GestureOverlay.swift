@@ -21,12 +21,11 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     @Binding var containerSize: CGSize
     
     private let content: () -> Content
-    private(set) var itemType: CanvasItemType
     
+    private(set) var itemType: CanvasItemType
     private(set) var onLongPress: () -> Void
     private(set) var onDoubleTap: () -> Void
     private(set) var onTap: () -> Void
-    
     private(set) var canManipulate: () -> Bool
     
     internal init(offset: Binding<CGSize>,
@@ -195,10 +194,9 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate {
         private let parent: GestureOverlay
-        // private var lastScale: CGFloat!
         private var externalScale: CGFloat!
+        private var externalRotation: Angle!
         private var lastStoreOffset: CGSize = .zero
-        private var lastRotation: Angle!
         private let centerRange = CGFloat(-5.0)...CGFloat(5.0)
         
         // All gestures
@@ -325,57 +323,13 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         @objc
         func handlePinch(sender: UIPinchGestureRecognizer) {
             guard canManipulate() else { return }
-            
             gestureStatus(state: &scaleInProgress, sender: sender)
-//
-//            switch sender.state {
-//            case .began:
-//                if lastScale == nil { lastScale = parent.scale }
-//            case .changed:
-//                guard checkInView(sender: sender, scale: parent.scale, forCancel: pinchGest) else {
-//                    parent.scale = parent.scale
-//                    sender.cancel()
-//                    return
-//                }
-//                let zoom = max(CGFloat(0.01), (lastScale * abs(sender.scale)))
-//                parent.scale = zoom
-//            case .ended, .cancelled, .failed, .possible:
-//                lastScale = nil
-//            @unknown default:
-//                lastScale = nil
-//            }
         }
         
         @objc
         func handleRotate(sender: UIRotationGestureRecognizer) {
             guard canManipulate() else { return }
-            
             gestureStatus(state: &rotInProgress, sender: sender)
-            
-            switch sender.state {
-            case .began:
-                if lastRotation == nil { lastRotation = parent.rotation }
-            case .changed:
-                let angle: Angle = .radians(lastRotation.radians + sender.rotation)
-                parent.rotation = angle.degrees.makeAngle { [weak self] value in
-                    guard let self = self else { return }
-                    switch value {
-                    case .vertical:
-                        self.parent.isHorizontalOrientation = false
-                        self.parent.isVerticalOrientation = true
-                    case .horizontal:
-                        self.parent.isHorizontalOrientation = true
-                        self.parent.isVerticalOrientation = false
-                    default:
-                        self.parent.isHorizontalOrientation = false
-                        self.parent.isVerticalOrientation = false
-                    }
-                }
-            case .ended, .cancelled, .failed, .possible:
-                lastRotation = nil
-            @unknown default:
-                lastRotation = nil
-            }
         }
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -418,27 +372,73 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
         }
     }
     
-    func begin() {
-        // guard !scaleInProgress else { return }
-        guard ParentTouchHolder.delegate === self else { return }
-        if externalScale == nil { externalScale = parent.scale }
+    func begin(gesture: ExternalGesture) {
+        switch gesture {
+        case .scale:
+            guard ParentTouchHolder.delegate === self else { return }
+            if externalScale == nil { externalScale = parent.scale }
+        case .rotation:
+            guard ParentTouchHolder.delegate === self else { return }
+            if externalRotation == nil { externalRotation = parent.rotation }
+        default:
+            break
+        }
     }
     
-    func finish() {
+    func finish(gesture: ExternalGesture) {
+        switch gesture {
+        case .scale:
+            guard ParentTouchHolder.delegate === self else { return }
+            externalScale = nil
+        case .rotation:
+            guard ParentTouchHolder.delegate === self else { return }
+            externalRotation = nil
+        default:
+            break
+        }
+    }
+    
+    func endAllGestures() {
         guard ParentTouchHolder.delegate === self else { return }
         ParentTouchHolder.delegate = nil
+        externalRotation = nil
         externalScale = nil
     }
     
-    func inProcess(scale: CGFloat) {
-        // guard !scaleInProgress else { return }
-        guard ParentTouchHolder.delegate === self else { return }
-        if externalScale == nil {
-            externalScale = parent.scale
-            return
+    func inProcess(gesture: ExternalGesture) {
+        switch gesture {
+        case let .scaleInProgress(scale):
+            guard ParentTouchHolder.delegate === self else { return }
+            if externalScale == nil {
+                externalScale = parent.scale
+                return
+            }
+            let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
+            parent.scale = zoom
+        case let .rotationInProgress(rotation):
+            if externalRotation == nil {
+                externalRotation = parent.rotation
+                return
+            }
+            let angle: Angle = .radians(externalRotation.radians + rotation)
+            let rotationForParent: Angle = angle.degrees.makeAngle { [weak self] value in
+                guard let self = self else { return }
+                switch value {
+                case .vertical:
+                    self.parent.isHorizontalOrientation = false
+                    self.parent.isVerticalOrientation = true
+                case .horizontal:
+                    self.parent.isHorizontalOrientation = true
+                    self.parent.isVerticalOrientation = false
+                default:
+                    self.parent.isHorizontalOrientation = false
+                    self.parent.isVerticalOrientation = false
+                }
+            }
+            parent.rotation = rotationForParent
+        default:
+            break
         }
-        let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
-        parent.scale = zoom
     }
 }
 
@@ -462,26 +462,5 @@ fileprivate extension GestureOverlay.Coordinator {
         @unknown default:
             state = false
         }
-    }
-    
-    func checkInView(sender: UIGestureRecognizer,
-                     scale: CGFloat?,
-                     forCancel: UIGestureRecognizer?...) -> Bool {
-        func _check(sender: UIGestureRecognizer, scale: CGFloat?) -> Bool {
-            guard let view = sender.view?.superview else { return false }
-            let point = sender.location(in: view)
-            let scaledSize = view.bounds.size
-            return (CGFloat(0.0)...scaledSize.width).contains(point.x) &&
-            (CGFloat(0.0)...scaledSize.height).contains(point.y) &&
-            sender.numberOfTouches == 2
-        }
-        return !_check(sender: sender, scale: scale) ? false : true
-    }
-}
-
-fileprivate extension UIGestureRecognizer {
-    func cancel() {
-        isEnabled = false
-        isEnabled = true
     }
 }
