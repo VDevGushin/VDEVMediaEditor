@@ -215,7 +215,7 @@ struct TextTool: View {
                 donePressed()
             } label: {
                 Text(doneStr)
-                    .font(.gramatika(size: 16))
+                    .font(AppFonts.gramatika(size: 16))
             }
             .disabled(text.isEmpty && isEditable)
             .buttonStyle(BlurButtonStyle())
@@ -256,7 +256,7 @@ struct TextTool: View {
                 }
             } label: {
                 Text(closeStr)
-                    .font(.gramatika(size: 16))
+                    .font(AppFonts.gramatika(size: 16))
             }
             .buttonStyle(BlurButtonStyle())
             .opacity(colorSelectorOpen ? 1 : 0)

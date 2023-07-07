@@ -109,7 +109,7 @@ struct ColorFilterTool: View {
                     .frame(width: width, height: width * ratio)
 
                     Text(text)
-                        .font(.mabry(size: 13))
+                        .font(AppFonts.mabry(size: 13))
                         .foregroundColor(AppColors.white)
                         .padding(8)
                 }

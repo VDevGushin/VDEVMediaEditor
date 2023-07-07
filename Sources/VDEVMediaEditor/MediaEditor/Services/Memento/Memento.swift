@@ -8,7 +8,7 @@
 import Foundation
 
 struct CanvasHistory {
-    private(set) var history: Stack<LayersMemento>
+    private var history: Stack<LayersMemento>
     
     init(limit: Int) {
         history = .init(limit: limit)
@@ -60,7 +60,7 @@ struct LayersMemento: Equatable {
     }
 }
 
-struct Stack<T: Equatable> {
+fileprivate struct Stack<T: Equatable> {
     private(set) var items: [T] = []
     private let limit: Int
     
@@ -78,6 +78,10 @@ struct Stack<T: Equatable> {
     mutating func pop() -> T? {
         guard !items.isEmpty else { return nil }
         return items.removeLast()
+    }
+    
+    mutating func removeAll() {
+        items.removeAll()
     }
     
     mutating func push(_ element: T) {

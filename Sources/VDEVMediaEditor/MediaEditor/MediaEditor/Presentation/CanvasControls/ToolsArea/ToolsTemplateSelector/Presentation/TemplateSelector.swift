@@ -69,10 +69,10 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
                             .overlay(
                                 VStack(alignment: .leading) {
                                     Text(templatePack.name)
-                                        .font(.gramatika(size: 14))
+                                        .font(AppFonts.gramatika(size: 14))
 
                                     Text(" \(templatePack.variants.count) \(DI.resolve(VDEVMediaEditorStrings.self).templates)")
-                                        .font(.gramatika(size: 9))
+                                        .font(AppFonts.gramatika(size: 9))
                                         .opacity(0.6)
                                 }
                                     .foregroundColor(AppColors.white)
@@ -106,7 +106,7 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
                             )
                             .overlay(
                                 Text(DI.resolve(VDEVMediaEditorStrings.self).applied)
-                                    .font(.gramatika(size: 20))
+                                    .font(AppFonts.gramatika(size: 20))
                                     .foregroundColor(AppColors.white)
                                     .padding(),
                                 alignment: .bottom

@@ -30,7 +30,7 @@ struct HeadWithTitle: View {
                     
                     
                     Text(title)
-                        .font(.gramatika(size: 24))
+                        .font(AppFonts.gramatika(size: 24))
                         .shadow(radius: 5)
 
                     Spacer()

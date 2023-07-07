@@ -61,7 +61,7 @@ struct LoadingView: View {
                 if showMessage {
                     if !message.isEmpty || message != "" {
                         Text(message)
-                            .font(.gramatika(size: 12))
+                            .font(AppFonts.gramatika(size: 12))
                             .foregroundColor(Color(color))
                             .multilineTextAlignment(.center)
                             .font(.caption)

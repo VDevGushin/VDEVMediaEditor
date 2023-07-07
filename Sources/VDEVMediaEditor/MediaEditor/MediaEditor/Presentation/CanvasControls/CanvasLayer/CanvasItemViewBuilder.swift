@@ -41,19 +41,19 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
             VStack(spacing: 12) {
                 item.title.map {
                     Text($0)
-                        .font(.gramatika(size: 18))
+                        .font(AppFonts.gramatika(size: 18))
                         .foregroundColor(AppColors.whiteWithOpacity1)
                 }
                 
                 item.albumArtist.map {
                     Text($0)
-                        .font(.gramatika(size: 16))
+                        .font(AppFonts.gramatika(size: 16))
                         .foregroundColor(AppColors.whiteWithOpacity)
                 }
                 
                 item.albumTitle.map {
                     Text($0)
-                        .font(.gramatika(size: 16))
+                        .font(AppFonts.gramatika(size: 16))
                         .foregroundColor(AppColors.whiteWithOpacity)
                 }
             }

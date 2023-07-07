@@ -120,7 +120,7 @@ struct DrawingView: View {
                     vm.getImage(onClose)
                 } label: {
                     Text(DI.resolve(VDEVMediaEditorStrings.self).done)
-                        .font(.gramatika(size: 16))
+                        .font(AppFonts.gramatika(size: 16))
                 }
                 .buttonStyle(DoneButtonStyle(tintColor: AppColors.black))
             }
