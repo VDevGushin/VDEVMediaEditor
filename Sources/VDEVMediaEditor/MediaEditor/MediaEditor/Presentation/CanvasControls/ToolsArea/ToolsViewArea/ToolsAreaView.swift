@@ -67,6 +67,9 @@ struct ToolsAreaView: View {
             .frame(maxWidth: toolsAreaSize.width, maxHeight: toolsAreaSize.height)
             
             switch vm.tools.currentToolItem {
+            case .promptImageGenerator:
+                promptImageGeneratorTool()
+                    .transition(.bottomTransition)
             case .template:
                 templatesTool()
                     .transition(.bottomTransition)
@@ -437,6 +440,19 @@ fileprivate extension ToolsAreaView {
             vm.tools.closeTools(false)
             if variants.isEmpty { return }
             vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.roundedEditorSize))
+        }
+    }
+    
+    // Генерация картрики по тексту (Если эта возможность доступна)
+    // 1 При первом открытии происходит загрузка модели
+    // 2 Во время процесса загрузки висит лодер (подготовка...)
+    // 3 После загрузки можно генерить картинку по тексту
+    @ViewBuilder
+    func promptImageGeneratorTool() -> some View {
+        ToolWrapper(title: strings.promptImageGenerate, fullScreen: false) {
+            vm.tools.closeTools(false)
+        } tool: {
+            PromptImageGeneratorView()
         }
     }
 }
