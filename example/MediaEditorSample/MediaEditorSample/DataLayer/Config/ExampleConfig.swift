@@ -80,6 +80,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var canRemoveAllLayers: Bool { true }
     var canShowOnboarding: Bool { false }
     var canUndo: Bool { true }
+    var canGenerateImageByPrompt: Bool { false }
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {
@@ -225,6 +226,7 @@ struct Strings: VDEVMediaEditorStrings {
     let text = "TEXT"
     let stickersCustom = "STICKER"
     let addPhoto = "PHOTO"
+    let promptImageGenerate = "AI IMAGE"
     let addVideo = "VIDEO"
     let camera = "CAMERA"
     let drawing = "DRAWING"
@@ -255,4 +257,6 @@ struct Strings: VDEVMediaEditorStrings {
     let sound = "SOUND"
     let hint = "+ ADD MEDIA"
     let addMusic = "MUSIC"
+    var submit = "SUBMIT"
+    var random = "RANDOM"
 }

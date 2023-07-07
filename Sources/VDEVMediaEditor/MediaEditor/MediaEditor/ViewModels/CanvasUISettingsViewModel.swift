@@ -30,27 +30,24 @@ final class CanvasUISettingsViewModel: ObservableObject {
         settings.needGuideLinesGrid
     }
 
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
     private var colorOp: AnyCancellable?
 
     init() {
         // необходимо инверсить гайд цвета при смене главного фона
         // чтобы не сливались цвета
         colorOp = $mainLayerBackgroundColor
-            .receive(on: DispatchQueue.global())
+            .receiveOnGlobal()
             .map { UIColor($0) }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self = self else { return }
+            .sink(on: .main, object: self) { wSelf, value in
                 let color = Color(uiColor: value.contrast(dark: .orange))
-                self.guideLinesColor = color
+                wSelf.guideLinesColor = color
             }
         
         $editorSize
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                self?.roundedEditorSize = value.rounded(.up)
+            .sink(on: .main, object: self) { wSelf, value in
+                wSelf.roundedEditorSize = value.rounded(.up)
             }
             .store(in: &storage)
         

@@ -27,6 +27,11 @@ struct DiController {
             container.register(type: VDEVLogger.self, service: logger)
         }
         container.register(type: RemoveLayersService.self, service: RemoveLayersService())
+        
+        if settings.canGenerateImageByPrompt {
+            container.register(type: ImageResultChecker.self,
+                               service: ImageResultChecker(config: .init()))
+        }
     }
     
     static func clean(with container: DIContainer = DIContainer.shared) {

@@ -24,7 +24,10 @@ struct CloseButton: View {
             action()
         } label: {
             ZStack {
-                AppColors.blackInvisible
+                InvisibleTapZoneView {
+                    haptics(.light)
+                    action()
+                }
                 Image(uiImage: images.common.xmark)
                     .resizable()
                     .scaledToFit()

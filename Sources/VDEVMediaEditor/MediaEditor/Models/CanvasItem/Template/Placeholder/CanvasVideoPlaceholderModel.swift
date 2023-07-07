@@ -26,7 +26,7 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     private(set) var maskImageFromTemplate: UIImage?
 
     private let aplayer = CanvasApplayer()
-    private var storage = Set<AnyCancellable>()
+    private var storage = Cancellables()
     private(set) var filters: [EditorFilter]
     
     override var filterChain: [FilterDescriptor] {
@@ -93,15 +93,13 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
                              colorFilter: colorFilter,
                              textures: textures,
                              masks: masks)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] output in
-            guard let self = self else { return }
+        .sink(on: .main, object: self) { wSelf, output in
             switch output.value {
-            case .video(let composition): self.avVideoComposition = composition
-            case .empty: self.avVideoComposition = nil
+            case .video(let composition): wSelf.avVideoComposition = composition
+            case .empty: wSelf.avVideoComposition = nil
             case .image, .cancel: break
             }
-            self.inProgress = false
+            wSelf.inProgress = false
         }
         .store(in: &storage)
     }

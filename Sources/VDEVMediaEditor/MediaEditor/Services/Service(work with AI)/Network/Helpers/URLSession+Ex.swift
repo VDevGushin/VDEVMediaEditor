@@ -11,15 +11,40 @@ import Combine
 extension URLSession {
     func fetch<Response: Decodable>(for request: URLRequest,
                                     decoder: JSONDecoder,
+                                    with type: Response.Type) async throws -> Response {
+        log(request: request)
+        let (data, httpResponse) = try await data(for: request)
+        
+        log(response: httpResponse as? HTTPURLResponse, data: data, error: nil)
+        
+        guard let httpResponse = httpResponse as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        let statusCode = httpResponse.statusCode
+
+        if (200...299).contains(statusCode) {
+            return try decoder.decode(Response.self, from: data)
+        }
+
+        if statusCode == 401 {
+            throw URLError(.userAuthenticationRequired)
+        }
+
+        throw URLError(.badServerResponse)
+    }
+    
+    func fetch<Response: Decodable>(for request: URLRequest,
+                                    decoder: JSONDecoder,
                                     with type: Response.Type) -> AnyPublisher<Response, Error> {
 
 
-        //log(request: request)
+        log(request: request)
 
         return dataTaskPublisher(for: request)
             .tryMap { element -> Data in
-
-                //log(response: element.response as? HTTPURLResponse, data: element.data, error: nil)
+                
+                log(response: element.response as? HTTPURLResponse, data: element.data, error: nil)
 
                 guard let httpResponse = element.response as? HTTPURLResponse else {
                     throw URLError(.badServerResponse)
@@ -28,6 +53,7 @@ extension URLSession {
                 let statusCode = httpResponse.statusCode
 
                 if (200...299).contains(statusCode) {
+                    let str = String(decoding: element.data, as: UTF8.self)
                     return element.data
                 }
 
@@ -46,30 +72,6 @@ extension URLSession {
         //            .decode(type: Response.self, decoder: decoder)
         //            .eraseToAnyPublisher()
     }
-
-    //    func fetchWithAuthRefresh<Response: Decodable>(for request: URLRequest,
-    //                                                decoder: JSONDecoder,
-    //                                                refresh: (() -> AnyPublisher<UserInfo, Error>)?,
-    //                                                with type: Response.Type) -> AnyPublisher<Response, Error> {
-    //
-    //        dataTaskPublisher(for: request)
-    //            .tryCatch { error in
-    //                if error.errorCode == 401 {
-    //                    guard let refresh = refresh else { throw error }
-    //
-    //                    return refresh().flatMap { model -> Publishers.MapError<Publishers.Retry<URLSession.DataTaskPublisher>, any Error> in
-    //                        return self.dataTaskPublisher(for: request.set(auth: model.tokenInfo?.token))
-    //                            .retry(3)
-    //                            .mapError { $0 as Error }
-    //                    }
-    //                }
-    //
-    //                throw error
-    //            }
-    //            .map(\.data)
-    //            .decode(type: Response.self, decoder: decoder)
-    //            .eraseToAnyPublisher()
-    //    }
 }
 
 fileprivate extension URLResponse {

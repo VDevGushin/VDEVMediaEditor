@@ -36,7 +36,7 @@ let package = Package(
                            "CollectionConcurrencyKit",
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
                            "CombineExt",
-                           "BackgroundRemoval"
+                           "BackgroundRemoval",
                           ],
             resources: [.process("Resources")]
         ),

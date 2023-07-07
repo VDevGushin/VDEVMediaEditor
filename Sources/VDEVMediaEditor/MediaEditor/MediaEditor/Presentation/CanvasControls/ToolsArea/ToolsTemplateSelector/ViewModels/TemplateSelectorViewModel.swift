@@ -21,7 +21,7 @@ final class TemplateSelectorViewModel: ObservableObject {
     private let fitCanvasSize: CGSize
     private let challengeId: String
     private var onClose: ([TemplatePack.Variant.Item]) -> Void
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
 
     init(fitCanvasSize: CGSize,
          challengeId: String,
@@ -37,10 +37,8 @@ final class TemplateSelectorViewModel: ObservableObject {
 
         $layers
             .map { !$0.isEmpty }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                self?.canShowDoneButton = value
-            }
+            .receiveOnMain()
+            .weakAssign(to: \.canShowDoneButton, on: self)
             .store(in: &storage)
         
     }

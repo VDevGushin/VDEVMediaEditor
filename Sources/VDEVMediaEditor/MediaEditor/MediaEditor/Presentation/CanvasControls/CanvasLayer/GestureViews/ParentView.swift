@@ -93,11 +93,11 @@ struct ParentView<Content: View>: UIViewRepresentable {
     private func setupGest(for hView: UIView, context: Context) {
         let PinchRecognizer = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinch(sender:)))
         PinchRecognizer.cancelsTouchesInView = true
-        PinchRecognizer.delegate = context.coordinator
+        PinchRecognizer.delegate = ExternalUIGestureRecognizerDelegate.shared
         
         let RotationGesture = UIRotationGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleRotate(sender:)))
         RotationGesture.cancelsTouchesInView = true
-        RotationGesture.delegate = context.coordinator
+        RotationGesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         
         hView.addGestureRecognizer(PinchRecognizer)
         hView.addGestureRecognizer(RotationGesture)
@@ -118,7 +118,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
         Coordinator(parent: self)
     }
     
-    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+    final class Coordinator {
         weak var pinchGest: UIPinchGestureRecognizer?
         weak var rotationGest: UIRotationGestureRecognizer?
         
@@ -128,12 +128,11 @@ struct ParentView<Content: View>: UIViewRepresentable {
         
         init(parent: ParentView) {
             self.parent = parent
-            super.init()
+            
             ParentTouchResultHolder.shared.onCancel = { [weak self] in
                 self?.pinchGest?.reset()
                 self?.pinchGest?.scale = 1.0
                 self?.rotationGest?.reset()
-                //self?.rotationGest?.rotation = 0.0
             }
         }
         
@@ -164,10 +163,6 @@ struct ParentView<Content: View>: UIViewRepresentable {
             }
         }
         
-        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            return true
-        }
-        
         private func checkEndAllGestures() {
             if !scaleInProgress && !rotationInProgress {
                 ParentTouchHolder.endAllGestures()
@@ -185,5 +180,13 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 state = false
             }
         }
+    }
+}
+
+final class ExternalUIGestureRecognizerDelegate: NSObject, UIGestureRecognizerDelegate {
+    static let shared = ExternalUIGestureRecognizerDelegate()
+    private override init() {}
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }

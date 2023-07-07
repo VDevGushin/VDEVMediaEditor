@@ -14,12 +14,12 @@ extension ObservableObject where Self.ObjectWillChangePublisher == ObservableObj
             self?.objectWillChange.send()
         }
     }
-
+    
     func observeOnMain<T: ObservableObject>(nested inner: T) -> AnyCancellable {
-        inner.objectWillChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-            self?.objectWillChange.send()
-        }
+        inner
+            .objectWillChange
+            .sink(on: .main, object: self) { wSelf, _ in
+                wSelf.objectWillChange.send()
+            }
     }
 }

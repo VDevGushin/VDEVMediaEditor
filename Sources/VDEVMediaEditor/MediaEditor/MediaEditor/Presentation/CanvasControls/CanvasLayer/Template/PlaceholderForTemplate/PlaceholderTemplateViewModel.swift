@@ -23,7 +23,7 @@ final class PlaceholderTemplateViewModel: ObservableObject {
     
     var size: CGSize { imageModel?.imageSize ?? videoModel?.size ?? .zero }
     
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
 
     init(item: CanvasPlaceholderModel, delegate: CanvasEditorDelegate?) {
         self.item = item

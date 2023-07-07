@@ -36,7 +36,7 @@ final class CanvasEditorViewModel: ObservableObject {
     private let builder = MediaBuilder()
     private let merger = LayersMerger()
     
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
     private let imageProcessingController = ImageProcessingController()
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)?,
@@ -47,107 +47,102 @@ final class CanvasEditorViewModel: ObservableObject {
         self.onPublish = onPublish
         
         observe(nested: self.ui).store(in: &storage)
-        
         observe(nested: self.tools).store(in: &storage)
-        
         observeOnMain(nested: self.data).store(in: &storage)
         
         addMediaButtonTitle = strings.hint
         
         mementoService
             .$canUndo
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in self?.canUndo = value }
+            .receiveOnMain()
+            .weakAssign(to: \.canUndo, on: self)
             .store(in: &storage)
         
         resolutionService.resolution
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in self?.resultResolution = value }
+            .receiveOnMain()
+            .weakAssign(to: \.resultResolution, on: self)
             .store(in: &storage)
         
         removeLayersService.$isNeedRemoveAllLayers
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self = self else { return }
-                if self.showRemoveAllAlert { return }
-                if self.data.isEmpty { return }
+            .sink(on: .main, object: self) { wSelf, value in
+                if wSelf.showRemoveAllAlert { return }
+                if wSelf.data.isEmpty { return }
                 makeHaptics()
-                self.showRemoveAllAlert = value
+                wSelf.showRemoveAllAlert = value
             }
             .store(in: &storage)
         
         merger.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
+            .sink(on: .main, object: self) { wSelf, value in
                 switch value {
                 case .idle:
-                    self?.isLoading = .false
-                    self?.contentPreview = nil
+                    wSelf.isLoading = .false
+                    wSelf.contentPreview = nil
                 case .inProgress:
-                    self?.isLoading = .init(value: true, message: self?.strings.processing ?? "")
+                    wSelf.isLoading = .init(
+                        value: true,
+                        message: wSelf.strings.processing
+                    )
                 case .successImage(let imageItem):
                     makeHaptics(.light)
-                    self?.data.add(imageItem)
-                    
-                    self?.tools.showAddItemSelector(false)
-                    self?.tools.openLayersList(false)
-                    self?.tools.seletedTool(.concreteItem(imageItem))
-                    
-                    self?.isLoading = .false
+                    wSelf.data.add(imageItem)
+                    wSelf.tools.showAddItemSelector(false)
+                    wSelf.tools.openLayersList(false)
+                    wSelf.tools.seletedTool(.concreteItem(imageItem))
+                    wSelf.isLoading = .false
                 case .successVideo(let videoItem):
                     makeHaptics(.light)
-                    self?.data.add(videoItem)
-                    
-                    self?.tools.showAddItemSelector(false)
-                    self?.tools.openLayersList(false)
-                    self?.tools.seletedTool(.concreteItem(videoItem))
-                    
-                    self?.isLoading = .false
+                    wSelf.data.add(videoItem)
+                    wSelf.tools.showAddItemSelector(false)
+                    wSelf.tools.openLayersList(false)
+                    wSelf.tools.seletedTool(.concreteItem(videoItem))
+                    wSelf.isLoading = .false
                 case .error(let error):
                     makeHaptics(.light)
                     Log.e(error)
-                    self?.isLoading = .false
-                    self?.contentPreview = nil
-                    self?.alertData = .init(error)
+                    wSelf.isLoading = .false
+                    wSelf.contentPreview = nil
+                    wSelf.alertData = .init(error)
                 }
             }
             .store(in: &storage)
         
         builder.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
+            .sink(on: .main, object: self) { wSelf, value in
                 switch value {
                 case .idle:
-                    self?.isLoading = .false
-                    self?.contentPreview = nil
+                    wSelf.isLoading = .false
+                    wSelf.contentPreview = nil
                 case .inProgress:
-                    self?.isLoading = .init(value: true, message: self?.strings.processing ?? "")
+                    wSelf.isLoading = .init(
+                        value: true,
+                        message: wSelf.strings.processing
+                    )
                 case .success(let combinerOutput):
                     makeHaptics(.light)
-                    self?.contentPreview = .init(model: combinerOutput)
-                    self?.isLoading = .false
+                    wSelf.contentPreview = .init(model: combinerOutput)
+                    wSelf.isLoading = .false
                 case .error(let error):
                     makeHaptics(.light)
                     Log.e(error)
-                    self?.isLoading = .false
-                    self?.contentPreview = nil
-                    self?.alertData = .init(error)
+                    wSelf.isLoading = .false
+                    wSelf.contentPreview = nil
+                    wSelf.alertData = .init(error)
                 }
             }
             .store(in: &storage)
 
         settings.isLoading.combineLatest(ui.$editorSize, $contentPreviewDidLoad)
             .map { return !$0.0 && ($0.1 != .zero) && $0.2}
-            .removeDuplicates()
-            .sink { [weak self] value in
-                guard let self = self else { return }
-                
+            .sink(on: .main, object: self) { wSelf, value in
                 if value {  
-                    self.addMediaButtonTitle = self.settings.subTitle ?? self.strings.hint
-                    if self.addMediaButtonTitle == "" { self.addMediaButtonTitle = self.strings.hint}
-                    self.getStartTemplate()
+                    wSelf.addMediaButtonTitle = wSelf.settings.subTitle ?? wSelf.strings.hint
+                    if wSelf.addMediaButtonTitle == "" {
+                        wSelf.addMediaButtonTitle = wSelf.strings.hint
+                    }
+                    wSelf.getStartTemplate()
                 }
             }
             .store(in: &storage)
@@ -155,11 +150,9 @@ final class CanvasEditorViewModel: ObservableObject {
         // Не разрешать работать с видео в формате 8к 4к
         data.$layers.flatMap { result -> AnyPublisher<Bool, Never> in result.elements.withVideoAsync() }
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self = self, value else { return }
-                switch self.resultResolution {
-                case .ultraHD4k, .ultraHD8k: self.set(resolution: .fullHD)
+            .sink(on: .main, object: self) { wSelf, value in
+                switch wSelf.resultResolution {
+                case .ultraHD4k, .ultraHD8k: wSelf.set(resolution: .fullHD)
                 default: break
                 }
             }
@@ -172,8 +165,8 @@ final class CanvasEditorViewModel: ObservableObject {
                 $0.0.isEmpty && $0.1 != .drawing
             }
             .removeDuplicates()
-            .sink { [weak self] value in
-                self?.addMediaButtonVisible = value
+            .sink(self) { wSelf, value in
+                wSelf.addMediaButtonVisible = value
             }
             .store(in: &storage)
     }

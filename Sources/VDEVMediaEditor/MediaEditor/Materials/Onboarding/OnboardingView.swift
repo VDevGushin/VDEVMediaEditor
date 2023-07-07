@@ -48,8 +48,8 @@ struct OnboardingView: View {
                 
                 Overlay()
             }
-            .onAppear { self.storyTimer.start(items: data.count) }
-            .onDisappear {self.storyTimer.cancel() }
+            .onAppear { storyTimer.start(items: data.count) }
+            .onDisappear { storyTimer.cancel() }
         }
         .overlay(alignment: .topTrailing) {
             CloseButton {
@@ -182,17 +182,17 @@ class StoryTimer: ObservableObject {
 
     func start(items: Int) {
         self.max = items
-        self.cancellable = self.publisher.autoconnect().sink(receiveValue: {  _ in
-            var newProgress = self.progress + (0.1 / self.interval)
-
-            if Int(newProgress) >= self.max {
-                newProgress = 0
+        self.cancellable = self.publisher
+            .autoconnect()
+            .sink(on: .main, object: self) { wSelf, _ in
+                var newProgress = wSelf.progress + (0.1 / wSelf.interval)
+                if Int(newProgress) >= wSelf.max {
+                    newProgress = 0
+                }
+                withAnimation(newProgress == 0 ? .none : .linear) {
+                    wSelf.progress = newProgress
+                }
             }
-
-            withAnimation(newProgress == 0 ? .none : .linear) {
-                self.progress = newProgress
-            }
-        })
     }
 
     func cancel() {

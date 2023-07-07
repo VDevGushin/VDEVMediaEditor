@@ -7,7 +7,14 @@
 
 import Foundation
 
-extension String {
+extension String: Error, LocalizedError {
+    public var localizedDescription: String {
+        self
+    }
+    
+    public var errorDescription: String? {
+        NSLocalizedString(self, comment: "")
+    }
 }
 
 extension String {

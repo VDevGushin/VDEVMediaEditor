@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Combine
 
 enum PasteboardModel {
     case image(UIImage)
@@ -17,6 +17,8 @@ struct ToolSelectorHorizontalView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var pasteboardService: PasteboardService
+    @InjectedOptional private var imageResultChecker: ImageResultChecker?
+    @State private var isLoading: Bool = false
     
     private let tools: [ToolItem]
     
@@ -62,6 +64,16 @@ struct ToolSelectorHorizontalView: View {
                 .padding(.horizontal, horizontalPadding)
             }
         }
+        .onReceive(
+            (imageResultChecker?.state ??
+                .single(ImageResultChecker.State.notStarted))
+            .receiveOnMain()
+        ) { value in
+            switch value {
+            case .inProgress: isLoading = true
+            default: isLoading = false
+            }
+        }
     }
     
     @ViewBuilder func ToolRow(tool: ToolItem) -> some View {
@@ -71,6 +83,18 @@ struct ToolSelectorHorizontalView: View {
                     size: .init(width: buttonSize, height: buttonSize),
                     tintColor: AppColors.whiteWithOpacity) {
             onSelect(tool)
+        }.overlay(alignment: .topTrailing) {
+            if isLoading, case .promptImageGenerator = tool {
+                Circle().fill(AppColors.whiteWithOpacity1)
+                    .frame(.init(width: 18, height: 18))
+                    .overlay {
+                        ActivityIndicator(isAnimating: true,
+                                          style: .medium,
+                                          color: AppColors.black.uiColor)
+                    }
+            } else {
+                EmptyView()
+            }
         }
     }
     

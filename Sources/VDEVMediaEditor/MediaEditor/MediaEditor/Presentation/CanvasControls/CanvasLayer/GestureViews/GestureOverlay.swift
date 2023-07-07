@@ -84,19 +84,19 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     
     private func setupGestForTemplate(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePanForTemplate(sender:)))
-        Pangesture.delegate = context.coordinator
+        Pangesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(Pangesture)
         Pangesture.cancelsTouchesInView = false
         context.coordinator.panGest = Pangesture
         
         let RotationGesture = UIRotationGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleRotateForTemplate(sender:)))
-        RotationGesture.delegate = context.coordinator
+        RotationGesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(RotationGesture)
         RotationGesture.cancelsTouchesInView = false
         context.coordinator.rotGest = RotationGesture
         
         let Pinchgesture = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinchForTemplate(sender:)))
-        Pinchgesture.delegate = context.coordinator
+        Pinchgesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(Pinchgesture)
         Pinchgesture.cancelsTouchesInView = false
         context.coordinator.pinchGest = Pinchgesture
@@ -109,39 +109,39 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     private func setupGest(for hView: UIView, context: Context) {
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePan(sender:)))
         Pangesture.cancelsTouchesInView = true
-        Pangesture.delegate = context.coordinator
+        Pangesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(Pangesture)
         context.coordinator.panGest = Pangesture
         
         let RotationGesture = UIRotationGestureRecognizer(target: context.coordinator, action:     #selector(context.coordinator.handleRotate(sender:)))
         RotationGesture.cancelsTouchesInView = true
-        RotationGesture.delegate = context.coordinator
+        RotationGesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(RotationGesture)
         context.coordinator.rotGest = RotationGesture
         
         let Pinchgesture = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinch(sender:)))
         Pinchgesture.cancelsTouchesInView = true
-        Pinchgesture.delegate = context.coordinator
+        Pinchgesture.delegate =  ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(Pinchgesture)
         context.coordinator.pinchGest = Pinchgesture
         
         // Если шаблон, то нам ничего не нужно (просто следим за манипуляциями)
         let TapGestureRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleTap(sender:)))
         TapGestureRecognizer.numberOfTapsRequired = 1
-        TapGestureRecognizer.delegate = context.coordinator
+        TapGestureRecognizer.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(TapGestureRecognizer)
         context.coordinator.tapGest = TapGestureRecognizer
         
         let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPress(sender:)))
         LongPressRecognizer.minimumPressDuration = 0.1
         LongPressRecognizer.delaysTouchesBegan = true
-        LongPressRecognizer.delegate = context.coordinator
+        LongPressRecognizer.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(LongPressRecognizer)
         context.coordinator.longTapGest = LongPressRecognizer
         
         let DoubleTapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleDoubleTap))
         DoubleTapRecognizer.numberOfTapsRequired = 2
-        DoubleTapRecognizer.delegate = context.coordinator
+        DoubleTapRecognizer.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(DoubleTapRecognizer)
         context.coordinator.doubleTapGest = DoubleTapRecognizer
         
@@ -192,7 +192,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         Coordinator(parent: self)
     }
     
-    final class Coordinator<Content: View>: NSObject, UIGestureRecognizerDelegate {
+    final class Coordinator<Content: View> {
         private let parent: GestureOverlay
         private var externalScale: CGFloat!
         private var externalRotation: Angle!
@@ -332,10 +332,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
             gestureStatus(state: &rotInProgress, sender: sender)
         }
         
-        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            return true
-        }
-        
         // MARK: - For template to detect manipulations
         @objc
         func handlePanForTemplate(sender: UIPanGestureRecognizer) {
@@ -408,37 +404,45 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     func inProcess(gesture: ExternalGesture) {
         switch gesture {
         case let .scaleInProgress(scale):
-            guard ParentTouchHolder.delegate === self else { return }
-            if externalScale == nil {
-                externalScale = parent.scale
-                return
-            }
-            let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
-            parent.scale = zoom
+            scaleInProgress(scale)
         case let .rotationInProgress(rotation):
-            if externalRotation == nil {
-                externalRotation = parent.rotation
-                return
-            }
-            let angle: Angle = .radians(externalRotation.radians + rotation)
-            let rotationForParent: Angle = angle.degrees.makeAngle { [weak self] value in
-                guard let self = self else { return }
-                switch value {
-                case .vertical:
-                    self.parent.isHorizontalOrientation = false
-                    self.parent.isVerticalOrientation = true
-                case .horizontal:
-                    self.parent.isHorizontalOrientation = true
-                    self.parent.isVerticalOrientation = false
-                default:
-                    self.parent.isHorizontalOrientation = false
-                    self.parent.isVerticalOrientation = false
-                }
-            }
-            parent.rotation = rotationForParent
+            rotationInProgress(rotation)
         default:
             break
         }
+    }
+    
+    private func scaleInProgress(_ scale: CGFloat) {
+        guard ParentTouchHolder.delegate === self else { return }
+        if externalScale == nil {
+            externalScale = parent.scale
+            return
+        }
+        let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
+        parent.scale = zoom
+    }
+    
+    private func rotationInProgress(_ rotation: CGFloat) {
+        if externalRotation == nil {
+            externalRotation = parent.rotation
+            return
+        }
+        let angle: Angle = .radians(externalRotation.radians + rotation)
+        let rotationForParent: Angle = angle.degrees.makeAngle { [weak self] value in
+            guard let self = self else { return }
+            switch value {
+            case .vertical:
+                self.parent.isHorizontalOrientation = false
+                self.parent.isVerticalOrientation = true
+            case .horizontal:
+                self.parent.isHorizontalOrientation = true
+                self.parent.isVerticalOrientation = false
+            default:
+                self.parent.isHorizontalOrientation = false
+                self.parent.isVerticalOrientation = false
+            }
+        }
+        parent.rotation = rotationForParent
     }
 }
 
@@ -453,14 +457,10 @@ fileprivate extension GestureOverlay.Coordinator {
     
     func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
         switch sender.state {
-        case .began:
-            state = true
-        case .changed:
-            state = true
-        case .ended, .cancelled, .failed, .possible:
-            state = false
-        @unknown default:
-            state = false
+        case .began: state = true
+        case .changed: state = true
+        case .ended, .cancelled, .failed, .possible: state = false
+        @unknown default: state = false
         }
     }
 }

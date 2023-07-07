@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct PublishButton: View {
     @Injected private var strings: VDEVMediaEditorStrings
     

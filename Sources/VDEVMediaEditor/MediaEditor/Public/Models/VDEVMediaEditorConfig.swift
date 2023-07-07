@@ -141,6 +141,7 @@ public protocol VDEVMediaEditorStrings {
     var addPhoto: String { get }
     var addVideo: String { get }
     var addMusic: String { get }
+    var promptImageGenerate: String { get }
     var camera: String { get }
     var drawing: String { get }
     var background: String { get }
@@ -169,4 +170,6 @@ public protocol VDEVMediaEditorStrings {
     var questionQualityImage: String { get }
     var sound: String { get }
     var hint: String { get }
+    var submit: String { get }
+    var random: String { get }
 }

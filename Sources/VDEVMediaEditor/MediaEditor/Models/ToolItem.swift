@@ -14,7 +14,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case photoPicker // выбор только фоток
     case videoPicker // выбор только видео
     case musicPiker // Выбор музыки
-    // case imageGenerator // Генерация картинки по тексту
+    case promptImageGenerator // Генерация картинки по тексту
     case camera
     case drawing
     case backgroundColor
@@ -38,12 +38,15 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         let settings = DI.resolve(VDEVMediaEditorSettings.self)
         
         var toolsItems: [ToolItem] = []
+        if settings.canGenerateImageByPrompt {
+            toolsItems.append(.promptImageGenerator)
+        }
         toolsItems.append(.photoPicker)
         toolsItems.append(.videoPicker)
+        toolsItems.append(.camera)
         if settings.canAddMusic {
             toolsItems.append(.musicPiker)
         }
-        toolsItems.append(.camera)
         toolsItems.append(.template)
         toolsItems.append(.stickers)
         toolsItems.append(.text(nil))
@@ -58,6 +61,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .photoPicker: return nil
         case .videoPicker: return nil
         case .musicPiker: return nil
+        case .promptImageGenerator: return nil
         case .camera: return nil
         case .drawing: return nil
         case .backgroundColor: return nil
@@ -85,6 +89,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.stickersCustom
         case .photoPicker:
             return Strings.addPhoto
+        case .promptImageGenerator:
+            return Strings.promptImageGenerate
         case .videoPicker:
             return Strings.addVideo
         case .musicPiker:
@@ -115,6 +121,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return images.typed.typeVideo
         case .musicPiker:
             return images.typed.typeVideo
+        case .promptImageGenerator:
+            return images.typed.typePhoto
         case .camera:
             return images.typed.typeCamera
         case .drawing:

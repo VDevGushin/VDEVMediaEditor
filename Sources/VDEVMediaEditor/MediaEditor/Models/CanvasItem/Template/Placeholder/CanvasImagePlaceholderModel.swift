@@ -25,7 +25,7 @@ final class CanvasImagePlaceholderModel: CanvasItemModel {
     var aspectRatio: CGFloat { originalImage.aspectRatio }
     
     private let aplayer: CanvasApplayer = .init()
-    private var storage = Set<AnyCancellable>()
+    private var storage = Cancellables()
     private(set) var filters: [EditorFilter]
     
     override var filterChain: [FilterDescriptor] {
@@ -78,18 +78,16 @@ final class CanvasImagePlaceholderModel: CanvasItemModel {
                              colorFilter: colorFilter,
                              textures: textures,
                              masks: masks)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] output in
-            guard let self = self else { return }
+        .sink(on: .main, object: self) { wSelf, output in
             switch output.value {
             case .image(let value):
-                self.image = value
+                wSelf.image = value
             case .empty:
-                self.image = self.originalImage
+                wSelf.image = wSelf.originalImage
             case .video, .cancel:
                 break
             }
-            self.inProgress = false
+            wSelf.inProgress = false
         }
         .store(in: &storage)
     }

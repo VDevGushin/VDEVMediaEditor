@@ -24,20 +24,20 @@ final class CanvasLayersDataViewModel: ObservableObject {
     
     private var maximumLayers: Int { settings.maximumLayers }
     
-    private var subscriptions = Set<AnyCancellable>()
-    private var storage = Set<AnyCancellable>()
+    private var subscriptions = Cancellables()
+    private var storage = Cancellables()
     
     init() {
         // слежу за внутренними изменениями объектов в коллекции
         $layers
-            .sink { [weak self] layers in
-                guard let self = self else { return }
-                
-                self.subscriptions.removeAll()
+            .sink(self) { wSelf, layers in
+                wSelf.subscriptions.removeAll()
                 for item in layers {
                     item.objectWillChange
-                        .sink(receiveValue: { [weak self] _ in self?.objectWillChange.send() })
-                        .store(in: &self.subscriptions)
+                        .sink { _ in
+                            wSelf.objectWillChange.send()
+                        }
+                        .store(in: &wSelf.subscriptions)
                 }
             }
             .store(in: &storage)

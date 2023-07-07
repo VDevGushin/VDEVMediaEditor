@@ -108,14 +108,12 @@ final class TutorialsModel: Identifiable, ObservableObject, Equatable {
         self.setItemToLoop()
         
         timeObserver = player.publisher(for: \.timeControlStatus)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                guard let self = self else { return }
+            .sink(on: .main, object: self) { wSelf, status in
                 if status == .paused {
-                    self.isPlaying = false
+                    wSelf.isPlaying = false
                 }
                 if status == .playing {
-                    self.isPlaying = true
+                    wSelf.isPlaying = true
                 }
             }
     }

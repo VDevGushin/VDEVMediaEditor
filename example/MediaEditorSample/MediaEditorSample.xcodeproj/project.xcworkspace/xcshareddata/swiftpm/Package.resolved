@@ -42,7 +42,7 @@
       "location" : "https://github.com/onevcat/Kingfisher.git",
       "state" : {
         "branch" : "master",
-        "revision" : "7f6331da4d0fcebec4996e9a64d072f467be932d"
+        "revision" : "40d7062bd9e6645f3bd5430e18565286f1223712"
       }
     },
     {
@@ -51,7 +51,7 @@
       "location" : "https://github.com/guoyingtao/Mantis.git",
       "state" : {
         "branch" : "master",
-        "revision" : "d919e546f49af922df2fcb5de01e742bc82829cf"
+        "revision" : "0dd577320b9c99739be13158a3ba46e514b27223"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-identified-collections.git",
       "state" : {
-        "revision" : "f52eee28bdc6065aa2f8424067e6f04c74bda6e6",
-        "version" : "0.7.1"
+        "revision" : "d01446a78fb768adc9a78cbb6df07767c8ccfc29",
+        "version" : "0.8.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
-        "revision" : "1b8b443b61b8b37fafb06c1abad9b6be244c9de9",
-        "version" : "0.1.4"
+        "revision" : "75d5be2c85ec1e3ccbd9d99d321dd3abb5955e8d",
+        "version" : "0.1.5"
       }
     }
   ],

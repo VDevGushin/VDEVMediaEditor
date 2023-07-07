@@ -11,12 +11,11 @@ import Combine
 // MARK: - Sticker
 final class CanvasStickerModel: CanvasItemModel {
     private(set) var originalImage: UIImage
-    
     @Published private(set) var image: UIImage
     @Published private(set) var inProgress: Bool = false
 
     private let aplayer = CanvasApplayer()
-    private var storage = Set<AnyCancellable>()
+    private var storage = Cancellables()
 
     init(image: UIImage,
          originalImage: UIImage? = nil,
@@ -71,16 +70,14 @@ final class CanvasStickerModel: CanvasItemModel {
                              colorFilter: colorFilter,
                              textures: textures,
                              masks: masks)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] output in
-            guard let self = self else { return }
+        .sink(on: .main, object: self) { wSelf, output in
             switch output.value {
-            case .image(let value): self.image = value
-            case .empty: self.image = self.originalImage
+            case .image(let value): wSelf.image = value
+            case .empty: wSelf.image = wSelf.originalImage
             case .video: break
             case .cancel: break
             }
-            self.inProgress = false
+            wSelf.inProgress = false
         }
         .store(in: &storage)
     }

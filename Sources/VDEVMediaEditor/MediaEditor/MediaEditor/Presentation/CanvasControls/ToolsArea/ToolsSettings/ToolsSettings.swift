@@ -16,7 +16,7 @@ final class ToolsSettingsViewModel: ObservableObject {
     
     @Injected private var resultSettings: VDEVMediaEditorResultSettings
     
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
     
     init(vm: CanvasEditorViewModel) {
         self.canvasVM = vm
@@ -25,21 +25,17 @@ final class ToolsSettingsViewModel: ObservableObject {
         
         canvasVM
             .$resultResolution
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                self?.current = value
-            }
+            .receiveOnMain()
+            .weakAssign(to: \.current, on: self)
             .store(in: &storage)
         
         makeVariants()
         
         $needAutoEnhance
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self = self else { return }
-                if self.needAutoEnhance != self.resultSettings.needAutoEnhance.value {
-                    self.resultSettings.needAutoEnhance.send($0)
+            .sink(on: .main, object: self) { wSelf, value in
+                if wSelf.needAutoEnhance != wSelf.resultSettings.needAutoEnhance.value {
+                    wSelf.resultSettings.needAutoEnhance.send(value)
                     makeHaptics()
                 }
             }
@@ -48,22 +44,28 @@ final class ToolsSettingsViewModel: ObservableObject {
     
     func makeVariants() {
         // Не разрешать работать с видео в формате 8к 4к
-        canvasVM.data.$layers.flatMap { result -> AnyPublisher<Bool, Never> in result.elements.withVideoAsync() }
+        canvasVM.data.$layers
+            .flatMap { result -> AnyPublisher<Bool, Never> in
+                result.elements.withVideoAsync()
+            }
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self = self else { return }
-                
+            .sink(on: .main, object: self) { wSelf, value in
                 if value {
-                    switch self.canvasVM.resultResolution {
-                    case .ultraHD8k, .ultraHD4k: self.canvasVM.set(resolution: .fullHD)
+                    switch wSelf.canvasVM.resultResolution {
+                    case .ultraHD8k, .ultraHD4k: wSelf.canvasVM.set(resolution: .fullHD)
                     default: break
                     }
-                    self.variants = [.sd, .hd, .fullHD].filter { $0 != self.canvasVM.resultResolution }
-                    self.variants = [self.canvasVM.resultResolution] + self.variants
+                    wSelf.variants = [.sd, .hd, .fullHD]
+                        .filter {
+                            $0 != wSelf.canvasVM.resultResolution
+                        }
+                    wSelf.variants = [wSelf.canvasVM.resultResolution] + wSelf.variants
                 } else {
-                    self.variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k].filter { $0 != self.canvasVM.resultResolution }
-                    self.variants = [self.canvasVM.resultResolution] + self.variants
+                    wSelf.variants = [.sd, .hd, .fullHD, .ultraHD4k, .ultraHD8k]
+                        .filter {
+                            $0 != wSelf.canvasVM.resultResolution
+                        }
+                    wSelf.variants = [wSelf.canvasVM.resultResolution] + wSelf.variants
                 }
             }
             .store(in: &storage)

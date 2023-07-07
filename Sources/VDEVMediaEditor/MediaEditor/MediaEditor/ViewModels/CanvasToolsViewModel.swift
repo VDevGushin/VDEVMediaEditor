@@ -31,9 +31,9 @@ final class CanvasToolsViewModel: ObservableObject {
     // показать лодер на загрузке стикеров
     @Published private(set) var isPrepareOjectOperation: Bool = false
     // загрузка стиков
-    private var objectPrepareOperations: Set<AnyCancellable> = Set()
+    private var objectPrepareOperations = Cancellables()
 
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
     
     @Published var overlay: CanvasEditorToolsForTemplateViewModel = .init()
 
@@ -43,19 +43,16 @@ final class CanvasToolsViewModel: ObservableObject {
         $layerInManipulation
             .removeDuplicates()
             .combineLatest(overlay.$isAnyViewOpen)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] layerInManipulation, isAnyViewOpen  in
-                guard let self = self else { return }
+            .sink(on: .main, object: self) { wSelf, result  in
+                let layerInManipulation = result.0
                 guard let value = layerInManipulation else { return }
-                
                 if value is CanvasTemplateModel {
-                    self.openLayersList(false)
+                    wSelf.openLayersList(false)
                     return
                 }
-                
-                self.overlay.hideAllOverlayViews()
-                self.openLayersList(false)
-                self.hideAllTools()
+                wSelf.overlay.hideAllOverlayViews()
+                wSelf.openLayersList(false)
+                wSelf.hideAllTools()
             }
             .store(in: &storage)
         
@@ -66,25 +63,24 @@ final class CanvasToolsViewModel: ObservableObject {
                 return $0.0 == .empty && $0.1 == false
             }
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self = self else { return }
+            .sink(on: .main, object: self) { wSelf, value in
                 if value {
-                    self.objectPrepareOperations.cancelAll()
-                    self.setPrepareOjectOperation(false)
+                    wSelf.objectPrepareOperations.cancelAll()
+                    wSelf.setPrepareOjectOperation(false)
                 }
             }
             .store(in: &storage)
         
         $currentToolItem.combineLatest(overlay.$isAnyViewOpen)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] currentToolItem, isAnyViewOpen  in
+            .sink(on: .main, object: self) { (wSelf, result) in
+                let currentToolItem = result.0
+                let isAnyViewOpen = result.1
                 if currentToolItem != .empty {
-                    self?.openLayersList(false)
-                    self?.disableLayersAndAddNewItem(true)
+                    wSelf.openLayersList(false)
+                    wSelf.disableLayersAndAddNewItem(true)
                 } else {
                     if isAnyViewOpen { return }
-                    self?.disableLayersAndAddNewItem(false)
+                    wSelf.disableLayersAndAddNewItem(false)
                 }
             }
             .store(in: &storage)
@@ -92,14 +88,12 @@ final class CanvasToolsViewModel: ObservableObject {
         overlay
             .$isAnyViewOpen
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                guard let self = self else { return }
+            .sink(on: .main, object: self) { wSelf, value in
                 if value {
-                    self.closeTools(false)
-                    self.disableLayersAndAddNewItem(true)
+                    wSelf.closeTools(false)
+                    wSelf.disableLayersAndAddNewItem(true)
                 } else {
-                    self.disableLayersAndAddNewItem(false)
+                    wSelf.disableLayersAndAddNewItem(false)
                 }
             }
             .store(in: &storage)
@@ -243,16 +237,12 @@ extension CanvasToolsViewModel {
                 forKey: item.url.absoluteString)
         }
         .replaceError(with: nil)
-        .receive(on: DispatchQueue.main)
-        .sink(receiveValue: { [weak self] value in
-            guard let self = self else { return }
-
-            self.setPrepareOjectOperation(false)
-
-            if self.currentToolItem == .stickers {
+        .sink(on: .main, object: self) { wSelf, value in
+            wSelf.setPrepareOjectOperation(false)
+            if wSelf.currentToolItem == .stickers {
                 completion(value?.image)
             }
-        })
+        }
         .store(in: &objectPrepareOperations)
     }
 }

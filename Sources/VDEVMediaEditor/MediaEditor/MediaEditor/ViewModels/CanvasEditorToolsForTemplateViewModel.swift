@@ -39,20 +39,23 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
     @Published var showVideoPicker: Bool = false
     @Published private(set) var isAnyViewOpen: Bool = false
 
-    private var storage: Set<AnyCancellable> = Set()
+    private var storage = Cancellables()
 
     init() {
         // Если у на вообще, что либо открыто на оверлее
-        Publishers.CombineLatest3($showPhotoPicker, $showVideoPicker, $state)
-            .map {
-                $0 == true || $1 == true || $2 != .empty
-            }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.isAnyViewOpen = $0
-            }
-            .store(in: &storage)
+        let checkAnyView = Publishers.CombineLatest3(
+            $showPhotoPicker,
+            $showVideoPicker,
+            $state
+        )
+        .eraseToAnyPublisher()
+        
+        checkAnyView
+        .map { $0 == true || $1 == true || $2 != .empty }
+        .removeDuplicates()
+        .receiveOnMain()
+        .weakAssign(to: \.isAnyViewOpen, on: self)
+        .store(in: &storage)
     }
 
     //MARK: - CanvasEditorDelegate

@@ -15,7 +15,7 @@ private final class CanvasLayerViewModel: ObservableObject {
     
     unowned let item: CanvasItemModel
     weak var memento: MementoObject? // for save state
-
+    
     private(set) var manipulationWatcher: ManipulationWatcher = .shared
     private var operation: AnyCancellable?
     private var watcherOperation: AnyCancellable?
@@ -30,10 +30,11 @@ private final class CanvasLayerViewModel: ObservableObject {
         operation = Publishers.CombineLatest3($offset.removeDuplicates(),
                                               $scale.removeDuplicates(),
                                               $rotation.removeDuplicates())
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] offset, scale, rotation in
-            guard let self = self else { return }
-            self.item.update(offset: offset, scale: scale, rotation: rotation)
+        .sink(on: .main, object: self) { wSelf, result in
+            let offset = result.0
+            let scale = result.1
+            let rotation = result.2
+            wSelf.item.update(offset: offset, scale: scale, rotation: rotation)
         }
     }
     
@@ -85,73 +86,6 @@ struct CanvasLayerView<Content: View>: View {
     @State private var tapScaleFactor: CGFloat = 1.0
     
     @Binding private var containerSize: CGSize
-    
-    @ViewBuilder
-    private var selectionColor: some View {
-        if vm.item.type == .template { EmptyView() }
-        if editorVM.tools.isItemInSelection(item: vm.item) {
-            AnimatedGradientView(color: guideLinesColor.opacity(0.1))
-        }
-        if !isCurrentInManipulation { EmptyView() }
-        if (gestureInProgress || isLongTap) {
-            AnimatedGradientView(color: guideLinesColor.opacity(0.2))
-        } else {
-            EmptyView()
-        }
-    }
-    
-    private var borderType: BorderType {
-        if vm.item.type == .template { return .empty }
-        if editorVM.tools.isItemInSelection(item: vm.item) { return .selected }
-        if !isCurrentInManipulation { return .empty }
-        return (gestureInProgress || isLongTap) ? .manipulated : .empty
-    }
-    
-    private var canManipulate: Bool {
-        if editorVM.tools.overlay.isAnyViewOpen { return vm.item is CanvasTemplateModel }
-        return editorVM.tools.isCurrent(item: vm.item) && isCurrentInManipulation
-    }
-    
-    private var itemBlur: CGFloat {
-        let maxBlur: CGFloat = 0.0
-        let minBlur: CGFloat = 5
-        let superMinBlur: CGFloat = 5
-        // Если открыто любое меню операций над шаблонами
-        if editorVM.tools.overlay.isAnyViewOpen {
-            return vm.item is CanvasTemplateModel ? maxBlur : minBlur
-        }
-        // Если это не текущий выбранный элемент
-        if !editorVM.tools.isCurrent(item: vm.item) { return superMinBlur }
-        // Если это шаблон
-        if vm.item is CanvasTemplateModel { return maxBlur }
-        // Проверка на возможность применить свойство опасити
-        if vm.manipulationWatcher
-            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
-            return maxBlur
-        }
-        
-        return isCurrentInManipulation ? maxBlur : minBlur
-    }
-    
-    private var itemOpacity: CGFloat {
-        let maxOpacity: CGFloat = 1.0
-        let minOpacity: CGFloat = 0.6
-        let superMinOpacity: CGFloat = 0.2
-        // Если открыто любое меню операций над шаблонами
-        if editorVM.tools.overlay.isAnyViewOpen {
-            return vm.item is CanvasTemplateModel ? maxOpacity : minOpacity
-        }
-        // Если это не текущий выбранный элемент
-        if !editorVM.tools.isCurrent(item: vm.item) { return superMinOpacity }
-        // Если это шаблон
-        if vm.item is CanvasTemplateModel { return maxOpacity }
-        // Проверка на возможность применить свойство опасити
-        if vm.manipulationWatcher
-            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
-            return maxOpacity
-        }
-        return isCurrentInManipulation ? maxOpacity : minOpacity
-    }
     
     init(item: CanvasItemModel,
          editorVM: CanvasEditorViewModel,
@@ -229,8 +163,12 @@ struct CanvasLayerView<Content: View>: View {
                         onShowCenterH?(false)
                     }
                 }
-                .onChange(of: isVerticalOrientation) { value in if value { haptics(.light) } }
-                .onChange(of: isHorizontalOrientation) { value in if value { haptics(.light) } }
+                .onChange(of: isVerticalOrientation) {
+                    value in if value { haptics(.light) }
+                }
+                .onChange(of: isHorizontalOrientation) {
+                    value in if value { haptics(.light) }
+                }
                 .onChange(of: gestureInProgress) { newValue in
                     switch newValue {
                     case true:
@@ -301,27 +239,78 @@ fileprivate extension CanvasLayerView {
     func resetCenter() { withAnimation(.interactiveSpring()) { vm.offset = .zero } }
 }
 
+// MARK: - Props
 fileprivate extension CanvasLayerView {
-    enum BorderType {
-        case empty
-        case selected
-        case manipulated
-        
-        func border(scale: CGFloat) -> CGFloat {
-            switch self {
-            case .manipulated: return 1 / scale
-            default: return 0.0
-            }
+    @ViewBuilder
+    var selectionColor: some View {
+        if vm.item.type == .template { EmptyView() }
+        if editorVM.tools.isItemInSelection(item: vm.item) {
+            AnimatedGradientView(color: guideLinesColor.opacity(0.1))
         }
-        
-        func borderOverlay(scale: CGFloat) -> CGFloat {
-            switch self {
-            case .selected: return 1 / scale
-            default: return 0.0
-            }
+        if !isCurrentInManipulation { EmptyView() }
+        if (gestureInProgress || isLongTap) {
+            AnimatedGradientView(color: guideLinesColor.opacity(0.2))
+        } else {
+            EmptyView()
         }
     }
     
+    var borderType: BorderType {
+        if vm.item.type == .template { return .empty }
+        if editorVM.tools.isItemInSelection(item: vm.item) { return .selected }
+        if !isCurrentInManipulation { return .empty }
+        return (gestureInProgress || isLongTap) ? .manipulated : .empty
+    }
+    
+    var canManipulate: Bool {
+        if editorVM.tools.overlay.isAnyViewOpen { return vm.item is CanvasTemplateModel }
+        return editorVM.tools.isCurrent(item: vm.item) && isCurrentInManipulation
+    }
+    
+    var itemBlur: CGFloat {
+        let maxBlur: CGFloat = 0.0
+        let minBlur: CGFloat = 2
+        let superMinBlur: CGFloat = 20
+        // Если открыто любое меню операций над шаблонами
+        if editorVM.tools.overlay.isAnyViewOpen {
+            return vm.item is CanvasTemplateModel ? maxBlur : minBlur
+        }
+        // Если это не текущий выбранный элемент
+        if !editorVM.tools.isCurrent(item: vm.item) { return superMinBlur }
+        // Если это шаблон
+        if vm.item is CanvasTemplateModel { return maxBlur }
+        // Проверка на возможность применить свойство опасити
+        if vm.manipulationWatcher
+            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
+            return maxBlur
+        }
+        
+        return isCurrentInManipulation ? maxBlur : minBlur
+    }
+    
+    var itemOpacity: CGFloat {
+        let maxOpacity: CGFloat = 1.0
+        let minOpacity: CGFloat = 0.6
+        let superMinOpacity: CGFloat = 0.2
+        // Если открыто любое меню операций над шаблонами
+        if editorVM.tools.overlay.isAnyViewOpen {
+            return vm.item is CanvasTemplateModel ? maxOpacity : minOpacity
+        }
+        // Если это не текущий выбранный элемент
+        if !editorVM.tools.isCurrent(item: vm.item) { return superMinOpacity }
+        // Если это шаблон
+        if vm.item is CanvasTemplateModel { return maxOpacity }
+        // Проверка на возможность применить свойство опасити
+        if vm.manipulationWatcher
+            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
+            return maxOpacity
+        }
+        return isCurrentInManipulation ? maxOpacity : minOpacity
+    }
+}
+
+// MARK: - Selection border type
+fileprivate extension CanvasLayerView {
     @ViewBuilder
     var selectionOverlay: some View {
         switch borderType {
@@ -363,5 +352,27 @@ private final class ManipulationWatcher: ObservableObject {
     func regectOpacityWith(dataModel: CanvasLayersDataViewModel,
                            for item: CanvasItemModel) -> Bool {
         dataModel.rejectOpacityProperty(itemInCanvas: item, itemInManipulation: current)
+    }
+}
+// MARK: - Helps
+fileprivate extension CanvasLayerView {
+    enum BorderType {
+        case empty
+        case selected
+        case manipulated
+        
+        func border(scale: CGFloat) -> CGFloat {
+            switch self {
+            case .manipulated: return 1 / scale
+            default: return 0.0
+            }
+        }
+        
+        func borderOverlay(scale: CGFloat) -> CGFloat {
+            switch self {
+            case .selected: return 1 / scale
+            default: return 0.0
+            }
+        }
     }
 }
