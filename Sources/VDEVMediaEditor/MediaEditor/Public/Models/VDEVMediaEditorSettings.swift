@@ -40,6 +40,7 @@ public protocol VDEVMediaEditorSettings {
     var showCommonSettings: Bool { get }
     // Показать возможность включения звука в видосах
     var canTurnOnSoundInVideos: Bool { get }
+    // Можно ли добавлять музыку
     var canAddMusic: Bool { get }
     
     var resourceID: String { get }

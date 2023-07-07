@@ -14,6 +14,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case photoPicker // выбор только фоток
     case videoPicker // выбор только видео
     case musicPiker // Выбор музыки
+    // case imageGenerator // Генерация картинки по тексту
     case camera
     case drawing
     case backgroundColor
@@ -36,28 +37,18 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     static var allCases: [ToolItem] {
         let settings = DI.resolve(VDEVMediaEditorSettings.self)
         
+        var toolsItems: [ToolItem] = []
+        toolsItems.append(.photoPicker)
+        toolsItems.append(.videoPicker)
         if settings.canAddMusic {
-            return  [
-                .photoPicker,
-                .videoPicker,
-                .musicPiker,
-                .camera,
-                .template,
-                .stickers,
-                .text(nil),
-                .drawing,
-            ]
-        } else {
-            return [
-                .photoPicker,
-                .videoPicker,
-                .camera,
-                .template,
-                .stickers,
-                .text(nil),
-                .drawing,
-            ]
+            toolsItems.append(.musicPiker)
         }
+        toolsItems.append(.camera)
+        toolsItems.append(.template)
+        toolsItems.append(.stickers)
+        toolsItems.append(.text(nil))
+        toolsItems.append(.drawing)
+        return toolsItems
     }
     
     var innerCanvasModel: CanvasItemModel? {

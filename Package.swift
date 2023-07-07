@@ -38,7 +38,7 @@ let package = Package(
                            "CombineExt",
                            "BackgroundRemoval"
                           ],
-            resources: [.process("Images"), .process("Resources")]
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "VDEVMediaEditorTests",
