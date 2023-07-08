@@ -25,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git", branch: "main"),
         .package(url: "https://github.com/mxcl/Path.swift.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMajor(from: "0.9.9")),
+        .package(url: "https://github.com/apple/ml-stable-diffusion", .upToNextMajor(from: "0.4.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -41,6 +42,7 @@ let package = Package(
                            "BackgroundRemoval",
                            .product(name: "Path", package: "Path.swift"),
                            "ZIPFoundation",
+                           .product(name: "StableDiffusion", package: "ml-stable-diffusion"),
                           ],
             resources: [.process("Resources")]
         ),
