@@ -1,5 +1,5 @@
 //
-//  PromptImageGeneratorMLService.swift
+//  CoreMLLoader.swift
 //  
 //
 //  Created by Vladislav Gushin on 08.07.2023.
@@ -13,7 +13,7 @@ import StableDiffusion
 import CoreML
 
 @available(iOS 16.2, *)
-final class PromptImageGeneratorMLService {
+final class CoreMLLoader {
     private(set) var mlSate: CurrentValueSubject<LoaderState, Never> = .init(.notStarted)
     private var downloadURL: URL {
         URL(string: "https://huggingface.co/pcuenq/coreml-stable-diffusion-2-1-base/resolve/main/coreml-stable-diffusion-2-1-base_original_compiled.zip")!
@@ -24,11 +24,11 @@ final class PromptImageGeneratorMLService {
     private var filePath: Path { fileFolderPath/fileName }
     
     private var fileNameZip: String {
-        "coreml-stable-diffusion-1-4_original_compiled.zip"
+        "coreml-stable-diffusion-2-1-base_original_compiled.zip"
     }
     
     private var fileName: String {
-        "coreml-stable-diffusion-1-4_original_compiled"
+        "coreml-stable-diffusion-2-1-base_original_compiled"
     }
     
     private var downloadSubscriber: Cancellable?
@@ -105,7 +105,7 @@ final class PromptImageGeneratorMLService {
 
 // MARK: - Donwloading
 @available(iOS 16.2, *)
-fileprivate extension PromptImageGeneratorMLService {
+fileprivate extension CoreMLLoader {
     func onReady() {
         self.mlSate.send(.ready(filePath.url))
     }
@@ -125,7 +125,7 @@ fileprivate extension PromptImageGeneratorMLService {
                     case .coreML:
                         self.onReady()
                     case .zip:
-                        try self.unzip(downloadedPath: fileZipPath, destinationPath: filePath)
+                        try self.unzip(downloadedPath: fileZipPath, destinationPath: fileFolderPath)
                         self.onReady()
                     }
                 } else {
@@ -133,7 +133,7 @@ fileprivate extension PromptImageGeneratorMLService {
                     try self.fileFolderPath.mkdir(.p)
                     try self.download(url: self.downloadURL,
                                       destination: self.fileZipPath.url)
-                    try self.unzip(downloadedPath: fileZipPath, destinationPath: filePath)
+                    try self.unzip(downloadedPath: fileZipPath, destinationPath: fileFolderPath)
                     self.onReady()
                 }
                 

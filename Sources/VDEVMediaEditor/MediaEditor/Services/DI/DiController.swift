@@ -29,7 +29,7 @@ struct DiController {
         container.register(type: RemoveLayersService.self, service: RemoveLayersService())
         
         if #available(iOS 16.2, *) {
-            container.register(type: PromptImageGeneratorMLService.self, service: PromptImageGeneratorMLService(canGenerateImageByPrompt:  settings.canGenerateImageByPrompt))
+            container.register(type: CoreMLLoader.self, service: CoreMLLoader(canGenerateImageByPrompt:  settings.canGenerateImageByPrompt))
         }
     }
     
