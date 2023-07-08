@@ -16,19 +16,19 @@ import CoreML
 final class CoreMLLoader {
     private(set) var mlSate: CurrentValueSubject<LoaderState, Never> = .init(.notStarted)
     private var downloadURL: URL {
-        URL(string: "https://huggingface.co/pcuenq/coreml-stable-diffusion-2-1-base/resolve/main/coreml-stable-diffusion-2-1-base_original_compiled.zip")!
+        AIConfig.shared.mlVariant.url
     }
     private var rootPath: DynamicPath { Path.documents }
-    private var fileFolderPath: Path { rootPath/"CoreML" }
+    private var fileFolderPath: Path { rootPath/AIConfig.shared.mlRootFolderName }
     private var fileZipPath: Path { fileFolderPath/fileNameZip }
     private var filePath: Path { fileFolderPath/fileName }
     
     private var fileNameZip: String {
-        "coreml-stable-diffusion-2-1-base_original_compiled.zip"
+        AIConfig.shared.mlVariant.zipName
     }
     
     private var fileName: String {
-        "coreml-stable-diffusion-2-1-base_original_compiled"
+        AIConfig.shared.mlVariant.pathName
     }
     
     private var downloadSubscriber: Cancellable?
