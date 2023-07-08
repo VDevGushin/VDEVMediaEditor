@@ -28,9 +28,7 @@ struct DiController {
         }
         container.register(type: RemoveLayersService.self, service: RemoveLayersService())
         
-        if settings.canGenerateImageByPrompt {
-            container.register(type: PromptImageGeneratorMLLoader.self, service: PromptImageGeneratorMLLoader())
-        }
+        container.register(type: PromptImageGeneratorMLService.self, service: PromptImageGeneratorMLService(canGenerateImageByPrompt:  settings.canGenerateImageByPrompt))
     }
     
     static func clean(with container: DIContainer = DIContainer.shared) {

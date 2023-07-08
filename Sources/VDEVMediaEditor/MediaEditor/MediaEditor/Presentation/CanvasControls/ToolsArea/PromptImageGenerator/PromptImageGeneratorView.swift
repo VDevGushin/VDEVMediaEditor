@@ -10,47 +10,48 @@ import Combine
 
 final class PromptImageGeneratorViewModel: ObservableObject {
     @Published private(set) var state: VMState = .initial
-    private let loader: PromptImageGeneratorMLLoader?
+    @Injected private var loader: PromptImageGeneratorMLService
     private var operation: AnyCancellable?
-    
     init() {
-        loader = DIContainer
-            .shared
-            .resolveOptional(PromptImageGeneratorMLLoader.self)
-        
-        guard let loader = loader else {
-            state = .notAvailable
-            return
-        }
-    
         operation = loader
             .mlSate
-            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self = self else { return }
                 switch value {
                 case .ready:
                     self.state = .ready
-                case .loading:
-                    self.state = .loading
-                case .initial:
+                case let .downloading(progress):
+                    self.state = .downloading(progress)
+                case .notStarted:
                     self.state = .initial
+                case let .failed(error):
+                    self.state = .error(error)
+                case .notAvailable:
+                    self.state = .notAvailable
+                case .uncompressing:
+                    self.state = .uncompressing
                 }
             }
     }
     
     func loadCoreML() {
-        loader?.load()
+        loader.load()
+    }
+    
+    func cancelLoadCoreML() {
+        loader.cancelLoad()
     }
 }
 
 extension PromptImageGeneratorViewModel {
     enum VMState {
-        case loading
+        case downloading(Double)
         case ready
         case initial
         case notAvailable
+        case error(Error)
+        case uncompressing
     }
 }
 
@@ -64,8 +65,16 @@ struct PromptImageGeneratorView: View {
             }
         case .notAvailable:
             NotAvailableStateView()
-        case .loading:
-            LoadingStateView()
+        case let .downloading(progress):
+            LoadingStateView(progress: progress) {
+                vm.cancelLoadCoreML()
+            }
+        case let .error(error):
+            ErrorStateView(error: error) {
+                vm.loadCoreML()
+            }
+        case .uncompressing:
+            UncompressingStateView()
         case .ready: EmptyView()
         }
     }
@@ -88,8 +97,30 @@ private extension PromptImageGeneratorView {
     }
     
     struct LoadingStateView: View {
+        let progress: Double
+        let action: () -> Void
         var body: some View {
-            Text("Загрузка...")
+            ProgressView("Downloading…", value: progress, total: 1).padding()
+            Button("Cancel") {
+                action()
+            }
+        }
+    }
+    
+    struct ErrorStateView: View {
+        let error: Error
+        let action: () -> Void
+        var body: some View {
+            Text("Ошибка...")
+            Button("Retry") {
+                action()
+            }
+        }
+    }
+    
+    struct UncompressingStateView: View {
+        var body: some View {
+            Text("Uncompressing...")
         }
     }
 }

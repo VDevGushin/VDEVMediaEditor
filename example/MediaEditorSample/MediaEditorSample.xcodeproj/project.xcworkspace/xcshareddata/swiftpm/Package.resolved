@@ -55,6 +55,15 @@
       }
     },
     {
+      "identity" : "path.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mxcl/Path.swift.git",
+      "state" : {
+        "revision" : "9c6f807b0a76be0e27aecc908bc6f173400d839e",
+        "version" : "1.4.0"
+      }
+    },
+    {
       "identity" : "sqlite.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stephencelis/SQLite.swift.git",
@@ -88,6 +97,15 @@
       "state" : {
         "revision" : "1b8b443b61b8b37fafb06c1abad9b6be244c9de9",
         "version" : "0.1.4"
+      }
+    },
+    {
+      "identity" : "zipfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/weichsel/ZIPFoundation.git",
+      "state" : {
+        "revision" : "43ec568034b3731101dbf7670765d671c30f54f3",
+        "version" : "0.9.16"
       }
     }
   ],

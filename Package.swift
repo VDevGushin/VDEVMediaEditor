@@ -23,6 +23,8 @@ let package = Package(
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", .upToNextMajor(from: "0.2.0")),
         .package(url: "https://github.com/SwiftUIX/SwiftUIX", .upToNextMajor(from: "0.1.3")),
         .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git", branch: "main"),
+        .package(url: "https://github.com/mxcl/Path.swift.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMajor(from: "0.9.9")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -36,7 +38,9 @@ let package = Package(
                            "CollectionConcurrencyKit",
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
                            "CombineExt",
-                           "BackgroundRemoval"
+                           "BackgroundRemoval",
+                           .product(name: "Path", package: "Path.swift"),
+                           "ZIPFoundation",
                           ],
             resources: [.process("Resources")]
         ),
