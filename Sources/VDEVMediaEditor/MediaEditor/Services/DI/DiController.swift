@@ -28,7 +28,9 @@ struct DiController {
         }
         container.register(type: RemoveLayersService.self, service: RemoveLayersService())
         
-        container.register(type: PromptImageGeneratorMLService.self, service: PromptImageGeneratorMLService(canGenerateImageByPrompt:  settings.canGenerateImageByPrompt))
+        if #available(iOS 16.2, *) {
+            container.register(type: PromptImageGeneratorMLService.self, service: PromptImageGeneratorMLService(canGenerateImageByPrompt:  settings.canGenerateImageByPrompt))
+        }
     }
     
     static func clean(with container: DIContainer = DIContainer.shared) {

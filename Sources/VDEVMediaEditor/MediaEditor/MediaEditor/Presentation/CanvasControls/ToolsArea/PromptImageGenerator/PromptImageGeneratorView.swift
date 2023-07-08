@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 
+@available(iOS 16.2, *)
 final class PromptImageGeneratorViewModel: ObservableObject {
     @Published private(set) var state: VMState = .initial
     @Injected private var loader: PromptImageGeneratorMLService
@@ -19,8 +20,8 @@ final class PromptImageGeneratorViewModel: ObservableObject {
             .sink { [weak self] value in
                 guard let self = self else { return }
                 switch value {
-                case .ready:
-                    self.state = .ready
+                case let .ready(url):
+                    self.state = .ready(url)
                 case let .downloading(progress):
                     self.state = .downloading(progress)
                 case .notStarted:
@@ -44,10 +45,11 @@ final class PromptImageGeneratorViewModel: ObservableObject {
     }
 }
 
+@available(iOS 16.2, *)
 extension PromptImageGeneratorViewModel {
     enum VMState {
         case downloading(Double)
-        case ready
+        case ready(URL)
         case initial
         case notAvailable
         case error(Error)
@@ -55,6 +57,7 @@ extension PromptImageGeneratorViewModel {
     }
 }
 
+@available(iOS 16.2, *)
 struct PromptImageGeneratorView: View {
     @StateObject private var vm: PromptImageGeneratorViewModel = .init()
     var body: some View {
@@ -75,11 +78,12 @@ struct PromptImageGeneratorView: View {
             }
         case .uncompressing:
             UncompressingStateView()
-        case .ready: EmptyView()
+        case let .ready(url): AIVIew(url: url)
         }
     }
 }
 
+@available(iOS 16.2, *)
 private extension PromptImageGeneratorView {
     struct InitialStateView: View {
         let action: () -> Void

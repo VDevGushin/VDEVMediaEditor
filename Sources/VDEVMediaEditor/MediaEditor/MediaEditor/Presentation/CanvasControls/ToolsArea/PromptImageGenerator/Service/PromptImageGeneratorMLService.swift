@@ -9,7 +9,10 @@ import Foundation
 import Combine
 import Path
 import ZIPFoundation
+import StableDiffusion
+import CoreML
 
+@available(iOS 16.2, *)
 final class PromptImageGeneratorMLService {
     private(set) var mlSate: CurrentValueSubject<LoaderState, Never> = .init(.notStarted)
     private var downloadURL: URL {
@@ -43,9 +46,6 @@ final class PromptImageGeneratorMLService {
     
     func cancelLoad() {
         downloader?.cancel()
-        downloadSubscriber?.cancel()
-        downloader = nil
-        downloadSubscriber?.cancel()
     }
     
     @discardableResult
@@ -62,7 +62,7 @@ final class PromptImageGeneratorMLService {
         
         switch result {
         case .coreML:
-            mlSate.send(.ready)
+            self.onReady()
             return true
         case .zip:
             mlSate.send(.notStarted)
@@ -89,7 +89,7 @@ final class PromptImageGeneratorMLService {
     }
     
     enum LoaderState {
-        case ready
+        case ready(URL)
         case downloading(Double)
         case notStarted
         case failed(Error)
@@ -104,7 +104,12 @@ final class PromptImageGeneratorMLService {
 }
 
 // MARK: - Donwloading
+@available(iOS 16.2, *)
 fileprivate extension PromptImageGeneratorMLService {
+    func onReady() {
+        self.mlSate.send(.ready(filePath.url))
+    }
+    
     func loadExecute() {
         guard !startCheck() else { return }
         
@@ -118,10 +123,10 @@ fileprivate extension PromptImageGeneratorMLService {
                 if let checkResult = checkResult {
                     switch checkResult {
                     case .coreML:
-                        self.mlSate.send(.ready)
+                        self.onReady()
                     case .zip:
                         try self.unzip(downloadedPath: fileZipPath, destinationPath: filePath)
-                        self.mlSate.send(.ready)
+                        self.onReady()
                     }
                 } else {
                     try self.fileFolderPath.delete()
@@ -129,7 +134,7 @@ fileprivate extension PromptImageGeneratorMLService {
                     try self.download(url: self.downloadURL,
                                       destination: self.fileZipPath.url)
                     try self.unzip(downloadedPath: fileZipPath, destinationPath: filePath)
-                    self.mlSate.send(.ready)
+                    self.onReady()
                 }
                 
             } catch {
