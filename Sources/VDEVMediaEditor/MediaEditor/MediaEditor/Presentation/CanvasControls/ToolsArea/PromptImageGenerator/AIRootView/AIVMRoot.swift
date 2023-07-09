@@ -43,7 +43,7 @@ final class AIVMRoot: ObservableObject {
                                                    controlNet: [],
                                                    configuration: AIConfig.shared.mlModelConfiguration,
                                                    disableSafety: AIConfig.shared.disableSafety,
-                                                   reduceMemory: AIConfig.shared.modelInfo.reduceMemory)
+                                                   reduceMemory: AIConfig.shared.mlVariant.modelInfo.reduceMemory)
         print("Pipeline loaded in \(Date().timeIntervalSince(beginDate))")
         return pipeline
     }

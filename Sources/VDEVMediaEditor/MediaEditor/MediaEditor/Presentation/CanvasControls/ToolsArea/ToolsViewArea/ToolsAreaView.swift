@@ -455,7 +455,10 @@ fileprivate extension ToolsAreaView {
         ToolWrapper(title: strings.promptImageGenerate, fullScreen: false) {
             vm.tools.closeTools(false)
         } tool: {
-            PromptImageGeneratorView()
+            PromptImageGeneratorView { image in
+                vm.tools.closeTools(false)
+                vm.data.add(CanvasImageModel(image: image, asset: nil))
+            }
         }
     }
 }

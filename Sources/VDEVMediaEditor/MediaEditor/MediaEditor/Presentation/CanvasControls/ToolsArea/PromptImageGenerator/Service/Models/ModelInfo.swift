@@ -73,9 +73,7 @@ extension ModelInfo {
     /// Currently using `split_einsum` for iOS and simple performance heuristics for macOS.
     var bestURL: URL { modelURL(for: bestAttention) }
         
-    var reduceMemory: Bool {
-        return !runningOnMac
-    }
+    var reduceMemory: Bool { true }
 }
 
 @available(iOS 16.0, *)

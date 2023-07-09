@@ -10,9 +10,11 @@ import SwiftUI
 @available(iOS 16.2, *)
 struct AIRootView: View {
     @StateObject private var vm: AIVMRoot
+    private let onComplete: (UIImage) -> Void
     
-    init(url: URL) {
+    init(url: URL, onComplete: @escaping (UIImage) -> Void) {
         self._vm = .init(wrappedValue: .init(url: url))
+        self.onComplete = onComplete
     }
     
     var body: some View {
@@ -27,7 +29,7 @@ struct AIRootView: View {
             case .notStarted:
                 InitialStateView()
             case let .ready(pipleLine):
-                AIImageGeneratorView(pipleLine)
+                AIImageGeneratorView(pipleLine, onComplete: onComplete)
             }
         }.viewDidLoad {
             vm.prepareML()

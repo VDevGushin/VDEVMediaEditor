@@ -11,6 +11,12 @@ import Combine
 @available(iOS 16.2, *)
 struct PromptImageGeneratorView: View {
     @StateObject private var vm: PromptImageGeneratorViewModel = .init()
+    private let onComplete: (UIImage) -> Void
+    
+    init(onComplete: @escaping (UIImage) -> Void) {
+        self.onComplete = onComplete
+    }
+    
     var body: some View {
         switch vm.state {
         case .initial:
@@ -29,7 +35,8 @@ struct PromptImageGeneratorView: View {
             }
         case .uncompressing:
             UncompressingStateView()
-        case let .ready(url): AIRootView(url: url)
+        case let .ready(url):
+            AIRootView(url: url, onComplete: onComplete)
         }
     }
 }

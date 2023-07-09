@@ -13,7 +13,6 @@ import StableDiffusion
 final class AIConfig {
     let mlVariant: MLVariant = .cpuAndNeuralEngine
     let mlRootFolderName = "CoreML"
-    let modelInfo: ModelInfo = ModelInfo.v21Base
     let mlModelConfiguration: MLModelConfiguration
     
     let scheduler = StableDiffusionScheduler.dpmSolverMultistepScheduler
@@ -41,18 +40,21 @@ struct MLVariant {
     let computeUnits: MLComputeUnits
     let zipName: String
     let pathName: String
+    let modelInfo: ModelInfo
     
     static let cpuAndNeuralEngine: MLVariant = .init(
-        url: URL(string: "https://huggingface.co/pcuenq/coreml-stable-diffusion-2-1-base/resolve/main/coreml-stable-diffusion-2-1-base_split_einsum_compiled.zip")!,
+        url: URL(string: "https://huggingface.co/pcuenq/coreml-stable-diffusion-2-base/resolve/main/coreml-stable-diffusion-2-base_split_einsum_compiled.zip")!,
         computeUnits: MLComputeUnits.cpuAndNeuralEngine,
-        zipName: "coreml-stable-diffusion-2-1-base_split_einsum_compiled.zip",
-        pathName: "coreml-stable-diffusion-2-1-base_split_einsum_compiled"
+        zipName: "coreml-stable-diffusion-2-base_split_einsum_compiled.zip",
+        pathName: "coreml-stable-diffusion-2-base_split_einsum_compiled",
+        modelInfo: ModelInfo.v2Base
     )
     
     static let cpuOnly: MLVariant = .init(
         url: URL(string: "https://huggingface.co/pcuenq/coreml-stable-diffusion-2-1-base/resolve/main/coreml-stable-diffusion-2-1-base_original_compiled.zip")!,
         computeUnits: MLComputeUnits.cpuOnly,
         zipName: "coreml-stable-diffusion-2-1-base_original_compiled.zip",
-        pathName: "coreml-stable-diffusion-2-1-base_original_compiled"
+        pathName: "coreml-stable-diffusion-2-1-base_original_compiled",
+        modelInfo: ModelInfo.v21Base
     )
 }

@@ -64,18 +64,23 @@ final class Pipeline {
         config.disableSafety = disableSafety
         config.schedulerType = scheduler
         
-        let images = try pipeline.generateImages(configuration: config) { progress in
-            handleProgress(progress)
-            return !canceled
+        var result: GenerationResult? = nil
+        try autoreleasepool {
+            let images = try pipeline.generateImages(configuration: config) { progress in
+                handleProgress(progress)
+                return !canceled
+            }
+            
+            let interval = Date().timeIntervalSince(beginDate)
+            print("Got images: \(images) in \(interval)")
+
+            // Unwrap the 1 image we asked for, nil means safety checker triggered
+            let image = images.compactMap({ $0 }).first
+            
+            result = GenerationResult(image: image, lastSeed: theSeed, interval: interval, userCanceled: canceled)
         }
-
-        let interval = Date().timeIntervalSince(beginDate)
-        print("Got images: \(images) in \(interval)")
-
-        // Unwrap the 1 image we asked for, nil means safety checker triggered
-        let image = images.compactMap({ $0 }).first
-
-        return GenerationResult(image: image, lastSeed: theSeed, interval: interval, userCanceled: canceled)
+        
+        return result!
     }
 
     func handleProgress(_ progress: StableDiffusionPipeline.Progress) {

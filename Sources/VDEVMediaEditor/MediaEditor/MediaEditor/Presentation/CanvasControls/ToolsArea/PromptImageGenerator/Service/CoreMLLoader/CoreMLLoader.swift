@@ -18,7 +18,7 @@ final class CoreMLLoader {
     private var downloadURL: URL {
         AIConfig.shared.mlVariant.url
     }
-    private var rootPath: DynamicPath { Path.documents }
+    private var rootPath: DynamicPath { Path.caches }
     private var fileFolderPath: Path { rootPath/AIConfig.shared.mlRootFolderName }
     private var fileZipPath: Path { fileFolderPath/fileNameZip }
     private var filePath: Path { fileFolderPath/fileName }

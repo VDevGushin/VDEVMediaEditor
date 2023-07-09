@@ -12,14 +12,16 @@ struct AIImageGeneratorView: View {
     @StateObject private var vm: AIImageGeneratorVM
     @State private var showErrorPopover = false
     
-    init(_ pipeline: Pipeline) {
-        self._vm = .init(wrappedValue: .init(pipeline: pipeline))
+    init(_ pipeline: Pipeline, onComplete: @escaping (UIImage) -> Void) {
+        self._vm = .init(wrappedValue: .init(pipeline: pipeline, onComplete: onComplete))
     }
     
     var body: some View {
         switch vm.state {
-        case let .complete(text, image, speed, interval):
-            Rectangle().fill(.green)
+        case .complete:
+            VStack {
+                Text("Обработка")
+            }
         case let.failed(error):
             ErrorWithDetails("Generation error", error: error)
         case let .running(progress):
@@ -41,16 +43,10 @@ struct AIImageGeneratorView: View {
                 }
             }
         case .startup, .userCanceled:
-            VStack {
+            VStack(spacing: 10) {
                 TextField("Positive prompt", text: $vm.positivePrompt,
                           axis: .vertical).lineLimit(5)
                     .textFieldStyle(.roundedBorder)
-                    .listRowInsets(EdgeInsets(top: 0, leading: -20, bottom: 0, trailing: 20))
-                
-                TextField("Negative prompt", text: $vm.negativePrompt,
-                          axis: .vertical).lineLimit(5)
-                    .textFieldStyle(.roundedBorder)
-                
                 HStack {
                     Button("generate") {
                         vm.submit()

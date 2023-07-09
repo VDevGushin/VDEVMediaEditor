@@ -5,11 +5,11 @@
 //  Created by Vladislav Gushin on 08.07.2023.
 //
 
-import Foundation
 import Combine
 import StableDiffusion
 import CoreImage
 import CoreML
+import UIKit
 
 @available(iOS 16.2, *)
 final class AIImageGeneratorVM: ObservableObject {
@@ -20,9 +20,11 @@ final class AIImageGeneratorVM: ObservableObject {
     private let scheduler = AIConfig.shared.scheduler
     private let pipeline: Pipeline
     private var progressSubscriber: Cancellable?
+    private let onComplete: (UIImage) -> Void
     
-    init(pipeline: Pipeline) {
+    init(pipeline: Pipeline, onComplete: @escaping (UIImage) -> Void) {
         self.pipeline = pipeline
+        self.onComplete = onComplete
         
         progressSubscriber = pipeline
             .progressPublisher
@@ -39,7 +41,7 @@ final class AIImageGeneratorVM: ObservableObject {
     
     func submit() {
         if case .running = state { return }
-        Task {
+        Task(priority: .high) {
             await set(state: .running(nil))
             do {
                 let result = try await generate()
@@ -47,6 +49,7 @@ final class AIImageGeneratorVM: ObservableObject {
                     await set(state: .userCanceled)
                 } else {
                     await set(state: .complete(positivePrompt, result.image, result.lastSeed, result.interval))
+                    await setComplete(image: result.image)
                 }
             } catch {
                 await set(state: .failed(error))
@@ -64,6 +67,17 @@ private extension AIImageGeneratorVM {
     @MainActor
     private func set(state: GenerationState) async {
         self.state = state
+    }
+    
+    @MainActor
+    private func setComplete(image: CGImage?) async {
+        guard let image = image else {
+            state = .startup
+            return
+        }
+        
+        let result = UIImage(cgImage: image)
+        onComplete(result)
     }
     
     func generate() async throws -> GenerationResult {
