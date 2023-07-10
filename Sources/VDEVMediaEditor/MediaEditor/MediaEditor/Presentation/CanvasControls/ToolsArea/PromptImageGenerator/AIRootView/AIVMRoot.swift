@@ -39,13 +39,17 @@ final class AIVMRoot: ObservableObject {
     
     func loadML(url: URL) async throws -> StableDiffusionPipeline {
         let beginDate = Date()
-        let pipeline = try StableDiffusionPipeline(resourcesAt: url,
-                                                   controlNet: [],
-                                                   configuration: AIConfig.shared.mlModelConfiguration,
-                                                   disableSafety: AIConfig.shared.disableSafety,
-                                                   reduceMemory: AIConfig.shared.mlVariant.modelInfo.reduceMemory)
-        print("Pipeline loaded in \(Date().timeIntervalSince(beginDate))")
-        return pipeline
+        var pipeline: StableDiffusionPipeline!
+        try autoreleasepool {
+            pipeline = try StableDiffusionPipeline(resourcesAt: url,
+                                                       controlNet: [],
+                                                       configuration: AIConfig.shared.mlModelConfiguration,
+                                                       disableSafety: AIConfig.shared.disableSafety,
+                                                       reduceMemory: AIConfig.shared.mlVariant.modelInfo.reduceMemory)
+            try pipeline.loadResources()
+            print("Pipeline loaded in \(Date().timeIntervalSince(beginDate))")
+        }
+        return pipeline!
     }
     
     enum VMState {

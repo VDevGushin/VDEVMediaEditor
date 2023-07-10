@@ -9,7 +9,6 @@ import Foundation
 import Combine
 import Path
 import ZIPFoundation
-import StableDiffusion
 import CoreML
 
 @available(iOS 16.2, *)
@@ -18,7 +17,7 @@ final class CoreMLLoader {
     private var downloadURL: URL {
         AIConfig.shared.mlVariant.url
     }
-    private var rootPath: DynamicPath { Path.caches }
+    private var rootPath: DynamicPath { Path.applicationSupport }
     private var fileFolderPath: Path { rootPath/AIConfig.shared.mlRootFolderName }
     private var fileZipPath: Path { fileFolderPath/fileNameZip }
     private var filePath: Path { fileFolderPath/fileName }

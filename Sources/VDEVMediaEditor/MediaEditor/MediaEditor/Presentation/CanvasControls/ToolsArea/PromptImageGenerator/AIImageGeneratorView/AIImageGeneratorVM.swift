@@ -6,10 +6,10 @@
 //
 
 import Combine
-import StableDiffusion
 import CoreImage
 import CoreML
 import UIKit
+import StableDiffusion
 
 @available(iOS 16.2, *)
 final class AIImageGeneratorVM: ObservableObject {

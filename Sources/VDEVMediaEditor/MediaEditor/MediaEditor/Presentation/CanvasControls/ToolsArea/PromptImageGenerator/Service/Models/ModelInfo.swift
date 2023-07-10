@@ -1,8 +1,6 @@
 
 import CoreML
 
-let runningOnMac = ProcessInfo.processInfo.isMacCatalystApp
-
 @available(iOS 16.0, *)
 enum AttentionVariant: String {
     case original
@@ -73,8 +71,16 @@ extension ModelInfo {
     /// Currently using `split_einsum` for iOS and simple performance heuristics for macOS.
     var bestURL: URL { modelURL(for: bestAttention) }
         
-    var reduceMemory: Bool { true }
+    var reduceMemory: Bool {
+        // Enable on iOS devices, except when using quantization
+        if runningOnMac { return false }
+        return !(quantized && deviceHas6GBOrMore)
+    }
 }
+
+let runningOnMac = ProcessInfo.processInfo.isMacCatalystApp
+let deviceHas6GBOrMore = ProcessInfo.processInfo.physicalMemory > 5924000000
+let quantized: Bool = false
 
 @available(iOS 16.0, *)
 extension ModelInfo {
