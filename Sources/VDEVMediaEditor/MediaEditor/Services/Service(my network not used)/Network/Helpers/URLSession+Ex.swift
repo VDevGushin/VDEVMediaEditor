@@ -28,6 +28,8 @@ extension URLSession {
                 let statusCode = httpResponse.statusCode
 
                 if (200...299).contains(statusCode) {
+                    let str = String(decoding: element.data, as: UTF8.self)
+                    print("DATA=========>", str)
                     return element.data
                 }
 

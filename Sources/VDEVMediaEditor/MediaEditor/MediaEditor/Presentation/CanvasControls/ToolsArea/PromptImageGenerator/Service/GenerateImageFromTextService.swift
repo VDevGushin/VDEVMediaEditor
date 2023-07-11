@@ -17,31 +17,152 @@ final class GenerateImageFromTextService {
     private var _state = CurrentValueSubject<State, Never>(.notStarted)
     private let defaults = UserDefaults.standard
     private let defaultsKey = "EDIT_ME_AI_MESSAGE_ID"
+    private var timerOperation: AnyCancellable?
     
-    func execute() {
-        cancel()
-        
-        operation = self.check(messageID: "mP5lq1WC5mpqFrhJEzbx")
-//        operation = send(message: "Tiny cute adorable ginger tabby kitten studio light")
-//            .flatMap { [weak self] result -> AnyPublisher<GetMessageOperation.Response, Error> in
-//                guard let self = self else {
-//                    return Fail(error: "Self is nil").eraseToAnyPublisher()
-//                }
-//                guard let messageId = result.messageId else {
-//                    return Fail(error: "Bad message id").eraseToAnyPublisher()
-//                }
-//
-//                return self.check(messageID: messageId)
-//            }
+    init() {
+        startCheck()
+    }
+    
+    deinit {
+        print("ddd")
+    }
+    
+    private func startCheck() {
+        guard let messageID = defaults.string(forKey: self.defaultsKey) else {
+            return _state.send(.notStarted)
+        }
+        startCheckTimer(messageID: messageID)
+    }
+    
+    private func stop() {
+        timerOperation = nil
+    }
+    
+    private func startCheckTimer(messageID: String) {
+        _state.send(.loading)
+        stop()
+        timerOperation = Timer.publish(every: 15,
+                          tolerance: 0.2,
+                          on: .main,
+                          in: .common)
+            .autoconnect()
+            .share()
+            .merge(with: Just(.init()))
+            .sink { [weak self] _ in
+                self?.getDataFrom(messageID: messageID)
+            }
+    }
+    
+    private func getDataFrom(messageID: String) {
+        operation = self.check(messageID: messageID)
+            .map { response, messageId -> ProcessingResult in
+                switch response.progress {
+                case .incoplete:
+                    return .notStarted(messageId: messageId)
+                case .progress(let progress):
+                    if progress >= 100 {
+                        guard let image = self.image(from: response.response?.imageUrls) else {
+                            return .notStarted(messageId: messageId)
+                        }
+                        return .success(image: image, messageId: messageId)
+                    } else {
+                        return .inProgress(progress: progress, messageId: messageId)
+                    }
+                }
+            }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { state in
+            .sink(receiveCompletion: { [weak self] state in
+                guard let self = self else { return }
                 switch state {
                 case .finished: break
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    self._state.send(.error(error: error))
                 }
-            }, receiveValue: { result in
-                dump(result)
+            }, receiveValue: { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .notStarted(messageId: _):
+                    self.stop()
+                    self.defaults.removeObject(forKey: self.defaultsKey)
+                    self._state.send(.notStarted)
+                case .success(image: let image, messageId: _):
+                    self.stop()
+                    self.defaults.removeObject(forKey: self.defaultsKey)
+                    self._state.send(.success(image: image))
+                case .inProgress(progress: let progress, messageId: let messageId):
+                    let savedMessageId = self.defaults.string(forKey: self.defaultsKey)
+                    if savedMessageId == nil {
+                        self.defaults.set(messageId, forKey: self.defaultsKey)
+                        self._state.send(.inProgress(progress: progress))
+                        return
+                    }
+                    if savedMessageId! != messageId {
+                        self.defaults.set(messageId, forKey: self.defaultsKey)
+                    }
+                    self._state.send(.inProgress(progress: progress))
+                }
+            })
+    }
+    
+    func execute(message: String) {
+        _state.send(.loading)
+        cancel()
+        operation = send(message: message)
+            .delay(for: 2, scheduler: DispatchQueue.global())
+            .flatMap { result -> AnyPublisher<(GetMessageOperation.Response, String), Error> in
+                guard let messageId = result.messageId else {
+                    return Fail(error: "Bad message id").eraseToAnyPublisher()
+                }
+                return self.check(messageID: messageId)
+            }
+            .map { response, messageId -> ProcessingResult in
+                switch response.progress {
+                case .incoplete:
+                    return .notStarted(messageId: messageId)
+                case .progress(let progress):
+                    if progress >= 100 {
+                        guard let image = self.image(from: response.response?.imageUrls) else {
+                            return .notStarted(messageId: messageId)
+                        }
+                        return .success(image: image, messageId: messageId)
+                    } else {
+                        return .inProgress(progress: progress, messageId: messageId)
+                    }
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] state in
+                guard let self = self else { return }
+                switch state {
+                case .finished: break
+                case .failure(let error):
+                    self._state.send(.error(error: error))
+                }
+            }, receiveValue: { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .notStarted(messageId: _):
+                    self.stop()
+                    self.defaults.removeObject(forKey: self.defaultsKey)
+                    self._state.send(.notStarted)
+                case .success(image: let image, messageId: _):
+                    self.stop()
+                    self.defaults.removeObject(forKey: self.defaultsKey)
+                    self._state.send(.success(image: image))
+                case .inProgress(progress: let progress, messageId: let messageId):
+                    let savedMessageId = self.defaults.string(forKey: self.defaultsKey)
+                    if savedMessageId == nil {
+                        self.defaults.set(messageId, forKey: self.defaultsKey)
+                        self._state.send(.inProgress(progress: progress))
+                        self.startCheckTimer(messageID: messageId)
+                        return
+                    }
+                    if savedMessageId! != messageId {
+                        self.defaults.set(messageId, forKey: self.defaultsKey)
+                    }
+                    self._state.send(.inProgress(progress: progress))
+                    self.startCheckTimer(messageID: messageId)
+                }
             })
     }
     
@@ -50,28 +171,38 @@ final class GenerateImageFromTextService {
         operation = nil
     }
     
-    private func check(messageID: String) -> AnyPublisher<GetMessageOperation.Response, Error> {
-        client
-            .execute(GetMessageOperation(messageID: messageID))
-            .eraseToAnyPublisher()
-    }
-    
     private func send(message: String) -> AnyPublisher<GenerateOperation.Response, Error> {
         client
             .execute(GenerateOperation(message: message))
             .eraseToAnyPublisher()
     }
     
-    private func image(from url: URL?) -> AnyPublisher<UIImage, Error> {
-        guard let url = url,
-              let data = try? Data(contentsOf: url),
-              let image = UIImage(data: data) else {
-            return Fail(error: "Can not get image").eraseToAnyPublisher()
+    private func check(messageID: String) -> AnyPublisher<(GetMessageOperation.Response, String), Error> {
+        client
+            .execute(GetMessageOperation(messageID: messageID))
+            .map {
+                ($0, messageID)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func image(from urls: [URL]?) -> UIImage? {
+        guard let urls = urls, !urls.isEmpty else {
+            return nil
         }
-        return Just(image).setFailureType(to: Error.self).eraseToAnyPublisher()
+        
+        let index = Int.random(in: 0...urls.count-1)
+        
+        guard let data = try? Data(contentsOf: urls[index]),
+              let image = UIImage(data: data) else {
+            return nil
+        }
+        
+        return image
     }
 }
 
+// MARK: - Request operation
 struct GenerateOperation: ApiOperationWithBody {
     typealias Response = Result
     var body: Body { .init(msg: message) }
@@ -115,38 +246,64 @@ extension GenerateImageFromTextService {
             let response: Response?
             
             struct Response: Decodable {
-                let imageUrl: URL
-                let imageUrls: [URL]
+                enum CodingKeys: String, CodingKey {
+                    case imageUrl
+                    case imageUrls
+                }
+                
+                let imageUrl: URL?
+                let imageUrls: [URL]?
+                
+                init(from decoder: Decoder) throws {
+                    guard let values = try? decoder.container(keyedBy: CodingKeys.self) else {
+                        imageUrl = nil
+                        imageUrls = nil
+                        return
+                    }
+                    imageUrl = try? values.decode(URL.self, forKey: .imageUrl)
+                    imageUrls = try? values.decode([URL].self, forKey: .imageUrls)
+                }
             }
             
             enum Progress: Decodable {
                 case incoplete
-                case progress(Double)
+                case progress(Int)
                 
                 init(from decoder: Decoder) throws {
-                       let container = try decoder.singleValueContainer()
-                       if let progress = try? container.decode(Double.self) {
-                           self = .progress(progress)
-                           return
-                       }
+                    guard let container = try? decoder.singleValueContainer() else {
+                        self = .progress(0)
+                        return
+                    }
+                    if let progress = try? container.decode(Int.self) {
+                        self = .progress(progress)
+                        return
+                    }
                     
-                       if let _ = try? container.decode(String.self) {
-                           self = .incoplete
-                           return
-                       }
+                    if let _ = try? container.decode(String.self) {
+                        self = .incoplete
+                        return
+                    }
                     
-                       throw DecodingError.typeMismatch(Double.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for progress"))
-                   }
+                    throw DecodingError.typeMismatch(Double.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for progress"))
+                }
             }
         }
     }
 }
 
+// MARK: - State
 extension GenerateImageFromTextService {
     enum State {
+        case loading
         case notStarted
-        case success(url: URL)
+        case success(image: UIImage)
         case error(error: Error? = nil)
         case inProgress(progress: Int)
+    }
+    
+    enum ProcessingResult {
+        case notStarted(messageId: String)
+        case success(image: UIImage, messageId: String)
+        case inProgress(progress: Int, messageId: String)
     }
 }

@@ -7,29 +7,89 @@
 
 import SwiftUI
 import Combine
+import UIKit
 
 struct PromptImageGeneratorView: View {
-    @StateObject private var vm: PromptImageGeneratorViewModel = .init()
-    private let onComplete: (UIImage) -> Void
+    @StateObject private var vm: PromptImageGeneratorViewModel
     
     init(onComplete: @escaping (UIImage) -> Void) {
-        self.onComplete = onComplete
+        self._vm = .init(wrappedValue: .init(onComplete: onComplete))
     }
     
     var body: some View {
-        Rectangle().fill(.green)
-            .viewDidLoad {
-                vm.submit()
+        switch vm.state {
+        case .loading:
+            VStack {
+                Spacer()
+                ActivityIndicator(isAnimating: true,
+                                  style: .medium,
+                                  color: .white)
+                Spacer()
             }
+        case .notStarted:
+            InitialStateView(error: nil) { message in
+                vm.submit(message: message)
+            }
+        case .error(let error):
+            InitialStateView(error: error) { message in
+                vm.submit(message: message)
+            }
+        case .inProgress(progress: let progress):
+            VStack {
+                Spacer()
+                ProgressView("Proccessing...", value: Double(progress), total: 100).padding()
+                Spacer()
+            }
+        }
     }
 }
 
 private extension PromptImageGeneratorView {
     struct InitialStateView: View {
-        let action: () -> Void
+        @State private var message: String =
+         """
+         maze, Narrow steep staircase, Old Building, Floating buildings, Urban, City rain, art by miyazaki and Ian McQue and Akihiko Yoshida and Katsuya Terada, colorful, trending on artstation, gorgeous, ultra-detailed, realistic, 8k, octane render, hyper detailed, cinematic
+         """
+        @FocusState private var messageIsFocused: Bool
+        private let error: Error?
+        private let onSubmit: (String) -> Void
+        
+        init(error: Error?, onSubmit: @escaping (String) -> Void) {
+            self.error = error
+            self.onSubmit = onSubmit
+        }
+        
         var body: some View {
-            Button("Скачать") {
-                action()
+            VStack(spacing: 12) {
+                error.map {
+                    Text($0.localizedDescription).foregroundColor(AppColors.redWithOpacity)
+                }
+                
+                VStack {
+                    TextEditor(text: $message)
+                        .focused($messageIsFocused)
+                        .transparentScrolling()
+                        .lineSpacing(10)
+                        .autocapitalization(.words)
+                        .disableAutocorrection(true)
+                        .padding()
+                    
+                }.overlay(
+                    RoundedRectangle(cornerRadius: 25)
+                        .stroke(Color.yellow, lineWidth: 5)
+                )
+                .padding(.horizontal)
+                .viewDidLoad {
+                    messageIsFocused = true
+                }
+                
+                Button("Submit") {
+                    messageIsFocused = false
+                    onSubmit(message)
+                }
+                .disabled(message.isEmpty)
+                
+                Spacer()
             }
         }
     }
@@ -39,36 +99,16 @@ private extension PromptImageGeneratorView {
             Text("Сервис не доступен")
         }
     }
-    
-    struct LoadingStateView: View {
-        let progress: Double
-        let action: () -> Void
-        var body: some View {
-            VStack {
-                ProgressView("Downloading…", value: progress, total: 1).padding()
-                Button("Cancel") {
-                    action()
-                }
+}
+
+private extension View {
+    func transparentScrolling() -> some View {
+        if #available(iOS 16.0, *) {
+            return scrollContentBackground(.hidden)
+        } else {
+            return onAppear {
+                UITextView.appearance().backgroundColor = .clear
             }
-        }
-    }
-    
-    struct ErrorStateView: View {
-        let error: Error
-        let action: () -> Void
-        var body: some View {
-            VStack {
-                Text("Ошибка...")
-                Button("Retry") {
-                    action()
-                }
-            }
-        }
-    }
-    
-    struct UncompressingStateView: View {
-        var body: some View {
-            Text("Uncompressing...")
         }
     }
 }

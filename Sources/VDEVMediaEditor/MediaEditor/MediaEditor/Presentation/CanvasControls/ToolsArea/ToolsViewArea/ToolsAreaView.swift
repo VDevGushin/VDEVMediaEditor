@@ -445,7 +445,7 @@ fileprivate extension ToolsAreaView {
     
     @ViewBuilder
     func promptImageGeneratorTool() -> some View {
-        ToolWrapper(title: strings.promptImageGenerate, fullScreen: false) {
+        ToolWrapper(title: strings.promptImageGenerate, fullScreen: true) {
             vm.tools.closeTools(false)
         } tool: {
             PromptImageGeneratorView { image in
