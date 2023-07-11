@@ -16,7 +16,12 @@ protocol ApiClient: BaseApiClient {
 final class ApiClientImpl: ApiClient {
     private(set) var host: String
 
-    var decoder: JSONDecoder { JSONDecoder() }
+    var decoder: JSONDecoder = {
+       let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .useDefaultKeys
+        return decoder
+    }()
+    
     var scheme: String { "https" }
 
     init(host: String) { self.host = host }
