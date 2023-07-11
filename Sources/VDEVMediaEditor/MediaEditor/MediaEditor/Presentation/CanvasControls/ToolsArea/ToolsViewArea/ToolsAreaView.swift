@@ -68,10 +68,8 @@ struct ToolsAreaView: View {
             
             switch vm.tools.currentToolItem {
             case .promptImageGenerator:
-                if #available(iOS 16.2, *) {
                     promptImageGeneratorTool()
                         .transition(.bottomTransition)
-                }
             case .template:
                 templatesTool()
                     .transition(.bottomTransition)
@@ -445,11 +443,6 @@ fileprivate extension ToolsAreaView {
         }
     }
     
-    // Генерация картрики по тексту (Если эта возможность доступна)
-    // 1 При первом открытии происходит загрузка модели
-    // 2 Во время процесса загрузки висит лодер (подготовка...)
-    // 3 После загрузки можно генерить картинку по тексту
-    @available(iOS 16.2, *)
     @ViewBuilder
     func promptImageGeneratorTool() -> some View {
         ToolWrapper(title: strings.promptImageGenerate, fullScreen: false) {

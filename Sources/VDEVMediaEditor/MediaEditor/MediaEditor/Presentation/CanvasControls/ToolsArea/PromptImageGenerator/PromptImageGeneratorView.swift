@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-@available(iOS 16.2, *)
 struct PromptImageGeneratorView: View {
     @StateObject private var vm: PromptImageGeneratorViewModel = .init()
     private let onComplete: (UIImage) -> Void
@@ -18,30 +17,13 @@ struct PromptImageGeneratorView: View {
     }
     
     var body: some View {
-        switch vm.state {
-        case .initial:
-            InitialStateView {
-                vm.loadCoreML()
+        Rectangle().fill(.green)
+            .viewDidLoad {
+                vm.submit()
             }
-        case .notAvailable:
-            NotAvailableStateView()
-        case let .downloading(progress):
-            LoadingStateView(progress: progress) {
-                vm.cancelLoadCoreML()
-            }
-        case let .error(error):
-            ErrorStateView(error: error) {
-                vm.loadCoreML()
-            }
-        case .uncompressing:
-            UncompressingStateView()
-        case let .ready(url):
-            AIRootView(url: url, onComplete: onComplete)
-        }
     }
 }
 
-@available(iOS 16.2, *)
 private extension PromptImageGeneratorView {
     struct InitialStateView: View {
         let action: () -> Void

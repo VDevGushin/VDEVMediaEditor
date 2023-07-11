@@ -44,7 +44,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         if settings.canAddMusic {
             toolsItems.append(.musicPiker)
         }
-        if settings.canGenerateImageByPrompt, #available(iOS 16.2, *) {
+        if settings.canGenerateImageByPrompt {
             toolsItems.append(.promptImageGenerator)
         }
         toolsItems.append(.template)

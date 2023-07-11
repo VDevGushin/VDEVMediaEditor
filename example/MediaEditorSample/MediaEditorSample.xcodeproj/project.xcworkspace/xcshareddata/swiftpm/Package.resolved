@@ -55,39 +55,12 @@
       }
     },
     {
-      "identity" : "ml-stable-diffusion",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/ml-stable-diffusion",
-      "state" : {
-        "revision" : "a7bf219247eb4aa872f09d4e5599763d4878d1b8",
-        "version" : "0.4.0"
-      }
-    },
-    {
-      "identity" : "path.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mxcl/Path.swift.git",
-      "state" : {
-        "revision" : "9c6f807b0a76be0e27aecc908bc6f173400d839e",
-        "version" : "1.4.0"
-      }
-    },
-    {
       "identity" : "sqlite.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stephencelis/SQLite.swift.git",
       "state" : {
         "revision" : "4d543d811ee644fa4cc4bfa0be996b4dd6ba0f54",
         "version" : "0.13.3"
-      }
-    },
-    {
-      "identity" : "swift-argument-parser",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-argument-parser.git",
-      "state" : {
-        "revision" : "fddd1c00396eed152c45a46bea9f47b98e59301d",
-        "version" : "1.2.0"
       }
     },
     {
@@ -115,15 +88,6 @@
       "state" : {
         "revision" : "75d5be2c85ec1e3ccbd9d99d321dd3abb5955e8d",
         "version" : "0.1.5"
-      }
-    },
-    {
-      "identity" : "zipfoundation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/weichsel/ZIPFoundation.git",
-      "state" : {
-        "revision" : "43ec568034b3731101dbf7670765d671c30f54f3",
-        "version" : "0.9.16"
       }
     }
   ],
