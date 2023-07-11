@@ -16,7 +16,8 @@ final class GenerateImageFromTextService {
         var path: String { "/v2/imagine" }
         var method: HTTPMethod { .post }
         var params: [String : String] = [:]
-        var token: String? = "Bearer 3f403066-f11b-403c-97a0-18ed113d8bda"
+        var token: String? = "Bearer 23bc3127-04af-4dc1-92ff-38bf34f6a982"
+        //var token: String? = "Bearer 3f403066-f11b-403c-97a0-18ed113d8bda"
         private let message: String
         
         init(message: String) {
@@ -41,8 +42,8 @@ final class GenerateImageFromTextService {
         var path: String
         var method: HTTPMethod = .get
         var params: [String : String] = ["expireMins": "2"]
-        var token: String? = "Bearer 3f403066-f11b-403c-97a0-18ed113d8bda"
-
+        var token: String? = "Bearer 23bc3127-04af-4dc1-92ff-38bf34f6a982"
+        // var token: String? = "Bearer 3f403066-f11b-403c-97a0-18ed113d8bda"
         init(messageID: String) {
             path = "/v2/message/\(messageID)"
         }
@@ -62,7 +63,7 @@ final class GenerateImageFromTextService {
     func execute() {
         cancel()
         operation = client
-            .execute(GenerateOperation(message: "Labrador in the style of Vermeer"))
+            .execute(GenerateOperation(message: "Полный пляж народу"))
             .flatMap { result -> AnyPublisher<GetMessageOperation.Response, Error> in
                 guard let messageId = result.messageId else {
                     return Fail(error: "Bad message id").eraseToAnyPublisher()
