@@ -35,10 +35,23 @@ struct PromptImageGeneratorView: View {
                 vm.submit(message: message)
             }
         case .inProgress(progress: let progress):
-            VStack {
+            VStack(alignment: .center, spacing: 12) {
                 Spacer()
-                ProgressView("Proccessing...", value: Double(progress), total: 100).padding()
+                ActivityIndicator(isAnimating: true,
+                                  style: .medium,
+                                  color: .white)
+                
+                Text("\(progress)%")
+                
                 Spacer()
+            }
+            .background {
+                vm.progressImage.map {
+                    Image(uiImage: $0)
+                        .resizable()
+                        .scaledToFill()
+                        .blur(radius: 3)
+                }
             }
         }
     }
@@ -48,7 +61,7 @@ private extension PromptImageGeneratorView {
     struct InitialStateView: View {
         @State private var message: String =
          """
-         maze, Narrow steep staircase, Old Building, Floating buildings, Urban, City rain, art by miyazaki and Ian McQue and Akihiko Yoshida and Katsuya Terada, colorful, trending on artstation, gorgeous, ultra-detailed, realistic, 8k, octane render, hyper detailed, cinematic
+         man in a ruin of an ancient city invaded by the jungle, light, unreal engine 5 and Octane Render,highly detailed, photorealistic, cinematic
          """
         @FocusState private var messageIsFocused: Bool
         private let error: Error?
