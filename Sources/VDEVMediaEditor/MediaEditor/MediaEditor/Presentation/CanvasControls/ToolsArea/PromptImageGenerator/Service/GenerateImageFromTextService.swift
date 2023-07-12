@@ -14,7 +14,7 @@ final class GenerateImageFromTextService {
     
     var state: AnyPublisher<State, Never> { _state.eraseToAnyPublisher() }
     private let client = ApiClientImpl(host: "api.thenextleg.io")
-    private var _state = CurrentValueSubject<State, Never>(.notStarted)
+    private var _state = CurrentValueSubject<State, Never>(.loading)
     private var imageResultCheckerObserver: AnyCancellable?
     private var executeTask: Task<Void, Error>?
     
@@ -23,6 +23,7 @@ final class GenerateImageFromTextService {
             _state.send(.inaccessible)
             return
         }
+        
         imageResultCheckerObserver = imageResultChecker
             .state
             .sink { [weak self] in
@@ -35,6 +36,8 @@ final class GenerateImageFromTextService {
                                                   progressImageUrl: progressImageUrl))
                 case .success(image: let image):
                     self?._state.send(.success(image: image))
+                    self?.imageResultCheckerObserver?.cancel()
+                    Task { await imageResultChecker.removeMessageID() }
                 case .error(error: let error):
                     self?._state.send(.error(error: error))
                 }
@@ -119,6 +122,7 @@ extension GenerateImageFromTextService {
         case notStarted
         case success(image: UIImage)
         case error(error: Error)
-        case inProgress(progress: Int, progressImageUrl: URL?)
+        case inProgress(progress: Int,
+                        progressImageUrl: URL?)
     }
 }

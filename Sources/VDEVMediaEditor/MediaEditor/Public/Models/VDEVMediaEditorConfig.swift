@@ -170,4 +170,6 @@ public protocol VDEVMediaEditorStrings {
     var questionQualityImage: String { get }
     var sound: String { get }
     var hint: String { get }
+    var submit: String { get }
+    var random: String { get }
 }

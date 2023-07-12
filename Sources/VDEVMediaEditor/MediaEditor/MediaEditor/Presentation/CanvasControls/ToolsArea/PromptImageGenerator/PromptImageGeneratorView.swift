@@ -79,7 +79,9 @@ private extension PromptImageGeneratorView {
             .withParallaxCardEffect()
         }
     }
+    
     struct InitialStateView: View {
+        @Injected private var strings: VDEVMediaEditorStrings
         @Binding private var message: String
         @Binding private var canSubmit: Bool
         @FocusState private var messageIsFocused: Bool
@@ -107,29 +109,31 @@ private extension PromptImageGeneratorView {
                         .foregroundColor(AppColors.redWithOpacity)
                 }
                 
-                VStack {
+                 VStack {
                     TextEditor(text: $message)
+                        .multilineTextAlignment(.leading)
                         .focused($messageIsFocused)
                         .transparentScrolling()
                         .lineSpacing(10)
-                        .autocapitalization(.words)
-                        .disableAutocorrection(true)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(false)
                         .padding()
-                    
-                }.overlay(
+                        .viewDidLoad {
+                            messageIsFocused = true
+                        }
+                }
+                .overlay(
                     RoundedRectangle(cornerRadius: 15)
                         .stroke(AppColors.whiteWithOpacity, lineWidth: 3)
                 )
                 .padding(.horizontal)
-                .viewDidLoad {
-                    messageIsFocused = true
-                }
+               
                 
                 HStack {
-                    TextButton(title: "Random") {
+                    TextButton(title: strings.random) {
                         onRandomMessage()
                     }
-                    TextButton(title: "Submit") {
+                    TextButton(title: strings.submit) {
                         messageIsFocused = false
                         onSubmit(message)
                     }

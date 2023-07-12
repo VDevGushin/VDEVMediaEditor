@@ -21,10 +21,7 @@ final class PromptImageGeneratorViewModel: ObservableObject {
     
     init(onComplete: @escaping (UIImage) -> Void) {
         self.onComplete = onComplete
-//        state = .inProgress(progress: 0)
-//        getProgressImage(from: .init(string: "https://cdn.discordapp.com/attachments/1005038853939265596/1128676965038182420/grid_0.webp")!)
-//
-        
+    
         checkMessageOp = $messageToSubmit.map {
             let message = $0.trimmingCharacters(in: .whitespacesAndNewlines)
             return message.isEmpty
@@ -101,7 +98,7 @@ private let rundomMessages: [String] = [
          man in a ruin of an ancient city invaded by the jungle, light, unreal engine 5 and Octane Render,highly detailed, photorealistic, cinematic
          """,
          """
-            a little girl with light brown short wavy curly hair and blue eyes floating in space, gazing in wonder at a quasar, Clear, detailed face. Clean Cel shaded vector art by lois van baarle, artgerm, Helen huang, by makoto shinkai and ilya kuvshinov, rossdraws, illustration
+        a little girl with light brown short wavy curly hair and blue eyes floating in space, gazing in wonder at a quasar, Clear, detailed face. Clean Cel shaded vector art by lois van baarle, artgerm, Helen huang, by makoto shinkai and ilya kuvshinov, rossdraws, illustration
         """,
          """
 sci-fi cosmic diarama of a quasar and jellyfish in a resin cube, volumetric lighting, high resolution, hdr, sharpen, Photorealism
@@ -130,7 +127,6 @@ Hyper real glass flowers, blue organic twisting. octane render, unreal engine, b
          """
 an artist desk full of drawings from the hobbit – colourful – paint spilled – brushes, pencils – high quality – 16k resolution
 """
-         
 ]
 
 

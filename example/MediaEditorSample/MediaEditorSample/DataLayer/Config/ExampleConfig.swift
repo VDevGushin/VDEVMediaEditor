@@ -257,4 +257,6 @@ struct Strings: VDEVMediaEditorStrings {
     let sound = "SOUND"
     let hint = "+ ADD MEDIA"
     let addMusic = "MUSIC"
+    var submit = "SUBMIT"
+    var random = "RANDOM"
 }
