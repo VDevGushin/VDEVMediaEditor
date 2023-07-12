@@ -27,11 +27,11 @@ struct PromptImageGeneratorView: View {
                 Spacer()
             }
         case .notStarted:
-            InitialStateView(error: nil) { message in
+            InitialStateView(message: $vm.messageToSubmit, error: nil) { message in
                 vm.submit(message: message)
             }
         case .error(let error):
-            InitialStateView(error: error) { message in
+            InitialStateView(message: $vm.messageToSubmit, error: error) { message in
                 vm.submit(message: message)
             }
         case .inProgress(progress: let progress):
@@ -59,16 +59,14 @@ struct PromptImageGeneratorView: View {
 
 private extension PromptImageGeneratorView {
     struct InitialStateView: View {
-        @State private var message: String =
-         """
-         man in a ruin of an ancient city invaded by the jungle, light, unreal engine 5 and Octane Render,highly detailed, photorealistic, cinematic
-         """
+        @Binding private var message: String
         @FocusState private var messageIsFocused: Bool
         private let error: Error?
         private let onSubmit: (String) -> Void
-        
-        init(error: Error?, onSubmit: @escaping (String) -> Void) {
+   
+        init(message: Binding<String>, error: Error?, onSubmit: @escaping (String) -> Void) {
             self.error = error
+            self._message = message
             self.onSubmit = onSubmit
         }
         

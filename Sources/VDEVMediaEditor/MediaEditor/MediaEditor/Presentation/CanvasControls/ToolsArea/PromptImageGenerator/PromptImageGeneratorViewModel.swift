@@ -12,6 +12,10 @@ import UIKit
 final class PromptImageGeneratorViewModel: ObservableObject {
     @Published private(set) var state: VMState = .notStarted
     @Published private(set) var progressImage: UIImage? = nil
+    @Published var messageToSubmit: String =
+     """
+     man in a ruin of an ancient city invaded by the jungle, light, unreal engine 5 and Octane Render,highly detailed, photorealistic, cinematic
+     """
     private var operation: AnyCancellable?
     private let generateImageFromTextService = GenerateImageFromTextService()
     private let onComplete: (UIImage) -> Void
