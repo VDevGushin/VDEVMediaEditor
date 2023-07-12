@@ -29,7 +29,8 @@ struct DiController {
         container.register(type: RemoveLayersService.self, service: RemoveLayersService())
         
         if settings.canGenerateImageByPrompt {
-            container.register(type: ImageResultChecker.self, service: ImageResultChecker())
+            container.register(type: ImageResultChecker.self,
+                               service: ImageResultChecker(config: .init()))
         }
     }
     

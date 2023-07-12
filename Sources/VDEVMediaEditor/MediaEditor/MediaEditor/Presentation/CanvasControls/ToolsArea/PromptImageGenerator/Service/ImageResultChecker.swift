@@ -11,6 +11,7 @@ import UIKit
 
 typealias MESSAGEID = String
 
+
 extension UserDefaults {
     private var defaultsKey: String { "EDIT_ME_AI_MESSAGE_ID" }
     @objc dynamic var MESSAGEID: String? {
@@ -19,52 +20,45 @@ extension UserDefaults {
     }
 }
 
+extension ImageResultChecker {
+    struct Config {
+        let numberOfAttempt: Int = 3
+        let timerInterval: Double = 5
+    }
+}
+
 final class ImageResultChecker: ObservableObject {
     var state: AnyPublisher<State, Never> {  _state.eraseToAnyPublisher() }
-    private let client = ApiClientImpl(host: "api.thenextleg.io")
-    
-    private let defaults = UserDefaults.standard
     private var _state = CurrentValueSubject<State, Never>(.notStarted)
-    private var timerOperation: AnyCancellable?
-    
-    private var operation: AnyCancellable?
-    private var userDefaultsOperation: AnyCancellable?
+    private let client = ApiClientImpl(host: "api.thenextleg.io")
     private var attempt: Int = 0
+    private let config: Config
+    private var timerOperation: AnyCancellable?
+    private var userDefaultsOperation: AnyCancellable?
+    private var fetchTask: Task<Void, Error>?
     
-    private func checkAttempt() async -> Bool {
-        attempt >= 2
+    @Published private var savedMessageID: String? = UserDefaults.standard.MESSAGEID {
+        didSet { UserDefaults.standard.MESSAGEID = savedMessageID }
     }
     
-    private func incrementAttemp() async {
-        attempt += 1
-    }
-    
-    @Published private var MESSAGEID: String? = UserDefaults.standard.MESSAGEID {
-        didSet {
-            UserDefaults.standard.MESSAGEID = MESSAGEID
-        }
-    }
-    
-    init() {
+    init(config: Config) {
+        self.config = config
         userDefaultsOperation = UserDefaults.standard.publisher(for: \.MESSAGEID)
             .sink(receiveValue: { [weak self] newValue in
                 guard let self = self else { return }
+                self.stop()
                 guard let newValue = newValue else {
-                    self.setState(value: .notStarted)
-                    return self.stop()
+                    return self.setState(value: .notStarted)
                 }
                 self.setState(value: .inProgress(progress: 0, progressImageUrl: nil))
                 self.startCheck(messageID: newValue)
             })
     }
     
-    deinit {
-        stop()
-    }
+    deinit { stop() }
     
     private func startCheck(messageID: MESSAGEID) {
-        stop()
-        timerOperation = Timer.publish(every: 15,
+        timerOperation = Timer.publish(every: config.timerInterval,
                                        tolerance: 0.2,
                                        on: .current,
                                        in: .common)
@@ -73,64 +67,47 @@ final class ImageResultChecker: ObservableObject {
         .merge(with: Just(.init()))
         .sink { [weak self] _ in
             guard let self = self else { return }
-            Task(priority: .background) {
-                let processingResult: ProcessingResult
+            self.fetchTask = Task(priority: .background) {
+                let processingResult: ProcessingResponse
                 do {
-                    let (response, messageId) = try await self.check(messageID: messageID)
-                    switch response.progress {
-                    case .incoplete:
-                        processingResult = .incoplete(messageId: messageId)
-                    case .progress(let progress):
-                        if progress >= 100 {
-                            guard let image = self.image(from: response.response?.imageUrls) else {
-                                processingResult = .error(messageId: messageId)
-                                return
-                            }
-                            processingResult = .success(image: image, messageId: messageId)
-                        } else {
-                            processingResult = .inProgress(progress: progress,
-                                                           messageId: messageId,
-                                                           progressImageUrl: response.progressImageUrl)
-                        }
-                    }
+//                    self.setState(value: .error(error: "Incomplete"))
+//                    return
+                    let response = try await self.check(messageID: messageID)
+                    processingResult = .createFrom(response)
                 } catch {
                     await self.incrementAttemp()
-                    processingResult = .error(messageId: messageID)
+                    processingResult = .error(error: error, messageId: messageID)
                 }
-                
                 switch processingResult {
-                case .incoplete(messageId: _):
+                case .incoplete(messageId: _): // Сервер не смог справиться
                     await self.removeMessageID()
-                    self.setState(value: .notStarted)
-                    self.stop()
-                case .error(messageId: _):
+                    self.stop(resetState: false)
+                    self.setState(value: .error(error: "Incomplete"))
+                case .error(error: let error, messageId: _): // После 3 попыток достать результат, оставить попытки
                     if await self.checkAttempt() {
                         await self.removeMessageID()
-                        self.setState(value: .notStarted)
-                        self.stop()
+                        self.stop(resetState: false)
+                        self.setState(value: .error(error: error))
                     }
                 case .success(image: let image, messageId: _):
                     await self.removeMessageID()
-                    self.setState(value: .success(image: image))
+                    self.setState(value: .success(image: image)) // посылаем результат
                     self.stop()
                 case .inProgress(progress: let progress,
                                  messageId: let messageId,
                                  progressImageUrl: let progressImageUrl):
-                    let savedMessageId = await self.getMessageID()
-                    
-                    if savedMessageId == nil {
+                    switch await self.getMessageID() {
+                    case nil:
                         await self.save(messageID: messageId)
                         self.setState(value: .inProgress(progress: progress,
                                                          progressImageUrl: progressImageUrl))
-                        return
+                    case let value:
+                        if value != messageId {
+                            await self.save(messageID: messageId)
+                        }
+                        self.setState(value: .inProgress(progress: progress,
+                                                         progressImageUrl: progressImageUrl))
                     }
-                    
-                    if savedMessageId! != messageId {
-                        await self.save(messageID: messageId)
-                    }
-                    
-                    self.setState(value: .inProgress(progress: progress,
-                                                     progressImageUrl: progressImageUrl))
                 }
             }
         }
@@ -138,90 +115,107 @@ final class ImageResultChecker: ObservableObject {
     
     @MainActor
     func getMessageID() async -> MESSAGEID? {
-        MESSAGEID
+        savedMessageID
     }
     
     @MainActor
     func save(messageID: MESSAGEID) async {
-        if messageID != MESSAGEID {
-            MESSAGEID = messageID
+        if messageID != savedMessageID {
+            savedMessageID = messageID
         }
     }
     
     @MainActor
     func removeMessageID() async {
-        if MESSAGEID != nil {
-            MESSAGEID = nil
+        if savedMessageID != nil {
+            savedMessageID = nil
         }
-    }
-    
-    func setState(value: State) {
-        _state.send(value)
-    }
-    
-    private func stop() {
-        timerOperation?.cancel()
-        operation?.cancel()
-        timerOperation = nil
-        operation = nil
-        attempt = 0
-        setState(value: .notStarted)
-    }
-    
-    private func check(
-        messageID: String
-    ) async throws -> (GetMessageOperation.Response, MESSAGEID) {
-        
-        try await withCheckedThrowingContinuation { [weak self] continuation in
-            guard let self = self else {
-                return continuation.resume(throwing: "Nil is Error")
-            }
-            self.operation = self.client
-                .execute(GetMessageOperation(messageID: messageID))
-                .map {
-                    ($0, messageID)
-                }
-                .sink(receiveCompletion: { state in
-                    switch state {
-                    case .finished: break
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }, receiveValue: { value in
-                    continuation.resume(returning: value)
-                })
-        }
-    }
-    
-    private func image(from urls: [URL]?) -> UIImage? {
-        guard let urls = urls, !urls.isEmpty else {
-            return nil
-        }
-        
-        let index = Int.random(in: 0...urls.count-1)
-        
-        guard let data = try? Data(contentsOf: urls[index]),
-              let image = UIImage(data: data) else {
-            return nil
-        }
-        
-        return image
     }
 }
 
 extension ImageResultChecker {
-    enum ProcessingResult {
-        case incoplete(messageId: String)
-        case error(messageId: String)
-        case success(image: UIImage, messageId: String)
-        case inProgress(progress: Int, messageId: String, progressImageUrl: URL?)
-    }
-    
     enum State {
         case notStarted
         case inProgress(progress: Int, progressImageUrl: URL?)
         case success(image: UIImage)
         case error(error: Error)
+    }
+}
+
+private extension ImageResultChecker {
+    @MainActor
+    private func checkAttempt() async -> Bool {
+        attempt >= config.numberOfAttempt - 1
+    }
+    
+    @MainActor
+    private func incrementAttemp() async {
+        attempt += 1
+    }
+    
+    private func setState(value: State) {
+        _state.send(value)
+    }
+    
+    private func stop(resetState: Bool = true) {
+        fetchTask?.cancel()
+        timerOperation?.cancel()
+        timerOperation = nil
+        fetchTask = nil
+        attempt = 0
+        if resetState {
+            setState(value: .notStarted)
+        }
+    }
+    
+    func check(
+        messageID: String
+    ) async throws -> (GetMessageOperation.Response, MESSAGEID) {
+        let response = try await client.execute(GetMessageOperation(messageID: messageID))
+        return (response, messageID)
+    }
+}
+
+private extension ImageResultChecker {
+    enum ProcessingResponse {
+        case incoplete(messageId: String)
+        case error(error: Error, messageId: String)
+        case success(image: UIImage, messageId: String)
+        case inProgress(progress: Int, messageId: String, progressImageUrl: URL?)
+        
+        static func createFrom(_ value: (ImageResultChecker.GetMessageOperation.Response, MESSAGEID)) -> ProcessingResponse {
+            let response = value.0
+            let messageId = value.1
+            switch response.progress {
+            case .incoplete:
+                return .incoplete(messageId: messageId)
+            case .progress(let progress):
+                if progress >= 100 {
+                    do {
+                        let image = try ProcessingResponse.image(from: response.response?.imageUrls)
+                        return .success(image: image, messageId: messageId)
+                    } catch {
+                        return .error(error: error, messageId: messageId)
+                    }
+                } else {
+                    return .inProgress(progress: progress,
+                                                   messageId: messageId,
+                                                   progressImageUrl: response.progressImageUrl)
+                }
+            }
+        }
+        
+        private static func image(from urls: [URL]?) throws -> UIImage {
+            guard let urls = urls, !urls.isEmpty else {
+                throw "Can't get generated image"
+            }
+            let index = Int.random(in: 0...urls.count-1)
+            let data = try Data(contentsOf: urls[index])
+            guard let image = UIImage(data: data) else {
+                throw "Can't get generated image"
+            }
+            return image
+        }
     }
     
     struct GetMessageOperation: ApiOperation {
@@ -272,13 +266,13 @@ extension ImageResultChecker {
                         self = .progress(progress)
                         return
                     }
-                    
                     if let _ = try? container.decode(String.self) {
                         self = .incoplete
                         return
                     }
-                    
-                    throw DecodingError.typeMismatch(Double.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for progress"))
+                    throw DecodingError.typeMismatch(Double.self,
+                                                     DecodingError.Context(codingPath: decoder.codingPath,
+                                                                           debugDescription: "Wrong type for progress"))
                 }
             }
         }

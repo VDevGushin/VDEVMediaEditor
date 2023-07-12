@@ -451,6 +451,7 @@ fileprivate extension ToolsAreaView {
             PromptImageGeneratorView { image in
                 vm.tools.closeTools(false)
                 vm.data.add(CanvasImageModel(image: image, asset: nil))
+                makeHaptics()
             }
         }
     }

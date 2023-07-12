@@ -20,6 +20,17 @@ struct Injected<Service> {
     var wrappedValue: Service { service }
 }
 
+@propertyWrapper
+struct InjectedOptional<Service> {
+    private var service: Service?
+
+    init() {
+        self.service = DIContainer.shared.resolveOptional(Service.self)
+    }
+
+    var wrappedValue: Service? { service }
+}
+
 final class DIContainer {
     static let shared = DIContainer()
     

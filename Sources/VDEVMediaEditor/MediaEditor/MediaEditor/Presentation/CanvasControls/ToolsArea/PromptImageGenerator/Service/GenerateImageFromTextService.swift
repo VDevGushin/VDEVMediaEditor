@@ -10,21 +10,25 @@ import Combine
 import UIKit
 
 final class GenerateImageFromTextService {
+    @InjectedOptional private var imageResultChecker: ImageResultChecker?
+    
     var state: AnyPublisher<State, Never> { _state.eraseToAnyPublisher() }
     private let client = ApiClientImpl(host: "api.thenextleg.io")
-    private var operation: AnyCancellable?
     private var _state = CurrentValueSubject<State, Never>(.notStarted)
-    private let imageResultChecker = DIContainer.shared.resolveOptional(ImageResultChecker.self)
     private var imageResultCheckerObserver: AnyCancellable?
     private var executeTask: Task<Void, Error>?
     
     init() {
-        guard let imageResultChecker = imageResultChecker else { return }
+        guard let imageResultChecker = imageResultChecker else {
+            _state.send(.inaccessible)
+            return
+        }
         imageResultCheckerObserver = imageResultChecker
             .state
             .sink { [weak self] in
                 switch $0 {
-                case .notStarted: break
+                case .notStarted:
+                    self?._state.send(.notStarted)
                 case .inProgress(progress: let progress,
                                  progressImageUrl: let progressImageUrl):
                     self?._state.send(.inProgress(progress: progress,
@@ -44,7 +48,7 @@ final class GenerateImageFromTextService {
     func execute(message: String) {
         executeTask?.cancel()
         guard let imageResultChecker = imageResultChecker else {
-            _state.send(.notStarted)
+            _state.send(.inaccessible)
             return
         }
         
@@ -66,29 +70,16 @@ final class GenerateImageFromTextService {
     }
     
     func cancel() {
-        operation?.cancel()
-        operation = nil
+        executeTask?.cancel()
+        executeTask = nil
     }
     
     private func send(message: String) async throws -> MESSAGEID {
-        try await withCheckedThrowingContinuation { [weak self] continuation in
-            guard let self = self else { return }
-            self.operation = self.client
-                .execute(GenerateOperation(message: message))
-                .sink(receiveCompletion: { state in
-                    switch state {
-                    case .finished: break
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }, receiveValue: { result in
-                    guard let messageid = result.messageId else {
-                        continuation.resume(throwing: "No message id")
-                        return
-                    }
-                    continuation.resume(returning: messageid)
-                })
+        let response = try await client.execute(GenerateOperation(message: message))
+        guard let messageID = response.messageId else {
+            throw "No message id"
         }
+        return messageID
     }
 }
 
@@ -124,6 +115,7 @@ struct GenerateOperation: ApiOperationWithBody {
 extension GenerateImageFromTextService {
     enum State {
         case loading
+        case inaccessible
         case notStarted
         case success(image: UIImage)
         case error(error: Error)

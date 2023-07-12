@@ -43,5 +43,19 @@ final class ApiClientImpl: ApiClient {
                                        decoder: decoder,
                                        with: Operation.Response.self)
     }
+    
+    func execute<Operation: ApiOperation>(
+        _ operation: Operation
+    ) async throws -> Operation.Response {
+        let request = makeURLRequest(operation: operation)
+        return try await URLSession.shared.fetch(for: request, decoder: decoder, with: Operation.Response.self)
+    }
+    
+    func execute<Operation: ApiOperationWithBody>(
+        _ operation: Operation
+    ) async throws -> Operation.Response {
+        let request = makeURLRequest(operation: operation)
+        return try await URLSession.shared.fetch(for: request, decoder: decoder, with: Operation.Response.self)
+    }
 }
 

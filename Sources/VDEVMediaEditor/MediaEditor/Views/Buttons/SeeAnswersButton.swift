@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct SeeAnswersButton: View {
     @Injected private var strings: VDEVMediaEditorStrings
     

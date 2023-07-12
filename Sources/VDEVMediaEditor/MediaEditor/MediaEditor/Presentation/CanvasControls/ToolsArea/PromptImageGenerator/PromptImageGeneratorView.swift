@@ -18,62 +18,93 @@ struct PromptImageGeneratorView: View {
     
     var body: some View {
         switch vm.state {
+        case.inaccessible: EmptyView()
         case .loading:
-            VStack {
-                Spacer()
-                ActivityIndicator(isAnimating: true,
-                                  style: .medium,
-                                  color: .white)
-                Spacer()
-            }
+            ProgressView(progress: 0, progressImage: vm.progressImage)
         case .notStarted:
-            InitialStateView(message: $vm.messageToSubmit, error: nil) { message in
+            InitialStateView(message: $vm.messageToSubmit,
+                             canSubmit: $vm.canSubmit,
+                             error: nil) { message in
                 vm.submit(message: message)
+            } onRandomMessage: {
+                vm.randomMessage()
             }
         case .error(let error):
-            InitialStateView(message: $vm.messageToSubmit, error: error) { message in
+            InitialStateView(message: $vm.messageToSubmit,
+                             canSubmit: $vm.canSubmit,
+                             error: error) { message in
                 vm.submit(message: message)
+            } onRandomMessage: {
+                vm.randomMessage()
             }
         case .inProgress(progress: let progress):
-            VStack(alignment: .center, spacing: 12) {
-                Spacer()
-                ActivityIndicator(isAnimating: true,
-                                  style: .medium,
-                                  color: .white)
-                
-                Text("\(progress)%")
-                
-                Spacer()
-            }
-            .background {
-                vm.progressImage.map {
-                    Image(uiImage: $0)
-                        .resizable()
-                        .scaledToFill()
-                        .blur(radius: 3)
-                }
-            }
+            ProgressView(progress: progress, progressImage: vm.progressImage)
         }
     }
 }
 
 private extension PromptImageGeneratorView {
+    struct ProgressView: View {
+        let progress: Int
+        var progressImage: UIImage?
+        var body: some View {
+            ZStack {
+                progressImage.map { image in
+                    Rectangle()
+                        .fill(.red)
+                        .overlay {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .clipped()
+                        }
+                        .cornerRadius(10)
+                        .blur(radius: 3)
+                        .padding()
+                }
+                
+                VStack(alignment: .center, spacing: 16) {
+                    Spacer()
+                    ActivityIndicator(isAnimating: true,
+                                      style: .large,
+                                      color: AppColors.white.uiColor)
+                    
+                    Text("\(progress)%")
+                        .font(AppFonts.gramatika(size: 16))
+                        .foregroundColor(AppColors.white)
+                    
+                    Spacer()
+                }
+            }
+            .withParallaxCardEffect()
+        }
+    }
     struct InitialStateView: View {
         @Binding private var message: String
+        @Binding private var canSubmit: Bool
         @FocusState private var messageIsFocused: Bool
         private let error: Error?
         private let onSubmit: (String) -> Void
+        private let onRandomMessage: () -> Void
    
-        init(message: Binding<String>, error: Error?, onSubmit: @escaping (String) -> Void) {
+        init(message: Binding<String>,
+             canSubmit: Binding<Bool>,
+             error: Error?,
+             onSubmit: @escaping (String) -> Void,
+             onRandomMessage: @escaping () -> Void) {
             self.error = error
             self._message = message
+            self._canSubmit = canSubmit
             self.onSubmit = onSubmit
+            self.onRandomMessage = onRandomMessage
         }
         
         var body: some View {
             VStack(spacing: 12) {
                 error.map {
-                    Text($0.localizedDescription).foregroundColor(AppColors.redWithOpacity)
+                    Text($0.localizedDescription)
+                        .font(AppFonts.gramatika(size: 12))
+                        .foregroundColor(AppColors.redWithOpacity)
                 }
                 
                 VStack {
@@ -86,28 +117,28 @@ private extension PromptImageGeneratorView {
                         .padding()
                     
                 }.overlay(
-                    RoundedRectangle(cornerRadius: 25)
-                        .stroke(Color.yellow, lineWidth: 5)
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(AppColors.whiteWithOpacity, lineWidth: 3)
                 )
                 .padding(.horizontal)
                 .viewDidLoad {
                     messageIsFocused = true
                 }
                 
-                Button("Submit") {
-                    messageIsFocused = false
-                    onSubmit(message)
+                HStack {
+                    TextButton(title: "Random") {
+                        onRandomMessage()
+                    }
+                    TextButton(title: "Submit") {
+                        messageIsFocused = false
+                        onSubmit(message)
+                    }
+                    .disabled(!canSubmit)
+                    .opacity(canSubmit ? 1.0 : 0.3)
                 }
-                .disabled(message.isEmpty)
                 
                 Spacer()
             }
-        }
-    }
-    
-    struct NotAvailableStateView: View {
-        var body: some View {
-            Text("Сервис не доступен")
         }
     }
 }
