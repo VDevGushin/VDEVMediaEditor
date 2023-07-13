@@ -37,7 +37,7 @@ final class GenerateImageFromTextService {
                 case .success(image: let image):
                     self?._state.send(.success(image: image))
                     self?.imageResultCheckerObserver?.cancel()
-                    Task { await imageResultChecker.removeMessageID() }
+                    self?.removeMessageID()
                 case .error(error: let error):
                     self?._state.send(.error(error: error))
                 }
@@ -46,6 +46,10 @@ final class GenerateImageFromTextService {
     
     deinit {
         cancel()
+    }
+    
+    func removeMessageID() {
+        Task { await imageResultChecker?.removeMessageID(force: true) }
     }
     
     func execute(message: String) {
@@ -66,7 +70,6 @@ final class GenerateImageFromTextService {
                 await imageResultChecker.save(messageID: messageID)
                 _state.send(.loading)
             } catch {
-                await imageResultChecker.removeMessageID()
                 _state.send(.error(error: error))
             }
         }

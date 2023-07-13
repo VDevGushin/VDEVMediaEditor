@@ -77,6 +77,10 @@ final class PromptImageGeneratorViewModel: ObservableObject {
         generateImageFromTextService.cancel()
     }
     
+    func onErrorConfirm() {
+        generateImageFromTextService.removeMessageID()
+    }
+    
     func randomMessage() {
         let index = Int.random(in: 0...rundomMessages.count-1)
         self.messageToSubmit = rundomMessages[index]

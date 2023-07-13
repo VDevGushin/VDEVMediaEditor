@@ -11,6 +11,34 @@ import UIKit
 
 typealias MESSAGEID = String
 
+enum AIGenerationError: Error, LocalizedError {
+    case error(Error)
+    case errorDescription(String)
+    case common(error: Error?, description: String?)
+    
+    var localizedDescription: String {
+        switch self {
+        case let .errorDescription(description):
+            return description
+        case let .error(error):
+            return error.localizedDescription
+        case let .common(error: error, description: description):
+            return description ?? error?.localizedDescription ?? ""
+        }
+    }
+    
+    public var errorDescription: String? {
+        switch self {
+        case let .errorDescription(description):
+            return NSLocalizedString(description, comment: "")
+        case let .error(error):
+            return NSLocalizedString(error.localizedDescription, comment: "")
+        case let .common(error: error, description: description):
+            let message = description ?? error?.localizedDescription ?? ""
+            return NSLocalizedString(message, comment: "")
+        }
+    }
+}
 
 extension UserDefaults {
     private var defaultsKey: String { "EDIT_ME_AI_MESSAGE_ID" }
@@ -71,12 +99,11 @@ final class ImageResultChecker: ObservableObject {
                 let processingResult: ProcessingResponse
                 do {
                     let response = try await self.check(messageID: messageID)
-                    processingResult = .createFrom(response)
+                    processingResult = try .createFrom(response)
                 } catch {
                     await self.incrementAttemp()
                     processingResult = .error(error: error, messageId: messageID)
                 }
-                
                 await self.processingResult(processingResult)
             }
         }
@@ -95,9 +122,13 @@ final class ImageResultChecker: ObservableObject {
     }
     
     @MainActor
-    func removeMessageID() async {
-        if savedMessageID != nil {
+    func removeMessageID(force: Bool = false) async {
+        if force {
             savedMessageID = nil
+        } else {
+            if savedMessageID != nil {
+                savedMessageID = nil
+            }
         }
     }
 }
@@ -122,13 +153,13 @@ private extension ImageResultChecker {
         case .error(error: let error, messageId: _):
             if await self.checkAttempt() {
                 self.setState(value: .error(error: error))
-                await self.removeMessageID()
+                self.stop()
             }
         case .success(image: let image, messageId: _):
             // посылаем результат
             self.setState(value: .success(image: image))
             // отсанавливаем таймер
-            self.stop()
+           
             // удалять id можно только после получения результата во вью
             // (GenerateImageFromTextService)
         case .inProgress(progress: let progress,
@@ -180,15 +211,25 @@ private extension ImageResultChecker {
 }
 
 private extension ImageResultChecker {
-    enum ProcessingResponse {
+    enum ProcessingResponse: Equatable {
+        static func == (lhs: ProcessingResponse, rhs: ProcessingResponse) -> Bool {
+            switch (lhs, rhs) {
+            case (.incoplete, .incoplete): return true
+            case (.error, .error): return true
+            case (.inProgress, .inProgress): return false
+            default: return false
+            }
+        }
+        
         case incoplete(messageId: String)
         case error(error: Error, messageId: String)
         case success(image: UIImage, messageId: String)
         case inProgress(progress: Int, messageId: String, progressImageUrl: URL?)
         
-        static func createFrom(_ value: (ImageResultChecker.GetMessageOperation.Response, MESSAGEID)) -> ProcessingResponse {
+        static func createFrom(_ value: (ImageResultChecker.GetMessageOperation.Response, MESSAGEID)) throws -> ProcessingResponse {
             let response = value.0
             let messageId = value.1
+            
             switch response.progress {
             case .incoplete:
                 return .incoplete(messageId: messageId)
@@ -198,7 +239,8 @@ private extension ImageResultChecker {
                         let image = try ProcessingResponse.image(from: response.response?.imageUrls)
                         return .success(image: image, messageId: messageId)
                     } catch {
-                        return .error(error: error, messageId: messageId)
+                        throw AIGenerationError.common(error: error,
+                                                       description: response.response?.description)
                     }
                 } else {
                     return .inProgress(progress: progress,
@@ -240,19 +282,23 @@ private extension ImageResultChecker {
                 enum CodingKeys: String, CodingKey {
                     case imageUrl
                     case imageUrls
+                    case description
                 }
                 
                 let imageUrl: URL?
                 let imageUrls: [URL]?
+                let description: String?
                 
                 init(from decoder: Decoder) throws {
                     guard let values = try? decoder.container(keyedBy: CodingKeys.self) else {
                         imageUrl = nil
                         imageUrls = nil
+                        description = nil
                         return
                     }
                     imageUrl = try? values.decode(URL.self, forKey: .imageUrl)
                     imageUrls = try? values.decode([URL].self, forKey: .imageUrls)
+                    description = try? values.decode(String.self, forKey: .description)
                 }
             }
             

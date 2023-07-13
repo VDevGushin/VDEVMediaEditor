@@ -36,6 +36,8 @@ struct PromptImageGeneratorView: View {
                 vm.submit(message: message)
             } onRandomMessage: {
                 vm.randomMessage()
+            } onErrorConfirm: {
+                vm.onErrorConfirm()
             }
         case .inProgress(progress: let progress):
             ProgressView(progress: progress, progressImage: vm.progressImage)
@@ -88,60 +90,83 @@ private extension PromptImageGeneratorView {
         private let error: Error?
         private let onSubmit: (String) -> Void
         private let onRandomMessage: () -> Void
-   
+        private let onErrorConfirm: (() -> Void)?
+        
         init(message: Binding<String>,
              canSubmit: Binding<Bool>,
              error: Error?,
              onSubmit: @escaping (String) -> Void,
-             onRandomMessage: @escaping () -> Void) {
+             onRandomMessage: @escaping () -> Void,
+             onErrorConfirm: (() -> Void)? = nil) {
             self.error = error
             self._message = message
             self._canSubmit = canSubmit
             self.onSubmit = onSubmit
             self.onRandomMessage = onRandomMessage
+            self.onErrorConfirm = onErrorConfirm
         }
         
         var body: some View {
-            VStack(spacing: 12) {
-                error.map {
-                    Text($0.localizedDescription)
-                        .font(AppFonts.gramatika(size: 12))
-                        .foregroundColor(AppColors.redWithOpacity)
-                }
-                
-                 VStack {
-                    TextEditor(text: $message)
-                        .multilineTextAlignment(.leading)
-                        .focused($messageIsFocused)
-                        .transparentScrolling()
-                        .lineSpacing(10)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(false)
-                        .padding()
-                        .viewDidLoad {
-                            messageIsFocused = true
+            ZStack {
+                VStack(spacing: 12) {
+                    VStack {
+                        TextEditor(text: $message)
+                            .multilineTextAlignment(.leading)
+                            .focused($messageIsFocused)
+                            .transparentScrolling()
+                            .lineSpacing(10)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(false)
+                            .padding()
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(AppColors.whiteWithOpacity, lineWidth: 3)
+                    )
+                    .padding(.horizontal)
+                    
+                    
+                    HStack {
+                        TextButton(title: strings.random) {
+                            onRandomMessage()
                         }
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(AppColors.whiteWithOpacity, lineWidth: 3)
-                )
-                .padding(.horizontal)
-               
-                
-                HStack {
-                    TextButton(title: strings.random) {
-                        onRandomMessage()
+                        TextButton(title: strings.submit) {
+                            messageIsFocused = false
+                            onSubmit(message)
+                        }
+                        .disabled(!canSubmit)
+                        .opacity(canSubmit ? 1.0 : 0.3)
                     }
-                    TextButton(title: strings.submit) {
-                        messageIsFocused = false
-                        onSubmit(message)
-                    }
-                    .disabled(!canSubmit)
-                    .opacity(canSubmit ? 1.0 : 0.3)
+                    
+                    Spacer()
+                }.viewDidLoad {
+                    messageIsFocused = (error == nil)
                 }
+                .blur(radius: error != nil ? 3 : 0)
                 
-                Spacer()
+                error.map { error in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        let message = error.makeRepresentable()
+                        
+                        VStack(alignment: .center, spacing: 12) {
+                            Text(message.title)
+                                .font(AppFonts.gramatika(size: 14))
+                                .foregroundColor(AppColors.red)
+                            
+                            Text(message.message)
+                                .font(AppFonts.gramatika(size: 12))
+                                .foregroundColor(AppColors.white)
+                            
+                            TextButton(title: strings.confirm) {
+                                onErrorConfirm?()
+                            }
+                        }
+                        .padding()
+                    }
+                    .background(AppColors.blackWithOpacity3)
+                    .cornerRadius(12)
+                    .padding()
+                }
             }
         }
     }
@@ -156,5 +181,50 @@ private extension View {
                 UITextView.appearance().backgroundColor = .clear
             }
         }
+    }
+}
+
+private extension View {
+    func aiAlert(isPresented: Binding<Bool>,
+                 errorRepresentation: ErrorRepresentation?,
+                 onComfirm: @escaping () -> Void) -> some View {
+        modifier(AiAlertModifier(isPresented: isPresented,
+                                 errorRepresentation: errorRepresentation,
+                                 onComfirm: onComfirm))
+    }
+}
+
+private struct AiAlertModifier: ViewModifier {
+    @Injected private var strings: VDEVMediaEditorStrings
+    @Binding private var isPresented: Bool
+    private let onComfirm: () -> Void
+    private let errorRepresentation: ErrorRepresentation?
+    
+    init(isPresented: Binding<Bool>,
+         errorRepresentation: ErrorRepresentation?,
+         onComfirm: @escaping () -> Void) {
+        print("============>_isPresented", isPresented.wrappedValue)
+        self._isPresented = isPresented
+        self.errorRepresentation = errorRepresentation
+        self.onComfirm = onComfirm
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .alert(isPresented: $isPresented) {
+                Alert(
+                    title: Text(errorRepresentation?.title ?? strings.error),
+                    message: Text(errorRepresentation?.message ?? ""),
+                    dismissButton: .default(
+                        Text(strings.confirm),
+                        action: confirmAction
+                    )
+                )
+            }
+    }
+    
+    private func confirmAction() {
+        onComfirm()
+        isPresented = false
     }
 }
