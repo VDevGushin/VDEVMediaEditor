@@ -12,6 +12,9 @@ import CollectionConcurrencyKit
 
 final class AssetCombiner {
     @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var resultSettings: VDEVMediaEditorResultSettings
+    @Injected private var resolution: ResolutionService
+    
     // MARK: - public
     func combine(_ input: [CombinerAsset],
                  scaleFactor: CGFloat,
@@ -20,14 +23,22 @@ final class AssetCombiner {
         
         // Создание видео
         if input.contains(where: { $0.body.videoBody != nil }) {
-            let videoMixer = VideoMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
-            return try await videoMixer.composeVideo(data: input, withAudio: settings.canTurnOnSoundInVideos)
-            
-            // Создание картиртинки
+            let result = try await VideoMixer.composeVideo(
+                renderSize: canvasNativeSize,
+                progressObserver: progressObserver,
+                data: input,
+                videoExportPreset: resolution.videoExportPreset(),
+                withAudio: settings.canTurnOnSoundInVideos
+            )
+            return result
         } else {
-            let mixer = ImageMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
-            let resultPack = try mixer.combineAndStore(assets: input, alsoSaveToPhotos: false)
-            return CombinerOutput(cover: resultPack.cover, url: resultPack.uri, aspect: canvasNativeSize.width / canvasNativeSize.height)
+            let result = try ImageMixer.combineAndStore(
+                renderSize: canvasNativeSize,
+                progressObserver: progressObserver,
+                assets: input,
+                needAutoEnhance: resultSettings.needAutoEnhance.value,
+                alsoSaveToPhotos: false)
+            return result
         }
     }
     
@@ -38,9 +49,14 @@ final class AssetCombiner {
         
         // Создание видео
         if input.contains(where: { $0.body.videoBody != nil }) {
-            let videoMixer = VideoMixer(renderSize: canvasNativeSize, progressObserver: progressObserver)
-            return try await videoMixer.composeVideo(data: input, withAudio: false)
-            
+            let result = try await VideoMixer.composeVideo(
+                renderSize: canvasNativeSize,
+                progressObserver: progressObserver,
+                data: input,
+                videoExportPreset: resolution.videoExportPreset(),
+                withAudio: false
+            )
+            return result
         // Создание картиртинки
         } else {
             let mixer = ImageMixerPng(renderSize: canvasNativeSize, progressObserver: progressObserver)

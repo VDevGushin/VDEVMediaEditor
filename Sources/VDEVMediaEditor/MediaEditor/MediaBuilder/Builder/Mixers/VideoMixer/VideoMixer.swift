@@ -10,28 +10,20 @@ import AVFoundation
 import Photos
 import UIKit
 
-typealias MixerThrowsCallback = () throws -> CombinerOutput
+enum MixerError: Error {
+    case couldNotGenerateThumbnail
+    case couldNotMakeExporter
+}
 
 // Render one video from others
-final class VideoMixer {
-    @Injected private var resolution: ResolutionService
-    
-    enum MixerError: Error {
-        case couldNotGenerateThumbnail
-        case couldNotMakeExporter
-    }
-    
-    private let renderSize: CGSize
-    private let progressObserver: ProgressObserver?
-    
-    
-    init(renderSize: CGSize,
-         progressObserver: ProgressObserver? = nil) {
-        self.renderSize = renderSize
-        self.progressObserver = progressObserver
-    }
-    
-    func composeVideo(data: [CombinerAsset], withAudio: Bool) async throws -> CombinerOutput {
+struct VideoMixer {
+    static func composeVideo(
+        renderSize: CGSize,
+        progressObserver: ProgressObserver? = nil,
+        data: [CombinerAsset],
+        videoExportPreset: String,
+        withAudio: Bool
+    ) async throws -> CombinerOutput {
         let mixComposition = AVMutableComposition()
         let audioMix = AVMutableAudioMix()
         
@@ -150,7 +142,7 @@ final class VideoMixer {
         
         try? FileManager.default.removeItem(at: url)
         
-        let presetName = resolution.videoExportPreset()
+        let presetName = videoExportPreset
         guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: presetName) else {
             throw MixerError.couldNotMakeExporter
         }

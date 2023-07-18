@@ -9,11 +9,10 @@ import UIKit
 import Photos
 import AVFoundation
 
-public final class FilteringProcessor {
-    public static let shared = FilteringProcessor()
-    private let renderContext = CIContext()
+final class FilteringProcessor {
+    static let shared = FilteringProcessor()
     
-    public static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
+    private let renderContext = CIContext()
     
     private init() {}
     
@@ -41,7 +40,7 @@ public final class FilteringProcessor {
                 request.finish(with: imageOutput, context: nil)
             }
         })
-        // https://developer.apple.com/av-foundation/Incorporating-HDR-video-with-Dolby-Vision-into-your-apps.pdf
+        //https://developer.apple.com/av-foundation/Incorporating-HDR-video-with-Dolby-Vision-into-your-apps.pdf
         if #available(iOS 14.0, *) {
             if !asset.tracks(withMediaCharacteristic: .containsHDRVideo).isEmpty {
                 composition.colorPrimaries = AVVideoColorPrimaries_ITU_R_709_2
@@ -61,13 +60,9 @@ public final class FilteringProcessor {
         exportQuality: FilteringProcessor.ExportQuality,
         trasform: Transform,
         mask: CGImage?
-        
     ) async throws -> URL {
-        
         let filterChain = FilteringProcessor.Processor(filterChain: filterChain)
-        
         let composition = AVMutableVideoComposition(asset: asset, applyingCIFiltersWithHandler: { [filterChain] request in
-            
             autoreleasepool {
                 var imageOutput = filterChain.applyFilters(to: request.sourceImage)
                 
@@ -154,15 +149,12 @@ public final class FilteringProcessor {
     func generateAndSavePNGImage(ciImage: CIImage) throws -> URL {
         try generateAndSaveImage(ciImage: ciImage)
     }
-}
-
-// MARK: - Save
-extension FilteringProcessor {
+    
     /// Generates png image on the internal storage and returns local URL
     /// - Parameter ciImage: image to generate png from
     /// - Throws: Any error while generating png oand saving it
     /// - Returns: local URL of newly generated PNG file
-    private func generateAndSaveImage(ciImage: CIImage) throws -> URL {
+    func generateAndSaveImage(ciImage: CIImage) throws -> URL {
         let generatedImagePath = try generateURLInCacheDir(withExtension: "png")
         let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
         try renderContext
@@ -174,10 +166,13 @@ extension FilteringProcessor {
         
         return generatedImagePath
     }
-    
-    private func processAndExportComposition(_ composition: AVVideoComposition,
-                                             ofAsset asset: AVAsset,
-                                             exportQuality: ExportQuality
+}
+
+// MARK: - Save
+fileprivate extension FilteringProcessor {
+    func processAndExportComposition(_ composition: AVVideoComposition,
+                                     ofAsset asset: AVAsset,
+                                     exportQuality: ExportQuality
     ) async throws -> URL {
         
         guard let export = AVAssetExportSession(asset: asset,
@@ -204,7 +199,7 @@ extension FilteringProcessor {
         }
     }
     
-    private func generateURLInCacheDir(withExtension extension: String) throws -> URL {
+    func generateURLInCacheDir(withExtension extension: String) throws -> URL {
         let imageIdentifier = UUID().uuidString
         let tmpDirURL = FileManager.default.temporaryDirectory
         return tmpDirURL.appendingPathComponent(imageIdentifier).appendingPathExtension(`extension`)
@@ -245,7 +240,7 @@ extension FilteringProcessor {
     }
 }
 
-private extension FilteringProcessor {
+extension FilteringProcessor {
     final class Processor {
         private var filterChain: [FilterDescriptor]
         private var filters: [CIFilter]
@@ -304,45 +299,5 @@ private extension FilteringProcessor {
             
             bootstrapped = true
         }
-    }
-}
-
-// MARK: - Public helper
-extension FilteringProcessor {
-    public func generateAndSaveContent(
-        withOverlayImage overlayImage: CIImage,
-        overContentAtURL contentURL: URL,
-        withContentMode contentMode: UIView.ContentMode? = nil
-    ) async throws -> URL {
-        let contentAsset = AVAsset(url: contentURL)
-        let isVideo = contentAsset.isPlayable
-        
-        let filter = FilterDescriptor(
-            name: "CISourceOverCompositing",
-            params: [
-                "inputImage": FilterDescriptor.Param.image(overlayImage, contentMode, URL(fileURLWithPath: ""))
-            ],
-            customImageTargetKey: "inputBackgroundImage"
-        )
-        
-        if isVideo {
-            let canExportHEVCWithAlpha = AVAssetExportSession.allExportPresets().contains(AVAssetExportPresetHEVCHighestQualityWithAlpha)
-            let quality: ExportQuality = canExportHEVCWithAlpha ? .HEVCHighestWithAlpha: .highest
-            return try await processAndExport(asset: contentAsset, filterChain: [filter], exportQuality: quality)
-        } else {
-            guard let processedImage = process(imageURL: contentURL, filterChain: [filter]) else {
-                throw ProcessorError.processImageReturnedNil
-            }
-            let resultImage = try generateAndSaveImage(ciImage: processedImage)
-            return resultImage
-        }
-    }
-    
-    private func process(imageURL: URL, filterChain: [FilterDescriptor]) -> CIImage? {
-        guard let image = AssetExtractionUtil.image(fromUrl: imageURL, storeCache: false) else {
-            return nil
-        }
-        let filterChain = Processor(filterChain: filterChain)
-        return filterChain.applyFilters(to: image)
     }
 }

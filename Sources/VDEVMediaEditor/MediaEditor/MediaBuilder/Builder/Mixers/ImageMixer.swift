@@ -9,22 +9,19 @@ import Foundation
 import UIKit
 import Photos
 
-final class ImageMixer {
-    @Injected private var resultSettings: VDEVMediaEditorResultSettings
-    
-    private let renderSize: CGSize
-    private let progressObserver: ProgressObserver?
-    
-    init(renderSize: CGSize, progressObserver: ProgressObserver? = nil) {
-        self.renderSize = renderSize
-        self.progressObserver = progressObserver
-    }
-    
-    func combineAndStore(assets: [CombinerAsset],
-                         alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
-        var image = try combine(assets: assets)
+struct ImageMixer {
+    static func combineAndStore(
+        renderSize: CGSize,
+        progressObserver: ProgressObserver? = nil,
+        assets: [CombinerAsset],
+        needAutoEnhance: Bool,
+        alsoSaveToPhotos: Bool
+    ) throws -> CombinerOutput {
+        var image = try combine(renderSize: renderSize,
+                                progressObserver: progressObserver,
+                                assets: assets)
         
-        if resultSettings.needAutoEnhance.value {
+        if needAutoEnhance {
             image = image.autoEnhance()
         }
         
@@ -36,10 +33,16 @@ final class ImageMixer {
             })
         }
         
-        return (image, imageURL, imageURL)
+        return .init(cover: imageURL,
+                     url: imageURL,
+                     aspect: renderSize.aspect)
     }
     
-    private func combine(assets: [CombinerAsset]) throws -> CIImage {
+    private static func combine(
+        renderSize: CGSize,
+        progressObserver: ProgressObserver? = nil,
+        assets: [CombinerAsset]
+    ) throws -> CIImage {
         progressObserver?.addProgress(title: "Подготовка изображения для генерации...") // for BG
         var sorted = assets.sorted(by: { $0.transform.zIndex < $1.transform.zIndex })
         var resultImage = sorted.removeFirst().body.imageBody!.ciImage

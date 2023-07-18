@@ -8,6 +8,10 @@
 import UIKit
 
 extension CGSize {
+    var aspect: CGFloat {
+        width / height
+    }
+    
     var rect: CGRect {
         .init(origin: .init(x: 0, y: 0), size: self)
     }

@@ -15,14 +15,24 @@ let package = Package(
             targets: ["VDEVMediaEditor"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/CombineCommunity/CombineExt.git", branch: "main"),
-        .package(url: "https://github.com/onevcat/Kingfisher.git", branch: "master"),
-        .package(url: "https://github.com/guoyingtao/Mantis.git", branch: "master"),
-        // .package(url: "https://github.com/Yummypets/YPImagePicker.git", .upToNextMajor(from: "5.0.0")),
-        .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", .upToNextMajor(from: "0.7.1")),
+        .package(url: "https://github.com/CombineCommunity/CombineExt.git",
+                 .upToNextMajor(from: "1.0.0")),
+        
+        .package(url: "https://github.com/onevcat/Kingfisher.git",
+                 .upToNextMajor(from: "7.0.0")),
+        
+        .package(url: "https://github.com/guoyingtao/Mantis.git",
+                 from: "2.14.1"),
+        
+        .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", .upToNextMajor(from: "0.8.0")),
+        
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", .upToNextMajor(from: "0.2.0")),
-        .package(url: "https://github.com/SwiftUIX/SwiftUIX", .upToNextMajor(from: "0.1.3")),
-        .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git", branch: "main"),
+        
+        .package(url: "https://github.com/SwiftUIX/SwiftUIX",
+                 .upToNextMajor(from: "0.1.6")),
+        
+        .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git",
+                 from: "0.1.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

@@ -9,8 +9,8 @@ import UIKit
 import Photos
 import Kingfisher
 
-public final class AssetExtractionUtil {
-    public static func image(fromUrl url: URL, storeCache: Bool = true) -> CIImage? {
+struct AssetExtractionUtil {
+    static func image(fromUrl url: URL, storeCache: Bool = true) -> CIImage? {
         return SessionCache<CIImage>.data(from: url, storeCache: storeCache, extractor: {
             if let fetchResult = fetchResult(forUrl: url) {
                 guard let asset = fetchResult.firstObject else { return nil }
@@ -47,7 +47,7 @@ public final class AssetExtractionUtil {
         }())
     }
     
-    public static func image(fromURL url: URL) async -> UIImage? {
+    static func image(fromURL url: URL) async -> UIImage? {
         if let fetchResult = fetchResult(forUrl: url) {
             guard let asset = fetchResult.firstObject,
                   asset.mediaType == .image else {
@@ -74,7 +74,7 @@ public final class AssetExtractionUtil {
         }
     }
     
-    public static func video(fromURL url: URL) async -> AVAsset? {
+    static func video(fromURL url: URL) async -> AVAsset? {
         guard let fetchResult = fetchResult(forUrl: url) else {
             return AVAsset(url: url)
         }

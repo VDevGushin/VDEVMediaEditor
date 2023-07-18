@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Ezaldeen99/BackgroundRemoval.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "a3e6d0b98ae033fa12b8882bc3137cc2721891b6"
+        "revision" : "bac5ad72b68850ca583581106793be29c19f41e9",
+        "version" : "0.1.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/CombineCommunity/CombineExt.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56"
+        "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56",
+        "version" : "1.8.1"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher.git",
       "state" : {
-        "branch" : "master",
-        "revision" : "40d7062bd9e6645f3bd5430e18565286f1223712"
+        "revision" : "c1f60c63f356d364f4284ba82961acbe7de79bcc",
+        "version" : "7.8.1"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/guoyingtao/Mantis.git",
       "state" : {
-        "branch" : "master",
-        "revision" : "0dd577320b9c99739be13158a3ba46e514b27223"
+        "revision" : "29783a4a73625acb42e58438fb1f9451fdcb0094",
+        "version" : "2.14.1"
       }
     },
     {
@@ -87,7 +87,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "revision" : "75d5be2c85ec1e3ccbd9d99d321dd3abb5955e8d",
-        "version" : "0.1.5"
+        "version" : "0.1.6"
       }
     }
   ],
