@@ -63,7 +63,7 @@ extension PlaceholderTemplateViewModel {
             delegate?.changeSound = { [weak self] item, volume in
                 guard let self = self else { return }
                 self.videoModel?.update(volume: volume)
-                //self.volume = volume
+
                 self.showSelection = false
             }
             

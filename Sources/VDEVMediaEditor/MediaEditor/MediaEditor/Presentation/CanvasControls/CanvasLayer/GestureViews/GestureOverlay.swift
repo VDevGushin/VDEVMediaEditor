@@ -83,6 +83,12 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
     }
     
     private func setupGestForTemplate(for hView: UIView, context: Context) {
+        let LongPressRecognizer = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleLongPressForTemplate(sender:)))
+        LongPressRecognizer.minimumPressDuration = 0.1
+        LongPressRecognizer.delaysTouchesBegan = true
+        LongPressRecognizer.delegate = ExternalUIGestureRecognizerDelegate.shared
+        hView.addGestureRecognizer(LongPressRecognizer)
+        
         let Pangesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePanForTemplate(sender:)))
         Pangesture.delegate = ExternalUIGestureRecognizerDelegate.shared
         hView.addGestureRecognizer(Pangesture)
@@ -102,7 +108,6 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         context.coordinator.pinchGest = Pinchgesture
         
         context.coordinator.tapGest = nil
-        context.coordinator.longTapGest = nil
         context.coordinator.doubleTapGest = nil
     }
     
@@ -217,26 +222,23 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         private func updateProgressStateAndSetExternalGestures() {
             guard canManipulate() else { return }
-            Log.d("""
-                "panInProgress: \(panInProgress)
-                "rotInProgress: \(rotInProgress)
-                "scaleInProgress: \(scaleInProgress)
-                "longTapInProgress: \(longTapInProgress)
-                "tapInProgress: \(tapInProgress)
-                "doubleTapInProgress: \(doubleTapInProgress)
-            """)
-            
+//            Log.d("""
+//                "panInProgress: \(panInProgress)
+//                "rotInProgress: \(rotInProgress)
+//                "scaleInProgress: \(scaleInProgress)
+//                "longTapInProgress: \(longTapInProgress)
+//                "tapInProgress: \(tapInProgress)
+//                "doubleTapInProgress: \(doubleTapInProgress)
+//            """)
             let anyGestureInProgress = panInProgress ||
             rotInProgress ||
             scaleInProgress ||
             longTapInProgress ||
             tapInProgress ||
             doubleTapInProgress
-            
             withAnimation(.interactiveSpring()) {
                 parent.gestureInProgress = anyGestureInProgress
             }
-            
             setupExternalZoom(anyGestureInProgress)
         }
         
@@ -335,17 +337,27 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         // MARK: - For template to detect manipulations
         @objc
         func handlePanForTemplate(sender: UIPanGestureRecognizer) {
+            guard canManipulate() else { return }
             gestureStatus(state: &panInProgress, sender: sender)
         }
         
         @objc
         func handlePinchForTemplate(sender: UIPinchGestureRecognizer) {
+            guard canManipulate() else { return }
             gestureStatus(state: &scaleInProgress, sender: sender)
         }
         
         @objc
         func handleRotateForTemplate(sender: UIRotationGestureRecognizer) {
+            guard canManipulate() else { return }
             gestureStatus(state: &rotInProgress, sender: sender)
+        }
+        
+        @objc
+        func handleLongPressForTemplate(sender: UILongPressGestureRecognizer) {
+            guard canManipulate() else { return }
+            gestureStatus(state: &longTapInProgress, sender: sender)
+            parent.onLongPress()
         }
     }
 }
@@ -358,7 +370,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
         //Отписка - когда гестура закончился
         guard parent.itemType != .template  else { return }
         
-        guard gestureInProgress else {
+        guard gestureInProgress, canManipulate() else {
             ParentTouchHolder.set(.noTouch)
             return
         }
@@ -369,6 +381,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     }
     
     func begin(gesture: ExternalGesture) {
+        guard canManipulate() else { return }
         switch gesture {
         case .scale:
             guard ParentTouchHolder.delegate === self else { return }
@@ -382,6 +395,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     }
     
     func finish(gesture: ExternalGesture) {
+        guard canManipulate() else { return }
         switch gesture {
         case .scale:
             guard ParentTouchHolder.delegate === self else { return }
@@ -402,6 +416,7 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
     }
     
     func inProcess(gesture: ExternalGesture) {
+        guard canManipulate() else { return }
         switch gesture {
         case let .scaleInProgress(scale):
             scaleInProgress(scale)
@@ -421,7 +436,6 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
         let zoom = max(CGFloat(0.01), (externalScale * abs(scale)))
         parent.scale = zoom
     }
-    
     private func rotationInProgress(_ rotation: CGFloat) {
         if externalRotation == nil {
             externalRotation = parent.rotation
@@ -448,11 +462,9 @@ extension GestureOverlay.Coordinator: ParentTouchResultHolderDelegate {
 
 fileprivate extension GestureOverlay.Coordinator {
     func canManipulate() -> Bool {
-        guard parent.canManipulate() else {
-            parent.gestureInProgress = false
-            return false
-        }
-        return true
+        if parent.canManipulate() { return true }
+        parent.gestureInProgress = false
+        return false
     }
     
     func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {

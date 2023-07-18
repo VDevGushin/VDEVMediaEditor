@@ -17,6 +17,10 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var removeLayersService: RemoveLayersService
     @Injected private var mementoService: MementoService
     
+    @Published private(set) var resultResolution: MediaResolution = .fullHD
+    @Published private(set) var addMediaButtonTitle: String = ""
+    @Published private(set) var addMediaButtonVisible: Bool = false
+    @Published private(set) var canUndo: Bool = false
     @Published var alertData: AlertData?
     @Published var ui: CanvasUISettingsViewModel = .init()
     @Published var data: CanvasLayersDataViewModel = .init()
@@ -25,17 +29,12 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published var contentPreview: EditorPreview.Content?
     @Published private var contentPreviewDidLoad: Bool = false
     @Published var showRemoveAllAlert: Bool = false
-    @Published private(set) var resultResolution: MediaResolution = .fullHD
-    @Published private(set) var addMediaButtonTitle: String = ""
-    @Published private(set) var addMediaButtonVisible: Bool = false
-    @Published private(set) var canUndo: Bool = false
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
     
     private let builder = MediaBuilder()
     private let merger = LayersMerger()
-    
     private var storage = Cancellables()
     private let imageProcessingController = ImageProcessingController()
     
@@ -135,7 +134,8 @@ final class CanvasEditorViewModel: ObservableObject {
             .store(in: &storage)
 
         settings.isLoading.combineLatest(ui.$editorSize, $contentPreviewDidLoad)
-            .map { return !$0.0 && ($0.1 != .zero) && $0.2}
+            .map { return !$0.0 && ($0.1 != .zero) && $0.2 }
+            .removeDuplicates()
             .sink(on: .main, object: self) { wSelf, value in
                 if value {  
                     wSelf.addMediaButtonTitle = wSelf.settings.subTitle ?? wSelf.strings.hint
@@ -158,14 +158,12 @@ final class CanvasEditorViewModel: ObservableObject {
             }
             .store(in: &storage)
         
-        // Показываь или не показывать кнопку
+        // Показываnь или не показывать кнопку
         data.$layers
             .combineLatest(tools.$currentToolItem)
-            .map {
-                $0.0.isEmpty && $0.1 != .drawing
-            }
+            .map { $0.0.isEmpty && $0.1 != .drawing }
             .removeDuplicates()
-            .sink(self) { wSelf, value in
+            .sink(on: .main, object: self) { wSelf, value in
                 wSelf.addMediaButtonVisible = value
             }
             .store(in: &storage)
@@ -249,7 +247,7 @@ extension CanvasEditorViewModel {
     }
 }
 
-// MARK: - History
+// MARK: - History proxy do data
 extension CanvasEditorViewModel: MementoObject {
     func undo() {
         data.undo()

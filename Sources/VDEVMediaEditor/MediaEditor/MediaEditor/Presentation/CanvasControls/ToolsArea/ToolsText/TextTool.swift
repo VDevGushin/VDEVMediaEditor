@@ -9,7 +9,6 @@ import SwiftUI
 import CoreImage.CIFilterBuiltins
 import Combine
 
-
 struct TextTool: View {
     @State private var text: String
     @State private var placeholder: String
@@ -128,6 +127,7 @@ struct TextTool: View {
                         .padding(.vertical)
                         .offset(x: sliderInManipulation ? 12 : -(sliderWidth / 2))
                         .animation(.interactiveSpring(), value: sliderInManipulation)
+                        .isVisible(!fromTemplate)
                 }
 
                 bottomBar
@@ -153,7 +153,7 @@ struct TextTool: View {
         }
         .padding(.vertical, 8)
         .background(
-            BlurView(style: .systemChromeMaterialDark)
+            BlurView(style: .systemUltraThinMaterialLight)
         )
     }
 
@@ -319,6 +319,10 @@ struct TextTool: View {
         let offset = textItem?.offset ?? .zero
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
+        var textFrameSize: CGSize = self.textFrameSize
+        if let oldTextFrameSize = textItem?.bounds.size, fromTemplate {
+            textFrameSize = oldTextFrameSize
+        }
         let newModel = CanvasTextModel(text: text,
                                        placeholder: placeholder,
                                        fontSize: fontSize,
@@ -330,7 +334,8 @@ struct TextTool: View {
                                        textFrameSize: textFrameSize,
                                        offset: offset,
                                        rotation: rotation,
-                                       scale: scale, isMovable: false)
+                                       scale: scale,
+                                       isMovable: false)
         doneAction(newModel)
     }
 

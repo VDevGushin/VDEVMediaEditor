@@ -11,19 +11,14 @@ import AVKit
 import IdentifiedCollections
 
 final class CanvasLayersDataViewModel: ObservableObject {
+    @Published var layers: IdentifiedArrayOf<CanvasItemModel> = []
     @Injected private var settings: VDEVMediaEditorSettings
     @Injected private var mementoService: MementoService
-    
-    private var canSave = true
-    
-    @Published var layers: IdentifiedArrayOf<CanvasItemModel> = []
-    
+
     var isEmpty: Bool { layers.isEmpty }
-    
     var isLimit: Bool { layers.count >= maximumLayers }
     
     private var maximumLayers: Int { settings.maximumLayers }
-    
     private var subscriptions = Cancellables()
     private var storage = Cancellables()
     
@@ -103,7 +98,6 @@ final class CanvasLayersDataViewModel: ObservableObject {
         if layers.index(id: id) == 0 { return }
         forceSave()
         if let replaceItem = layers.remove(id: id) {
-            
             layers.insert(replaceItem, at: 0)
         }
     }
@@ -161,9 +155,7 @@ extension CanvasLayersDataViewModel {
     // возможность вставить только 1 шаблон
     func addTemplate(_ item: CanvasTemplateModel) {
         forceSave()
-        layers.removeAll {
-            $0 is CanvasTemplateModel
-        }
+        layers.removeAll { $0 is CanvasTemplateModel }
         layers.insert(item, at: 0)
     }
 }
@@ -241,7 +233,6 @@ extension CanvasLayersDataViewModel {
         
         // Get index of current
         guard let currentIndex = layers.index(id: itemInCanvas.id) else { return false }
-        
         return currentIndex < checkIndex
     }
 }

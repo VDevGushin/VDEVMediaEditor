@@ -24,7 +24,6 @@ struct MediaEditorView: View {
             
             VStack(spacing: 0) {
                     EditorArea
-                        .viewDidLoad(vm.contentViewDidLoad)
                         .padding(.bottom, 4)
                 
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
@@ -51,6 +50,7 @@ struct MediaEditorView: View {
         }
         .environmentObject(vm)
         .environment(\.guideLinesColor, vm.ui.guideLinesColor)
+        .viewDidLoad(vm.contentViewDidLoad)
     }
 }
 

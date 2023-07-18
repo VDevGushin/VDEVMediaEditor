@@ -8,10 +8,8 @@ import SwiftUI
 import Combine
 import Kingfisher
 
-
 final class CanvasToolsViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
-    
     var baseChallengeId: String { settings.resourceID }
 
     // Открыть/закрыть показ развернутых слоев
@@ -27,12 +25,11 @@ final class CanvasToolsViewModel: ObservableObject {
     @Published var layerInManipulation: CanvasItemModel?
     // Показать/скрыть менюху, где слои и добавление нового item в канвас
     @Published private(set) var layersAndAddNewItemIsVisible: Bool = true
-
     // показать лодер на загрузке стикеров
     @Published private(set) var isPrepareOjectOperation: Bool = false
-    // загрузка стиков
+    
+    
     private var objectPrepareOperations = Cancellables()
-
     private var storage = Cancellables()
     
     @Published var overlay: CanvasEditorToolsForTemplateViewModel = .init()
@@ -119,9 +116,8 @@ final class CanvasToolsViewModel: ObservableObject {
     // Oбнуление или показ конкретныз тулзов
     func seletedTool(_ tool: ToolItem) {
         guard tool != currentToolItem else { return }
-        
+
         if tool != .empty  { set(showAddItemSelector: false) }
-        
         set(currentToolItem: tool)
         makeHaptics()
     }
@@ -183,33 +179,24 @@ extension CanvasToolsViewModel {
     // Если есть текущий слой в режиме модификации
     // (закрывать управление некторомыми элементами)
     private var currentCanvasItemInEditMode: CanvasItemModel? {
-        var result: CanvasItemModel? = nil
-        switch currentToolItem {
-        case .concreteItem(let canvasItem):
-            result = canvasItem
-        default : break
+        guard case .concreteItem(let canvasItem) = currentToolItem else {
+            return nil
         }
-        return result
+        return canvasItem
     }
 
-    func isCurrent(item: CanvasItemModel) -> Bool {
-        guard let id = currentCanvasItemInEditMode?.id else {
-            return true
-        }
+    func inEditMode(item: CanvasItemModel) -> Bool {
+        guard let id = currentCanvasItemInEditMode?.id else { return true }
         return item.id == id
     }
     
     func isItemInSelection(item: CanvasItemModel) -> Bool {
-        guard let id = currentCanvasItemInEditMode?.id else {
-            return false
-        }
+        guard let id = currentCanvasItemInEditMode?.id else { return false }
         return item.id == id
     }
 
     func needDisableIfNotCurrent(item: CanvasItemModel) -> Bool {
-        guard let id = currentCanvasItemInEditMode?.id else {
-            return false
-        }
+        guard let id = currentCanvasItemInEditMode?.id else { return false }
         return item.id != id
     }
 }

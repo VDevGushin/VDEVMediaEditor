@@ -25,27 +25,27 @@ struct MediaEditorToolsForTemplateView: View {
             case .mediaPick:
                 PickMediaContainer()
                     .bottomTool()
-                    .transition(.trailingTransition)
+                    .transition(.trailingTransition.animation(.easeInOut))
                     .environmentObject(vm)
             case .editVariants(let item):
                 EditVariants(item: item)
                     .bottomTool()
-                    .transition(.trailingTransition)
+                    .transition(.trailingTransition.animation(.easeInOut))
                     .environmentObject(vm)
             case .adjustments(let item):
                 adjustment(item)
                     .bottomTool()
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
             case .texture(let item):
                 textureTool(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
             case .filter(let item):
                 filterTool(item)
                     .bottomTool()
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
             case .editText(item: let item):
                 textTool(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
             case .empty: EmptyView()
             }
         }

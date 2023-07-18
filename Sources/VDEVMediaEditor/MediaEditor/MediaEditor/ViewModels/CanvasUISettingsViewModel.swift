@@ -10,25 +10,18 @@ import Combine
 
 final class CanvasUISettingsViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
-    
     @Published var mainLayerBackgroundColor: Color = .init(hexadecimal: "0d0e0e")
     @Published var showVerticalCenter: Bool = false
     @Published var showHorizontalCenter: Bool = false
-    
     // получаем фактический размер канваса редактора
     @Published var editorSize: CGSize = .zero
     @Published private(set) var guideLinesColor: Color = AppColors.white
     @Published private(set) var aspectRatio: CGFloat? = nil
-    
     //Round editor size for templates and results
     @Published var roundedEditorSize: CGSize = .zero
-    
     var canvasCornerRadius: CGFloat { 16 }
     var bottomBarHeight: CGFloat { 76 }
-    
-    var needGuideLinesGrid: Bool {
-        settings.needGuideLinesGrid
-    }
+    var needGuideLinesGrid: Bool { settings.needGuideLinesGrid }
 
     private var storage = Cancellables()
     private var colorOp: AnyCancellable?

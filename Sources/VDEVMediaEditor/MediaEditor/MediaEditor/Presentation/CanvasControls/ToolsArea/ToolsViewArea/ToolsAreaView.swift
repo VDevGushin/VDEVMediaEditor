@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Combine
-import Kingfisher
 import PhotosUI
 
 struct ToolsAreaView: View {
@@ -40,7 +39,7 @@ struct ToolsAreaView: View {
             case (true, true):
                 toolsAddNewLayer()
                     .bottomTool()
-                    .transition(.trailingTransition)
+                    .transition(.trailingTransition.animation(.easeInOut))
             case (true, false):
                 if settings.isInternalModule {
                     ZStack {
@@ -52,11 +51,11 @@ struct ToolsAreaView: View {
                         .leftTool()
                         .topTool()
                     }
-                    .transition(.leadingTransition)
+                    .transition(.leadingTransition.animation(.easeInOut))
                 } else {
                     toolsLayersManager()
                         .bottomTool()
-                        .transition(.leadingTransition)
+                        .transition(.leadingTransition.animation(.easeInOut))
                 }
             default: EmptyView()
             }
@@ -69,55 +68,55 @@ struct ToolsAreaView: View {
             switch vm.tools.currentToolItem {
             case .promptImageGenerator:
                     promptImageGeneratorTool()
-                        .transition(.bottomTransition)
+                        .transition(.bottomTransition.animation(.easeInOut))
             case .template:
                 templatesTool()
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .stickers:
                 stickersTool(title: vm.tools.currentToolItem.title)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .backgroundColor:
                 bgTool(title: vm.tools.currentToolItem.title)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .drawing:
                 drawingTool()
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .text(let item):
                 textTool(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .concreteItem(let item):
                 toolConcrete(item)
                     .bottomTool()
-                    .transition(.trailingTransition)
+                    .transition(.trailingTransition.animation(.easeInOut))
                 
             case .adjustment(let item):
                 adjustment(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .colorFilter(let item):
                 filterTool(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .textureFilter(let item):
                 textureTool(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .masksFilter(let item):
                 maskTool(item)
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .aspectRatio:
                 aspectRatio()
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
                 
             case .settings:
                 settingsMenu()
-                    .transition(.bottomTransition)
+                    .transition(.bottomTransition.animation(.easeInOut))
 
                 // данные тулзы нужно показывать путем оверлеев экрана
             case .empty: EmptyView()
@@ -225,7 +224,7 @@ struct ToolsAreaView: View {
             .padding()
             .rightTool()
             .topTool()
-            .transition(.opacity)
+            .transition(.opacity.animation(.easeInOut))
         default:
             if vm.canUndo && settings.canUndo {
                 UndoButton {
@@ -235,7 +234,7 @@ struct ToolsAreaView: View {
                 }
                 .rightTool()
                 .topTool()
-                .transition(.opacity)
+                .transition(.opacity.animation(.easeInOut))
             }
         }
     }

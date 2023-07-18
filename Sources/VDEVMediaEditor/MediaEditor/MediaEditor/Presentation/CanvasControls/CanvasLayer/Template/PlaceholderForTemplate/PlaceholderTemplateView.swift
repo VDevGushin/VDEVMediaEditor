@@ -152,7 +152,11 @@ private extension PlaceholderTemplateView {
                     Image(uiImage: img)
                         .resizable()
                 } placeholder: {
-                    LoadingView(inProgress: true, style: .medium, color: AppColors.white.uiColor)
+                    LoadingView(
+                        inProgress: true,
+                        style: .medium,
+                        color: AppColors.white.uiColor,
+                        cornerRadius: 0)
                 }
             } else {
                 addButton()

@@ -14,15 +14,13 @@ class AsyncImageLoader: ObservableObject {
     @Binding private var image: UIImage?
     private let url: URL
 
-    private let imageCache = ImageCache.default
-
     init(url: URL, image: Binding<UIImage?>) {
         self.url = url
         self._image = image
     }
 
     func load() async {
-        image = try? await imageCache.retrieveImage(
+        image = try? await ImageCache.default.retrieveImage(
             downloadAndStoreIfNeededFrom: url,
             forKey: url.absoluteString
         ).image

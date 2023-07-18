@@ -12,10 +12,12 @@ import Kingfisher
 import CollectionConcurrencyKit
 
 final class TemplateLayerViewModel: ObservableObject {
-    private(set) unowned var item: CanvasTemplateModel
-    
+    @Injected private var settings: VDEVMediaEditorSettings
     @Published private(set) var isLoading = false
     @Published var templateLayers: IdentifiedArrayOf<CanvasItemModel> = []
+    private(set) var item: CanvasTemplateModel
+    
+    var canRemoveOrChangeTemplate: Bool { settings.сanRemoveOrChangeTemplate }
     
     private var operation: Task<Void, Never>?
     

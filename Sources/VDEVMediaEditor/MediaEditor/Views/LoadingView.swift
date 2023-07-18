@@ -72,6 +72,7 @@ struct LoadingView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(BlurView(style: blurStyle))
             .clipShape(RoundedCorner(radius: cornerRadius))
+            .transition(.opacity.animation(.easeInOut))
         }
     }
 }

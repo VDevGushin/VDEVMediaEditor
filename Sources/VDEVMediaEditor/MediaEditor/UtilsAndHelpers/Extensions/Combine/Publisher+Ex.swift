@@ -20,21 +20,7 @@ extension AnyPublisher {
     }
 }
 
-public extension Publisher {
-    func get(_ block: @escaping (Output) -> Void) -> Publishers.Map<Self, Output> {
-        map {
-            block($0)
-            return $0
-        }
-    }
-
-    func `catch`(_ block: @escaping (Failure) throws -> Void) -> Publishers.TryCatch<Self, Self> {
-        tryCatch { e -> Self in
-            try block(e)
-            throw e
-        }
-    }
-    
+public extension Publisher {    
     @inlinable
     func receiveOnMain() -> Publishers.ReceiveOn<Self, DispatchQueue> {
         receive(on: DispatchQueue.main)

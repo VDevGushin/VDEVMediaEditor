@@ -9,30 +9,44 @@ import Foundation
 import Combine
 import SwiftUI
 
-protocol CanvasEditorDelegate: AnyObject {
+//Select media from camera rall
+protocol CanvasEditorSelectMediaFromMediaPickerForTemplate {
     // Select media from camera rall
     var pickSelector: ((PickerMediaOutput?) -> Void)? { get set }
     func showMediaPicker()
     func hideMediaPicker()
+}
 
+// Variants for edit for template object
+protocol CanvasEditorEditVariantsForTemplate {
     // Edit media
-    func showMediaEditor(item: CanvasItemModel)
-    
-    // Edit text
-    var editText: ((CanvasTextModel) -> Void)? { get set }
-    var deleteItem: ((CanvasItemModel?) -> Void)? { get set }
     var endWorkWithItem: (() -> Void)? { get set }
-    func showTextEditor(item: CanvasTextModel)
-    func hideAllOverlayViews()
-    
-    // Sound
+    var deleteItem: ((CanvasItemModel?) -> Void)? { get set }
     var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)? { get set }
+    func showMediaEditor(item: CanvasItemModel)
+}
+
+// Work with text
+protocol CanvasEditorWorkWithTextForTemplate {
+    var editText: ((CanvasTextModel) -> Void)? { get set }
+    func showTextEditor(item: CanvasTextModel)
+}
+
+protocol CanvasEditorDelegate: AnyObject,
+                               CanvasEditorSelectMediaFromMediaPickerForTemplate,
+                               CanvasEditorEditVariantsForTemplate,
+                               CanvasEditorWorkWithTextForTemplate{
+    func hideAllOverlayViews()
 }
 
 final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEditorDelegate {
     @Injected private var settings: VDEVMediaEditorSettings
-    
     var baseChallengeId: String { settings.resourceID }
+    var endWorkWithItem: (() -> Void)?
+    var pickSelector: ((PickerMediaOutput?) -> Void)?
+    var deleteItem: ((CanvasItemModel?) -> Void)?
+    var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)?
+    var editText: ((CanvasTextModel) -> Void)?
     
     @Published var state: State = .empty
     @Published var showPhotoPicker: Bool = false
@@ -58,17 +72,10 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         .store(in: &storage)
     }
 
-    //MARK: - CanvasEditorDelegate
-    
-    var endWorkWithItem: (() -> Void)?
-    
     func hideAllOverlayViews() {
         if state != .empty { set(.empty) }
     }
     
-    // MARK: - Pick image
-    var pickSelector: ((PickerMediaOutput?) -> Void)?
-
     func showMediaPicker() {
         hideAllOverlayViews()
         if state != .mediaPick { set(.mediaPick) }
@@ -78,10 +85,6 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         hideAllOverlayViews()
         endWorkWithItem?()
     }
-
-    // MARK: - Image/Video filters adjustment image
-  
-    var deleteItem: ((CanvasItemModel?) -> Void)?
     
     func onDeleteItem(item: CanvasItemModel) {
         hideAllOverlayViews()
@@ -119,18 +122,11 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
             showVideoPicker = value
         }
     }
-
-    // MARK: - Sound
-    
-    var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)?
     
     func onChangeSound(for model: CanvasVideoPlaceholderModel, value: Float) {
         hideAllOverlayViews()
         changeSound?(model, value)
     }
-    
-    // MARK: - Edit text
-    var editText: ((CanvasTextModel) -> Void)?
     
     func showTextEditor(item: CanvasTextModel) {
         hideAllOverlayViews()

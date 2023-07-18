@@ -191,10 +191,9 @@ struct CanvasLayerView<Content: View>: View {
                 }
                 .frame($0.size)
         }
-        .onReceive(vm.manipulationWatcher.$current.removeDuplicates()) { value in
+        .onReceive(vm.manipulationWatcher.$current) { value in
             //Если еще не было манипуляций ни с одним элементом нам надо разрешить действие
             guard let value = value else { return isCurrentInManipulation = true }
-            
             if value == vm.item {
                 isCurrentInManipulation = true
             } else {
@@ -263,8 +262,10 @@ fileprivate extension CanvasLayerView {
     }
     
     var canManipulate: Bool {
-        if editorVM.tools.overlay.isAnyViewOpen { return vm.item is CanvasTemplateModel }
-        return editorVM.tools.isCurrent(item: vm.item) && isCurrentInManipulation
+        if editorVM.tools.overlay.isAnyViewOpen {
+            return vm.item is CanvasTemplateModel
+        }
+        return editorVM.tools.inEditMode(item: vm.item) && isCurrentInManipulation
     }
     
     var itemBlur: CGFloat {
@@ -276,7 +277,7 @@ fileprivate extension CanvasLayerView {
             return vm.item is CanvasTemplateModel ? maxBlur : minBlur
         }
         // Если это не текущий выбранный элемент
-        if !editorVM.tools.isCurrent(item: vm.item) { return superMinBlur }
+        if !editorVM.tools.inEditMode(item: vm.item) { return superMinBlur }
         // Если это шаблон
         if vm.item is CanvasTemplateModel { return maxBlur }
         // Проверка на возможность применить свойство опасити
@@ -297,7 +298,7 @@ fileprivate extension CanvasLayerView {
             return vm.item is CanvasTemplateModel ? maxOpacity : minOpacity
         }
         // Если это не текущий выбранный элемент
-        if !editorVM.tools.isCurrent(item: vm.item) { return superMinOpacity }
+        if !editorVM.tools.inEditMode(item: vm.item) { return superMinOpacity }
         // Если это шаблон
         if vm.item is CanvasTemplateModel { return maxOpacity }
         // Проверка на возможность применить свойство опасити

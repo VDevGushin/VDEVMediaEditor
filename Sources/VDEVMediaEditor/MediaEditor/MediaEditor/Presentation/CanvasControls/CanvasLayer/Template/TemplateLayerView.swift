@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct TemplateLayerView: View {
     @StateObject private var vm: TemplateLayerViewModel
@@ -29,7 +28,9 @@ struct TemplateLayerView: View {
             LoadingView(inProgress: vm.isLoading, style: .large)
         }
         .overlay {
-            toolsOverlay()
+            if vm.canRemoveOrChangeTemplate {
+                toolsOverlay()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

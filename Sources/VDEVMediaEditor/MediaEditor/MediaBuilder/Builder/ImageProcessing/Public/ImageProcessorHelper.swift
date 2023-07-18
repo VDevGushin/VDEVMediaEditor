@@ -17,7 +17,9 @@ public final class ImageProcessorHelper {
     
     private var innerProcessor = FilteringProcessor.shared
     
-    public func extractImage(fromUrl url: URL, storeCache: Bool = true) -> CIImage? {
+    public func extractImage(
+        fromUrl url: URL,
+        storeCache: Bool = true) -> CIImage? {
         AssetExtractionUtil.image(fromUrl: url, storeCache: storeCache)
     }
     
@@ -55,7 +57,10 @@ public final class ImageProcessorHelper {
     }
     
     private func process(imageURL: URL, filterChain: [FilterDescriptor]) -> CIImage? {
-        guard let image = AssetExtractionUtil.image(fromUrl: imageURL, storeCache: false) else {
+        guard let image = AssetExtractionUtil.image(
+            fromUrl: imageURL,
+            storeCache: false
+        ) else {
             return nil
         }
         let filterChain = FilteringProcessor.Processor(filterChain: filterChain)

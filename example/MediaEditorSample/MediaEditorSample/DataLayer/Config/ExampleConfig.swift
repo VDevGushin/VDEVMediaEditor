@@ -13,9 +13,10 @@ extension VDEVMediaEditorConfig {
     static var exampleConfig: Self {
         let source = NetworkAdapter(client: NetworkClientImpl())
         //let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
-        let id = "9b22fbb1-554c-4e6b-94a6-96793028c20b"
+        // let id = "9b22fbb1-554c-4e6b-94a6-96793028c20b"
         //let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
-        //let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
+       // let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
+        let id = "d32cb5c8-5810-437a-a895-1ca43983d253"
         return .init(settings: EditorSettings(id, sourceService: source),
                   networkService: source,
                   images: Images(),
@@ -81,31 +82,35 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var canShowOnboarding: Bool { false }
     var canUndo: Bool { true }
     var canGenerateImageByPrompt: Bool { false }
+    var сanRemoveOrChangeTemplate: Bool { false }
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {
+        defer {
+            getMeta()
+        }
         self.resourceID = resourceID
         self.sourceService = sourceService
-        getMeta()
     }
     
     private func getMeta() {
+//        isLoading.send(true)
+//        title = "SHARE YOUR RESULT!"
+//        subTitle = "+ ADD MEDIA"
+//        withAttach = false
+//        self.isLoading.send(false)
         isLoading.send(true)
-        title = "SHARE YOUR RESULT!"
-        subTitle = "+ ADD MEDIA"
-        withAttach = false
-        self.isLoading.send(false)
-//        Task {
-//            let meta = await sourceService.startMeta(forChallenge: resourceID) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-//
-//            await MainActor.run { [weak self] in
-//                guard let self = self else { return }
-//                self.title = meta.title
-//                self.subTitle = meta.subTitle
-//                self.withAttach = meta.isAttachedTemplate
-//                self.isLoading.send(false)
-//            }
-//        }
+        Task {
+            let meta = await sourceService.startMeta(forChallenge: resourceID) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+            
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
+                self.title = meta.title
+                self.subTitle = meta.subTitle
+                self.withAttach = meta.isAttachedTemplate
+                self.isLoading.send(false)
+            }
+        }
     }
     
     func getStartTemplate(for size: CGSize,

@@ -9,9 +9,9 @@ import SwiftUI
 
 struct IsometricVideo: View {
     let model: EditorPreview.Content
-    @State private var animate: Bool = true
-    @State private var b: CGFloat = -0.2
-    @State private var c: CGFloat = -0.3
+    @State private var animate: Bool = false
+    @State private var b: CGFloat = 0
+    @State private var c: CGFloat = 0
     
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
@@ -77,9 +77,9 @@ struct IsometricVideo: View {
 
 struct IsometricImage: View {
     let image: UIImage
-    @State private var animate: Bool = true
-    @State private var b: CGFloat = -0.2
-    @State private var c: CGFloat = -0.3
+    @State private var animate: Bool = false
+    @State private var b: CGFloat = 0
+    @State private var c: CGFloat = 0
     
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {

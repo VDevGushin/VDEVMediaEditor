@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 
+typealias Cancellables = Set<AnyCancellable>
+
 extension Set where Element == AnyCancellable {
     mutating func limitCancel(_ value: Int = 10) {
         while count > value { self.popFirst()?.cancel() }

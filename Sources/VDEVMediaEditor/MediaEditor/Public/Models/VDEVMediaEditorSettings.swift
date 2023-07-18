@@ -45,6 +45,9 @@ public protocol VDEVMediaEditorSettings {
     // Можно работать с генерацией картинок
     var canGenerateImageByPrompt: Bool { get }
     
+    // Можно ли удалять или рефрешить шаблоны
+    var сanRemoveOrChangeTemplate: Bool { get }
+    
     var resourceID: String { get }
     var title: String { get }
     var subTitle: String? { get }
