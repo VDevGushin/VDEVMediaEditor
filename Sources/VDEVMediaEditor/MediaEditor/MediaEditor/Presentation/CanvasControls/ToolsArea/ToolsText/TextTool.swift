@@ -26,6 +26,7 @@ struct TextTool: View {
     @State private var isEditable: Bool
     @State private var textFrameSize: CGSize = .zero
     @State private var sliderInManipulation: Bool = false
+    @State private var backColor: Color
 
     private var textItem: CanvasTextModel?
     private let fromTemplate: Bool
@@ -47,12 +48,12 @@ struct TextTool: View {
         self.labelContainerToCanvasWidthRatio = labelContainerToCanvasWidthRatio
         self.doneAction = doneAction
         self.deleteAction = deleteAction
-
         guard let item = textItem else {
             self.text = ""
             self.placeholder = DI.resolve(VDEVMediaEditorStrings.self).defaultPlaceholder
             self.fontSize = 32
             self.textColor = AppColors.black.uiColor.contrast
+            self.backColor = AppColors.black.uiColor.contrast.isDarkColor ? AppColors.whiteWithOpacity : AppColors.blackWithOpacity
             self.alignment = .center
             self.textAlignment = .center
             self.textStyle = CanvasTextStyle.basicText
@@ -68,6 +69,7 @@ struct TextTool: View {
         self.placeholder = item.placeholder
         self.fontSize = item.fontSize
         self.textColor = item.color
+        self.backColor = item.color.isDarkColor ? AppColors.whiteWithOpacity : AppColors.blackWithOpacity
         self.alignment = item.alignment
         self.textAlignment = item.textAlignment
         self.textStyle = item.textStyle
@@ -85,13 +87,14 @@ struct TextTool: View {
             Color.clear
 
             VStack {
-                topBar
-                    .padding(.horizontal)
-
                 ZStack {
                     InvisibleTapZoneView(tapCount: 1) {
                         text.isEmpty ? deletePressed() : donePressed()
                     }
+                    
+                    topBar
+                        .padding(.horizontal)
+                        .topTool()
 
                     GeometryReader { geo in
                         FancyTextView(
@@ -152,9 +155,16 @@ struct TextTool: View {
             }
         }
         .padding(.vertical, 8)
-        .background(
-            BlurView(style: .systemUltraThinMaterialLight)
-        )
+        .background(backColor)
+        .onChange(of: textColor) { value in
+            backColor = value.isDarkColor ? AppColors.whiteWithOpacity : AppColors.blackWithOpacity
+        }
+        .animation(.easeInOut, value: backColor)
+        .onChange(of: isEditing) { value in
+            if value {
+                colorSelectorOpen = false
+            }
+        }
     }
 
     @ViewBuilder
@@ -244,6 +254,8 @@ struct TextTool: View {
                     }
                 }
                 .buttonStyle(BlurButtonStyle())
+            } else {
+                EmptyView()
             }
 
             Spacer()
@@ -313,35 +325,40 @@ struct TextTool: View {
     }
 
     private func donePressed() {
+        defer {
+            let scale = textItem?.scale ?? 1
+            let rotation = textItem?.rotation ?? .zero
+            let offset = textItem?.offset ?? .zero
+            let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let scale = textItem?.scale ?? 1
-        let rotation = textItem?.rotation ?? .zero
-        let offset = textItem?.offset ?? .zero
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        var textFrameSize: CGSize = self.textFrameSize
-        if let oldTextFrameSize = textItem?.bounds.size, fromTemplate {
-            textFrameSize = oldTextFrameSize
+            var textFrameSize: CGSize = self.textFrameSize
+            if let oldTextFrameSize = textItem?.bounds.size, fromTemplate {
+                textFrameSize = oldTextFrameSize
+            }
+            let newModel = CanvasTextModel(text: text,
+                                           placeholder: placeholder,
+                                           fontSize: fontSize,
+                                           color: textColor,
+                                           alignment: alignment,
+                                           textAlignment: textAlignment,
+                                           textStyle: textStyle,
+                                           needTextBG: needTextBG,
+                                           textFrameSize: textFrameSize,
+                                           offset: offset,
+                                           rotation: rotation,
+                                           scale: scale,
+                                           isMovable: false)
+            doneAction(newModel)
         }
-        let newModel = CanvasTextModel(text: text,
-                                       placeholder: placeholder,
-                                       fontSize: fontSize,
-                                       color: textColor,
-                                       alignment: alignment,
-                                       textAlignment: textAlignment,
-                                       textStyle: textStyle,
-                                       needTextBG: needTextBG,
-                                       textFrameSize: textFrameSize,
-                                       offset: offset,
-                                       rotation: rotation,
-                                       scale: scale,
-                                       isMovable: false)
-        doneAction(newModel)
+        isEditing = false
     }
 
     private func deletePressed() {
         guard isEditable else { return }
-        deleteAction()
+        defer {
+            deleteAction()
+        }
+        isEditing = false
     }
 }
 
@@ -519,5 +536,15 @@ private struct Triangle: Shape {
         path.addLine(to: .init(x: rect.midX, y: rect.maxY))
         path.addLine(to: .init(x: rect.minX, y: rect.minY))
         return path
+    }
+}
+
+extension UIColor {
+    var isDarkColor: Bool {
+        var r, g, b, a: CGFloat
+        (r, g, b, a) = (0, 0, 0, 0)
+        self.getRed(&r, green: &g, blue: &b, alpha: &a)
+        let lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        return  lum < 0.50
     }
 }

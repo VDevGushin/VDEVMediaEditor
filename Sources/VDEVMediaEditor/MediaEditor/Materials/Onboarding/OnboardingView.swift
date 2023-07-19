@@ -84,14 +84,14 @@ struct OnboardingView: View {
                         .font(AppFonts.elmaTrioRegular(32))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(AppColors.white)
-                        .transition(.opacity)
+                        .transition(.opacityTransition())
                     
                     Text(data[Int(storyTimer.progress)].subtitle)
                         .multilineTextAlignment(.leading)
                         .font(AppFonts.elmaTrioRegular(20))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(AppColors.whiteWithOpacity)
-                        .transition(.opacity)
+                        .transition(.opacityTransition())
                     
                     data[Int(storyTimer.progress)].imageURL.map {
                         AsyncImageView(url: $0) {

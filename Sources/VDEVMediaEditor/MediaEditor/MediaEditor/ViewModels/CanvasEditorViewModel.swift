@@ -16,31 +16,33 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var resolutionService: ResolutionService
     @Injected private var removeLayersService: RemoveLayersService
     @Injected private var mementoService: MementoService
+    @Injected private var builder: MediaBuilder
+    @Injected private var merger: LayersMerger
+    @Injected private var imageProcessingController: ImageProcessingController
+    
+    // VM
+    @Published var ui: CanvasUISettingsViewModel = .init()
+    @Published var data: CanvasLayersDataViewModel = .init()
+    @Published var tools: CanvasToolsViewModel = .init()
     
     @Published private(set) var resultResolution: MediaResolution = .fullHD
     @Published private(set) var addMediaButtonTitle: String = ""
     @Published private(set) var addMediaButtonVisible: Bool = false
     @Published private(set) var canUndo: Bool = false
     @Published var alertData: AlertData?
-    @Published var ui: CanvasUISettingsViewModel = .init()
-    @Published var data: CanvasLayersDataViewModel = .init()
-    @Published var tools: CanvasToolsViewModel = .init()
-    @Published var isLoading: LoadingModel = .false
+    
+    @Published var isLoading: LoadingModel = .true
     @Published var contentPreview: EditorPreview.Content?
-    @Published private var contentPreviewDidLoad: Bool = false
     @Published var showRemoveAllAlert: Bool = false
+    @Published private var contentPreviewDidLoad: Bool = false
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
     
-    private let builder = MediaBuilder()
-    private let merger = LayersMerger()
     private var storage = Cancellables()
-    private let imageProcessingController = ImageProcessingController()
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)?,
          onClose: (@MainActor () -> Void)?) {
-        isLoading = .init(value: true, message: strings.loading)
         
         self.onClose = onClose
         self.onPublish = onPublish
@@ -80,10 +82,7 @@ final class CanvasEditorViewModel: ObservableObject {
                     wSelf.isLoading = .false
                     wSelf.contentPreview = nil
                 case .inProgress:
-                    wSelf.isLoading = .init(
-                        value: true,
-                        message: wSelf.strings.processing
-                    )
+                    wSelf.isLoading = .processing
                 case .successImage(let imageItem):
                     makeHaptics(.light)
                     wSelf.data.add(imageItem)
@@ -115,10 +114,7 @@ final class CanvasEditorViewModel: ObservableObject {
                     wSelf.isLoading = .false
                     wSelf.contentPreview = nil
                 case .inProgress:
-                    wSelf.isLoading = .init(
-                        value: true,
-                        message: wSelf.strings.processing
-                    )
+                    wSelf.isLoading = .processing
                 case .success(let combinerOutput):
                     makeHaptics(.light)
                     wSelf.contentPreview = .init(model: combinerOutput)
@@ -158,7 +154,7 @@ final class CanvasEditorViewModel: ObservableObject {
             }
             .store(in: &storage)
         
-        // Показываnь или не показывать кнопку
+        // Показывать или не показывать кнопку
         data.$layers
             .combineLatest(tools.$currentToolItem)
             .map { $0.0.isEmpty && $0.1 != .drawing }
@@ -189,7 +185,7 @@ final class CanvasEditorViewModel: ObservableObject {
 extension CanvasEditorViewModel {
     func removeBackground(on item: CanvasItemModel,
                           completion: @escaping (CanvasItemModel) -> Void) {
-        isLoading = .init(value: true, message: strings.processing)
+        isLoading = .processing
         forceSave()
         imageProcessingController.removeBackground(on: item) { [weak self] new in
             self?.data.delete(item, withSave: false)
@@ -203,13 +199,12 @@ extension CanvasEditorViewModel {
 // MARK: - Get started template
 extension CanvasEditorViewModel {
     func getStartTemplate() {
-        isLoading = .init(value: true, message: strings.loading)
+        isLoading = .true
         data.getStartTemplate(size: ui.roundedEditorSize) { [weak self] in
             self?.isLoading = .false
         }
     }
 }
-
 
 // MARK: - Remove all after screen down
 extension CanvasEditorViewModel {
@@ -241,7 +236,7 @@ extension CanvasEditorViewModel {
     @MainActor
     func onPublishResult(output: CombinerOutput) {
         if onPublish != nil {
-            isLoading = .init(value: true, message: strings.processing)
+            isLoading = .processing
             onPublish?(output)
         }
     }

@@ -12,6 +12,14 @@ struct LoadingModel {
     let message: String
     
     static let `false`: LoadingModel = .init(value: false, message: "")
+    static let `true`: LoadingModel = .init(
+        value: true,
+        message: DI.resolve(VDEVMediaEditorStrings.self).loading
+    )
+    static let processing: LoadingModel = .init(
+        value: true,
+        message: DI.resolve(VDEVMediaEditorStrings.self).processing
+    )
 }
 
 struct LoadingView: View {
@@ -72,7 +80,7 @@ struct LoadingView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(BlurView(style: blurStyle))
             .clipShape(RoundedCorner(radius: cornerRadius))
-            .transition(.opacity.animation(.easeInOut))
+            .transition(.opacityTransition())
         }
     }
 }

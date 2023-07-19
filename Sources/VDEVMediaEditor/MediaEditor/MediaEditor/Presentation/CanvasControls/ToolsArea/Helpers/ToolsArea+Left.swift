@@ -15,6 +15,8 @@ extension View {
 
 private struct LeftTools: ViewModifier {
     func body(content: Content) -> some View {
+//        content
+//            .frame(maxWidth: .infinity, alignment: .leading)
         HStack(spacing: 0) {
             content
             Spacer()

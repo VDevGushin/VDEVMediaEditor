@@ -9,12 +9,11 @@ import SwiftUI
 
 final class MementoService: ObservableObject {
     @Published private(set) var canUndo: Bool = false
-    @Injected private var settings: VDEVMediaEditorSettings
+    private let settings: VDEVMediaEditorSettings
     private lazy var historyService = CanvasHistory(limit: settings.historyLimit)
     
-    static let shared = MementoService()
-
-    private init() {
+    init(settings: VDEVMediaEditorSettings) {
+        self.settings = settings
         self.canUndo = false
     }
     

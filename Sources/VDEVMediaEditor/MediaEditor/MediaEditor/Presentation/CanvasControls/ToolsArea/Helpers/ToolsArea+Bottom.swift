@@ -15,6 +15,8 @@ extension View {
 
 private struct BottomTools: ViewModifier {
     func body(content: Content) -> some View {
+//        content
+//            .frame(maxHeight: .infinity, alignment: .bottom)
         VStack(spacing: 0) {
             Spacer()
             content

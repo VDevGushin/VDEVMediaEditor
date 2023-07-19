@@ -185,7 +185,7 @@ struct TutorialsVideoView: View {
                     }
                     
                 }
-                .transition(.opacity.animation(.easeInOut))
+                .transition(.opacityTransition())
             }
         }
         .clipped()

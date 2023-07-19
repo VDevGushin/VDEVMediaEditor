@@ -38,7 +38,6 @@ final class CanvasToolsViewModel: ObservableObject {
         observe(nested: self.overlay).store(in: &storage)
         
         $layerInManipulation
-            .removeDuplicates()
             .combineLatest(overlay.$isAnyViewOpen)
             .sink(on: .main, object: self) { wSelf, result  in
                 let layerInManipulation = result.0
@@ -56,9 +55,7 @@ final class CanvasToolsViewModel: ObservableObject {
         // Если закрываем наши менюхи
         // то надо обрывать операции загрузки(если они в процессе)
         $currentToolItem.combineLatest($showAddItemSelector)
-            .map {
-                return $0.0 == .empty && $0.1 == false
-            }
+            .map { $0.0 == .empty && $0.1 == false }
             .removeDuplicates()
             .sink(on: .main, object: self) { wSelf, value in
                 if value {
@@ -97,6 +94,7 @@ final class CanvasToolsViewModel: ObservableObject {
     }
 
     // Открытие сразу редактирования для определенных элементов
+    @discardableResult
     func tryToEdit(_ item: CanvasItemModel) -> Bool {
         if item is CanvasTextModel {
             let item: CanvasTextModel = CanvasItemModel.toType(model: item)

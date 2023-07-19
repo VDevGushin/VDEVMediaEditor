@@ -37,9 +37,10 @@ struct ToolAdjustments: View {
         let currentBrightnessValue: Double = colorFilters.value(forKey: kCIInputBrightnessKey) as? Double ?? 0.0
         let currentSaturationValue: Double = colorFilters.value(forKey: kCIInputSaturationKey) as? Double ?? 1.0
         
+        
         toolItems = [
-            AdjustToolItem(title: strings.brightness, min: -0.5, max: 0.5, normal: currentBrightnessValue),
-            AdjustToolItem(title: strings.contrast, min: 0, max: 2, normal: currentContrastValue),
+            AdjustToolItem(title: strings.brightness, min: -0.2, max: 0.2, normal: currentBrightnessValue),
+            AdjustToolItem(title: strings.contrast, min: 0.8, max: 1.2, normal: currentContrastValue),
             AdjustToolItem(title: strings.saturation, min: 0, max: 2, normal: currentSaturationValue),
             AdjustToolItem(title: strings.highlight, min: 0, max: 1, normal: 0.5),
             AdjustToolItem(title: strings.shadow, min: -1, max: 1, normal: 0)

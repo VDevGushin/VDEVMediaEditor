@@ -81,6 +81,18 @@ struct IsometricImage: View {
     @State private var b: CGFloat = 0
     @State private var c: CGFloat = 0
     
+    func animateView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.interactiveSpring(response: 0.4,
+                                             dampingFraction: 0.6,
+                                             blendDuration: 0.6)){
+                animate = true
+                b = -0.2
+                c = -0.3
+            }
+        }
+    }
+    
     var body: some View {
         IsometricView(depth: animate == true ? 45 : 0) {
             Image(uiImage: image)
@@ -102,15 +114,6 @@ struct IsometricImage: View {
         .rotation3DEffect(.degrees(animate == true ? 45: 0), axis: (x: 0, y: 0, z: 1))
         .scaleEffect(animate == true ? 0.3: 1)
         .offset(x: animate == true ? 12: 0)
-        .onAppear {
-            withAnimation(.interactiveSpring(response: 0.4,
-                                             dampingFraction: 0.6,
-                                             blendDuration: 0.6)){
-                animate = false
-                b = 0
-                c = 0
-            }
-        }
         .onTapGesture {
             makeHaptics()
             if animate == true {

@@ -1,5 +1,5 @@
 //
-//  CanvasLayerView1.swift
+//  CanvasLayerView.swift
 //  MediaEditor
 //
 //  Created by Vladislav Gushin on 08.02.2023.
@@ -60,7 +60,9 @@ struct CanvasLayerView<Content: View>: View {
     @Environment(\.guideLinesColor) private var guideLinesColor
     @StateObject private var vm: CanvasLayerViewModel
     
-    private unowned var editorVM: CanvasEditorViewModel
+    private unowned var toolsModel: CanvasToolsViewModel
+    private unowned var dataModel: CanvasLayersDataViewModel
+    
     private let content: () -> Content
     
     // Callbacks
@@ -88,7 +90,8 @@ struct CanvasLayerView<Content: View>: View {
     @Binding private var containerSize: CGSize
     
     init(item: CanvasItemModel,
-         editorVM: CanvasEditorViewModel,
+         toolsModel: CanvasToolsViewModel,
+         dataModel: CanvasLayersDataViewModel,
          containerSize: Binding<CGSize>,
          @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
@@ -99,7 +102,8 @@ struct CanvasLayerView<Content: View>: View {
          onEndManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEdit: ((CanvasItemModel) -> Void)? = nil) {
         self._containerSize = containerSize
-        self.editorVM = editorVM
+        self.toolsModel = toolsModel
+        self.dataModel = dataModel
         self.onSelect = onSelect
         self.onDelete = onDelete
         self.onShowCenterV = onShowCenterV
@@ -108,7 +112,7 @@ struct CanvasLayerView<Content: View>: View {
         self.onEndManipulated = onEndManipulated
         self.onEdit = onEdit
         self.content = content
-        self._vm = .init(wrappedValue: .init(item: item, memento: editorVM))
+        self._vm = .init(wrappedValue: .init(item: item, memento: dataModel))
     }
     
     var body: some View {
@@ -243,7 +247,7 @@ fileprivate extension CanvasLayerView {
     @ViewBuilder
     var selectionColor: some View {
         if vm.item.type == .template { EmptyView() }
-        if editorVM.tools.isItemInSelection(item: vm.item) {
+        if toolsModel.isItemInSelection(item: vm.item) {
             AnimatedGradientView(color: guideLinesColor.opacity(0.1))
         }
         if !isCurrentInManipulation { EmptyView() }
@@ -256,16 +260,16 @@ fileprivate extension CanvasLayerView {
     
     var borderType: BorderType {
         if vm.item.type == .template { return .empty }
-        if editorVM.tools.isItemInSelection(item: vm.item) { return .selected }
+        if toolsModel.isItemInSelection(item: vm.item) { return .selected }
         if !isCurrentInManipulation { return .empty }
         return (gestureInProgress || isLongTap) ? .manipulated : .empty
     }
     
     var canManipulate: Bool {
-        if editorVM.tools.overlay.isAnyViewOpen {
+        if toolsModel.overlay.isAnyViewOpen {
             return vm.item is CanvasTemplateModel
         }
-        return editorVM.tools.inEditMode(item: vm.item) && isCurrentInManipulation
+        return toolsModel.inEditMode(item: vm.item) && isCurrentInManipulation
     }
     
     var itemBlur: CGFloat {
@@ -273,16 +277,16 @@ fileprivate extension CanvasLayerView {
         let minBlur: CGFloat = 2
         let superMinBlur: CGFloat = 20
         // Если открыто любое меню операций над шаблонами
-        if editorVM.tools.overlay.isAnyViewOpen {
+        if toolsModel.overlay.isAnyViewOpen {
             return vm.item is CanvasTemplateModel ? maxBlur : minBlur
         }
         // Если это не текущий выбранный элемент
-        if !editorVM.tools.inEditMode(item: vm.item) { return superMinBlur }
+        if !toolsModel.inEditMode(item: vm.item) { return superMinBlur }
         // Если это шаблон
         if vm.item is CanvasTemplateModel { return maxBlur }
         // Проверка на возможность применить свойство опасити
         if vm.manipulationWatcher
-            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
+            .regectOpacityWith(dataModel: dataModel, for: vm.item) {
             return maxBlur
         }
         
@@ -294,16 +298,16 @@ fileprivate extension CanvasLayerView {
         let minOpacity: CGFloat = 0.6
         let superMinOpacity: CGFloat = 0.2
         // Если открыто любое меню операций над шаблонами
-        if editorVM.tools.overlay.isAnyViewOpen {
+        if toolsModel.overlay.isAnyViewOpen {
             return vm.item is CanvasTemplateModel ? maxOpacity : minOpacity
         }
         // Если это не текущий выбранный элемент
-        if !editorVM.tools.inEditMode(item: vm.item) { return superMinOpacity }
+        if !toolsModel.inEditMode(item: vm.item) { return superMinOpacity }
         // Если это шаблон
         if vm.item is CanvasTemplateModel { return maxOpacity }
         // Проверка на возможность применить свойство опасити
         if vm.manipulationWatcher
-            .regectOpacityWith(dataModel: editorVM.data, for: vm.item) {
+            .regectOpacityWith(dataModel: dataModel, for: vm.item) {
             return maxOpacity
         }
         return isCurrentInManipulation ? maxOpacity : minOpacity
@@ -346,9 +350,13 @@ private final class ManipulationWatcher: ObservableObject {
     
     static let shared = ManipulationWatcher()
     
-    func setManipulated(item: CanvasItemModel) { current = item }
+    func setManipulated(item: CanvasItemModel) {
+        current = item
+    }
     
-    func removeManipulated() { current = nil }
+    func removeManipulated() {
+        current = nil
+    }
     
     func regectOpacityWith(dataModel: CanvasLayersDataViewModel,
                            for item: CanvasItemModel) -> Bool {

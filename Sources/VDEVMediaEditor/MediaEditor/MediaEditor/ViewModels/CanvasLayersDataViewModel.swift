@@ -111,6 +111,13 @@ final class CanvasLayersDataViewModel: ObservableObject {
         }
     }
     
+    // возможность вставить только 1 шаблон
+    func addTemplate(_ item: CanvasTemplateModel) {
+        forceSave()
+        layers.removeAll { $0 is CanvasTemplateModel }
+        layers.insert(item, at: 0)
+    }
+    
     func getStartTemplate(size: CGSize, completion: @escaping () -> Void) {
         guard size != .zero else {
             Log.e("Editor size is zero...")
@@ -131,32 +138,6 @@ final class CanvasLayersDataViewModel: ObservableObject {
             Log.d("Start template is empty")
             completion()
         }
-    }
-}
-
-// MARK: - Helpers
-extension CanvasLayersDataViewModel {
-    func canReset(item: CanvasItemModel) -> Bool {
-        item.offset != .zero || item.scale != 1 || item.rotation != .zero
-    }
-}
-
-extension CanvasLayersDataViewModel {
-    func canMerge(item: CanvasItemModel) -> CanvasItemModel? {
-        guard !isLimit else { return nil }
-        guard item.canMerge else { return nil }
-        guard let index = layers.index(id: item.id), index > 0 else { return nil }
-        guard let prevItem = layers[safe: index - 1], prevItem.canMerge else { return nil }
-        return prevItem
-    }
-}
-
-extension CanvasLayersDataViewModel {
-    // возможность вставить только 1 шаблон
-    func addTemplate(_ item: CanvasTemplateModel) {
-        forceSave()
-        layers.removeAll { $0 is CanvasTemplateModel }
-        layers.insert(item, at: 0)
     }
 }
 
@@ -222,21 +203,6 @@ extension CanvasLayersDataViewModel {
     }
 }
 
-// Check index for opacity when gesture
-extension CanvasLayersDataViewModel {
-    func rejectOpacityProperty(itemInCanvas: CanvasItemModel, itemInManipulation: CanvasItemModel?) -> Bool {
-        // Get index of checkItem
-        guard let itemInManipulation = itemInManipulation,
-              let checkIndex = layers.index(id: itemInManipulation.id) else {
-            return false
-        }
-        
-        // Get index of current
-        guard let currentIndex = layers.index(id: itemInCanvas.id) else { return false }
-        return currentIndex < checkIndex
-    }
-}
-
 // Work with sound
 extension CanvasLayersDataViewModel {
     func set(sound: Float, for item: CanvasItemModel) -> CanvasItemModel {
@@ -266,6 +232,32 @@ extension CanvasLayersDataViewModel {
         }
         
         return item
+    }
+}
+
+// MARK: - Helpers
+// Check index for opacity when gesture
+extension CanvasLayersDataViewModel {
+    func rejectOpacityProperty(itemInCanvas: CanvasItemModel, itemInManipulation: CanvasItemModel?) -> Bool {
+        // Get index of checkItem
+        guard let itemInManipulation = itemInManipulation,
+              let checkIndex = layers.index(id: itemInManipulation.id) else {
+            return false
+        }
+        
+        // Get index of current
+        guard let currentIndex = layers.index(id: itemInCanvas.id) else { return false }
+        return currentIndex < checkIndex
+    }
+}
+
+extension CanvasLayersDataViewModel {
+    func canMerge(item: CanvasItemModel) -> CanvasItemModel? {
+        guard !isLimit else { return nil }
+        guard item.canMerge else { return nil }
+        guard let index = layers.index(id: item.id), index > 0 else { return nil }
+        guard let prevItem = layers[safe: index - 1], prevItem.canMerge else { return nil }
+        return prevItem
     }
 }
 

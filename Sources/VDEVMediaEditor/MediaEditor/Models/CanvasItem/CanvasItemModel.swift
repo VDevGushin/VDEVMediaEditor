@@ -81,6 +81,10 @@ class CanvasItemModel: Identifiable, ObservableObject {
 
         return filterChain
     }
+    
+    var canReset: Bool {
+        offset != .zero || scale != 1 || rotation != .zero
+    }
 
     init(id: UUID = UUID(),
          offset: CGSize = .zero,

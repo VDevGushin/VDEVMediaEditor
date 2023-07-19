@@ -13,6 +13,8 @@ struct MediaEditorToolsForTemplateView: View {
     @ObservedObject private var vm: CanvasEditorToolsForTemplateViewModel
     @Binding private var mainBackgroundColor: Color
     
+    @State private var textForEdit: CanvasTextModel?
+    
     init(vm: CanvasEditorToolsForTemplateViewModel, backColor: Binding<Color>) {
         self.vm = vm
         self._mainBackgroundColor = backColor
@@ -25,30 +27,50 @@ struct MediaEditorToolsForTemplateView: View {
             case .mediaPick:
                 PickMediaContainer()
                     .bottomTool()
-                    .transition(.trailingTransition.animation(.easeInOut))
+                    .transition(.trailingTransition)
                     .environmentObject(vm)
             case .editVariants(let item):
                 EditVariants(item: item)
                     .bottomTool()
-                    .transition(.trailingTransition.animation(.easeInOut))
+                    .transition(.trailingTransition)
                     .environmentObject(vm)
             case .adjustments(let item):
                 adjustment(item)
                     .bottomTool()
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
             case .texture(let item):
                 textureTool(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
             case .filter(let item):
                 filterTool(item)
                     .bottomTool()
-                    .transition(.bottomTransition.animation(.easeInOut))
-            case .editText(item: let item):
-                textTool(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
+            case .editText: EmptyView()
             case .empty: EmptyView()
             }
         }
+        .onReceive(vm.$state.removeDuplicates(), perform: { value in
+            switch value {
+            case .editText(item: let text): textForEdit = text
+            default:
+                textForEdit = nil
+            }
+        })
+        .fullScreenCover(item: $textForEdit, onDismiss: {
+            vm.hideAllOverlayViews()
+            textForEdit = nil
+        }, content: { item in
+            TextTool(textItem: item,
+                     labelContainerToCanvasWidthRatio: 0.8,
+                     fromTemplate: true) { newModel in
+                vm.editText?(newModel)
+                vm.hideAllOverlayViews()
+                textForEdit = nil
+            } deleteAction: {
+                vm.hideAllOverlayViews()
+                textForEdit = nil
+            }
+        })
         .fullScreenCover(isPresented: $vm.showPhotoPicker) {
             PhotoPickerView(type: .image) { result in
                 vm.set(showPhotoPicker: false)
@@ -65,25 +87,6 @@ struct MediaEditorToolsForTemplateView: View {
                 if let result = result {
                     vm.pickSelector?(result)
                 }
-            }
-        }
-    }
-}
-
-// MARK: - Edit text
-fileprivate extension MediaEditorToolsForTemplateView {
-    @ViewBuilder
-    func textTool(_ item: CanvasTextModel?) -> some View {
-        ZStack {
-            Color.clear
-            
-            TextTool(textItem: item,
-                     labelContainerToCanvasWidthRatio: 0.8,
-                     fromTemplate: true) { newModel in
-                vm.editText?(newModel)
-                vm.hideAllOverlayViews()
-            } deleteAction: {
-                vm.hideAllOverlayViews()
             }
         }
     }

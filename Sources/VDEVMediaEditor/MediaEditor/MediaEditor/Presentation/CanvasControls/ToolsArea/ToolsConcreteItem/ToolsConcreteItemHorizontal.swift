@@ -172,7 +172,7 @@ struct ToolsConcreteItemHorizontal: View {
                             }
                         }
                         
-                        if vm.data.canReset(item: item) {
+                        if item.canReset {
                             ToolRow(image: images.currentItem.currentItemReset,
                                     title: strings.reset,
                                     tintColor: AppColors.greenWithOpacity) { onReset(item) }

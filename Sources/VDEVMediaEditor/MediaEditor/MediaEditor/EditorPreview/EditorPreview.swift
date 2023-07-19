@@ -47,7 +47,7 @@ struct EditorPreviewModifier: ViewModifier {
                     EditorPreview(model: $0,
                                   onPublish: onPublish,
                                   onClose: onClose)
-                    .transition(.opacity.animation(.easeInOut))
+                    .transition(.opacityTransition())
                 }
             }
         }

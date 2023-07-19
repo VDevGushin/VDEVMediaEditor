@@ -23,8 +23,9 @@ struct MediaEditorView: View {
             AppColors.black
             
             VStack(spacing: 0) {
-                    EditorArea
-                        .padding(.bottom, 4)
+                EditorArea
+                    .viewDidLoad(vm.contentViewDidLoad)
+                    .padding(.bottom, 4)
                 
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
             }
@@ -37,12 +38,13 @@ struct MediaEditorView: View {
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
             vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))
         }
-        .editorPreview(with: $vm.contentPreview, onPublish: { model in
+        .blur(radius: vm.contentPreview == nil ? 0 : 3)
+        .editorPreview(with: $vm.contentPreview) { model in
             vm.contentPreview = nil
             vm.onPublishResult(output: model)
-        }, onClose: {
+        } onClose: {
             vm.contentPreview = nil
-        })
+        }
         .showRemoveAlert(isPresented: $vm.showRemoveAllAlert) {
             vm.removeAllLayers()
         } onCancel: {
@@ -50,7 +52,6 @@ struct MediaEditorView: View {
         }
         .environmentObject(vm)
         .environment(\.guideLinesColor, vm.ui.guideLinesColor)
-        .viewDidLoad(vm.contentViewDidLoad)
     }
 }
 
@@ -76,7 +77,8 @@ fileprivate extension MediaEditorView {
                             
                             ForEach(vm.data.layers, id: \.self) { item in
                                 CanvasLayerView(item: item,
-                                                editorVM: vm,
+                                                toolsModel: vm.tools,
+                                                dataModel: vm.data,
                                                 containerSize: $vm.ui.editorSize) {
                                     CanvasItemViewBuilder(item: item,
                                                           canvasSize: size,
@@ -91,7 +93,6 @@ fileprivate extension MediaEditorView {
                                     } else {
                                         // Отменить выборку
                                         vm.tools.closeTools(false)
-                                        //vm.tools.layerInManipulation = item
                                     }
                                 } onDelete: { item in
                                     vm.data.delete(item)
@@ -116,7 +117,7 @@ fileprivate extension MediaEditorView {
                     .frame(size)
                 }
             }
-            .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.5 : 1.0)
+            .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.7 : 1.0)
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -126,11 +127,6 @@ fileprivate extension MediaEditorView {
         .overlay(content: CenterAxes)
         .overlay(content: Grids)
         .overlay(content: AddMediaButton)
-//        .overlay(alignment: .topTrailing, {
-//            if vm.canUndo {
-//                UndoButton { vm.onUndo() }
-//            }
-//        })
         .onChange(of: vm.ui.showHorizontalCenter) {
             if $0 { haptics(.light) }
         }
@@ -148,7 +144,6 @@ fileprivate extension MediaEditorView {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
             }
-            
             if vm.ui.showHorizontalCenter {
                 Rectangle()
                     .foregroundColor(vm.ui.guideLinesColor.opacity(0.6))

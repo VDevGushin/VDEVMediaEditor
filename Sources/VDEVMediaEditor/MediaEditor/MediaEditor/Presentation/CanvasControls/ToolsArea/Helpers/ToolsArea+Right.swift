@@ -15,6 +15,8 @@ extension View {
 
 private struct RightTools: ViewModifier {
     func body(content: Content) -> some View {
+//        content
+//            .frame(maxWidth: .infinity, alignment: .trailing)
         HStack(spacing: 0) {
             Spacer()
             content

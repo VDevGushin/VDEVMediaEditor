@@ -31,7 +31,7 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             templatePackVariants(selectedTemplatePack)
-                                .transition(.opacity)
+                                .transition(.opacityTransition())
                         }
                         .padding(.horizontal)
                     }
@@ -39,7 +39,7 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             templatePacks
-                                .transition(.opacity)
+                                .transition(.opacityTransition())
                         }
                         .padding(.horizontal)
                     }

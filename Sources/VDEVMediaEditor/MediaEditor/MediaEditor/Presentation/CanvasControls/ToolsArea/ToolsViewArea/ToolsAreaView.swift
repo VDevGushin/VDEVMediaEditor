@@ -23,6 +23,8 @@ struct ToolsAreaView: View {
     @State private var showCamera = false
     @State private var showImageCropper = false
     @State private var showMusicPicker = false
+    @State private var textForEdit: CanvasTextModel?
+    @State private var showNewTextInput: Bool = false
     @State private var toolsAreaSize: CGSize = .zero
     
     init(rootMV: CanvasEditorViewModel) {
@@ -39,7 +41,7 @@ struct ToolsAreaView: View {
             case (true, true):
                 toolsAddNewLayer()
                     .bottomTool()
-                    .transition(.trailingTransition.animation(.easeInOut))
+                    .transition(.trailingTransition)
             case (true, false):
                 if settings.isInternalModule {
                     ZStack {
@@ -51,11 +53,11 @@ struct ToolsAreaView: View {
                         .leftTool()
                         .topTool()
                     }
-                    .transition(.leadingTransition.animation(.easeInOut))
+                    .transition(.leadingTransition)
                 } else {
                     toolsLayersManager()
                         .bottomTool()
-                        .transition(.leadingTransition.animation(.easeInOut))
+                        .transition(.leadingTransition)
                 }
             default: EmptyView()
             }
@@ -66,58 +68,53 @@ struct ToolsAreaView: View {
             .frame(maxWidth: toolsAreaSize.width, maxHeight: toolsAreaSize.height)
             
             switch vm.tools.currentToolItem {
-            case .promptImageGenerator:
-                    promptImageGeneratorTool()
-                        .transition(.bottomTransition.animation(.easeInOut))
-            case .template:
-                templatesTool()
-                    .transition(.bottomTransition.animation(.easeInOut))
-                
-            case .stickers:
-                stickersTool(title: vm.tools.currentToolItem.title)
-                    .transition(.bottomTransition.animation(.easeInOut))
-                
-            case .backgroundColor:
-                bgTool(title: vm.tools.currentToolItem.title)
-                    .transition(.bottomTransition.animation(.easeInOut))
-                
-            case .drawing:
-                drawingTool()
-                    .transition(.bottomTransition.animation(.easeInOut))
-                
-            case .text(let item):
-                textTool(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
-                
             case .concreteItem(let item):
                 toolConcrete(item)
                     .bottomTool()
-                    .transition(.trailingTransition.animation(.easeInOut))
+                    .transition(.trailingTransition)
+                
+            case .promptImageGenerator:
+                    promptImageGeneratorTool()
+                        .transition(.bottomTransition)
+            case .template:
+                templatesTool()
+                    .transition(.bottomTransition)
+                
+            case .stickers:
+                stickersTool(title: vm.tools.currentToolItem.title)
+                    .transition(.bottomTransition)
+                
+            case .backgroundColor:
+                bgTool(title: vm.tools.currentToolItem.title)
+                    .transition(.bottomTransition)
+                
+            case .drawing:
+                drawingTool()
+                    .transition(.bottomTransition)
                 
             case .adjustment(let item):
                 adjustment(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
                 
             case .colorFilter(let item):
                 filterTool(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
                 
             case .textureFilter(let item):
                 textureTool(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
                 
             case .masksFilter(let item):
                 maskTool(item)
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
                 
             case .aspectRatio:
                 aspectRatio()
-                    .transition(.bottomTransition.animation(.easeInOut))
+                    .transition(.bottomTransition)
                 
             case .settings:
                 settingsMenu()
-                    .transition(.bottomTransition.animation(.easeInOut))
-
+                    .transition(.bottomTransition)
                 // данные тулзы нужно показывать путем оверлеев экрана
             case .empty: EmptyView()
             case .imageCropper: EmptyView()
@@ -125,17 +122,28 @@ struct ToolsAreaView: View {
             case .photoPicker: EmptyView()
             case .videoPicker: EmptyView()
             case .musicPiker: EmptyView()
+            case .text: EmptyView()
             }
         }
         .fetchSize($toolsAreaSize)
-        .onReceive(vm.tools.$currentToolItem, perform: { value in
+        .onReceive(vm.tools.$currentToolItem.removeDuplicates(), perform: { value in
             switch value {
             case .imageCropper: showImageCropper = true
             case .camera: showCamera = true
             case .photoPicker: showPhoroPicker = true
             case .videoPicker: showVideoPicker = true
             case .musicPiker: showMusicPicker = true
+            case .text(let text):
+                if let text = text {
+                    textForEdit = text
+                    showNewTextInput = false
+                } else {
+                    textForEdit = nil
+                    showNewTextInput = true
+                }
             default:
+                textForEdit = nil
+                showNewTextInput = false
                 showVideoPicker = false
                 showPhoroPicker = false
                 showCamera = false
@@ -194,6 +202,30 @@ struct ToolsAreaView: View {
                 vm.data.add(model)
             }
         }
+        .fullScreenCover(item: $textForEdit.removeDuplicates()) { item in
+            TextTool(textItem: item,
+                     labelContainerToCanvasWidthRatio: 0.8) { newModel in
+                vm.data.delete(item)
+                textForEdit = nil
+                vm.data.add(newModel)
+                vm.tools.closeTools(false)
+            } deleteAction: {
+                textForEdit = nil
+                vm.data.delete(item)
+                vm.tools.closeTools(false)
+            }
+        }
+        .fullScreenCover(isPresented: $showNewTextInput.removeDuplicates()) {
+            TextTool(textItem: nil,
+                     labelContainerToCanvasWidthRatio: 0.8) { newModel in
+                showNewTextInput = false
+                vm.data.add(newModel)
+                vm.tools.closeTools(false)
+            } deleteAction: {
+                showNewTextInput = false
+                vm.tools.closeTools(false)
+            }
+        }
         .imageCropper(show: $showImageCropper,
                       item: vm.tools.currentToolItem) { new in
             mementoObject?.forceSave()
@@ -224,7 +256,7 @@ struct ToolsAreaView: View {
             .padding()
             .rightTool()
             .topTool()
-            .transition(.opacity.animation(.easeInOut))
+            .transition(.opacityTransition(withAnimation: false))
         default:
             if vm.canUndo && settings.canUndo {
                 UndoButton {
@@ -234,7 +266,7 @@ struct ToolsAreaView: View {
                 }
                 .rightTool()
                 .topTool()
-                .transition(.opacity.animation(.easeInOut))
+                .transition(.opacityTransition(withAnimation: false))
             }
         }
     }
@@ -409,25 +441,6 @@ fileprivate extension ToolsAreaView {
             .padding(.horizontal)
             .overlay(alignment: .center) {
                 LoadingView(inProgress: vm.tools.isPrepareOjectOperation, style: .large)
-            }
-        }
-    }
-    
-    // добавление текста
-    @ViewBuilder
-    func textTool(_ item: CanvasTextModel?) -> some View {
-        ZStack {
-            Color.clear
-            
-            TextTool(textItem: item,
-                     labelContainerToCanvasWidthRatio: 0.8) { newModel in
-                if let item = item { vm.data.delete(item) }
-                
-                vm.data.add(newModel)
-                vm.tools.closeTools(false)
-            } deleteAction: {
-                vm.data.delete(item)
-                vm.tools.closeTools(false)
             }
         }
     }
