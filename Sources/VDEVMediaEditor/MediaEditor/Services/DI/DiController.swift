@@ -15,6 +15,8 @@ struct DiController {
                          strings: VDEVMediaEditorStrings,
                          resultSettings: VDEVMediaEditorResultSettings,
                          logger: VDEVLogger?) {
+        let resolutionService = ResolutionService(resolution: resultSettings.resolution)
+        
         container.register(type: VDEVMediaEditorSettings.self,
                            service: settings)
         container.register(type: VDEVMediaEditorResultSettings.self,
@@ -28,7 +30,7 @@ struct DiController {
         container.register(type: PasteboardService.self,
                            service: PasteboardService())
         container.register(type: ResolutionService.self,
-                           service: ResolutionService(resolution: resultSettings.resolution))
+                           service: resolutionService)
         container.register(type: MementoService.self,
                            service: MementoService(settings: settings))
         
@@ -49,7 +51,7 @@ struct DiController {
                            service: MediaBuilder())
         
         container.register(type: LayersMerger.self,
-                           service: LayersMerger())
+                           service: LayersMerger(strings: strings, resolution: resolutionService))
         
         container.register(type: ImageProcessingController.self,
                            service: ImageProcessingController())
