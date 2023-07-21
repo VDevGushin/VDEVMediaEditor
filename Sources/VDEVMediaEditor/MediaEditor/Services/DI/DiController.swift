@@ -47,9 +47,6 @@ struct DiController {
                                service: ImageResultChecker(config: .init()))
         }
         
-        container.register(type: MediaBuilder.self,
-                           service: MediaBuilder())
-        
         container.register(type: LayersMerger.self,
                            service: LayersMerger(strings: strings, resolution: resolutionService))
         

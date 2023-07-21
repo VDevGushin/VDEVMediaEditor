@@ -254,8 +254,6 @@ struct TextTool: View {
                     }
                 }
                 .buttonStyle(BlurButtonStyle())
-            } else {
-                EmptyView()
             }
 
             Spacer()
