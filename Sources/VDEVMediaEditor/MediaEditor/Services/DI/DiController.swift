@@ -46,12 +46,6 @@ struct DiController {
             container.register(type: ImageResultChecker.self,
                                service: ImageResultChecker(config: .init()))
         }
-        
-        container.register(type: LayersMerger.self,
-                           service: LayersMerger(strings: strings, resolution: resolutionService))
-        
-        container.register(type: ImageProcessingController.self,
-                           service: ImageProcessingController())
     }
     
     static func clean(with container: DIContainer = DIContainer.shared) {

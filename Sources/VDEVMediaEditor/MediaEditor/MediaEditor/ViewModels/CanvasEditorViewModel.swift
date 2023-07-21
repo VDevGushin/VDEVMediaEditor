@@ -16,8 +16,6 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var resolutionService: ResolutionService
     @Injected private var removeLayersService: RemoveLayersService
     @Injected private var mementoService: MementoService
-    @Injected private var merger: LayersMerger
-    @Injected private var imageProcessingController: ImageProcessingController
     
     // VM
     @Published var ui: CanvasUISettingsViewModel = .init()
@@ -35,7 +33,9 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published var showRemoveAllAlert: Bool = false
     @Published private var contentPreviewDidLoad: Bool = false
     
-    private let builder =  MediaBuilder()
+    private let builder = MediaBuilder()
+    private let merger = LayersMerger()
+    private let imageProcessingController = ImageProcessingController()
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?

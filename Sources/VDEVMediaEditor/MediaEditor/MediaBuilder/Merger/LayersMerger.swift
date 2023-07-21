@@ -22,15 +22,10 @@ extension LayersMerger {
 // Мержит все - кроме видосиков и шаблонов
 
 final class LayersMerger: ObservableObject {
-    private let strings: VDEVMediaEditorStrings
-    private let resolution: ResolutionService
+    @Injected private var strings: VDEVMediaEditorStrings
+    @Injected private var resolution: ResolutionService
     
     @Published var state: State = .idle
-    
-    init(strings: VDEVMediaEditorStrings, resolution: ResolutionService) {
-        self.strings = strings
-        self.resolution = resolution
-    }
     
     private lazy var builder: MediaBuilder = .init()
     
