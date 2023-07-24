@@ -25,7 +25,7 @@ struct ImageMixer {
             image = image.autoEnhance()
         }
         
-        let imageURL = try FilteringProcessor.shared.generateAndSave(ciImage: image, withJPGQuality: 1)
+        let imageURL = try FilteringProcessor().generateAndSave(ciImage: image, withJPGQuality: 1)
         
         if alsoSaveToPhotos {
             PHPhotoLibrary.shared().performChanges({

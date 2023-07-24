@@ -14,21 +14,21 @@ extension AnyTransition {
     static var leadingTransition: AnyTransition {
         .asymmetric(insertion: .move(edge: .leading).combined(with: .opacity),
                     removal: .move(edge: .leading).combined(with: .opacity))
-        .animation(.easeInOut(duration: moveSpeed))
+        //.animation(.easeInOut(duration: moveSpeed))
     }
     
     static var trailingTransition: AnyTransition {
         .asymmetric(insertion: .move(edge: .trailing),
                     removal: .move(edge: .trailing))
         .combined(with: .opacity)
-        .animation(.easeInOut(duration: moveSpeed))
+        //.animation(.easeInOut(duration: moveSpeed))
     }
     
     static var bottomTransition: AnyTransition {
         .asymmetric(insertion: .move(edge: .bottom),
                     removal: .move(edge: .bottom))
         .combined(with: .opacity)
-        .animation(.easeInOut(duration: moveSpeed))
+        //.animation(.easeInOut(duration: moveSpeed))
     }
     
     static func opacityTransition(withAnimation: Bool = true) -> AnyTransition {

@@ -15,7 +15,7 @@ struct ToolsAreaView: View {
     @Injected private var settings: VDEVMediaEditorSettings
     @ObservedObject private var vm: CanvasEditorViewModel
     
-    private var mementoObject: MementoObject? { vm }
+    private var mementoObject: MementoObject? { vm.data }
     
     @State private var showOnboarding = false
     @State private var showPhoroPicker = false
@@ -32,7 +32,7 @@ struct ToolsAreaView: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
+        // let _ = Self._printChanges()
         
         ZStack {
             toolsOverlay()
@@ -262,7 +262,7 @@ struct ToolsAreaView: View {
                 UndoButton {
                     vm.tools.closeTools()
                     vm.tools.overlay.hideAllOverlayViews()
-                    vm.undo()
+                    vm.data.undo()
                 }
                 .rightTool()
                 .topTool()
@@ -367,12 +367,7 @@ struct ToolsAreaView: View {
             let copyItem = item.copy()
             vm.data.add(copyItem)
             vm.tools.closeTools()
-        } removeBackgroundML: { item in
-            vm.removeBackground(on: item) { newItem in
-                vm.tools.showAddItemSelector(false)
-                vm.tools.openLayersList(false)
-                vm.tools.seletedTool(.concreteItem(newItem))
-            }
+        } removeBackgroundML: { _ in
         } onMerge: { items in
             vm.onMergeMedia(items)
         } onVolume: { item, volume in

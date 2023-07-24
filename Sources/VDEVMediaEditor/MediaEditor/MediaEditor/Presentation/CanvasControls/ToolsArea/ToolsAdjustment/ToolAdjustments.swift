@@ -112,7 +112,6 @@ struct ToolAdjustments: View {
             .frame(height: 32)
             .background {
                 InvisibleTapZoneView {
-                    haptics(.light)
                     item.apply(adjustmentSettings: nil)
                     resetState()
                 }

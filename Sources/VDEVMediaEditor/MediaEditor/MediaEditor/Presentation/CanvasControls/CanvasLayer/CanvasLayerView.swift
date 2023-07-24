@@ -79,7 +79,6 @@ struct CanvasLayerView<Content: View>: View {
     @State private var isVerticalOrientation = false
     @State private var isCenterVertical = false
     @State private var isCenterHorizontal = false
-    @State private var isLongTap: Bool = false
     @State private var phase = 0.0 // for border animation
     // фактический размер итема на канвасе(для комбайна видосов)
     // расчитывается конда на конве двигаем/крутим/скейлим
@@ -87,12 +86,9 @@ struct CanvasLayerView<Content: View>: View {
     @State private var isCurrentInManipulation: Bool = true
     @State private var tapScaleFactor: CGFloat = 1.0
     
-    @Binding private var containerSize: CGSize
-    
     init(item: CanvasItemModel,
          toolsModel: CanvasToolsViewModel,
          dataModel: CanvasLayersDataViewModel,
-         containerSize: Binding<CGSize>,
          @ViewBuilder content: @escaping () -> Content,
          onSelect: ((CanvasItemModel) -> Void)? = nil,
          onDelete: ((CanvasItemModel) -> Void)? = nil,
@@ -101,7 +97,6 @@ struct CanvasLayerView<Content: View>: View {
          onManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEndManipulated: ((CanvasItemModel) -> Void)? = nil,
          onEdit: ((CanvasItemModel) -> Void)? = nil) {
-        self._containerSize = containerSize
         self.toolsModel = toolsModel
         self.dataModel = dataModel
         self.onSelect = onSelect
@@ -127,7 +122,6 @@ struct CanvasLayerView<Content: View>: View {
                 isCenterVertical: $isCenterVertical,
                 isCenterHorizontal: $isCenterHorizontal,
                 tapScaleFactor: $tapScaleFactor,
-                containerSize: $containerSize,
                 itemType: vm.item.type) {
                     content()
                 } onLongPress: {
@@ -195,15 +189,10 @@ struct CanvasLayerView<Content: View>: View {
                 }
                 .frame($0.size)
         }
-        .onReceive(vm.manipulationWatcher.$current) { value in
+        .onReceive(vm.manipulationWatcher.current) { value in
             //Если еще не было манипуляций ни с одним элементом нам надо разрешить действие
             guard let value = value else { return isCurrentInManipulation = true }
-            if value == vm.item {
-                isCurrentInManipulation = true
-            } else {
-                isCurrentInManipulation = false
-                gestureInProgress = false
-            }
+            isCurrentInManipulation = value == vm.item
         }
     }
 }
@@ -215,7 +204,7 @@ fileprivate extension CanvasLayerView {
             if isHorizontalOrientation {
                 Rectangle()
                     .foregroundColor(guideLinesColor.opacity(0.6))
-                    .frame(width:  1 / vm.scale)
+                    .frame(width: 1 / vm.scale)
                     .frame(maxHeight: .infinity)
             }
             
@@ -239,6 +228,7 @@ fileprivate extension CanvasLayerView {
             vm.scale = 1
         }
     }
+    
     func resetCenter() { withAnimation(.interactiveSpring()) { vm.offset = .zero } }
 }
 
@@ -251,7 +241,7 @@ fileprivate extension CanvasLayerView {
             AnimatedGradientView(color: guideLinesColor.opacity(0.1))
         }
         if !isCurrentInManipulation { EmptyView() }
-        if (gestureInProgress || isLongTap) {
+        if gestureInProgress {
             AnimatedGradientView(color: guideLinesColor.opacity(0.2))
         } else {
             EmptyView()
@@ -262,14 +252,14 @@ fileprivate extension CanvasLayerView {
         if vm.item.type == .template { return .empty }
         if toolsModel.isItemInSelection(item: vm.item) { return .selected }
         if !isCurrentInManipulation { return .empty }
-        return (gestureInProgress || isLongTap) ? .manipulated : .empty
+        return gestureInProgress ? .manipulated : .empty
     }
     
     var canManipulate: Bool {
         if toolsModel.overlay.isAnyViewOpen {
             return vm.item is CanvasTemplateModel
         }
-        return toolsModel.inEditMode(item: vm.item) && isCurrentInManipulation
+        return isCurrentInManipulation && toolsModel.inEditMode(item: vm.item)
     }
     
     var itemBlur: CGFloat {
@@ -344,23 +334,28 @@ fileprivate extension CanvasLayerView {
 // MARK: - ManipulationWatcher
 // Следим, чтобы объект манипуляции был только один
 private final class ManipulationWatcher: ObservableObject {
-    @Published private(set) var current: CanvasItemModel?
+    var current: AnyPublisher<CanvasItemModel?, Never> {
+        _current
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
     
+    private var _current = CurrentValueSubject<CanvasItemModel?, Never>(nil)
     private init() { }
     
     static let shared = ManipulationWatcher()
     
     func setManipulated(item: CanvasItemModel) {
-        current = item
+        _current.send(item)
     }
     
     func removeManipulated() {
-        current = nil
+        _current.send(nil)
     }
     
     func regectOpacityWith(dataModel: CanvasLayersDataViewModel,
                            for item: CanvasItemModel) -> Bool {
-        dataModel.rejectOpacityProperty(itemInCanvas: item, itemInManipulation: current)
+        dataModel.rejectOpacityProperty(itemInCanvas: item, itemInManipulation: _current.value)
     }
 }
 // MARK: - Helps

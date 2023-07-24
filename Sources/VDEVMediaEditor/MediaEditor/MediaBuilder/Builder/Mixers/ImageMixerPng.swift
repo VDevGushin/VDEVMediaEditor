@@ -21,7 +21,7 @@ final class ImageMixerPng {
     func combineAndStore(assets: [CombinerAsset], alsoSaveToPhotos: Bool) throws -> (image: CIImage, cover: URL, uri: URL) {
         let image = try combine(assets: assets)
         
-        let imageURL = try FilteringProcessor.shared.generateAndSavePNGImage(ciImage: image)
+        let imageURL = try FilteringProcessor().generateAndSavePNGImage(ciImage: image)
         
         if alsoSaveToPhotos {
             PHPhotoLibrary.shared().performChanges({

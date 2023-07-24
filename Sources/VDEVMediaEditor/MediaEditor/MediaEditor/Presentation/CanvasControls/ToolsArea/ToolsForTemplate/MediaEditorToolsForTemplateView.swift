@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct MediaEditorToolsForTemplateView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @ObservedObject private var vm: CanvasEditorToolsForTemplateViewModel
@@ -21,7 +20,7 @@ struct MediaEditorToolsForTemplateView: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
+        // let _ = Self._printChanges()
         ZStack{
             switch vm.state {
             case .mediaPick:

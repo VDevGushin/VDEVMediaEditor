@@ -46,7 +46,7 @@ private enum Aspects {
     var title: String {
         switch self {
         case .full: return "FULL"
-        case .type1: return "1:1 (Instagram)"
+        case .type1: return "1:1"
         case .type2: return "9:16"
         case .type3: return "4:5"
         case .type4: return "5:7"
@@ -100,7 +100,6 @@ struct ToolsAspectRatioView: View {
                 .frame(minHeight: 32)
                 .background {
                     InvisibleTapZoneView {
-                        makeHaptics()
                         onSelected(variants[index].value)
                     }
                 }

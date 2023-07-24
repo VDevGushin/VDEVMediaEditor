@@ -52,7 +52,6 @@ struct ToolWrapperWithBinding<Tool: View>: View {
         VStack {
             if !fullScreen {
                 InvisibleTapZoneView {
-                    makeHaptics()
                     returnPressed()
                 }
             }
@@ -99,7 +98,6 @@ struct ToolWrapper<Tool: View>: View {
         VStack {
             if !fullScreen {
                 InvisibleTapZoneView {
-                    makeHaptics()
                     returnPressed()
                 }
             }

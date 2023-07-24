@@ -54,24 +54,22 @@ extension CanvasItemModel {
 
         case .drawing:
             Log.d("Item is drawing")
-            
             progressObserver?.setMessage(value: "Подготовка рисунка...")
-            
             let item: CanvasDrawModel = CanvasItemModel.toType(model: self)
-            
             guard let processedCIImage = item.image.rotatedCIImage else {
                 Log.e("Can't get ciImage")
                 return nil
             }
-            
             ciImage = processedCIImage
-
         default:
             return nil
         }
 
         ciImage = ciImage
-            .frame(frameFetchedSize * scaleFactor, contentMode: .scaleAspectFill)
+            .resized(
+                to: frameFetchedSize * scaleFactor,
+                withContentMode: .scaleAspectFill
+            )
             .cropped(to: CGRect(origin: .zero, size: frameFetchedSize * scaleFactor))
 
         Log.d("End to make image asset")
@@ -151,7 +149,7 @@ extension CanvasItemModel {
             
             Log.d("Apply filters to video [filters count: \(filterChain.count)]")
             
-            guard let filteredURL = try? await FilteringProcessor.shared.processAndExport(
+            guard let filteredURL = try? await FilteringProcessor().processAndExport(
                 asset: asset,
                 filterChain: filterChain,
                 resize: (targetAssetSize, .scaleAspectFill),
@@ -231,4 +229,3 @@ extension CanvasItemModel {
         )
     }
 }
-

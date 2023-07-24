@@ -45,13 +45,12 @@ extension CGSize {
 
     static func aspectFill(aspectRatio: CGSize, minimumSize: CGSize) -> CGSize {
         var res = minimumSize
-        let mW = minimumSize.width / aspectRatio.width;
-        let mH = minimumSize.height / aspectRatio.height;
+        let mW = minimumSize.width / aspectRatio.width
+        let mH = minimumSize.height / aspectRatio.height
 
-        if( mH > mW ) {
+        if mH > mW  {
             res.width = minimumSize.height / aspectRatio.height * aspectRatio.width;
-        }
-        else if( mW > mH ) {
+        } else if  mW > mH  {
             res.height = minimumSize.width / aspectRatio.width * aspectRatio.height;
         }
 

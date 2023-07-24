@@ -32,12 +32,11 @@ final class LayersMerger: ObservableObject {
     func merge(layers: [CanvasItemModel], on editorSize: CGSize) {
         makeMediaItem(layers: layers,
                       size: editorSize,
-                      resolution: resolution.resolution.value)
+                      resolution: resolution.value)
     }
 }
 
 private extension LayersMerger {
-    
     func makeMediaItem(layers: [CanvasItemModel],
                        size: CGSize,
                        resolution: MediaResolution) {
@@ -46,8 +45,8 @@ private extension LayersMerger {
         
         let assetBuilder = CombinerAssetBuilder(layers: layers,
                                                 scaleFactor: sizeModel.finalScale,
-                                                bgColor: .clear,
                                                 canvasNativeSize: sizeModel.finalCanvasSize,
+                                                bgColor: .clear,
                                                 progressObserver: nil)
         
         

@@ -64,7 +64,7 @@ struct CanvasApplayer {
 
                 let avAsset = AVAsset(url: url)
 
-                let videoComposition = FilteringProcessor.shared.makeAVVideoComposition(for: avAsset, filterChain: filterChain)
+                let videoComposition = FilteringProcessor().makeAVVideoComposition(for: avAsset, filterChain: filterChain)
 
                 seal(.success(.videoAdjustmentOutput(asset: videoComposition)))
             }
@@ -94,9 +94,9 @@ struct CanvasApplayer {
                     return
                 }
 
-                guard let updatedImage = FilteringProcessor.shared.process(image: image,
+                guard let updatedImage = FilteringProcessor().process(image: image,
                                                                            filteringChain: filterChain),
-                      let cgImage = FilteringProcessor.shared.createCGImage(from: updatedImage) else {
+                      let cgImage = FilteringProcessor().createCGImage(from: updatedImage) else {
                     seal(.success(.empty()))
                     return
                 }
@@ -121,9 +121,9 @@ extension CanvasApplayer {
 
         var result = CanvasApplayerOutput.empty()
 
-        if  let updatedImage = FilteringProcessor.shared.process(image: image,
+        if  let updatedImage = FilteringProcessor().process(image: image,
                                                                  filteringChain: filterChain),
-            let cgImage = FilteringProcessor.shared.createCGImage(from: updatedImage) {
+            let cgImage = FilteringProcessor().createCGImage(from: updatedImage) {
 
             result = .imageAdjustmentOutput(image: UIImage(cgImage: cgImage))
         }
@@ -142,7 +142,7 @@ extension CanvasApplayer {
 
         var result = CanvasApplayerOutput.empty()
 
-        let videoComposition = FilteringProcessor.shared.makeAVVideoComposition(for: avAsset, filterChain: filterChain)
+        let videoComposition = FilteringProcessor().makeAVVideoComposition(for: avAsset, filterChain: filterChain)
 
         result = .videoAdjustmentOutput(asset: videoComposition)
         
@@ -160,9 +160,9 @@ extension CanvasApplayer {
 
         var result = CanvasApplayerOutput.empty()
         
-        if  let updatedImage = FilteringProcessor.shared.process(image: image,
+        if  let updatedImage = FilteringProcessor().process(image: image,
                                                                  filteringChain: filterChain),
-            let cgImage = FilteringProcessor.shared.createCGImage(from: updatedImage) {
+            let cgImage = FilteringProcessor().createCGImage(from: updatedImage) {
 
             result = .imageAdjustmentOutput(image: UIImage(cgImage: cgImage))
         }

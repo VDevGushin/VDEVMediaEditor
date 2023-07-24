@@ -107,8 +107,8 @@ struct ToolsConcreteItemHorizontal: View {
                             ToolRow(image: images.currentItem.currentItemCrop,
                                     title: strings.crop) { onCropImage(item) }
                             
-                            ToolRow(image: images.currentItem.currentItemRMBack,
-                                    title: strings.removeBack) { removeBackgroundML(item) }
+//                            ToolRow(image: images.currentItem.currentItemRMBack,
+//                                    title: strings.removeBack) { removeBackgroundML(item) }
                             
                         case .audio:
                             let video: CanvasAudioModel? = CanvasItemModel.toTypeOptional(model: item)

@@ -56,7 +56,6 @@ struct ImageButton: View {
             }
             .background {
                 InvisibleTapZoneView {
-                    haptics(.light)
                     action()
                 }
             }

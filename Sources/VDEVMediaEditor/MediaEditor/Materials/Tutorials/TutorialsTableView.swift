@@ -53,7 +53,6 @@ struct TutorialsTableView: View {
                     .padding(.horizontal)
                     .overlay {
                         InvisibleTapZoneView {
-                            makeHaptics()
                             vm.stopAll()
                             curentModel = model
                         }

@@ -25,7 +25,6 @@ struct CloseButton: View {
         } label: {
             ZStack {
                 InvisibleTapZoneView {
-                    haptics(.light)
                     action()
                 }
                 Image(uiImage: images.common.xmark)

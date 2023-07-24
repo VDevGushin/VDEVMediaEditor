@@ -26,25 +26,29 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published private(set) var addMediaButtonTitle: String = ""
     @Published private(set) var addMediaButtonVisible: Bool = false
     @Published private(set) var canUndo: Bool = false
-    @Published var alertData: AlertData?
     
+    @Published var alertData: AlertData?
     @Published var isLoading: LoadingModel = .true
     @Published var contentPreview: EditorPreview.Content?
     @Published var showRemoveAllAlert: Bool = false
+    
     @Published private var contentPreviewDidLoad: Bool = false
     
-    private let builder = MediaBuilder()
-    private let merger = LayersMerger()
-    private let imageProcessingController = ImageProcessingController()
+    private let builder: MediaBuilder
+    private let merger: LayersMerger
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
     
     private var storage = Cancellables()
     
-    init(onPublish: (@MainActor (CombinerOutput) -> Void)?,
+    init(builder: MediaBuilder = .init(),
+         merger: LayersMerger = .init(),
+         onPublish: (@MainActor (CombinerOutput) -> Void)?,
          onClose: (@MainActor () -> Void)?) {
         
+        self.builder = builder
+        self.merger = merger
         self.onClose = onClose
         self.onPublish = onPublish
         
@@ -115,7 +119,7 @@ final class CanvasEditorViewModel: ObservableObject {
                     wSelf.isLoading = .false
                     wSelf.contentPreview = nil
                 case .inProgress:
-                    wSelf.isLoading = .processing
+                    wSelf.isLoading = .buildMedia
                 case .success(let combinerOutput):
                     makeHaptics(.light)
                     wSelf.contentPreview = .init(model: combinerOutput)
@@ -134,12 +138,15 @@ final class CanvasEditorViewModel: ObservableObject {
             .map { return !$0.0 && ($0.1 != .zero) && $0.2 }
             .removeDuplicates()
             .sink(on: .main, object: self) { wSelf, value in
-                if value {  
+                if value {
                     wSelf.addMediaButtonTitle = wSelf.settings.subTitle ?? wSelf.strings.hint
                     if wSelf.addMediaButtonTitle == "" {
                         wSelf.addMediaButtonTitle = wSelf.strings.hint
                     }
-                    wSelf.getStartTemplate()
+                    wSelf.isLoading = .true
+                    wSelf.data.getStartTemplate(size: wSelf.ui.roundedEditorSize) {
+                        wSelf.isLoading = .false
+                    }
                 }
             }
             .store(in: &storage)
@@ -149,7 +156,7 @@ final class CanvasEditorViewModel: ObservableObject {
             .removeDuplicates()
             .sink(on: .main, object: self) { wSelf, value in
                 switch wSelf.resultResolution {
-                case .ultraHD4k, .ultraHD8k: wSelf.set(resolution: .fullHD)
+                case .ultraHD4k, .ultraHD8k: wSelf.onSet(resolution: .fullHD)
                 default: break
                 }
             }
@@ -168,48 +175,32 @@ final class CanvasEditorViewModel: ObservableObject {
     
     deinit { Log.d("❌ Deinit: CanvasEditorViewModel") }
     
-    func onBuildMedia() {
-        builder.makeMediaItem(layers: data.layers.elements,
-                              size: ui.editorSize,
-                              backgrondColor: ui.mainLayerBackgroundColor,
-                              resolution: resultResolution)
-    }
-    
-    func onMergeMedia(_ layers: [CanvasItemModel]) {
-        merger.merge(layers: layers, on: ui.editorSize)
-    }
-    
     func contentViewDidLoad() { self.contentPreviewDidLoad = true }
 }
 
-// FIXME: - Перенести в другое место
+// MARK: - Actions
 extension CanvasEditorViewModel {
-    func removeBackground(on item: CanvasItemModel,
-                          completion: @escaping (CanvasItemModel) -> Void) {
-        isLoading = .processing
-        forceSave()
-        imageProcessingController.removeBackground(on: item) { [weak self] new in
-            self?.data.delete(item, withSave: false)
-            self?.data.add(new, withSave: false)
-            self?.isLoading = .false
-            completion(new)
-        }
+    func onBuildMedia() {
+        builder.makeMediaItem(
+            layers: data.layers.elements,
+            size: ui.editorSize,
+            backgrondColor: ui.mainLayerBackgroundColor,
+            resolution: resultResolution
+        )
     }
-}
-
-// MARK: - Get started template
-extension CanvasEditorViewModel {
-    func getStartTemplate() {
-        isLoading = .true
-        data.getStartTemplate(size: ui.roundedEditorSize) { [weak self] in
-            self?.isLoading = .false
-        }
+    
+    func onCancelBuildMedia() {
+        builder.cancel()
     }
-}
-
-// MARK: - Remove all after screen down
-extension CanvasEditorViewModel {
-    func removeAllLayers() {
+    
+    func onMergeMedia(_ layers: [CanvasItemModel]) {
+        merger.merge(
+            layers: layers,
+            on: ui.editorSize
+        )
+    }
+    
+    func onRemoveAllLayers() {
         defer { removeLayersService.notNeedToRemoveAllLayers() }
         tools.showAddItemSelector(false)
         tools.seletedTool(.empty)
@@ -217,14 +208,11 @@ extension CanvasEditorViewModel {
         tools.openLayersList(true)
     }
     
-    func cancelRemoveAllLayers() {
+    func onCancelRemoveAllLayers() {
         removeLayersService.notNeedToRemoveAllLayers()
     }
-}
-
-// MARK: - Resolution
-extension CanvasEditorViewModel {
-    func set(resolution: MediaResolution) {
+    
+    func onSet(resolution: MediaResolution) {
         resolutionService.set(resolution: resolution)
     }
 }
@@ -240,16 +228,5 @@ extension CanvasEditorViewModel {
             isLoading = .processing
             onPublish?(output)
         }
-    }
-}
-
-// MARK: - History proxy do data
-extension CanvasEditorViewModel: MementoObject {
-    func undo() {
-        data.undo()
-    }
-    
-    func forceSave() {
-        data.forceSave()
     }
 }

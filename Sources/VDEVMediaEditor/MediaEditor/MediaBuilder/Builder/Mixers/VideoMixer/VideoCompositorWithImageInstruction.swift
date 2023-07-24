@@ -56,7 +56,7 @@ final class VideoCompositorWithImage: NSObject, AVVideoCompositing {
     }
 
     private let colorSpace = CGColorSpaceCreateDeviceRGB()
-    private lazy var imageContext = CIContext()
+    private lazy var imageContext =  CIContext(options: [.useSoftwareRenderer: false]) 
 
     func renderContextChanged(_ newRC: AVVideoCompositionRenderContext) {
         // do anything in here you need to before you start writing frames
@@ -100,7 +100,7 @@ final class VideoCompositorWithImage: NSObject, AVVideoCompositing {
         
         outImage = outImage
             .cropped(to: CGRect(origin: .zero, size: canvasSize))
-            .frame(frameSize, contentMode: .scaleAspectFill)
+            .resized(to: frameSize, withContentMode: .scaleAspectFill)
             .cropped(to: CGRect(origin: .zero, size: frameSize))
 
         imageContext.render(outImage, to: buffer)

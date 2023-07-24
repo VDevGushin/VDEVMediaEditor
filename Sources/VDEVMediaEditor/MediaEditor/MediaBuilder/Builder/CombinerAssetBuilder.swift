@@ -17,8 +17,8 @@ final class CombinerAssetBuilder {
 
     init(layers: [CanvasItemModel],
          scaleFactor: CGFloat,
-         bgColor: UIColor,
          canvasNativeSize: CGSize,
+         bgColor: UIColor,
          progressObserver: ProgressObserver?) {
         self.layers = layers
         self.scaleFactor = scaleFactor

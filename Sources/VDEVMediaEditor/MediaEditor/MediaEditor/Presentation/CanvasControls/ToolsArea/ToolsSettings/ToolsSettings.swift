@@ -52,7 +52,7 @@ final class ToolsSettingsViewModel: ObservableObject {
             .sink(on: .main, object: self) { wSelf, value in
                 if value {
                     switch wSelf.canvasVM.resultResolution {
-                    case .ultraHD8k, .ultraHD4k: wSelf.canvasVM.set(resolution: .fullHD)
+                    case .ultraHD8k, .ultraHD4k: wSelf.canvasVM.onSet(resolution: .fullHD)
                     default: break
                     }
                     wSelf.variants = [.sd, .hd, .fullHD]
@@ -73,7 +73,7 @@ final class ToolsSettingsViewModel: ObservableObject {
     
     func set(_ result: MediaResolution) {
         makeHaptics()
-        canvasVM.set(resolution: result)
+        canvasVM.onSet(resolution: result)
     }
     
     func set(_ needAutoEnhance: Bool) {

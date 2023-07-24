@@ -265,7 +265,7 @@ private extension ImageResultChecker {
         typealias Response = Result
         var path: String
         var method: HTTPMethod = .get
-        var params: [String : String] = ["expireMins": "2"]
+        var params: [String : String] = [:]//["expireMins": "2"]
         var token: String? = "Bearer 23bc3127-04af-4dc1-92ff-38bf34f6a982"
         init(messageID: String) {
             path = "/v2/message/\(messageID)"

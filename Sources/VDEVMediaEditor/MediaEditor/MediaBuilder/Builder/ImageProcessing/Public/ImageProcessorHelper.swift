@@ -15,7 +15,7 @@ public final class ImageProcessorHelper {
     public static let renderingQueue = DispatchQueue(label: "w1d1.serial.filteringprocessor.renderingQueue")
     private init() {}
     
-    private var innerProcessor = FilteringProcessor.shared
+    private var innerProcessor = FilteringProcessor()
     
     public func extractImage(
         fromUrl url: URL,
@@ -46,9 +46,15 @@ public final class ImageProcessorHelper {
         if isVideo {
             let canExportHEVCWithAlpha = AVAssetExportSession.allExportPresets().contains(AVAssetExportPresetHEVCHighestQualityWithAlpha)
             let quality: FilteringProcessor.ExportQuality = canExportHEVCWithAlpha ? .HEVCHighestWithAlpha: .highest
-            return try await innerProcessor.processAndExport(asset: contentAsset, filterChain: [filter], exportQuality: quality)
+            return try await innerProcessor.processAndExport(
+                asset: contentAsset,
+                filterChain: [filter],
+                exportQuality: quality)
         } else {
-            guard let processedImage = process(imageURL: contentURL, filterChain: [filter]) else {
+            guard let processedImage = process(
+                imageURL: contentURL,
+                filterChain: [filter]
+            ) else {
                 throw FilteringProcessor.ProcessorError.processImageReturnedNil
             }
             let resultImage = try innerProcessor.generateAndSaveImage(ciImage: processedImage)
@@ -57,13 +63,10 @@ public final class ImageProcessorHelper {
     }
     
     private func process(imageURL: URL, filterChain: [FilterDescriptor]) -> CIImage? {
-        guard let image = AssetExtractionUtil.image(
-            fromUrl: imageURL,
-            storeCache: false
-        ) else {
+        guard let image = AssetExtractionUtil.image(fromUrl: imageURL, storeCache: false),
+              let filterChain = FilteringProcessor.Processor(filterChain: filterChain) else {
             return nil
         }
-        let filterChain = FilteringProcessor.Processor(filterChain: filterChain)
         return filterChain.applyFilters(to: image)
     }
 }

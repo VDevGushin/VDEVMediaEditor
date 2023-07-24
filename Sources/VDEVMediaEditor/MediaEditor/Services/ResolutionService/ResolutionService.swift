@@ -13,21 +13,25 @@ import AVKit
 
 final class ResolutionService {
     var resolution: CurrentValueSubject<MediaResolution, Never> = .init(.fullHD)
+    var value: MediaResolution = .fullHD
     
     init(resolution: VDEVMediaResolution) {
         self.set(resolution: resolution)
+        self.value = resolution.value
     }
     
     func set(resolution: VDEVMediaResolution) {
         self.resolution.send(resolution.value)
+        self.value = resolution.value
     }
     
     func set(resolution: MediaResolution) {
         self.resolution.send(resolution)
+        self.value = resolution
     }
     
     func videoExportPreset() -> String {
-        switch resolution.value {
+        switch value {
         case .hd:
             return AVAssetExportPreset1280x720
         case .sd:

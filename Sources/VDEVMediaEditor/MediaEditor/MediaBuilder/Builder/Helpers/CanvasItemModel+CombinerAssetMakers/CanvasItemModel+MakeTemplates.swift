@@ -242,7 +242,7 @@ extension CanvasItemModel {
         }
         
         ciImage = ciImage
-            .frame(bounds.size * scaleFactor, contentMode: .scaleAspectFit)
+            .resized(to: bounds.size * scaleFactor, withContentMode: .scaleAspectFit)
             .cropped(to: CGRect(origin: .zero, size: bounds.size * scaleFactor))
         
         
@@ -266,17 +266,18 @@ extension CanvasItemModel {
         progressObserver: ProgressObserver? = nil
     ) async -> CombinerAsset? {
         
-        Log.d("Begin to make placeholder asset")
-        
         guard self.type == .placeholder else {
             return nil
         }
+        
+        Log.d("Begin to make placeholder asset")
         
         let item: CanvasPlaceholderModel = CanvasItemModel.toType(model: self)
         
         let halpScale: CGFloat = 0.05
         
         if let imageModel: CanvasImagePlaceholderModel = item.imageModel {
+            Log.d("Подготовка картинки из плейсхолдера...")
             progressObserver?.setMessage(value: "Подготовка картинки из плейсхолдера...")
             // формирование картинки из плейсхолдера
             return await makePlaceHolderImageAsset(item: item,
@@ -287,6 +288,7 @@ extension CanvasItemModel {
         }
         
         if let videoItem: CanvasVideoPlaceholderModel = item.videoModel {
+            Log.d("Подготовка видео из плейсхолдера...")
             progressObserver?.setMessage(value: "Подготовка видео из плейсхолдера...")
             // формирование видосика из плейсхолдера
             return await makePlaceHolderVideoAsset(item: item,
@@ -348,13 +350,10 @@ fileprivate extension CanvasItemModel {
         ciImage = ciImage.resized(to: size, withContentMode: .scaleAspectFill)
         //.frame(size, contentMode: .scaleAspectFill)
         
-        // Контейнер для хранения плейсхолдера
-        let container = CIImage(color: .clear)
-            .frame(containerSize, contentMode: .scaleAspectFill)
         
         // Вписываем с трансофрмами плейсхолдер в контейнер
         ciImage = ciImage
-            .composited(with: container, canvasSize: containerSize, transform: trasform)
+            .transform(canvasSize: containerSize, transform: trasform)
             .cropped(to: .init(origin: .zero, size: containerSize))
         
         // ресайзим маску под нужный размер
@@ -421,7 +420,7 @@ fileprivate extension CanvasItemModel {
             maskCGImage = maskCG
         }
         
-        guard let filteredURL = try? await FilteringProcessor.shared.processAndExport(
+        guard let filteredURL = try? await FilteringProcessor().makePlaceHolderVideoAsset(
             asset: asset,
             containerSize: containerSize,
             videoSize: size,

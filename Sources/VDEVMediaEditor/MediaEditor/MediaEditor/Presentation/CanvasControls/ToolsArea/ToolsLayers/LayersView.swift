@@ -14,7 +14,7 @@ struct LayersView: View {
     @Injected private var settings: VDEVMediaEditorSettings
     @Injected private var removeLayersService: RemoveLayersService
     
-    private var mementoObject: MementoObject? { vm }
+    private var mementoObject: MementoObject? { vm.data }
     
     var body: some View {
         Group {

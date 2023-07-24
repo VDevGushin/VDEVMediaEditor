@@ -20,6 +20,7 @@ struct InvisibleTapZoneView: View {
         Color.black
             .opacity(0.001)
             .onTapGesture(count: tapCount) {
+                makeHaptics()
                 action?()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

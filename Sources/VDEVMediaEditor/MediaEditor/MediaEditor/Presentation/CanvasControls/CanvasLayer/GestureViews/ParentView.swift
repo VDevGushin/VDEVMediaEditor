@@ -10,10 +10,11 @@ import SwiftUIX
 
 let ParentTouchHolder = ParentTouchResultHolder.shared
 
-enum ParentTouchResult: Equatable {
-    case noTouch
-    case touch(scale: CGFloat, state: UIGestureRecognizer.State)
-    case rotation(rotation: CGFloat, state: UIGestureRecognizer.State)
+protocol ParentTouchResultHolderDelegate: AnyObject {
+    func begin(gesture: ExternalGesture)
+    func finish(gesture: ExternalGesture)
+    func inProcess(gesture: ExternalGesture)
+    func endAllGestures()
 }
 
 enum ExternalGesture {
@@ -23,30 +24,31 @@ enum ExternalGesture {
     case rotationInProgress(CGFloat)
 }
 
-protocol ParentTouchResultHolderDelegate: AnyObject {
-    func begin(gesture: ExternalGesture)
-    func finish(gesture: ExternalGesture)
-    func inProcess(gesture: ExternalGesture)
-    func endAllGestures()
-}
-
 final class ParentTouchResultHolder {
     weak var delegate: ParentTouchResultHolderDelegate?
     
-    fileprivate var onCancel: (() -> Void)?
+    private var onCancel: (() -> Void)?
     
     private init() { }
     
     static let shared = ParentTouchResultHolder()
     
-    func endAllGestures() {
+    func cancel() {
+        set(.noTouch)
+    }
+    
+    fileprivate func endAllGestures() {
         delegate?.endAllGestures()
     }
     
-    func set(_ value: ParentTouchResult) {
+    fileprivate func set(onCancel: (() -> Void)?) {
+        self.onCancel = onCancel
+    }
+    
+    fileprivate func set(_ value: ParentTouchResult) {
         switch value {
         case .noTouch:
-            delegate?.finish(gesture: .scale)
+            endAllGestures()
             onCancel?()
         case let .touch(scale: scale, state: state):
             switch state {
@@ -74,6 +76,12 @@ final class ParentTouchResultHolder {
     }
 }
 
+fileprivate enum ParentTouchResult: Equatable {
+    case noTouch
+    case touch(scale: CGFloat, state: UIGestureRecognizer.State)
+    case rotation(rotation: CGFloat, state: UIGestureRecognizer.State)
+}
+
 struct ParentView<Content: View>: UIViewRepresentable {
     let content: Content
     
@@ -93,11 +101,11 @@ struct ParentView<Content: View>: UIViewRepresentable {
     private func setupGest(for hView: UIView, context: Context) {
         let PinchRecognizer = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinch(sender:)))
         PinchRecognizer.cancelsTouchesInView = true
-        PinchRecognizer.delegate = ExternalUIGestureRecognizerDelegate.shared
+        PinchRecognizer.delegate = context.coordinator
         
         let RotationGesture = UIRotationGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handleRotate(sender:)))
         RotationGesture.cancelsTouchesInView = true
-        RotationGesture.delegate = ExternalUIGestureRecognizerDelegate.shared
+        RotationGesture.delegate = context.coordinator
         
         hView.addGestureRecognizer(PinchRecognizer)
         hView.addGestureRecognizer(RotationGesture)
@@ -118,7 +126,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
         Coordinator(parent: self)
     }
     
-    final class Coordinator {
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
         weak var pinchGest: UIPinchGestureRecognizer?
         weak var rotationGest: UIRotationGestureRecognizer?
         
@@ -128,11 +136,12 @@ struct ParentView<Content: View>: UIViewRepresentable {
         
         init(parent: ParentView) {
             self.parent = parent
-            
-            ParentTouchResultHolder.shared.onCancel = { [weak self] in
-                self?.pinchGest?.reset()
-                self?.pinchGest?.scale = 1.0
-                self?.rotationGest?.reset()
+            super.init()
+            ParentTouchResultHolder.shared.set {
+                [weak self] in
+                    self?.pinchGest?.reset()
+                    self?.pinchGest?.scale = 1.0
+                    self?.rotationGest?.reset()
             }
         }
         
@@ -142,7 +151,8 @@ struct ParentView<Content: View>: UIViewRepresentable {
             if sender.state == .began {
                 ParentTouchHolder.set(.touch(scale: sender.scale, state: .began))
             } else if sender.state == .changed {
-                ParentTouchHolder.set(.touch(scale: sender.scale, state: .changed))
+                let scale = ((sender.scale - 1) * 0.8) + 1
+                ParentTouchHolder.set(.touch(scale: scale, state: .changed))
             } else if sender.state == .ended || sender.state == .cancelled {
                 ParentTouchHolder.set(.touch(scale: sender.scale, state: .ended))
                 checkEndAllGestures()
@@ -168,6 +178,7 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 ParentTouchHolder.endAllGestures()
             }
         }
+        
         private func gestureStatus(state: inout Bool, sender: UIGestureRecognizer) {
             switch sender.state {
             case .began:
@@ -180,13 +191,9 @@ struct ParentView<Content: View>: UIViewRepresentable {
                 state = false
             }
         }
-    }
-}
-
-final class ExternalUIGestureRecognizerDelegate: NSObject, UIGestureRecognizerDelegate {
-    static let shared = ExternalUIGestureRecognizerDelegate()
-    private override init() {}
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
+        
+        public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+            return true
+        }
     }
 }

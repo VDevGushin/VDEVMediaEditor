@@ -11,6 +11,7 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
+    @Namespace var animation
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -18,13 +19,14 @@ struct MediaEditorView: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
+        // let _ = Self._printChanges()
         ZStack {
             AppColors.black
             
             VStack(spacing: 0) {
                 EditorArea
                     .viewDidLoad(vm.contentViewDidLoad)
+                    .matchedGeometryEffect(id: "EditorArea", in: animation)
                     .padding(.bottom, 4)
                 
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
@@ -33,22 +35,24 @@ struct MediaEditorView: View {
             ToolsAreaView(rootMV: vm)
                 .padding(.bottom, 6)
             
-            LoadingView(inProgress: vm.isLoading, style: .medium, color: vm.ui.guideLinesColor.uiColor)
+            LoadingView(inProgress: vm.isLoading, style: .medium, color: vm.ui.guideLinesColor.uiColor) {
+                vm.onCancelBuildMedia()
+            }
         }
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
             vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))
         }
-        .blur(radius: vm.contentPreview == nil ? 0 : 3)
-        .editorPreview(with: $vm.contentPreview) { model in
+        .animation(.easeInOut, value: vm.contentPreview)
+        .editorPreview(with: $vm.contentPreview, animation: animation) { model in
             vm.contentPreview = nil
             vm.onPublishResult(output: model)
         } onClose: {
             vm.contentPreview = nil
         }
         .showRemoveAlert(isPresented: $vm.showRemoveAllAlert) {
-            vm.removeAllLayers()
+            vm.onRemoveAllLayers()
         } onCancel: {
-            vm.cancelRemoveAllLayers()
+            vm.onCancelRemoveAllLayers()
         }
         .environmentObject(vm)
         .environment(\.guideLinesColor, vm.ui.guideLinesColor)
@@ -63,59 +67,53 @@ fileprivate extension MediaEditorView {
             
             GeometryReader { proxy in
                 let size = proxy.size
-                if vm.addMediaButtonVisible {
-                    vm.ui.mainLayerBackgroundColor.frame(size)
-                } else {
-                    ParentView {
-                        ZStack {
-                            InvisibleTapZoneView(tapCount: 1) {
-                                if vm.tools.currentToolItem != .empty {
-                                    haptics(.light)
+                ParentView {
+                    ZStack {
+                        InvisibleTapZoneView(tapCount: 1) {
+                            if vm.tools.currentToolItem != .empty {
+                                vm.tools.closeTools(false)
+                            }
+                        }
+                        
+                        ForEach(vm.data.layers, id: \.self) { item in
+                            CanvasLayerView(item: item,
+                                            toolsModel: vm.tools,
+                                            dataModel: vm.data) {
+                                CanvasItemViewBuilder(item: item,
+                                                      canvasSize: vm.ui.editorSize,
+                                                      guideLinesColor: vm.ui.guideLinesColor,
+                                                      delegate: vm.tools.overlay)
+                            } onSelect: { item in
+                                if vm.tools.currentToolItem == .empty {
+                                    // Выбрать конкретный итем
+                                    vm.tools.openLayersList(true)
+                                    vm.data.bringToFront(item)
+                                    vm.tools.seletedTool(.concreteItem(item))
+                                } else {
+                                    // Отменить выборку
                                     vm.tools.closeTools(false)
                                 }
-                            }
-                            
-                            ForEach(vm.data.layers, id: \.self) { item in
-                                CanvasLayerView(item: item,
-                                                toolsModel: vm.tools,
-                                                dataModel: vm.data,
-                                                containerSize: $vm.ui.editorSize) {
-                                    CanvasItemViewBuilder(item: item,
-                                                          canvasSize: size,
-                                                          guideLinesColor: vm.ui.guideLinesColor,
-                                                          delegate: vm.tools.overlay)
-                                } onSelect: { item in
-                                    if vm.tools.currentToolItem == .empty {
-                                        // Выбрать конкретный итем
-                                        vm.tools.openLayersList(true)
-                                        vm.data.bringToFront(item)
-                                        vm.tools.seletedTool(.concreteItem(item))
-                                    } else {
-                                        // Отменить выборку
-                                        vm.tools.closeTools(false)
-                                    }
-                                } onDelete: { item in
-                                    vm.data.delete(item)
-                                } onShowCenterV: { value in
-                                    vm.ui.showVerticalCenter = value
-                                } onShowCenterH: { value in
-                                    vm.ui.showHorizontalCenter = value
-                                } onManipulated: { item in
-                                    vm.tools.layerInManipulation = item
-                                } onEndManipulated: { item in
+                            } onDelete: { item in
+                                vm.data.delete(item)
+                            } onShowCenterV: { value in
+                                vm.ui.showVerticalCenter = value
+                            } onShowCenterH: { value in
+                                vm.ui.showHorizontalCenter = value
+                            } onManipulated: { item in
+                                vm.tools.layerInManipulation = item
+                            } onEndManipulated: { item in
+                                vm.tools.layerInManipulation = nil
+                            } onEdit: { item in
+                                if vm.tools.tryToEdit(item) {
                                     vm.tools.layerInManipulation = nil
-                                } onEdit: { item in
-                                    if vm.tools.tryToEdit(item) {
-                                        vm.tools.layerInManipulation = nil
-                                    } else {
-                                        vm.tools.layerInManipulation = item
-                                    }
+                                } else {
+                                    vm.tools.layerInManipulation = item
                                 }
                             }
                         }
                     }
-                    .frame(size)
                 }
+                .frame(size)
             }
             .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.7 : 1.0)
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)
