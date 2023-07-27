@@ -11,7 +11,6 @@ import Combine
 
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
-    @Namespace var animation
     
     init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
          onClose: (@MainActor () -> Void)? = nil) {
@@ -26,7 +25,6 @@ struct MediaEditorView: View {
             VStack(spacing: 0) {
                 EditorArea
                     .viewDidLoad(vm.contentViewDidLoad)
-                    .matchedGeometryEffect(id: "EditorArea", in: animation)
                     .padding(.bottom, 4)
                 
                 AppColors.clear.frame(height: vm.ui.bottomBarHeight)
@@ -42,8 +40,7 @@ struct MediaEditorView: View {
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
             vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))
         }
-        .animation(.easeInOut, value: vm.contentPreview)
-        .editorPreview(with: $vm.contentPreview, animation: animation) { model in
+        .editorPreview(with: $vm.contentPreview.removeDuplicates()) { model in
             vm.contentPreview = nil
             vm.onPublishResult(output: model)
         } onClose: {

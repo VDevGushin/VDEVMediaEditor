@@ -81,7 +81,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var canRemoveAllLayers: Bool { true }
     var canShowOnboarding: Bool { false }
     var canUndo: Bool { true }
-    var canGenerateImageByPrompt: Bool { true }
+    var canGenerateImageByPrompt: Bool { false }
     var сanRemoveOrChangeTemplate: Bool { true }
     
     init(_ resourceID: String,

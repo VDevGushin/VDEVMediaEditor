@@ -13,44 +13,51 @@ import AVFoundation
 
 extension View {
     func editorPreview(with contentPreview: Binding<EditorPreview.Content?>,
-                       animation: Namespace.ID,
                        onPublish: @escaping (CombinerOutput) -> Void,
                        onClose: @escaping () -> Void) -> some View {
         
         modifier(EditorPreviewModifier(model: contentPreview,
-                                       animation: animation,
                                        onPublish: onPublish,
                                        onClose: onClose))
     }
 }
 
 struct EditorPreviewModifier: ViewModifier {
+    @Injected private var images: VDEVImageConfig
     @Binding private var model: EditorPreview.Content?
     @State private var showResult = false
     private let onPublish: (CombinerOutput) -> Void
     private let onClose: () -> Void
-    private let animation: Namespace.ID
+    @Namespace var animation
     
     init(model: Binding<EditorPreview.Content?>,
-         animation: Namespace.ID,
          onPublish: @escaping (CombinerOutput) -> Void,
          onClose: @escaping () -> Void) {
         self._model = model
         self.onClose = onClose
         self.onPublish = onPublish
-        self.animation = animation
     }
     
     func body(content: Content) -> some View {
         ZStack {
+            if !showResult {
+                AppColors.black
+                    .matchedGeometryEffect(
+                        id: "EditorArea",
+                        in: animation,
+                        anchor: .center,
+                        isSource: true
+                    )
+            }
+            
             content
+
             if showResult {
                 model.map {
                     EditorPreview(model: $0,
                                   animation: animation,
                                   onPublish: onPublish,
                                   onClose: onClose)
-                    .transition(.opacityTransition())
                 }
             }
         }
@@ -71,10 +78,11 @@ struct EditorPreview: View {
     @Injected private var settings: VDEVMediaEditorSettings
    
     @State var model: Content
+    var animation: Namespace.ID
     @State var challengeTitle: String = ""
     @State var needShare: Bool = false
     
-    let animation: Namespace.ID
+    //let animation: Namespace.ID
     
     var onPublish: (CombinerOutput) -> Void
     var onClose: () -> Void
@@ -102,9 +110,12 @@ struct EditorPreview: View {
             case .video:
                 IsometricVideo(model: model)
                     .aspectRatio(model.aspect, contentMode: .fit)
-                    .matchedGeometryEffect(id: "EditorArea", in: animation)
                     .padding(.horizontal, 15)
                     .withParallaxCardEffect()
+                    .matchedGeometryEffect(
+                        id: "EditorArea",
+                        in: animation
+                    )
             case .image:
                 AsyncImageView(url: model.url) { img in
                     IsometricImage(image: img)
@@ -112,9 +123,12 @@ struct EditorPreview: View {
                     LoadingView(inProgress: true, style: .medium)
                 }
                 .aspectRatio(model.aspect, contentMode: .fit)
-                .matchedGeometryEffect(id: "EditorArea", in: animation)
                 .padding(.horizontal, 15)
                 .withParallaxCardEffect()
+                .matchedGeometryEffect(
+                    id: "EditorArea",
+                    in: animation
+                )
             }
             
             Spacer()
