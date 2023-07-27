@@ -38,6 +38,7 @@ final class CanvasToolsViewModel: ObservableObject {
         observe(nested: self.overlay).store(in: &storage)
         
         $layerInManipulation
+            .removeDuplicates()
             .combineLatest(overlay.$isAnyViewOpen)
             .sink(on: .main, object: self) { wSelf, result  in
                 let layerInManipulation = result.0
@@ -46,6 +47,7 @@ final class CanvasToolsViewModel: ObservableObject {
                     wSelf.openLayersList(false)
                     return
                 }
+                
                 wSelf.overlay.hideAllOverlayViews()
                 wSelf.openLayersList(false)
                 wSelf.hideAllTools()

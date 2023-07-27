@@ -31,21 +31,28 @@ struct MediaEditorView: View {
             }
             
             ToolsAreaView(rootMV: vm)
-                .padding(.bottom, 6)
             
-            LoadingView(inProgress: vm.isLoading, style: .medium, color: vm.ui.guideLinesColor.uiColor) {
+            LoadingView(
+                inProgress: vm.isLoading,
+                style: .medium,
+                color: vm.ui.guideLinesColor.uiColor
+            ) {
                 vm.onCancelBuildMedia()
             }
         }
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
             vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))
         }
-        .editorPreview(with: $vm.contentPreview.removeDuplicates()) { model in
+        .editorPreview(
+            with: $vm.contentPreview.removeDuplicates(),
+            cornerRadius: vm.ui.canvasCornerRadius
+        ) { model in
             vm.contentPreview = nil
             vm.onPublishResult(output: model)
         } onClose: {
             vm.contentPreview = nil
         }
+        .showInnerPhone($vm.showRemoveAllAlert)
         .showRemoveAlert(isPresented: $vm.showRemoveAllAlert) {
             vm.onRemoveAllLayers()
         } onCancel: {

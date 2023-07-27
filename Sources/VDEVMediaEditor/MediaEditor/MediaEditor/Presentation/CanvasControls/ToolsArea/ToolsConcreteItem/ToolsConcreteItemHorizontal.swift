@@ -13,6 +13,8 @@ struct ToolsConcreteItemHorizontal: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
     
+    @State private var isOpen = false
+    
     private weak var item: CanvasItemModel?
     
     private var onClose: () -> Void
@@ -94,18 +96,28 @@ struct ToolsConcreteItemHorizontal: View {
                             
                             ToolRow(image: images.currentItem.currentItemMask,
                                     title: strings.mask) { onMaskFilter(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemFilter,
                                     title: strings.filter) { onColorFilter(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemTexture,
                                     title: strings.texture) { onTextureFilter(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemAdjustments,
                                     title: strings.adjustments) { onAdjustments(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemCrop,
                                     title: strings.crop) { onCropImage(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
 //                            ToolRow(image: images.currentItem.currentItemRMBack,
 //                                    title: strings.removeBack) { removeBackgroundML(item) }
@@ -115,14 +127,14 @@ struct ToolsConcreteItemHorizontal: View {
                             if let volume = video?.volume {
                                 if volume <= 0.0 {
                                     ToolRow(image: images.currentItem.currentItemSoundON,
-                                            title: strings.sound) {
-                                        onVolume(item, 1.0)
-                                    }
+                                            title: strings.sound) {  onVolume(item, 1.0) }
+                                            .opacity(isOpen ? 1.0 : 0.0)
+                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 } else {
                                     ToolRow(image: images.currentItem.currentItemSoundOFF,
-                                            title: strings.sound) {
-                                        onVolume(item, 0.0)
-                                    }
+                                            title: strings.sound) { onVolume(item, 0.0) }
+                                            .opacity(isOpen ? 1.0 : 0.0)
+                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 }
                             }
                             
@@ -132,32 +144,42 @@ struct ToolsConcreteItemHorizontal: View {
                                 if let volume = video?.volume {
                                     if volume <= 0.0 {
                                         ToolRow(image: images.currentItem.currentItemSoundON,
-                                                title: strings.sound) {
-                                            onVolume(item, 1.0)
-                                        }
+                                                title: strings.sound) { onVolume(item, 1.0) }
+                                                .opacity(isOpen ? 1.0 : 0.0)
+                                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                     } else {
                                         ToolRow(image: images.currentItem.currentItemSoundOFF,
-                                                title: strings.sound) {
-                                            onVolume(item, 0.0)
-                                        }
+                                                title: strings.sound) { onVolume(item, 0.0) }
+                                                .opacity(isOpen ? 1.0 : 0.0)
+                                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                     }
                                 }
                             }
                             
                             ToolRow(image: images.currentItem.currentItemMask,
                                     title: strings.mask) { onMaskFilter(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemTexture,
                                     title: strings.texture) { onTextureFilter(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemFilter,
                                     title: strings.filter) { onColorFilter(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemAdjustments,
                                     title: strings.adjustments) { onAdjustments(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         case .text:
                             ToolRow(image: images.currentItem.currentItemEditText,
                                     title: strings.editText) { onEditText(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         default: EmptyView()
                         }
                         
@@ -165,9 +187,9 @@ struct ToolsConcreteItemHorizontal: View {
                             switch item.type {
                             case .image, .video, .text, .sticker, .drawing:
                                 ToolRow(image: images.currentItem.currentIteDublicate,
-                                        title: strings.dublicate) {
-                                    onDublicate(item)
-                                }
+                                        title: strings.dublicate) { onDublicate(item) }
+                                        .opacity(isOpen ? 1.0 : 0.0)
+                                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             default: EmptyView()
                             }
                         }
@@ -176,11 +198,15 @@ struct ToolsConcreteItemHorizontal: View {
                             ToolRow(image: images.currentItem.currentItemReset,
                                     title: strings.reset,
                                     tintColor: AppColors.greenWithOpacity) { onReset(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         }
                         
                         ToolRow(image: images.currentItem.currentItemRM,
                                 title: strings.remove,
                                 tintColor: AppColors.redWithOpacity) { onDelete(item) }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         Rectangle()
                             .fill(AppColors.whiteWithOpacity)
@@ -189,35 +215,41 @@ struct ToolsConcreteItemHorizontal: View {
                         
                         if item.type != .template {
                             ToolRow(image: images.currentItem.currentItemUp,
-                                    title: strings.up) {
-                                onUp(item)
-                            }
+                                    title: strings.up) { onUp(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
                             ToolRow(image: images.currentItem.currentItemDown,
-                                    title: strings.down) {
-                                onBack(item)
-                            }
+                                    title: strings.down) { onBack(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         }
                         
                         ToolRow(image: images.currentItem.currentItemBringToTop,
-                                title: strings.bringToTop) {
-                            onBringToFront(item)
-                        }
+                                title: strings.bringToTop) { onBringToFront(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemBringToBottom,
-                                title: strings.bringToBottom) {
-                            onBringToBack(item)
-                        }
+                                title: strings.bringToBottom) { onBringToBack(item) }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         if let withItem = vm.data.canMerge(item: item) {
                             ToolRow(image: images.currentItem.currentItemMerge,
-                                    title: strings.merge) {
-                                onMerge([withItem, item])
-                            }
+                                    title: strings.merge) { onMerge([withItem, item]) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         }
                     }
                 }
                 .padding(.horizontal, horizontalPadding)
+            }
+        }
+        .padding(.bottom, 6)
+        .viewDidLoad {
+            withAnimation(.myInteractiveSpring) {
+                isOpen = true
             }
         }
     }

@@ -31,7 +31,22 @@ extension AnyTransition {
         //.animation(.easeInOut(duration: moveSpeed))
     }
     
+    static var topTransition: AnyTransition {
+        .asymmetric(insertion: .move(edge: .top),
+                    removal: .move(edge: .top))
+        .combined(with: .opacity)
+        //.animation(.easeInOut(duration: moveSpeed))
+    }
+    
     static func opacityTransition(withAnimation: Bool = true) -> AnyTransition {
         return withAnimation ? .opacity.animation(.easeInOut(duration: opacitySpeed)) : .opacity
+    }
+    
+    
+}
+
+extension Animation {
+    static var myInteractiveSpring: Animation {
+        .interactiveSpring(response: 0.3, dampingFraction: 0.7)
     }
 }

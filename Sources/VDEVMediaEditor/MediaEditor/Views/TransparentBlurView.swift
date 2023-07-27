@@ -15,9 +15,7 @@ struct TransparentBlurView: UIViewRepresentable {
         return view
     }
     
-    func updateUIView(_ uiview: TransparentBlurViewHelper, context: Context) {
-       
-    }
+    func updateUIView(_ uiview: TransparentBlurViewHelper, context: Context) { }
 }
 
 final class TransparentBlurViewHelper: UIVisualEffectView {

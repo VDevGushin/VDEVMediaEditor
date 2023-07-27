@@ -19,6 +19,7 @@ struct ToolSelectorHorizontalView: View {
     @Injected private var pasteboardService: PasteboardService
     @InjectedOptional private var imageResultChecker: ImageResultChecker?
     @State private var isLoading: Bool = false
+    @State private var isOpen: Bool = false
     
     private let tools: [ToolItem]
     
@@ -56,12 +57,22 @@ struct ToolSelectorHorizontalView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .center, spacing: buttonSpacing) {
                     PasteButton()
-                    
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .center)
+                
                     ForEach(0..<tools.count , id: \.self) { i in
                         ToolRow(tool: tools[i])
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .trailing)
                     }
                 }
                 .padding(.horizontal, horizontalPadding)
+            }
+        }
+        .padding(.bottom, 6)
+        .viewDidLoad {
+            withAnimation(.myInteractiveSpring) {
+                isOpen = true
             }
         }
         .onReceive(

@@ -99,6 +99,7 @@ struct LoadingView: View {
                         .multilineTextAlignment(.center)
                         .font(.caption)
                         .padding()
+                        .transition(.opacity)
                 }
             }
         }
@@ -111,7 +112,7 @@ struct LoadingView: View {
                 BlurView(style: blurStyle)
             case .buildMedia:
                 TransparentBlurView(removeAllFilters: false)
-                .edgesIgnoringSafeArea(.all)
+                    .edgesIgnoringSafeArea(.all)
             }
         }
         .clipShape(RoundedCorner(radius: cornerRadius))
@@ -120,6 +121,6 @@ struct LoadingView: View {
                 CloseButton { action() }
             }
         }
-        .visible(inProgress, animation: .interactiveSpring())
+        .visible(inProgress, animation: .easeOut(duration: 0.4))
     }
 }

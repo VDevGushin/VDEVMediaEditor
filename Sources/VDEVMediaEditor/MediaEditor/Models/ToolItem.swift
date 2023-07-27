@@ -38,11 +38,11 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         let settings = DI.resolve(VDEVMediaEditorSettings.self)
         
         var toolsItems: [ToolItem] = []
+        toolsItems.append(.photoPicker)
+        toolsItems.append(.videoPicker)
         if settings.canGenerateImageByPrompt {
             toolsItems.append(.promptImageGenerator)
         }
-        toolsItems.append(.photoPicker)
-        toolsItems.append(.videoPicker)
         toolsItems.append(.camera)
         if settings.canAddMusic {
             toolsItems.append(.musicPiker)

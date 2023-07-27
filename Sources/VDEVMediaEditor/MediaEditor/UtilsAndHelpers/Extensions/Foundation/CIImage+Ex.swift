@@ -130,10 +130,13 @@ extension CIImage {
 
 // Пытаемся создать маску из URL картинки маски
 extension CIImage {
-    func createMask(maskCG: CGImage?, for size: CGSize, context: CIContext? = nil) -> CIImage {
+    func createMask(
+        maskCG: CGImage?,
+        for size: CGSize,
+        context: CIContext = CIContext(options: [.useSoftwareRenderer: false])
+    ) -> CIImage {
         guard let maskCG = maskCG else { return self }
-        
-        let context: CIContext = context ?? .init()
+        let context: CIContext = context
         let imageCI = self
         let maskCI = CIImage(cgImage: maskCG)
         let background = CIImage.empty()

@@ -205,6 +205,8 @@ private struct ItemEditVariantsView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
     
+    @State private var isOpen = false
+    
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
     private let backButtonSize: CGFloat = 35
@@ -251,17 +253,25 @@ private struct ItemEditVariantsView: View {
                         ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) {
                             onColorFilter(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) {
                             onTextureFilter(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemRM, title: strings.remove) {
                             onDelete(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                     case .video:
                         
                         if settings.canTurnOnSoundInVideos {
@@ -273,11 +283,15 @@ private struct ItemEditVariantsView: View {
                                             title: strings.sound) {
                                         onVolume(videoTemplate, 1.0)
                                     }
+                                            .opacity(isOpen ? 1.0 : 0.0)
+                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 } else {
                                     ToolRow(image: images.currentItem.currentItemSoundOFF,
                                             title: strings.sound) {
                                         onVolume(videoTemplate, 0.0)
                                     }
+                                            .opacity(isOpen ? 1.0 : 0.0)
+                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 }
                             }
                         }
@@ -285,21 +299,35 @@ private struct ItemEditVariantsView: View {
                         ToolRow(image: images.currentItem.currentItemTexture, title: strings.texture) {
                             onTextureFilter(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemFilter, title: strings.filter) {
                             onColorFilter(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemAdjustments, title: strings.adjustments) { onAdjustments(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         ToolRow(image: images.currentItem.currentItemRM, title: strings.remove) {
                             onDelete(item)
                         }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                     default: EmptyView()
                     }
                 }
                 .padding(.horizontal, horizontalPadding)
+            }
+        }
+        .padding(.bottom, 6)
+        .viewDidLoad {
+            withAnimation(.myInteractiveSpring) {
+                isOpen = true
             }
         }
     }

@@ -13,56 +13,55 @@ import AVFoundation
 
 extension View {
     func editorPreview(with contentPreview: Binding<EditorPreview.Content?>,
+                       cornerRadius: CGFloat,
                        onPublish: @escaping (CombinerOutput) -> Void,
                        onClose: @escaping () -> Void) -> some View {
-        
-        modifier(EditorPreviewModifier(model: contentPreview,
-                                       onPublish: onPublish,
-                                       onClose: onClose))
+        modifier(EditorPreviewModifier(
+            model: contentPreview,
+            cornerRadius: cornerRadius,
+            onPublish: onPublish,
+            onClose: onClose
+        ))
     }
 }
 
 struct EditorPreviewModifier: ViewModifier {
     @Injected private var images: VDEVImageConfig
     @Binding private var model: EditorPreview.Content?
+    private let cornerRadius: CGFloat
     @State private var showResult = false
     private let onPublish: (CombinerOutput) -> Void
     private let onClose: () -> Void
-    @Namespace var animation
     
     init(model: Binding<EditorPreview.Content?>,
+         cornerRadius: CGFloat,
          onPublish: @escaping (CombinerOutput) -> Void,
          onClose: @escaping () -> Void) {
         self._model = model
+        self.cornerRadius = cornerRadius
         self.onClose = onClose
         self.onPublish = onPublish
     }
     
     func body(content: Content) -> some View {
         ZStack {
-            if !showResult {
-                AppColors.black
-                    .matchedGeometryEffect(
-                        id: "EditorArea",
-                        in: animation,
-                        anchor: .center,
-                        isSource: true
-                    )
-            }
-            
             content
-
-            if showResult {
-                model.map {
-                    EditorPreview(model: $0,
-                                  animation: animation,
-                                  onPublish: onPublish,
-                                  onClose: onClose)
-                }
+                .scaleEffect(showResult ? 1.5 : 1.0, anchor: .center)
+                .blur(radius: showResult ? 3 : 0)
+                .clipShape(RoundedCorner(radius: cornerRadius))
+            
+            model.map {
+                EditorPreview(model: $0,
+                              onPublish: onPublish,
+                              onClose: onClose)
+                .opacity(showResult ? 1.0 : 0.0)
+                .scaleEffect(showResult ? 1.0 : 0.5, anchor: .center)
+                .blur(radius: showResult ? 0 : 15)
+                .clipShape(RoundedCorner(radius: cornerRadius))
             }
         }
         .onChange(of: model) { value in
-            withAnimation(.interactiveSpring()) {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 showResult = value != nil
             }
         }
@@ -73,36 +72,36 @@ struct EditorPreviewModifier: ViewModifier {
 struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vm: CanvasEditorViewModel
-    
     @Injected private var images: VDEVImageConfig
     @Injected private var settings: VDEVMediaEditorSettings
-   
-    @State var model: Content
-    var animation: Namespace.ID
-    @State var challengeTitle: String = ""
-    @State var needShare: Bool = false
     
-    //let animation: Namespace.ID
+    @State var model: Content
+    @State private var challengeTitle: String = ""
+    @State private var needShare: Bool = false
+    @State private var showAnimation: Bool = false
     
     var onPublish: (CombinerOutput) -> Void
     var onClose: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text(challengeTitle)
-                    .font(AppFonts.elmaTrioRegular(12))
-                    .foregroundColor(AppColors.white)
-                
-                Spacer()
-                
-                CloseButton {
-                    haptics(.light)
-                    needShare = false
-                    onClose()
+            if showAnimation {
+                HStack {
+                    Text(challengeTitle)
+                        .font(AppFonts.elmaTrioRegular(12))
+                        .foregroundColor(AppColors.white)
+                    
+                    Spacer()
+                    
+                    CloseButton {
+                        haptics(.light)
+                        needShare = false
+                        onClose()
+                    }
                 }
+                .padding()
+                .transition(.topTransition)
             }
-            .padding()
             
             Spacer()
             
@@ -112,10 +111,6 @@ struct EditorPreview: View {
                     .aspectRatio(model.aspect, contentMode: .fit)
                     .padding(.horizontal, 15)
                     .withParallaxCardEffect()
-                    .matchedGeometryEffect(
-                        id: "EditorArea",
-                        in: animation
-                    )
             case .image:
                 AsyncImageView(url: model.url) { img in
                     IsometricImage(image: img)
@@ -125,36 +120,46 @@ struct EditorPreview: View {
                 .aspectRatio(model.aspect, contentMode: .fit)
                 .padding(.horizontal, 15)
                 .withParallaxCardEffect()
-                .matchedGeometryEffect(
-                    id: "EditorArea",
-                    in: animation
-                )
             }
             
             Spacer()
             
-            HStack {
-                ShareButton {
-                    haptics(.light)
-                    needShare = true
-                }
-                
-                Spacer()
-                
-                if settings.isInternalModule {
-                    PublishButton {
+            if showAnimation {
+                HStack {
+                    ShareButton {
                         haptics(.light)
-                        needShare = false
-                        onPublish(model.model)
+                        needShare = true
+                    }
+                    
+                    Spacer()
+                    
+                    if settings.isInternalModule {
+                        PublishButton {
+                            haptics(.light)
+                            needShare = false
+                            onPublish(model.model)
+                        }
                     }
                 }
+                .padding(.horizontal, 15)
+                .padding(.bottom, 12)
+                .transition(.bottomTransition)
             }
-            .padding(.horizontal, 15)
-            .padding(.bottom, 12)
         }
         .background {
-            TransparentBlurView(removeAllFilters: false)
-            .edgesIgnoringSafeArea(.all)
+            if showAnimation {
+                TransparentBlurView(removeAllFilters: false)
+                    .edgesIgnoringSafeArea(.all)
+                    .transition(.opacity)
+            }
+        }
+        .onAppear {
+            challengeTitle = settings.title
+        }
+        .viewDidLoad {
+            withAnimation(.easeInOut) {
+                showAnimation = true
+            }
         }
         .sheet(isPresented: $needShare, onDismiss: {
             needShare = false
@@ -167,28 +172,23 @@ struct EditorPreview: View {
                 needShare = false
             }
         })
-        .onAppear {
-            challengeTitle = settings.title
-        }
     }
 }
 
 // MARK: - Model
 extension EditorPreview {
     struct Content: Identifiable, Equatable {
-        enum ResultType {
-            case video
-            case image
-        }
-        
+        enum ResultType { case video, image }
         let type: ResultType
         let model: CombinerOutput
         let aspect: CGFloat
+        var id: String { model.url.absoluteString }
+        var url: URL { model.url }
+        var cover: URL { model.cover }
         
         init(model: CombinerOutput) {
             self.model = model
             self.aspect = model.aspect
-            
             if model.url.absoluteString.lowercased().hasSuffix("mov") ||
                 model.url.absoluteString.lowercased().hasSuffix("mp4"){
                 self.type = .video
@@ -196,10 +196,6 @@ extension EditorPreview {
                 self.type = .image
             }
         }
-        
-        var id: String { model.url.absoluteString }
-        var url: URL { model.url }
-        var cover: URL { model.cover }
         
         public static func == (lhs: Content, rhs: Content) -> Bool {
             lhs.id == rhs.id

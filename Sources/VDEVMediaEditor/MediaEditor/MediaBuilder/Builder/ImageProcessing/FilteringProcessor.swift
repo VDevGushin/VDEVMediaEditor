@@ -52,14 +52,13 @@ final class FilteringProcessor {
                 }
                 request.finish(with: imageOutput, context: nil)
             })
-        //https://developer.apple.com/av-foundation/Incorporating-HDR-video-with-Dolby-Vision-into-your-apps.pdf
-        if #available(iOS 14.0, *) {
-            if !asset.tracks(withMediaCharacteristic: .containsHDRVideo).isEmpty {
-                composition.colorPrimaries = AVVideoColorPrimaries_ITU_R_709_2
-                composition.colorTransferFunction = AVVideoTransferFunction_ITU_R_709_2
-                composition.colorYCbCrMatrix = AVVideoYCbCrMatrix_ITU_R_709_2
-            }
+       
+        if !asset.tracks(withMediaCharacteristic: .containsHDRVideo).isEmpty {
+            composition.colorPrimaries = AVVideoColorPrimaries_ITU_R_709_2
+            composition.colorTransferFunction = AVVideoTransferFunction_ITU_R_709_2
+            composition.colorYCbCrMatrix = AVVideoYCbCrMatrix_ITU_R_709_2
         }
+        
         if let resize = resize { composition.renderSize = resize.0 }
         return composition
     }
@@ -165,15 +164,15 @@ extension FilteringProcessor {
                 request.finish(with: imageOutput, context: self.renderContext)
             })
         
-        if #available(iOS 14.0, *) {
-            if !asset.tracks(withMediaCharacteristic: .containsHDRVideo).isEmpty {
-                composition.colorPrimaries = AVVideoColorPrimaries_ITU_R_709_2
-                composition.colorTransferFunction = AVVideoTransferFunction_ITU_R_709_2
-                composition.colorYCbCrMatrix = AVVideoYCbCrMatrix_ITU_R_709_2
-            }
+        
+        if !asset.tracks(withMediaCharacteristic: .containsHDRVideo).isEmpty {
+            composition.colorPrimaries = AVVideoColorPrimaries_ITU_R_709_2
+            composition.colorTransferFunction = AVVideoTransferFunction_ITU_R_709_2
+            composition.colorYCbCrMatrix = AVVideoYCbCrMatrix_ITU_R_709_2
         }
         
         composition.renderSize = containerSize
+        
         return try await processAndExportComposition(
             composition,
             ofAsset: asset,
@@ -184,13 +183,15 @@ extension FilteringProcessor {
 
 // MARK: - Save
 fileprivate extension FilteringProcessor {
-    func processAndExportComposition(_ composition: AVVideoComposition,
-                                     ofAsset asset: AVAsset,
-                                     exportQuality: ExportQuality
+    func processAndExportComposition(
+        _ composition: AVVideoComposition,
+        ofAsset asset: AVAsset,
+        exportQuality: ExportQuality
     ) async throws -> URL {
-        
-        guard let export = AVAssetExportSession(asset: asset,
-                                                presetName: exportQuality.presetId) else {
+        guard let export = AVAssetExportSession(
+            asset: asset,
+            presetName: exportQuality.presetId
+        ) else {
             throw ProcessorError.couldNotMakeExportSession
         }
         
@@ -225,7 +226,6 @@ extension FilteringProcessor {
     enum ProcessorError: Error {
         case imageReturnedNull
         case processImageReturnedNil
-        
         case couldNotMakeExportSession
         case couldNotMakeOutputURL
     }
