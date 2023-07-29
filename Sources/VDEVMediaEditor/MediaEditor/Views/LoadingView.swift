@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import NVActivityIndicatorView
 
 struct LoadingModel {
     let value: Bool
@@ -89,7 +90,11 @@ struct LoadingView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            ActivityIndicator(isAnimating: inProgress, style: style, color: color)
+            Activity(isAnimating: inProgress,
+                     size: .init(width: 30, height: 30),
+                     color: color)
+            .frame(width: 30, height: 30)
+            
             
             if showMessage {
                 if !message.isEmpty || message != "" {
@@ -122,5 +127,26 @@ struct LoadingView: View {
             }
         }
         .visible(inProgress, animation: .easeOut(duration: 0.4))
+    }
+}
+
+private struct Activity: UIViewRepresentable {
+    let isAnimating: Bool
+    let size: CGSize
+    var color: UIColor = AppColors.gray.uiColor
+    
+    func makeUIView(context: Context) -> NVActivityIndicatorView {
+        let view = NVActivityIndicatorView(
+            frame: .init(origin: .zero, size: size),
+            type: .ballScaleRippleMultiple,
+            color: color,
+            padding: nil)
+        view.sizeToFit()
+        return view
+    }
+    
+    func updateUIView(_ uiView: NVActivityIndicatorView, context: Context) {
+        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
+        uiView.color = color
     }
 }

@@ -33,6 +33,8 @@ let package = Package(
         
         .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git",
                  from: "0.1.0"),
+        
+        .package(url: "https://github.com/ninjaprox/NVActivityIndicatorView.git",  from: "5.1.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -42,6 +44,7 @@ let package = Package(
             dependencies: ["Kingfisher",
                            "Mantis",
                            // "YPImagePicker",
+                           "NVActivityIndicatorView",
                            "SwiftUIX",
                            "CollectionConcurrencyKit",
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
