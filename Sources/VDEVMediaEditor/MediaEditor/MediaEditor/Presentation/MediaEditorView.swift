@@ -52,7 +52,7 @@ struct MediaEditorView: View {
         } onClose: {
             vm.contentPreview = nil
         }
-        .showInnerPhone($vm.showRemoveAllAlert)
+        //.showInnerPhone($vm.showRemoveAllAlert)
         .showRemoveAlert(isPresented: $vm.showRemoveAllAlert) {
             vm.onRemoveAllLayers()
         } onCancel: {

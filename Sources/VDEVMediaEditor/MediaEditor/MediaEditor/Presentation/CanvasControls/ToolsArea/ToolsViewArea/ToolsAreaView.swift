@@ -33,20 +33,19 @@ struct ToolsAreaView: View {
     
     var body: some View {
         // let _ = Self._printChanges()
+        
         ZStack {
             toolsOverlay()
             
             switch (vm.tools.layersAndAddNewItemIsVisible, vm.tools.showAddItemSelector) {
             case (true, true):
                 toolsAddNewLayer()
-                    .environmentObject(vm)
                     .bottomTool()
                     .transition(.trailingTransition)
             case (true, false):
                 if settings.isInternalModule {
                     ZStack {
                         toolsLayersManager()
-                            .environmentObject(vm)
                             .bottomTool()
                         
                         BackButton { vm.onCloseEditor() }
@@ -57,7 +56,6 @@ struct ToolsAreaView: View {
                     .transition(.leadingTransition)
                 } else {
                     toolsLayersManager()
-                        .environmentObject(vm)
                         .bottomTool()
                         .transition(.leadingTransition)
                 }
@@ -274,36 +272,6 @@ struct ToolsAreaView: View {
     }
     
     @ViewBuilder
-       func toolsLayersManager() -> some View {
-           HStack(alignment: .bottom) {
-               LayersView()
-                   .padding(.leading, 10)
-               
-               if !vm.data.isLimit {
-                   ImageButton(image: images.common.add,
-                               title: strings.addMedia,
-                               fontSize: 9,
-                               size: .init(width: 44, height: 44),
-                               tintColor: AppColors.white,
-                               resizeImage: true) {
-                       vm.tools.openLayersList(false)
-                       vm.tools.showAddItemSelector(true)
-                       Log.d("Add new layer")
-                   }.padding(.trailing, 15)
-               }
-               
-               Spacer()
-               
-               ContinueButton {
-                   haptics(.light)
-                   vm.onBuildMedia()
-               }
-               .hidden(vm.data.layers.isEmpty)
-               .padding()
-           }
-       }
-    
-    @ViewBuilder
     func toolsAddNewLayer() -> some View {
         ToolSelectorHorizontalView(tools: vm.tools.toolsItems) {
             vm.tools.closeTools(false)
@@ -324,6 +292,36 @@ struct ToolsAreaView: View {
                 vm.tools.closeTools(false)
                 vm.tools.seletedTool(.text(newItem))
             }
+        }
+    }
+    
+    @ViewBuilder
+    func toolsLayersManager() -> some View {
+        HStack(alignment: .bottom) {
+            LayersView()
+                .padding(.leading, 10)
+            
+            if !vm.data.isLimit {
+                ImageButton(image: images.common.add,
+                            title: strings.addMedia,
+                            fontSize: 9,
+                            size: .init(width: 44, height: 44),
+                            tintColor: AppColors.white,
+                            resizeImage: true) {
+                    vm.tools.openLayersList(false)
+                    vm.tools.showAddItemSelector(true)
+                    Log.d("Add new layer")
+                }.padding(.trailing, 15)
+            }
+            
+            Spacer()
+            
+            ContinueButton {
+                haptics(.light)
+                vm.onBuildMedia()
+            }
+            .hidden(vm.data.layers.isEmpty)
+            .padding()
         }
     }
     
