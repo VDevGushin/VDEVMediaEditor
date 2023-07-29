@@ -45,7 +45,7 @@ struct ToolsAreaView: View {
             case (true, false):
                 if settings.isInternalModule {
                     ZStack {
-                        ToolsLayersManagerView()
+                        toolsLayersManager()
                             .environmentObject(vm)
                             .bottomTool()
                         
@@ -56,7 +56,7 @@ struct ToolsAreaView: View {
                     }
                     .transition(.leadingTransition)
                 } else {
-                    ToolsLayersManagerView()
+                    toolsLayersManager()
                         .environmentObject(vm)
                         .bottomTool()
                         .transition(.leadingTransition)
@@ -272,6 +272,36 @@ struct ToolsAreaView: View {
             }
         }
     }
+    
+    @ViewBuilder
+       func toolsLayersManager() -> some View {
+           HStack(alignment: .bottom) {
+               LayersView()
+                   .padding(.leading, 10)
+               
+               if !vm.data.isLimit {
+                   ImageButton(image: images.common.add,
+                               title: strings.addMedia,
+                               fontSize: 9,
+                               size: .init(width: 44, height: 44),
+                               tintColor: AppColors.white,
+                               resizeImage: true) {
+                       vm.tools.openLayersList(false)
+                       vm.tools.showAddItemSelector(true)
+                       Log.d("Add new layer")
+                   }.padding(.trailing, 15)
+               }
+               
+               Spacer()
+               
+               ContinueButton {
+                   haptics(.light)
+                   vm.onBuildMedia()
+               }
+               .hidden(vm.data.layers.isEmpty)
+               .padding()
+           }
+       }
     
     @ViewBuilder
     func toolsAddNewLayer() -> some View {
@@ -530,53 +560,5 @@ extension ToolsAreaView {
     func delete(item: CanvasItemModel) {
         vm.tools.closeTools()
         vm.data.delete(item)
-    }
-}
-
-private struct ToolsLayersManagerView: View {
-    @EnvironmentObject private var vm: CanvasEditorViewModel
-    @Injected private var images: VDEVImageConfig
-    @Injected private var strings: VDEVMediaEditorStrings
-    @State private var isOpen = false
-    
-    var body: some View {
-        HStack(alignment: .bottom) {
-            Group {
-                LayersView()
-                    .padding(.leading, 10)
-                
-                if !vm.data.isLimit {
-                    ImageButton(image: images.common.add,
-                                title: strings.addMedia,
-                                fontSize: 9,
-                                size: .init(width: 44, height: 44),
-                                tintColor: AppColors.white,
-                                resizeImage: true) {
-                        vm.tools.openLayersList(false)
-                        vm.tools.showAddItemSelector(true)
-                        Log.d("Add new layer")
-                    }.padding(.trailing, 15)
-                }
-            }
-            .opacity(isOpen ? 1.0 : 0.0)
-            .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .center)
-                
-            Spacer()
-            
-            ContinueButton {
-                haptics(.light)
-                vm.onBuildMedia()
-            }
-            .hidden(vm.data.layers.isEmpty)
-            .padding()
-            .opacity(isOpen ? 1.0 : 0.0)
-            .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .leading)
-        }
-        .padding(.bottom, 6)
-        .viewDidLoad {
-            withAnimation(.myInteractiveSpring) {
-                isOpen = true
-            }
-        }
     }
 }
