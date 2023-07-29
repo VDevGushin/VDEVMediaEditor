@@ -140,6 +140,7 @@ fileprivate extension PlaceholderTemplateViewModel {
         item.update(imageModel: iModel)
         observe(nested: iModel).store(in: &storage)
         isEmpty = false
+        makeHaptics()
     }
 
     @MainActor
@@ -150,6 +151,7 @@ fileprivate extension PlaceholderTemplateViewModel {
         item.update(videoModel: vModel)
         observe(nested: vModel).store(in: &storage)
         isEmpty = false
+        makeHaptics()
     }
 }
 
