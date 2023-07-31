@@ -21,6 +21,8 @@ final class TemplateBuilderSimpleMarginPack: TemplateBuilder {
         let variant7 = variantType7(canvasSize)
         let variant8 = variantType8(canvasSize)
         let variant9 = variantType9(canvasSize)
+        let variant10 = variantTypeVertical10(canvasSize)
+        let variant11 = variantTypeVertical11(canvasSize)
         
         let variants: [TemplatePack.Variant] = [variant1,
                                                 variant2,
@@ -30,7 +32,9 @@ final class TemplateBuilderSimpleMarginPack: TemplateBuilder {
                                                 variant6,
                                                 variant7,
                                                 variant8,
-                                                variant9]
+                                                variant9,
+                                                variant10,
+                                                variant11]
         
         let result = TemplatePack(id: "57d5acf1-d1f0-4bef-897f-e3dd5b4dcea1",
                                   name: "Simple frame",
@@ -532,4 +536,55 @@ fileprivate extension TemplateBuilderSimpleMarginPack {
                                     cover: URL.getLocal(fileName: "simpleMarginVariant9", ofType: "jpg"))
     }
 
+    // Для Милы (какой то там видео эффект
+    private func variantTypeVertical10(_ canvasSize: CGSize) -> TemplatePack.Variant {
+        let m: CGFloat = canvasSize.width * (1 / 8)
+        let width = canvasSize.width - (m * 2)
+        let height = canvasSize.height
+        
+        let items = [
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: m,
+                                                  y: 0,
+                                                  width: width,
+                                                  height: height),
+                                      fontPreset: nil)
+        ]
+        
+        return TemplatePack.Variant(items: items,
+                                    id: "0616f0e9-a9d0-45e5-8965-ec92040e0cb4",
+                                    cover: URL.getLocal(fileName: "simpleMarginVariant10", ofType: "jpg"))
+    }
+    
+    // Для Милы (какой то там видео эффект
+    private func variantTypeVertical11(_ canvasSize: CGSize) -> TemplatePack.Variant {
+        let m: CGFloat = canvasSize.height * (1 / 12)
+        let width = canvasSize.width
+        let height = canvasSize.height - (m * 2)
+        
+        let items = [
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: 0,
+                                                  y: m,
+                                                  width: width,
+                                                  height: height),
+                                      fontPreset: nil)
+        ]
+        
+        return TemplatePack.Variant(items: items,
+                                    id: "0616f0e9-a9d0-45e5-8965-ec92040e0cb4",
+                                    cover: URL.getLocal(fileName: "simpleMarginVariant11", ofType: "jpg"))
+    }
 }
