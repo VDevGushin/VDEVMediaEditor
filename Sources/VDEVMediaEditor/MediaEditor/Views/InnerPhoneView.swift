@@ -23,7 +23,7 @@ struct InnerPhoneViewModifier: ViewModifier {
                     .resizable()
                     .scaledToFill()
             } placeholder: {
-                LoadingView(inProgress: true, style: .medium)
+                LoadingView(inProgress: true)
             }
             .edgesIgnoringSafeArea(.all)
             .opacity(value ? 1.0 : 0.0)

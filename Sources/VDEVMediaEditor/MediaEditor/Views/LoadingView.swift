@@ -43,7 +43,6 @@ enum LoadingType {
 
 struct LoadingView: View {
     private var inProgress: Bool
-    private let style: UIActivityIndicatorView.Style
     private let color: UIColor
     private let blurStyle: UIBlurEffect.Style
     private let message: String
@@ -53,14 +52,12 @@ struct LoadingView: View {
     private let loadingType: LoadingType
     
     init(inProgress: LoadingModel,
-         style: UIActivityIndicatorView.Style,
          color: UIColor = AppColors.gray.uiColor,
          blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
          cornerRadius: CGFloat = 15,
          showMessage: Bool = true,
          onClose: (() -> Void)? = nil) {
         self.inProgress = inProgress.value
-        self.style = style
         self.color = color
         self.blurStyle = blurStyle
         self.message = inProgress.message
@@ -71,14 +68,12 @@ struct LoadingView: View {
     }
     
     init(inProgress: Bool,
-         style: UIActivityIndicatorView.Style,
          color: UIColor = AppColors.whiteWithOpacity.uiColor,
          blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
          cornerRadius: CGFloat = 15,
          showMessage: Bool = true,
          onClose: (() -> Void)? = nil) {
         self.inProgress = inProgress
-        self.style = style
         self.color = color
         self.blurStyle = blurStyle
         self.message = ""
@@ -89,11 +84,12 @@ struct LoadingView: View {
     }
     
     var body: some View {
+        
         VStack(alignment: .center) {
             Activity(isAnimating: inProgress,
-                     size: .init(width: 30, height: 30),
+                     size: .init(width: 40, height: 40),
                      color: color)
-            .frame(width: 30, height: 30)
+            .frame(width: 40, height: 40)
             
             
             if showMessage {
@@ -102,7 +98,6 @@ struct LoadingView: View {
                         .font(AppFonts.gramatika(size: 12))
                         .foregroundColor(Color(color))
                         .multilineTextAlignment(.center)
-                        .font(.caption)
                         .padding()
                         .transition(.opacity)
                 }
@@ -131,14 +126,27 @@ struct LoadingView: View {
 }
 
 private struct Activity: UIViewRepresentable {
-    let isAnimating: Bool
-    let size: CGSize
-    var color: UIColor = AppColors.gray.uiColor
+    private let isAnimating: Bool
+    private let size: CGSize
+    private let type: NVActivityIndicatorType
+    private var color: UIColor = AppColors.gray.uiColor
+    
+    init(
+        isAnimating: Bool,
+        size: CGSize,
+        type: NVActivityIndicatorType = .ballScaleRippleMultiple,
+        color: UIColor
+    ) {
+        self.isAnimating = isAnimating
+        self.size = size
+        self.type = type
+        self.color = color
+    }
     
     func makeUIView(context: Context) -> NVActivityIndicatorView {
         let view = NVActivityIndicatorView(
             frame: .init(origin: .zero, size: size),
-            type: .ballScaleRippleMultiple,
+            type: type,
             color: color,
             padding: nil)
         view.sizeToFit()

@@ -103,7 +103,6 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
                 .aspectRatio(item.image.aspectRatio, contentMode: .fit)
             
             LoadingView(inProgress: item.inProgress,
-                        style: .large,
                         color: .init(guideLinesColor))
         }
         .frame(width: width)

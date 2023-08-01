@@ -115,7 +115,7 @@ struct EditorPreview: View {
                 AsyncImageView(url: model.url) { img in
                     IsometricImage(image: img)
                 } placeholder: {
-                    LoadingView(inProgress: true, style: .medium)
+                    LoadingView(inProgress: true)
                 }
                 .aspectRatio(model.aspect, contentMode: .fit)
                 .padding(.horizontal, 15)

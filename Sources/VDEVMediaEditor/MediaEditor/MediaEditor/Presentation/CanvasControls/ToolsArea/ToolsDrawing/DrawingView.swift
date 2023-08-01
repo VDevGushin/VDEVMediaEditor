@@ -128,7 +128,7 @@ struct DrawingView: View {
             .topTool()
         }
         .overlay(alignment: .center) {
-            LoadingView(inProgress: vm.isLoading, style: .large)
+            LoadingView(inProgress: vm.isLoading)
         }
     }
 }

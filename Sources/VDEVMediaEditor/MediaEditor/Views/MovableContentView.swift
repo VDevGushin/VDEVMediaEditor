@@ -13,7 +13,7 @@ struct MovableContentView<Content: View>: View {
     private let size: CGSize
     private unowned let item: CanvasItemModel
 
-    @State private var position: CGSize = .zero
+    @State private var position: CGSize = .init(width: 0, height: 0)
     @State private var scale: CGFloat = 1
     @State private var startPosition: CGSize!
     @State private var startZoom: CGFloat!
@@ -52,16 +52,20 @@ struct MovableContentView<Content: View>: View {
                 .offset(position)
                 .fetchSize($contentSize)
                 .gesture(mainGesture.simultaneously(with: tapObserver))
-                .onChange(of: isManipulation) { isInManipulation = $0 }
-                .onChange(of: showSelection) { isShowSelection = $0 }
+                .onChange(of: isManipulation) {
+                    isInManipulation = $0
+                }
+                .onChange(of: showSelection) {
+                    isShowSelection = $0
+                }
+                .onChange(of: position) { value in
+                    item.update(offset: value, scale: scale, rotation: .zero)
+                }
+                .onChange(of: scale) { value in
+                    item.update(offset: position, scale: value, rotation: .zero)
+                }
         }
-        .frame(size)
-        .onChange(of: position) { value in
-            item.update(offset: value, scale: scale, rotation: .zero)
-        }
-        .onChange(of: scale) { value in
-            item.update(offset: position, scale: value, rotation: .zero)
-        }
+        .frame(width: size.width, height: size.height, alignment: .center)
     }
 }
 
@@ -77,13 +81,14 @@ fileprivate extension MovableContentView {
             .updating($showSelection, body: { _, out, _ in out = true })
             .onChanged { move in
                 if startPosition == nil { startPosition = position }
-                withAnimation(.interactiveSpring()) { updateDrag(move) }
+                updateDrag(move)
+                //withAnimation(.interactiveSpring()) {  }
             }
             .onEnded { move in
-                withAnimation(.interactiveSpring()) {
+               // withAnimation(.interactiveSpring()) {
                     updateDrag(move)
                     startPosition = nil
-                }
+               // }
             }
     }
 

@@ -23,6 +23,8 @@ final class TemplateBuilderSimpleMarginPack: TemplateBuilder {
         let variant9 = variantType9(canvasSize)
         let variant10 = variantTypeVertical10(canvasSize)
         let variant11 = variantTypeVertical11(canvasSize)
+        let variant12 = variantTypeVertical12(canvasSize)
+        let variant13 = variantTypeVertical13(canvasSize)
         
         let variants: [TemplatePack.Variant] = [variant1,
                                                 variant2,
@@ -34,7 +36,9 @@ final class TemplateBuilderSimpleMarginPack: TemplateBuilder {
                                                 variant8,
                                                 variant9,
                                                 variant10,
-                                                variant11]
+                                                variant11,
+                                                variant12,
+                                                variant13]
         
         let result = TemplatePack(id: "57d5acf1-d1f0-4bef-897f-e3dd5b4dcea1",
                                   name: "Simple frame",
@@ -586,5 +590,92 @@ fileprivate extension TemplateBuilderSimpleMarginPack {
         return TemplatePack.Variant(items: items,
                                     id: "0616f0e9-a9d0-45e5-8965-ec92040e0cb4",
                                     cover: URL.getLocal(fileName: "simpleMarginVariant11", ofType: "jpg"))
+    }
+    
+    private func variantTypeVertical12(_ canvasSize: CGSize) -> TemplatePack.Variant {
+        let m: CGFloat = canvasSize.width * (1 / 8)
+        let width = canvasSize.width - (m * 2)
+        let height = canvasSize.height - (m * 2)
+        
+        let items = [
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: 0,
+                                                  y: 0,
+                                                  width: canvasSize.width,
+                                                  height: canvasSize.height),
+                                      fontPreset: nil),
+            
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: m,
+                                                  y: m,
+                                                  width: width,
+                                                  height: height),
+                                      fontPreset: nil)
+        ]
+        
+        return TemplatePack.Variant(items: items,
+                                    id: "0616f0e9-a9d0-45e5-8965-ec92040e0cb4",
+                                    cover: URL.getLocal(fileName: "simpleMarginVariant12", ofType: "jpg"))
+    }
+    
+    private func variantTypeVertical13(_ canvasSize: CGSize) -> TemplatePack.Variant {
+        let m: CGFloat = canvasSize.width * (1 / 8)
+        
+        let items = [
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: 0,
+                                                  y: 0,
+                                                  width: canvasSize.width,
+                                                  height: canvasSize.height),
+                                      fontPreset: nil),
+            
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: m,
+                                                  y: m,
+                                                  width: canvasSize.width - (m * 2),
+                                                  height: canvasSize.height - (m * 2)),
+                                      fontPreset: nil),
+            
+            TemplatePack.Variant.Item(blendingMode: .sourceOver,
+                                      filters: [],
+                                      isLocked: false,
+                                      isMovable: false,
+                                      text: "",
+                                      placeholderText: "",
+                                      url: URL(string: "https://ucarecdn.com/af8c8ffd-6486-45ee-99e0-bebea1e7921e/"),
+                                      rect: .init(x: m * 2,
+                                                  y: m * 2,
+                                                  width: canvasSize.width - (m * 4),
+                                                  height: canvasSize.height - (m * 4)),
+                                      fontPreset: nil)
+        ]
+        
+        return TemplatePack.Variant(items: items,
+                                    id: "0616f0e9-a9d0-45e5-8965-ec92040e0cb4",
+                                    cover: URL.getLocal(fileName: "simpleMarginVariant13", ofType: "jpg"))
     }
 }

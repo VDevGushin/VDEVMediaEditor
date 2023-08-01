@@ -52,9 +52,10 @@ private extension PlaceholderTemplateView {
                                        size: size,
                                        isInManipulation: $isInManipulation,
                                        isShowSelection: $isShowSelection) {
+                        let size = imageModel.imageSize.aspectFill(minimumSize: size).rounded(.up)
                         Image(uiImage: imageModel.image)
                             .resizable()
-                            .frame(imageModel.imageSize.aspectFill(minimumSize: size))
+                            .frame(size)
                     } onTap: {
                         vm.hideAllOverlayViews()
                         // haptics(.light)
@@ -83,6 +84,7 @@ private extension PlaceholderTemplateView {
                                               color: .init(guideLinesColor))
                         }
                     }
+                    .frame(size)
                 }
 
                 if let videoModel = vm.videoModel {
@@ -96,11 +98,12 @@ private extension PlaceholderTemplateView {
                                        size: size,
                                        isInManipulation: $isInManipulation,
                                        isShowSelection: $isShowSelection) {
+                        let size = videoModel.size.aspectFill(minimumSize: size).rounded(.up)
                         VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
                                                    videoComposition: videoModel.avVideoComposition,
                                                    thumbnail: videoModel.thumbnail,
                                                    volume: binding)
-                        .frame(videoModel.size.aspectFill(minimumSize: size))
+                        .frame(size)
                     } onTap: {
                         haptics(.light)
                         vm.hideAllOverlayViews()
@@ -124,6 +127,7 @@ private extension PlaceholderTemplateView {
                                               color: .init(guideLinesColor))
                         }
                     }
+                    .frame(size)
                 }
             }
         .overlay {
@@ -154,7 +158,6 @@ private extension PlaceholderTemplateView {
                 } placeholder: {
                     LoadingView(
                         inProgress: true,
-                        style: .medium,
                         color: AppColors.white.uiColor,
                         cornerRadius: 0)
                 }

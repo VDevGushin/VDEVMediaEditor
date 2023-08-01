@@ -198,7 +198,8 @@ struct GridPickTool<ItemModel: GridToolItem, DataSource>: View where DataSource:
         Group {
             if dataSource.isLoading {
                 GeometryReader { proxy in
-                    LoadingView(inProgress: true, style: .medium, color: AppColors.white.uiColor)
+                    LoadingView(inProgress: true,
+                                color: AppColors.white.uiColor)
                         .frame(getLoadingSize(proxy))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .padding(.horizontal)

@@ -35,7 +35,7 @@ struct TemplateSelectorView: View {
             if !vm.isLoading { tools }
             
         }.overlay(alignment: .center) {
-            LoadingView(inProgress: vm.isLoading, style: .large)
+            LoadingView(inProgress: vm.isLoading)
         }
         .animation(.interactiveSpring(), value: vm.isLoading)
     }

@@ -20,7 +20,7 @@ struct TemplateSelector<DS>: View where DS: SectionedDataSource,
             if dataSource.isLoading {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        LoadingView(inProgress: true, style: .medium, color: AppColors.white.uiColor)
+                        LoadingView(inProgress: true, color: AppColors.white.uiColor)
                             .frame(width: 120, height: 210)
                             .clipShape(RoundedRectangle(cornerRadius: 18))
                             .padding(.horizontal)

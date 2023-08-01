@@ -34,7 +34,6 @@ struct MediaEditorView: View {
             
             LoadingView(
                 inProgress: vm.isLoading,
-                style: .medium,
                 color: vm.ui.guideLinesColor.uiColor
             ) {
                 vm.onCancelBuildMedia()

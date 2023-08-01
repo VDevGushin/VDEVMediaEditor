@@ -435,7 +435,7 @@ fileprivate extension ToolsAreaView {
             }
             .padding(.horizontal)
             .overlay(alignment: .center) {
-                LoadingView(inProgress: vm.tools.isPrepareOjectOperation, style: .large)
+                LoadingView(inProgress: vm.tools.isPrepareOjectOperation)
             }
         }
     }

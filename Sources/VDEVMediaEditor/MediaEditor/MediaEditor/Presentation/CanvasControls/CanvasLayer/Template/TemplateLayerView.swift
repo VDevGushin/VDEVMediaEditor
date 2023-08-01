@@ -25,7 +25,7 @@ struct TemplateLayerView: View {
             }
             .frame(vm.item.bounds.size)
             
-            LoadingView(inProgress: vm.isLoading, style: .large)
+            LoadingView(inProgress: vm.isLoading)
         }
         .overlay {
             if vm.canRemoveOrChangeTemplate {

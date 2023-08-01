@@ -100,7 +100,7 @@ struct ColorFilterTool: View {
                                     .resizable()
                                     .scaledToFill()
                             } placeholder: {
-                                LoadingView(inProgress: true, style: .medium)
+                                LoadingView(inProgress: true)
                             }
                         } else {
                             AppColors.black

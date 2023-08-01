@@ -74,7 +74,7 @@ private struct ImageCropperWrapper: View {
                 }
             }
             
-            LoadingView(inProgress: vm.isLoading, style: .large)
+            LoadingView(inProgress: vm.isLoading)
         }
         .onAppear { vm.getImage() }
     }

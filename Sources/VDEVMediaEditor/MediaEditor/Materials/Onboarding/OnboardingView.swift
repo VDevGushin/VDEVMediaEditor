@@ -34,7 +34,7 @@ struct OnboardingView: View {
                         .resizable()
                         .scaledToFill()
                 } placeholder: {
-                    LoadingView(inProgress: true, style: .medium)
+                    LoadingView(inProgress: true)
                 }
                 .edgesIgnoringSafeArea(.all)
                 .blur(radius: 5, opaque: false)
