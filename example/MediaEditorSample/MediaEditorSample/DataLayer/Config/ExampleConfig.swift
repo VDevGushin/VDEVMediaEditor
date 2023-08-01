@@ -245,7 +245,7 @@ struct Strings: VDEVMediaEditorStrings {
     let delete = "DELETE"
     let done = "DONE"
     let `continue` = "CONTINUE"
-    let processing = "PROCCESSING"
+    let processing = "PROCESSING"
     let loading = "LOADING"
     let applied = "APPLIED"
     let templates = "templates"
