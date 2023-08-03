@@ -204,6 +204,8 @@ struct Strings: VDEVMediaEditorStrings {
     let saturation = "SATURATION"
     let highlight = "HIGHLIGHT"
     let shadow = "SHADOW"
+    let alpha = "OPACITY"
+    let blurRadius = "BLUR"
     let `default` = "DEFAULT"
     let mask = "MASK"
     let filter = "FILTER"

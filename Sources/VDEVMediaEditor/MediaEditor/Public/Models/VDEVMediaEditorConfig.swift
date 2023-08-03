@@ -112,6 +112,8 @@ public protocol VDEVMediaEditorStrings {
     var saturation: String { get }
     var highlight: String { get }
     var shadow: String { get }
+    var blurRadius: String { get }
+    var alpha: String { get }
     var `default`: String { get }
     var mask: String { get }
     var filter: String { get }

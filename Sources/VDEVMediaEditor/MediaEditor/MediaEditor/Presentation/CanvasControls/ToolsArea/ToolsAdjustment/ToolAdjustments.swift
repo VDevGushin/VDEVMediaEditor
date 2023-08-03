@@ -21,6 +21,8 @@ struct ToolAdjustments: View {
     @State private var saturation: Double = 0
     @State private var highlight: Double = 0
     @State private var shadow: Double = 0
+    @State private var blurRadius: Double = 0
+    @State private var alpha: Double = 0
     
     @Binding private var state: ToolsEditState
     
@@ -43,7 +45,9 @@ struct ToolAdjustments: View {
             AdjustToolItem(title: strings.contrast, min: 0.8, max: 1.2, normal: currentContrastValue),
             AdjustToolItem(title: strings.saturation, min: 0, max: 2, normal: currentSaturationValue),
             AdjustToolItem(title: strings.highlight, min: 0, max: 1, normal: 0.5),
-            AdjustToolItem(title: strings.shadow, min: -1, max: 1, normal: 0)
+            AdjustToolItem(title: strings.shadow, min: -1, max: 1, normal: 0),
+            AdjustToolItem(title: strings.blurRadius, min: 0, max: 15, normal: 0),
+            AdjustToolItem(title: strings.alpha, min: 0, max: 1, normal: 1),
         ]
     }
     
@@ -65,6 +69,8 @@ struct ToolAdjustments: View {
                         case 2: return saturation
                         case 3: return highlight
                         case 4: return shadow
+                        case 5: return blurRadius
+                        case 6: return alpha
                         default: fatalError()
                         }
                     } set: { newValue in
@@ -74,6 +80,8 @@ struct ToolAdjustments: View {
                         case 2: saturation = newValue
                         case 3: highlight = newValue
                         case 4: shadow = newValue
+                        case 5: blurRadius = newValue
+                        case 6: alpha = newValue
                         default: ()
                         }
                         
@@ -82,7 +90,9 @@ struct ToolAdjustments: View {
                             contrast: contrast,
                             saturation: saturation,
                             highlight: highlight,
-                            shadow: shadow
+                            shadow: shadow,
+                            blurRadius: blurRadius,
+                            alpha: alpha
                         )
                         self.item.apply(adjustmentSettings: settings)
                         
@@ -131,6 +141,8 @@ struct ToolAdjustments: View {
             saturation = item.adjustmentSettings?.saturation ?? toolItems[2].normal
             highlight = item.adjustmentSettings?.highlight ?? toolItems[3].normal
             shadow = item.adjustmentSettings?.shadow ?? toolItems[4].normal
+            blurRadius = item.adjustmentSettings?.blurRadius ?? toolItems[5].normal
+            alpha = item.adjustmentSettings?.alpha ?? toolItems[6].normal
         }
     }
 }

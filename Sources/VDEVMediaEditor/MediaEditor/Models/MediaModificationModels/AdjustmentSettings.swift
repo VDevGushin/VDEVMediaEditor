@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreImage
 
 struct AdjustmentSettings: Identifiable {
     let id = UUID()
@@ -14,6 +15,8 @@ struct AdjustmentSettings: Identifiable {
     var saturation: Double
     var highlight: Double
     var shadow: Double
+    var blurRadius: Double
+    let alpha: Double
 
     func makeFilterDescriptors() -> [FilterDescriptor] {
         return [
@@ -32,7 +35,22 @@ struct AdjustmentSettings: Identifiable {
                     "inputHighlightAmount": .number(NSNumber(value: highlight)),
                     "inputShadowAmount": .number(NSNumber(value: shadow))
                 ]
+            ),
+            
+            FilterDescriptor(
+                name: "CIGaussianBlur",
+                params: [
+                    "inputRadius": .number(NSNumber(value: blurRadius))
+                ]
+            ),
+            
+            FilterDescriptor(
+                name: "CIColorMatrix",
+                params: [
+                    "inputAVector": .vector(CIVector(values: [0, 0, 0, alpha], count: 4))
+                ]
             )
+            
         ]
     }
 }
