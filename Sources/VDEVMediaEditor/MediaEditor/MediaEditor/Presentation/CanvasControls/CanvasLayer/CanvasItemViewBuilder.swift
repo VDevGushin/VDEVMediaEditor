@@ -63,26 +63,32 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         
     case .video:
         let item: CanvasVideoModel = CanvasItemModel.toType(model: item)
+        let size = item.bounds.size.aspectFill(minimumSize: canvasSize).rounded(.up)
+        
         ZStack {
             VideoPlayerViewForLayers(assetURL: item.videoURL,
                                      videoComposition: item.avVideoComposition,
                                      thumbnail: item.thumbnail,
                                      volume: item.volume)
-            .frame(width: canvasSize.width)
-            
-            if item.inProgress {
-                ActivityIndicator(isAnimating: true,
-                                  style: .large,
-                                  color: .init(guideLinesColor))
+            .frame(height: size.height)
+            .overlay(alignment: .center) {
+                if item.inProgress {
+                    ActivityIndicator(isAnimating: true,
+                                      style: .large,
+                                      color: .init(guideLinesColor))
+                }
             }
         }
         
     case .image:
         let item: CanvasImageModel = CanvasItemModel.toType(model: item)
+        let size = item.image.size.aspectFill(minimumSize: canvasSize).rounded(.up)
+        
         Image(uiImage: item.image)
             .resizable()
             .aspectRatio(item.image.aspectRatio, contentMode: .fill)
-            .overlay {
+            .frame(size)
+            .overlay(alignment: .center) {
                 if item.inProgress {
                     ActivityIndicator(
                         isAnimating: true,
@@ -91,21 +97,19 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
                     )
                 }
             }
-            .frame(item.image.size.aspectFill(minimumSize: canvasSize))
         
     case .sticker:
         let item: CanvasStickerModel = CanvasItemModel.toType(model: item)
         let width = canvasSize.width / 1.2
         
-        ZStack {
-            Image(uiImage: item.image)
-                .resizable()
-                .aspectRatio(item.image.aspectRatio, contentMode: .fit)
-            
-            LoadingView(inProgress: item.inProgress,
-                        color: .init(guideLinesColor))
-        }
-        .frame(width: width)
+        Image(uiImage: item.image)
+            .resizable()
+            .aspectRatio(item.image.aspectRatio, contentMode: .fit)
+            .frame(width: width)
+            .overlay(alignment: .center) {
+                LoadingView(inProgress: item.inProgress,
+                            color: .init(guideLinesColor))
+            }
         
     case .drawing:
         let item: CanvasDrawModel = CanvasItemModel.toType(model: item)
