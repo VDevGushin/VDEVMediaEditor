@@ -44,9 +44,7 @@ struct MovableContentView<Content: View>: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.clear
-            
+        ZStackWithClearColor {
             content()
                 .scaleEffect(scale)
                 .offset(position)

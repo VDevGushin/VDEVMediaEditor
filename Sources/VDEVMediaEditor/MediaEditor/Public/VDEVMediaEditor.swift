@@ -4,7 +4,6 @@ import SwiftUI
 import Combine
 import AVFoundation
 
-
 public final class VDEVMediaEditorViewModel: ObservableObject {
     private(set) var colorScheme: ColorScheme = .dark
     
@@ -18,7 +17,8 @@ public final class VDEVMediaEditorViewModel: ObservableObject {
                               images: config.images,
                               strings: config.strings,
                               resultSettings: config.resultSettings,
-                              logger: config.logger)
+                              logger: config.logger,
+                              networkModulesConfig: config.networkModulesConfig)
     }
     
     deinit {

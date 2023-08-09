@@ -9,22 +9,35 @@ import SwiftUI
 import AVKit
 import Combine
 
+extension PlaceholderTemplateViewModel {
+    enum ProgresType {
+        case simple
+        case neural(UIImage?)
+        
+        init(withNeural: Bool, image: UIImage? = nil) {
+            self = withNeural ? .neural(image) : .simple
+        }
+    }
+}
+
 final class PlaceholderTemplateViewModel: ObservableObject {
     unowned let item: CanvasPlaceholderModel
     weak var delegate: CanvasEditorDelegate?
-
-    @Published private(set) var inProgress: Bool = false
+    
+    @Published private(set) var inProgress: ProgresType? = nil
     @Published private(set) var imageModel: CanvasImagePlaceholderModel?
     @Published private(set) var videoModel: CanvasVideoPlaceholderModel?
     @Published private(set) var showSelection: Bool = false
     @Published private(set) var isEmpty: Bool = true
 
     private let aplayer: CanvasApplayer = .init()
-    
-    var size: CGSize { imageModel?.imageSize ?? videoModel?.size ?? .zero }
-    
     private var storage = Cancellables()
-
+    private var hasNeural: Bool { item.filters.hasNeural }
+    
+    var size: CGSize {
+        imageModel?.imageSize ?? videoModel?.size ?? .zero
+    }
+    
     init(item: CanvasPlaceholderModel, delegate: CanvasEditorDelegate?) {
         self.item = item
         self.delegate = delegate
@@ -72,7 +85,7 @@ extension PlaceholderTemplateViewModel {
     }
 
     func openMediaSelector() {
-        if inProgress { return }
+        if inProgress != nil { return }
         
         hideAllOverlayViews()
         delegate?.endWorkWithItem = { [weak self] in
@@ -85,11 +98,17 @@ extension PlaceholderTemplateViewModel {
             guard let model = model else { return }
             showSelection = false
             self.storage.removeAll()
-            self.inProgress = true
+            let hasNeural = self.hasNeural
+            self.inProgress = .init(withNeural: hasNeural)
             Task {
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
+                    
+                    await MainActor.run {
+                        self.inProgress = .init(withNeural: hasNeural, image: image)
+                    }
+                    
                     await self.reset()
                     let model = await CanvasImagePlaceholderModel
                         .applyFilter(applyer: self.aplayer,
@@ -115,7 +134,7 @@ extension PlaceholderTemplateViewModel {
             }
         }
         
-        delegate?.showMediaPicker()
+        delegate?.showMediaPicker(workWithNeural: hasNeural)
     }
 }
 
@@ -134,7 +153,7 @@ fileprivate extension PlaceholderTemplateViewModel {
 
     @MainActor
     func setImage(model: CanvasImagePlaceholderModel?) async {
-        inProgress = false
+        inProgress = nil
         imageModel = model
         guard let iModel = imageModel else { return }
         item.update(imageModel: iModel)
@@ -145,7 +164,7 @@ fileprivate extension PlaceholderTemplateViewModel {
 
     @MainActor
     func setVideo(model: CanvasVideoPlaceholderModel?) async {
-        inProgress = false
+        inProgress = nil
         videoModel = model
         guard let vModel = videoModel else { return }
         item.update(videoModel: vModel)

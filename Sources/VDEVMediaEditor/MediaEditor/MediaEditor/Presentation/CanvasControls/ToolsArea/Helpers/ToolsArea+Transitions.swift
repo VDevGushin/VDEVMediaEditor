@@ -38,8 +38,9 @@ extension AnyTransition {
         //.animation(.easeInOut(duration: moveSpeed))
     }
     
-    static func opacityTransition(withAnimation: Bool = true) -> AnyTransition {
-        return withAnimation ? .opacity.animation(.easeInOut(duration: opacitySpeed)) : .opacity
+    static func opacityTransition(withAnimation: Bool = true, speed: Double? = nil) -> AnyTransition {
+        return withAnimation ? .opacity
+            .animation(.easeInOut(duration: speed ?? opacitySpeed)) : .opacity
     }
     
     

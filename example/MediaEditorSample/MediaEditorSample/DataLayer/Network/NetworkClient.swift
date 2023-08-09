@@ -37,7 +37,7 @@ enum NetworkClientError: Error {
 final class NetworkClientImpl: NetworkClient {
     static private let APIDomain = "app.w1d1.com"
     static private let demoAPIDomain = "v2.w1d1.com"
-    static private var currentAPIDomain: String { APIDomain }
+    static private var currentAPIDomain: String { demoAPIDomain }
     
     private let apollo: ApolloClient
     

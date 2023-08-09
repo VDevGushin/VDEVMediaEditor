@@ -9,7 +9,9 @@ import Foundation
 
 // Обычные шаблоны
 final class TemplateBuilderSimplePack: TemplateBuilder {
-    @MainActor func buildTemplate(canvasSize: CGSize) -> TemplatePack {
+    
+    @MainActor
+    func buildTemplate(canvasSize: CGSize) -> TemplatePack {
         let variant1 = variantType1(canvasSize)
         let variant2 = variantType2(canvasSize)
         let variant3 = variantType3(canvasSize)

@@ -59,9 +59,9 @@ struct ToolWrapperWithBinding<Tool: View>: View {
             VStack(spacing: 20) {
                 HeadWithTitle(title: title,
                               returnPressed: returnPressed)
-                    .padding()
-                    .opacity(editState.getOpacity())
-
+                .padding(.horizontal)
+                .opacity(editState.getOpacity())
+                
                 tool($editState)
             }
             .padding(.vertical)

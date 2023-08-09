@@ -51,12 +51,21 @@ struct GetMediaActor {
 final class MediaPickerGetter {
     
     @GetMediaActor
-    func makeResult(info: [UIImagePickerController.InfoKey : Any]) async -> PickerMediaOutput? {
+    func makeResult(
+        info: [UIImagePickerController.InfoKey : Any],
+        needOriginal: Bool = false
+    ) async -> PickerMediaOutput? {
+        
         guard let mediaType = info[UIImagePickerController.InfoKey.mediaType] as? String else { return nil }
         
         switch mediaType {
         case String(UTType.image.identifier):
             guard let image = info[.originalImage] as? UIImage else { return nil }
+            
+            guard !needOriginal else {
+                return .init(with: image, asset: nil)
+            }
+            
             if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
                 let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
                 return .init(with: compressed, asset: .image(asset: asset, image: nil))
@@ -65,7 +74,6 @@ final class MediaPickerGetter {
             let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
             
             return .init(with: compressed, asset: .image(asset: nil, image: image))
-            
         case String(UTType.movie.identifier):
             guard let videoURL = info[.mediaURL] as? URL else { return nil }
             let thumbnail = await generateThumbnail(path: videoURL)

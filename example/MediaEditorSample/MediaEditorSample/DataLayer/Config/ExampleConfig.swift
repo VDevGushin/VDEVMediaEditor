@@ -22,9 +22,22 @@ extension VDEVMediaEditorConfig {
                   images: Images(),
                   strings: Strings(),
                   resultSettings: ResultSettings(),
-                  logger: Logger())
-        
+                  logger: Logger(),
+        networkModulesConfig: [Imge2ImageModuleConfig()])
     }
+}
+
+struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
+    //Продакшн: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/app/image-to-image`
+    //Test: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/test/image-to-image`
+    var type: VDEVMediaEditor.VDEVNetworkModuleConfigType = .image2image
+    var host: String = "app.w1d1.com"
+    var path: String = "/api/v2/fileProcessing/stable-diffusion/app/image-to-image"
+    var headers: [String : String]? = [
+        "id": "a3542326-e295-4ab0-acdb-596928f15015",
+        "x-w1d1-version": Bundle.main.shortVersion
+    ]
+    var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
 }
 
 final class Logger: VDEVLogger {
@@ -266,4 +279,6 @@ struct Strings: VDEVMediaEditorStrings {
     let addMusic = "MUSIC"
     var submit = "SUBMIT"
     var random = "RANDOM"
+    var doingSomeMagic = "DOING SOME\nMAGIC"
+    var sharpen = "SHARPEN"
 }

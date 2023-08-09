@@ -15,16 +15,13 @@ let package = Package(
             targets: ["VDEVMediaEditor"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/CombineCommunity/CombineExt.git",
-                 .upToNextMajor(from: "1.0.0")),
-        
         .package(url: "https://github.com/onevcat/Kingfisher.git",
-                 .upToNextMajor(from: "7.0.0")),
+                 .upToNextMajor(from: "7.9.0")),
         
         .package(url: "https://github.com/guoyingtao/Mantis.git",
                  from: "2.14.1"),
         
-        .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", .upToNextMajor(from: "0.8.0")),
+        .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", .upToNextMajor(from: "1.0.0")),
         
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", .upToNextMajor(from: "0.2.0")),
         
@@ -48,7 +45,6 @@ let package = Package(
                            "SwiftUIX",
                            "CollectionConcurrencyKit",
                            .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
-                           "CombineExt",
                            "BackgroundRemoval",
                           ],
             resources: [.process("Resources")]

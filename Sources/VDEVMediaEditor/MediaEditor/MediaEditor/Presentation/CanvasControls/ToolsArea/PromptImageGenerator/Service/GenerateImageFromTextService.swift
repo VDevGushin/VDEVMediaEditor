@@ -125,7 +125,6 @@ extension GenerateImageFromTextService {
         case notStarted
         case success(image: UIImage)
         case error(error: Error)
-        case inProgress(progress: Int,
-                        progressImageUrl: URL?)
+        case inProgress(progress: Int, progressImageUrl: URL?)
     }
 }

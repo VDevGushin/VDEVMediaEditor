@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ApiOperation: Any {
+public protocol ApiOperation: Any {
     associatedtype Response: Decodable
 
     var path: String { get }
@@ -24,27 +24,33 @@ protocol ApiOperation: Any {
     mutating func update(token: String?) -> Self
 }
 
-extension ApiOperation {
+public extension ApiOperation {
     mutating func update(token: String?) -> Self {
         self.token = token
         return self
     }
 
     var timeOut: TimeInterval { 20.0 }
-
     var headers: [String: String]? { nil }
     var scheme: String? { nil }
     var host: String? { nil }
+    var params: [String: String] { [:] }
 }
 
-protocol ApiOperationWithBody: ApiOperation {
+public protocol ApiOperationWithBody: ApiOperation {
     associatedtype Body: Encodable
-
     var encoder: JSONEncoder { get }
-    
     var body: Body { get }
 }
 
-extension ApiOperationWithBody {
+public protocol ApiOperationWithMultipartRequest: ApiOperation where Response == Data {
+    var multipartRequest: MultipartRequest { get }
+}
+
+public extension ApiOperationWithBody {
+    var method: HTTPMethod { .post }
+}
+
+public extension ApiOperationWithMultipartRequest {
     var method: HTTPMethod { .post }
 }

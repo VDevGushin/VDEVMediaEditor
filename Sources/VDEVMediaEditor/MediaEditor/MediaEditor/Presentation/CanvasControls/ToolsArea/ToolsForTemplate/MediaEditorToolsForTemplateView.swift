@@ -11,7 +11,6 @@ struct MediaEditorToolsForTemplateView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @ObservedObject private var vm: CanvasEditorToolsForTemplateViewModel
     @Binding private var mainBackgroundColor: Color
-    
     @State private var textForEdit: CanvasTextModel?
     
     init(vm: CanvasEditorToolsForTemplateViewModel, backColor: Binding<Color>) {
@@ -70,17 +69,28 @@ struct MediaEditorToolsForTemplateView: View {
                 textForEdit = nil
             }
         })
-        .fullScreenCover(isPresented: $vm.showPhotoPicker) {
-            PhotoPickerView(type: .image) { result in
-                vm.set(showPhotoPicker: false)
-                vm.hideMediaPicker()
-                if let result = result {
-                    vm.pickSelector?(result)
+        .fullScreenCover(item: $vm.showPhotoPicker) { value in
+            switch value {
+            case .compressed:
+                PhotoPickerView(type: .image, needOriginal: false) { result in
+                    vm.set(showPhotoPicker: nil)
+                    vm.hideMediaPicker()
+                    if let result = result {
+                        vm.pickSelector?(result)
+                    }
+                }
+            case .original:
+                PhotoPickerView(type: .image, needOriginal: true) { result in
+                    vm.set(showPhotoPicker: nil)
+                    vm.hideMediaPicker()
+                    if let result = result {
+                        vm.pickSelector?(result)
+                    }
                 }
             }
         }
         .fullScreenCover(isPresented: $vm.showVideoPicker) {
-            PhotoPickerView(type: .video) { result in
+            PhotoPickerView(type: .video, needOriginal: true) { result in
                 vm.set(showVideoPicker: false)
                 vm.hideMediaPicker()
                 if let result = result {
@@ -102,7 +112,7 @@ private struct PickMediaContainer: View {
             vm.hideAllOverlayViews()
             vm.pickSelector?(result)
         } pickPhoto: {
-            vm.set(showPhotoPicker: true)
+            vm.set(showPhotoPicker: .compressed)
         } pickVideo: {
             vm.set(showVideoPicker: true)
         }
@@ -116,8 +126,10 @@ private struct PickMediaContainer: View {
         let toolVideo = ToolItem.videoPicker
         let toolImage = ToolItem.photoPicker
        
-        ToolSelectorHorizontalView(tools: [toolImage, toolVideo],
-                                   canPasteOnlyImages: true, onClose: onClose) { item in
+        ToolSelectorHorizontalView(
+            tools: [toolImage, toolVideo],
+            canPasteOnlyImages: true, onClose: onClose
+        ) { item in
             switch item {
             case .photoPicker: pickPhoto()
             case .videoPicker: pickVideo()

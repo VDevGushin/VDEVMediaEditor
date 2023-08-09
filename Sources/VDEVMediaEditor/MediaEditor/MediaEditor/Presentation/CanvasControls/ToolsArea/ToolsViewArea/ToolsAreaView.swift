@@ -169,7 +169,7 @@ struct ToolsAreaView: View {
             .edgesIgnoringSafeArea(.all)
         }
         .fullScreenCover(isPresented: $showPhoroPicker, content: {
-            PhotoPickerView(type: .image) { model in
+            PhotoPickerView(type: .image, needOriginal: false) { model in
                 vm.tools.closeTools(false)
                 guard let model = model else { return }
                 switch model.mediaType {
@@ -182,7 +182,7 @@ struct ToolsAreaView: View {
             .edgesIgnoringSafeArea(.all)
         })
         .fullScreenCover(isPresented: $showVideoPicker, content: {
-            PhotoPickerView(type: .video) { model in
+            PhotoPickerView(type: .video, needOriginal: false) { model in
                 vm.tools.closeTools(false)
                 guard let model = model else { return }
                 switch model.mediaType {

@@ -119,7 +119,16 @@ extension EditorFilter {
             cover: networkFilter.cover?.url,
             steps: networkFilter.stepsFull.compactMap {
                 guard let stepType = EditorFilter.Step.StepType(value: $0.type) else { return nil }
-                return Step(type: stepType, url: $0.url?.url, settings: .init(jsonValue: $0.settings.jsonValue))
+                
+                let neuralConfig: NeuralConfig? = .make(from: $0)
+                
+                return Step(
+                    type: stepType,
+                    id: $0.id,
+                    url: $0.url?.url,
+                    settings: .init(jsonValue: $0.settings.jsonValue),
+                    neuralConfig: neuralConfig
+                )
             }
         )
     }
@@ -180,6 +189,25 @@ extension TemplatePack {
             cover: template.cover?.url,
             isAttached: template.isAttached,
             variants: variants
+        )
+    }
+}
+
+fileprivate extension NeuralConfig {
+    static func make(from stepFull: NetworkClient.EditorTemplate.Variant.ClientConfig.Item.Filter.StepsFull) -> NeuralConfig? {
+        guard let config = stepFull.neuralConfig else { return nil }
+        
+        let dimension: [NeuralConfig.AllowedDimension] = config.allowedDimensions?
+            .map {
+                .init(width: $0.width, height: $0.height)
+            } ?? []
+        
+        return .init(
+            stepID: stepFull.id,
+            minPixels: config.minPixels,
+            maxPixels: config.maxPixels,
+            allowedDimensions: dimension,
+            dimensionsMultipleOf: config.dimensionsMultipleOf
         )
     }
 }

@@ -8,8 +8,11 @@
 import UIKit
 import CoreImage
 
+public let NeuralFilterDescriptorName = "NeuralFilter"
+
 public class FilterDescriptor: Codable, Hashable {
     public enum Param: Codable, Hashable {
+     
         enum ParamErrors: Error { case unableToDecodeBase64StringToData }
         
         case number(NSNumber)
@@ -19,6 +22,7 @@ public class FilterDescriptor: Codable, Hashable {
         case vector(CIVector)
         case image(CIImage, UIView.ContentMode?, URL)
         case colorSpaceString(CGColorSpace, String)
+        case neural(NeuralConfig)
         case unsupported
 
         var valueForParams: Any {
@@ -31,6 +35,7 @@ public class FilterDescriptor: Codable, Hashable {
             case .image(let image, _, _): return image
             case .colorSpaceString(let colorSpace, _): return colorSpace
             case .unsupported: return NSNull()
+            case .neural: return NSNull()
             }
         }
 
@@ -142,18 +147,25 @@ public class FilterDescriptor: Codable, Hashable {
             case .colorSpaceString(_, let colorSpaceString):
                 try container.encode("color_space_string", forKey: .type)
                 try container.encode(colorSpaceString, forKey: .value)
-            case .unsupported:
+            case .unsupported, .neural:
                 try container.encode("unsupported", forKey: .type)
                 try container.encodeNil(forKey: .value)
             }
         }
     }
 
+    public var id: String?
     public var name: String
     public var params: [String: Param]?
     public var customImageTargetKey: String?
+    
+    var isNeural: Bool { name == NeuralFilterDescriptorName }
 
-    public init(name: String, params: [String: Param]? = nil, customImageTargetKey: String? = nil) {
+    public init(name: String,
+                params: [String: Param]? = nil,
+                id: String? = nil,
+                customImageTargetKey: String? = nil) {
+        self.id = id
         self.name = name
         self.params = params
         self.customImageTargetKey = customImageTargetKey
@@ -167,6 +179,72 @@ public class FilterDescriptor: Codable, Hashable {
         hasher.combine(name)
         hasher.combine(params)
         hasher.combine(customImageTargetKey)
+    }
+}
+
+public extension FilterDescriptor {
+    convenience init?(step: EditorFilter.Step, id: String?) {
+        switch step.type {
+        case .lut:
+            let colorSpaceString = "sRGB"
+            guard let colorSpace = CGColorSpace.fromCFIDString(colorSpaceString),
+                  let url = step.url else {
+                return nil
+            }
+            self.init(
+                name: "CIColorCubeWithColorSpace",
+                params: [
+                    "inputCubeDimension": .number(64),
+                    "inputCubeData": .init(dataURL: url),
+                    "inputColorSpace": .colorSpaceString(colorSpace, colorSpaceString)
+                ],
+                id: id
+            )
+        case .mask:
+            guard let url = step.url else { return nil }
+            self.init(
+                name: "CIBlendWithMask",
+                params: [
+                    "inputMaskImage": .init(imageURL: url, contentMode: .scaleAspectFit)
+                ],
+                id: id
+            )
+        case .texture:
+            guard let url = step.url else { return nil }
+            let blendMode = step.settings?.blendMode ?? "CISourceOverCompositing"
+            let contentModeId = step.settings?.contentMode ?? 0
+            let contentMode = UIView.ContentMode(rawValue: contentModeId) ?? .scaleToFill
+            
+            self.init(
+                name: blendMode,
+                params: [
+                    "inputImage": .init(imageURL: url, contentMode: contentMode)
+                ],
+                id: id,
+                customImageTargetKey: "inputBackgroundImage"
+            )
+            
+        case .neural:
+            guard let neuralConfig = step.neuralConfig else { return nil }
+            self.init(name: NeuralFilterDescriptorName,
+                      params: [neuralConfig.stepID: .neural(neuralConfig)],
+                      id: id)
+        }
+    }
+}
+
+extension Sequence where Element == FilterDescriptor {
+    var notNeuralFilters: [Element] {
+        self.filter { !$0.isNeural }
+    }
+    
+    var neuralFilters: [Element] {
+        self.filter { $0.isNeural }
+    }
+    
+    var ciFilters: [CIFilter] {
+        // not work with neuralFilters
+        self.compactMap { CIFilter(name: $0.name) }
     }
 }
 

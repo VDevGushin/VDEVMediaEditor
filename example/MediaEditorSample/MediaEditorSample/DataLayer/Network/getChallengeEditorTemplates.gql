@@ -21,6 +21,15 @@ query getChallengeEditorTemplates($baseChallengeId: ID!, $screenHeight: Int!, $s
                 settings
                 url
                 filterId
+                neuralConfig {
+                    minPixels
+                    maxPixels
+                    allowedDimensions {
+                        width
+                        height
+                    }
+                    dimensionsMultipleOf
+                }
               }
             }
             blendMode

@@ -77,9 +77,7 @@ class CanvasItemModel: Identifiable, ObservableObject {
         let texturesFD = textures?.steps.makeFilterDescriptors() ?? []
         let masksFD = masks?.steps.makeFilterDescriptors() ?? []
         
-        let filterChain = adjustSettingsFDs + colorFD + texturesFD + masksFD
-
-        return filterChain
+        return adjustSettingsFDs + colorFD + texturesFD + masksFD
     }
     
     var canReset: Bool {
@@ -157,9 +155,7 @@ class CanvasItemModel: Identifiable, ObservableObject {
                                   masks: masks)
         return new
     }
-}
-
-extension CanvasItemModel {
+    
     func getOriginalURLFrom(asset: PHAsset?) async -> URL? {
         guard let asset = asset, asset.mediaType == .video else { return nil }
         
@@ -177,6 +173,26 @@ extension CanvasItemModel {
         }
     }
     
+    func getFilteredOriginal(asset: CanvasItemAsset?) async -> UIImage? {
+        guard let asset = asset else { return nil }
+        guard asset.type == .image else { return nil }
+        
+        var phImage: UIImage? = await getFrom(asset: asset.asset) ?? asset.image
+        
+        if let _phImage = phImage {
+            let applyer: CanvasApplayer = .init()
+            let res = await applyer.applyFilters(for: _phImage, filterChain: filterChain)
+            switch res.value {
+            case .image(let image): phImage = image
+            default: break
+            }
+        }
+        
+        return phImage
+    }
+}
+
+extension CanvasItemModel {
     func getOriginalURLFrom(asset: CanvasItemAsset?) async -> URL? {
         guard let asset = asset, asset.type == .video else { return nil }
         
@@ -197,24 +213,6 @@ extension CanvasItemModel {
         
         PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFill, options: options) { image, _ in
             phImage = image
-        }
-        
-        return phImage
-    }
-    
-    func getFilteredOriginal(asset: CanvasItemAsset?) async -> UIImage? {
-        guard let asset = asset else { return nil }
-        guard asset.type == .image else { return nil }
-        
-        var phImage: UIImage? = await getFrom(asset: asset.asset) ?? asset.image
-        
-        if let _phImage = phImage {
-            let applyer: CanvasApplayer = .init()
-            let res = await applyer.applyFilters(for: _phImage, filterChain: filterChain)
-            switch res.value {
-            case .image(let image): phImage = image
-            default: break
-            }
         }
         
         return phImage

@@ -53,17 +53,12 @@ struct CanvasApplayer {
                 let colorFD = colorFilter?.steps.makeFilterDescriptors() ?? []
                 let texturesFD = textures?.steps.makeFilterDescriptors() ?? []
                 let masksFD = masks?.steps.makeFilterDescriptors() ?? []
-
                 let filterChain = baseFiltersFDs + adjustSettingsFDs + colorFD + texturesFD + masksFD
-
                 guard !filterChain.isEmpty else {
                     seal(.success(.empty()))
                     return
                 }
-
-
                 let avAsset = AVAsset(url: url)
-
                 let videoComposition = FilteringProcessor().makeAVVideoComposition(for: avAsset, filterChain: filterChain)
 
                 seal(.success(.videoAdjustmentOutput(asset: videoComposition)))
@@ -107,24 +102,44 @@ struct CanvasApplayer {
             }
         }.eraseToAnyPublisher()
     }
-
+    
+    func applyFilters(
+        for image: UIImage,
+        filterChain: [FilterDescriptor]
+    ) -> AnyPublisher<CanvasApplayerOutput, Never> {
+        Future<CanvasApplayerOutput, Never> { seal in
+            DispatchQueue.global(qos: .userInitiated).async {
+                guard !filterChain.isEmpty else {
+                    seal(.success(.empty()))
+                    return
+                }
+                var result = CanvasApplayerOutput.empty()
+                if let updatedImage = FilteringProcessor()
+                    .process(
+                        image: image,
+                        filteringChain: filterChain),
+                   let cgImage = FilteringProcessor().createCGImage(from: updatedImage) {
+                    result = .imageAdjustmentOutput(image: UIImage(cgImage: cgImage))
+                }
+                
+                seal(.success(result))
+            }
+        }.eraseToAnyPublisher()
+    }
 }
 
 extension CanvasApplayer {
     func applyFilters(for image: UIImage, filterChain: [FilterDescriptor]) async -> CanvasApplayerOutput {
-
         guard !filterChain.isEmpty else {
             return .imageAdjustmentOutput(image: image)
         }
-
         if Task.isCancelled { return .cancel }
-
         var result = CanvasApplayerOutput.empty()
-
-        if  let updatedImage = FilteringProcessor().process(image: image,
-                                                                 filteringChain: filterChain),
+        if  let updatedImage = FilteringProcessor()
+            .process(
+                image: image,
+                filteringChain: filterChain),
             let cgImage = FilteringProcessor().createCGImage(from: updatedImage) {
-
             result = .imageAdjustmentOutput(image: UIImage(cgImage: cgImage))
         }
         return result
@@ -133,37 +148,27 @@ extension CanvasApplayer {
 
     func applyFilters(for url: URL, filters: [EditorFilter]) async -> CanvasApplayerOutput {
         let filterChain = filters.flatMap { $0.steps.makeFilterDescriptors() }
-
         guard !filterChain.isEmpty else { return .empty() }
-
         if Task.isCancelled { return .cancel }
-
         let avAsset = AVAsset(url: url)
-
         var result = CanvasApplayerOutput.empty()
-
         let videoComposition = FilteringProcessor().makeAVVideoComposition(for: avAsset, filterChain: filterChain)
-
         result = .videoAdjustmentOutput(asset: videoComposition)
-        
         return result
     }
 
     func applyFilters(for image: UIImage, filters: [EditorFilter]) async -> CanvasApplayerOutput {
-        let filterChain = filters.flatMap { $0.steps.makeFilterDescriptors() }
-
+        let filterChain = filters.flatMap { $0.steps.makeFilterDescriptors(id: $0.id) }
         guard !filterChain.isEmpty else {
             return .imageAdjustmentOutput(image: image)
         }
-
         if Task.isCancelled { return .cancel }
-
         var result = CanvasApplayerOutput.empty()
-        
-        if  let updatedImage = FilteringProcessor().process(image: image,
-                                                                 filteringChain: filterChain),
-            let cgImage = FilteringProcessor().createCGImage(from: updatedImage) {
-
+        if let updatedImage = FilteringProcessor().process(
+            image: image,
+            filteringChain: filterChain
+        ),
+           let cgImage = FilteringProcessor().createCGImage(from: updatedImage) {
             result = .imageAdjustmentOutput(image: UIImage(cgImage: cgImage))
         }
         return result

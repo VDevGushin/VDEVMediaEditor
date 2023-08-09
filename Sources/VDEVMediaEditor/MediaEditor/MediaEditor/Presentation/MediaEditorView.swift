@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import CombineExt
 import Combine
 
 struct MediaEditorView: View {

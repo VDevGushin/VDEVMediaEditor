@@ -38,20 +38,29 @@ public struct EditorFilter: Equatable {
     public struct Step {
         var type: StepType
         var url: URL?
+        var id: String?
         var settings: StepSettings? // RAW JSON
+        var neuralConfig: NeuralConfig?
         
-        public init(type: StepType,
-                    url: URL? = nil,
-                    settings: StepSettings? = nil) {
+        public init(
+            type: StepType,
+            id: String? = nil,
+            url: URL? = nil,
+            settings: StepSettings? = nil,
+            neuralConfig: NeuralConfig? = nil
+        ) {
+            self.id = id
             self.type = type
             self.url = url
             self.settings = settings
+            self.neuralConfig = neuralConfig
         }
         
         public enum StepType: String {
             case lut
             case mask
             case texture
+            case neural
             
             public init?(value: String) {
                 guard let value = StepType(rawValue: value) else { return nil }
@@ -79,66 +88,26 @@ public struct EditorFilter: Equatable {
     }
 }
 
-extension FilterDescriptor {
-    convenience init?(step: EditorFilter.Step) {
-        guard let url = step.url else { return nil }
-        
-        switch step.type {
-        case .lut:
-            let colorSpaceString = "sRGB"
-            guard let colorSpace = CGColorSpace.fromCFIDString(colorSpaceString) else {
-                return nil
-            }
-
-            self.init(
-                name: "CIColorCubeWithColorSpace",
-                params: [
-                    "inputCubeDimension": .number(64),
-                    "inputCubeData": .init(dataURL: url),
-                    "inputColorSpace": .colorSpaceString(colorSpace, colorSpaceString)
-                ]
-            )
-        case .mask:
-            self.init(
-                name: "CIBlendWithMask",
-                params: [
-                    "inputMaskImage": .init(imageURL: url, contentMode: .scaleAspectFit)
-                ]
-            )
-        case .texture:
-            let blendMode = step.settings?.blendMode ?? "CISourceOverCompositing"
-            let contentModeId = step.settings?.contentMode ?? 0
-            let contentMode = UIView.ContentMode(rawValue: contentModeId) ?? .scaleToFill
-
-            self.init(
-                name: blendMode,
-                params: [
-                    "inputImage": .init(imageURL: url, contentMode: contentMode)
-                ],
-                customImageTargetKey: "inputBackgroundImage"
-            )
-        }
-    }
-}
-
-extension Array where Element == EditorFilter.Step {
-    func makeFilterDescriptors() -> [FilterDescriptor] {
-        compactMap { FilterDescriptor(step: $0) }
+extension Sequence where Element == EditorFilter.Step {
+    func makeFilterDescriptors(id: String? = nil) -> [FilterDescriptor] {
+        compactMap { FilterDescriptor(step: $0, id: id) }
     }
 }
 
 // MARK: - MASK Filter
-extension Array where Element ==  EditorFilter.Step {
+extension Sequence where Element ==  EditorFilter.Step {
     var noMask: [Element] { self.filter { $0.type != .mask } }
     var mask: [Element] { self.filter { $0.type == .mask } }
+    var neural: [Element] { self.filter { $0.type == .neural } }
 }
 
 extension Array where Element == EditorFilter {
     var maskImageURL: URL? { onlyMask.flatMap { $0.steps }.first?.url }
     
+    var hasNeural: Bool { contains { !$0.steps.neural.isEmpty } }
+    
     var noMask: [Element] {
         var result: [EditorFilter] = []
-
         for i in 0..<self.count {
             let steps = self[i].steps.noMask
 
@@ -148,13 +117,11 @@ extension Array where Element == EditorFilter {
                 result.append(filter)
             }
         }
-
         return result
     }
-
+    
     var onlyMask: [Element] {
         var result: [EditorFilter] = []
-
         for i in 0..<self.count {
             let steps = self[i].steps.mask
 
@@ -164,7 +131,6 @@ extension Array where Element == EditorFilter {
                 result.append(filter)
             }
         }
-
         return result
     }
 }

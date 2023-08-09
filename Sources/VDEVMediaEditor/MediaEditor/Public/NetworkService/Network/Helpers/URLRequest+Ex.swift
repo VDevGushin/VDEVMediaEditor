@@ -35,7 +35,22 @@ extension URLRequest {
             }
         }
     }
+    
+    func add(body: Data) -> Self {
+        map {
+            $0.httpBody = body
+        }
+    }
 
+    func addHeaderForContentType(_ value: String) -> Self {
+        map {
+            $0.setValue(
+                value,
+                forHTTPHeaderField: "Content-Type"
+            )
+        }
+    }
+    
     func add(headers: [String: String]?) -> Self {
         guard let headers = headers, !headers.isEmpty else { return self }
 

@@ -9,67 +9,66 @@ import Foundation
 import Combine
 
 extension URLSession {
+    func fetch<Response: Decodable>(for request: URLRequest, with type: Response.Type) async throws -> Response {
+        log(request: request)
+        let (data, httpResponse) = try await data(for: request)
+        log(response: httpResponse as? HTTPURLResponse, data: data, error: nil)
+        guard let httpResponse = httpResponse as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        let statusCode = httpResponse.statusCode
+        if (200...299).contains(statusCode) {
+            guard let result = data as? Response else {
+                throw URLError(.cannotParseResponse)
+            }
+            return result
+        }
+        if statusCode == 401 {
+            throw URLError(.userAuthenticationRequired)
+        }
+        throw URLError(.badServerResponse)
+    }
+    
     func fetch<Response: Decodable>(for request: URLRequest,
                                     decoder: JSONDecoder,
                                     with type: Response.Type) async throws -> Response {
         log(request: request)
         let (data, httpResponse) = try await data(for: request)
-        
         log(response: httpResponse as? HTTPURLResponse, data: data, error: nil)
-        
         guard let httpResponse = httpResponse as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
-
         let statusCode = httpResponse.statusCode
-
         if (200...299).contains(statusCode) {
             return try decoder.decode(Response.self, from: data)
         }
-
         if statusCode == 401 {
             throw URLError(.userAuthenticationRequired)
         }
-
         throw URLError(.badServerResponse)
     }
     
     func fetch<Response: Decodable>(for request: URLRequest,
                                     decoder: JSONDecoder,
                                     with type: Response.Type) -> AnyPublisher<Response, Error> {
-
-
         log(request: request)
-
         return dataTaskPublisher(for: request)
             .tryMap { element -> Data in
-                
                 log(response: element.response as? HTTPURLResponse, data: element.data, error: nil)
-
                 guard let httpResponse = element.response as? HTTPURLResponse else {
                     throw URLError(.badServerResponse)
                 }
-
                 let statusCode = httpResponse.statusCode
-
                 if (200...299).contains(statusCode) {
                     return element.data
                 }
-
                 if statusCode == 401 {
                     throw URLError(.userAuthenticationRequired)
                 }
-
                 throw URLError(.badServerResponse)
             }
             .decode(type: Response.self, decoder: decoder)
             .eraseToAnyPublisher()
-
-
-        //        dataTaskPublisher(for: request)
-        //            .map(\.data)
-        //            .decode(type: Response.self, decoder: decoder)
-        //            .eraseToAnyPublisher()
     }
 }
 
@@ -106,7 +105,6 @@ fileprivate func log(request: URLRequest) {
 }
 
 fileprivate func log(response: HTTPURLResponse?, data: Data?, error: Error?) {
-
     Log.d("\n - - - - - - - - - - INCOMMING - - - - - - - - - - \n")
     defer { Log.d("\n - - - - - - - - - -  END - - - - - - - - - - \n") }
     let urlString = response?.url?.absoluteString

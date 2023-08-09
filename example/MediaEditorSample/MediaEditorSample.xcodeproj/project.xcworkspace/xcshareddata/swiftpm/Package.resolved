@@ -28,21 +28,12 @@
       }
     },
     {
-      "identity" : "combineext",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/CombineCommunity/CombineExt.git",
-      "state" : {
-        "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56",
-        "version" : "1.8.1"
-      }
-    },
-    {
       "identity" : "kingfisher",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher.git",
       "state" : {
-        "revision" : "c1f60c63f356d364f4284ba82961acbe7de79bcc",
-        "version" : "7.8.1"
+        "revision" : "c75584ac759cbb16b204d0a7de3ebf53ea6b304d",
+        "version" : "7.9.0"
       }
     },
     {
@@ -86,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-identified-collections.git",
       "state" : {
-        "revision" : "d01446a78fb768adc9a78cbb6df07767c8ccfc29",
-        "version" : "0.8.0"
+        "revision" : "d1e45f3e1eee2c9193f5369fa9d70a6ddad635e8",
+        "version" : "1.0.0"
       }
     },
     {

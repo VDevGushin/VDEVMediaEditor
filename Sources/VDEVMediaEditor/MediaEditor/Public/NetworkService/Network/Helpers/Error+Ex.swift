@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Error {
+public extension Error {
     var isUnauthorized: Bool {
         guard let error = self as? URLError else { return false }
 
@@ -19,7 +19,7 @@ extension Error {
     }
 }
 
-struct ErrorRepresentation {
+public struct ErrorRepresentation {
     @Injected private var strings: VDEVMediaEditorStrings
     
     private(set) var title: String = ""

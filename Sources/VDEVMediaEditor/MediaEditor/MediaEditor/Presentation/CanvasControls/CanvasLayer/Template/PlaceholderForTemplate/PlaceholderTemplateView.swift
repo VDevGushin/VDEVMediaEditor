@@ -8,36 +8,85 @@
 import SwiftUI
 
 struct PlaceholderTemplateView: View {
-    @StateObject private var vm: PlaceholderTemplateViewModel
     @Environment(\.guideLinesColor) private var guideLinesColor
+    
     @Injected private var images: VDEVImageConfig
-
+    @Injected private var strings: VDEVMediaEditorStrings
+    
+    @StateObject private var vm: PlaceholderTemplateViewModel
+    
     //для того, чтобы узнать манипулируем мы с картинкой или видосом
     @State private var isInManipulation: Bool = false
     @State private var isShowSelection: Bool = false
-
-    init(item: CanvasPlaceholderModel, delegate: CanvasEditorDelegate?) {
+    
+    init(
+        item: CanvasPlaceholderModel,
+        delegate: CanvasEditorDelegate?
+    ) {
         _vm = .init(wrappedValue: .init(item: item, delegate: delegate))
     }
-
+    
     var body: some View {
-        ZStack {
-            Color.clear
-            if !vm.isEmpty {
-                ZStack {
-                    Item()
-                }
-            } else {
+        ZStackWithClearColor {
+            OrView(vm.isEmpty) {
                 AddMediaButton()
+                    .transition(.opacityTransition(withAnimation: true, speed: 0.2))
+            } secondView: {
+                Item()
+                    .transition(.opacityTransition(withAnimation: true, speed: 0.2))
             }
         }
-        .overlay(content: {
-            if vm.inProgress {
-                ActivityIndicator(isAnimating: vm.inProgress,
-                                  style: .medium,
-                color: .init(guideLinesColor))
+        .overlay {
+            Loader(
+                message: strings.doingSomeMagic,
+                inProgress: vm.inProgress
+            )
+        }
+    }
+}
+
+// MARK: - Loader
+private extension PlaceholderTemplateView {
+    @ViewBuilder
+    func Loader(
+        message: String,
+        inProgress: PlaceholderTemplateViewModel.ProgresType?
+    ) -> some View {
+        vm.inProgress.map {
+            switch $0 {
+            case .simple:
+                ActivityIndicator(
+                    isAnimating: true,
+                    style: .medium,
+                    color: .init(guideLinesColor)
+                )
+            case let .neural(image):
+                ZStack {
+                    image.map {
+                        Image(uiImage: $0)
+                            .resizable()
+                            .scaledToFill()
+                            .blur(radius: 8, opaque: false)
+                            .overlay {
+                                AppColors.blackWithOpacity1
+                            }
+                    }
+                    
+                    VStack(alignment: .center) {
+                        Text(message)
+                            .multilineTextAlignment(.center)
+                            .font(AppFonts.gramatika(size: 16))
+                            .foregroundColor(AppColors.white)
+                        
+                        ActivityIndicator(
+                            isAnimating: true,
+                            style: .medium,
+                            color: .init(guideLinesColor)
+                        )
+                    }
+                }
             }
-        })
+        }
     }
 }
 
@@ -45,91 +94,90 @@ struct PlaceholderTemplateView: View {
 private extension PlaceholderTemplateView {
     @ViewBuilder
     func Item() -> some View {
-            GeometryReader { proxy in
-                let size = proxy.size
-                vm.imageModel.map { imageModel in
-                    MovableContentView(item: imageModel,
-                                       size: size,
-                                       isInManipulation: $isInManipulation,
-                                       isShowSelection: $isShowSelection) {
-                        let size = imageModel.imageSize.aspectFill(minimumSize: size).rounded(.up)
-                        Image(uiImage: imageModel.image)
-                            .resizable()
-                            .frame(size)
-                    } onTap: {
-                        vm.hideAllOverlayViews()
-                        // haptics(.light)
-                        // vm.openMediaSelector()
-                    } onDoubleTap: {
-                        haptics(.light)
-                        vm.openEditVariants()
-                    }.modifier (
-                        TemplateMask(itemForShow: imageModel.templatedImage) {
-                            Image(uiImage: $0)
-                                .resizable()
-                                .aspectRatio(imageModel.aspectRatio, contentMode: .fill)
-                                .gesture(
-                                    DragGesture(minimumDistance: 0)
-                                        .onEnded { value in
-                                            let location = value.location
-                                            print("==>", location)
-                                        }
-                                )
-                        }
-                    )
-                    .overlay {
-                        if imageModel.inProgress {
-                            ActivityIndicator(isAnimating: imageModel.inProgress,
-                                              style: .medium,
-                                              color: .init(guideLinesColor))
-                        }
-                    }
-                    .frame(size)
-                }
-
-                if let videoModel = vm.videoModel {
-                    
-                    let binding = Binding(
-                        get: { videoModel.volume },
-                        set: { videoModel.update(volume: $0) }
-                    )
-                    
-                    MovableContentView(item: videoModel,
-                                       size: size,
-                                       isInManipulation: $isInManipulation,
-                                       isShowSelection: $isShowSelection) {
-                        let size = videoModel.size.aspectFill(minimumSize: size).rounded(.up)
-                        VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
-                                                   videoComposition: videoModel.avVideoComposition,
-                                                   thumbnail: videoModel.thumbnail,
-                                                   volume: binding)
+        GeometryReader { proxy in
+            let size = proxy.size
+            vm.imageModel.map { imageModel in
+                MovableContentView(item: imageModel,
+                                   size: size,
+                                   isInManipulation: $isInManipulation,
+                                   isShowSelection: $isShowSelection) {
+                    let size = imageModel.imageSize.aspectFill(minimumSize: size).rounded(.up)
+                    Image(uiImage: imageModel.image)
+                        .resizable()
                         .frame(size)
-                    } onTap: {
-                        haptics(.light)
-                        vm.hideAllOverlayViews()
-                        // vm.openMediaSelector()
-                    } onDoubleTap: {
-                        haptics(.light)
-                        vm.openEditVariants()
-                    }.modifier(
-                        TemplateMask(itemForShow: videoModel.maskVideoComposition) {
-                            VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
-                                            videoComposition: $0,
-                                            thumbnail: videoModel.thumbnail,
-                                            volume: .constant(0.0))
-                            .frame(videoModel.size.aspectFill(minimumSize: size))
-                        }
-                    )
-                    .overlay {
-                        if videoModel.inProgress {
-                            ActivityIndicator(isAnimating: videoModel.inProgress,
-                                              style: .medium,
-                                              color: .init(guideLinesColor))
-                        }
+                } onTap: {
+                    vm.hideAllOverlayViews()
+                    // haptics(.light)
+                    // vm.openMediaSelector()
+                } onDoubleTap: {
+                    haptics(.light)
+                    vm.openEditVariants()
+                }.modifier (
+                    TemplateMask(itemForShow: imageModel.templatedImage) {
+                        Image(uiImage: $0)
+                            .resizable()
+                            .aspectRatio(imageModel.aspectRatio, contentMode: .fill)
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onEnded { value in
+                                        let location = value.location
+                                        print("==>", location)
+                                    }
+                            )
                     }
-                    .frame(size)
+                )
+                .overlay {
+                    if imageModel.inProgress {
+                        ActivityIndicator(isAnimating: imageModel.inProgress,
+                                          style: .medium,
+                                          color: .init(guideLinesColor))
+                    }
                 }
+                .frame(size)
             }
+            
+            vm.videoModel.map { videoModel in
+                let binding = Binding(
+                    get: { videoModel.volume },
+                    set: { videoModel.update(volume: $0) }
+                )
+                
+                MovableContentView(item: videoModel,
+                                   size: size,
+                                   isInManipulation: $isInManipulation,
+                                   isShowSelection: $isShowSelection) {
+                    let size = videoModel.size.aspectFill(minimumSize: size).rounded(.up)
+                    VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
+                                               videoComposition: videoModel.avVideoComposition,
+                                               thumbnail: videoModel.thumbnail,
+                                               volume: binding)
+                    .frame(size)
+                } onTap: {
+                    haptics(.light)
+                    vm.hideAllOverlayViews()
+                    // vm.openMediaSelector()
+                } onDoubleTap: {
+                    haptics(.light)
+                    vm.openEditVariants()
+                }.modifier(
+                    TemplateMask(itemForShow: videoModel.maskVideoComposition) {
+                        VideoPlayerViewForTempates(assetURL: videoModel.videoURL,
+                                                   videoComposition: $0,
+                                                   thumbnail: videoModel.thumbnail,
+                                                   volume: .constant(0.0))
+                        .frame(videoModel.size.aspectFill(minimumSize: size))
+                    }
+                )
+                .overlay {
+                    if videoModel.inProgress {
+                        ActivityIndicator(isAnimating: videoModel.inProgress,
+                                          style: .medium,
+                                          color: .init(guideLinesColor))
+                    }
+                }
+                .frame(size)
+            }
+        }
         .overlay {
             if vm.showSelection || isShowSelection {
                 Selection()
@@ -166,7 +214,7 @@ private extension PlaceholderTemplateView {
             }
         }
         .foregroundColor(AppColors.black)
-        .opacity(vm.inProgress ? 0.1 : 1.0)
+        .opacity(vm.inProgress != nil ? 0.1 : 1.0)
         .overlay {
             if vm.showSelection {
                 Selection()
@@ -199,13 +247,13 @@ private extension PlaceholderTemplateView {
 private struct TemplateMask<T, MaskContent: View>: ViewModifier {
     private let maskContent: (T) -> MaskContent
     private let itemForShow: T?
-
+    
     init(itemForShow: T?,
          @ViewBuilder maskContent: @escaping (T) -> MaskContent) {
         self.itemForShow = itemForShow
         self.maskContent = maskContent
     }
-
+    
     func body(content: Content) -> some View {
         if let iShow = itemForShow {
             content.mask {

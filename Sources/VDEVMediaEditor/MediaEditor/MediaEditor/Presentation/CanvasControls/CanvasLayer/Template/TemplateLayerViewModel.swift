@@ -15,12 +15,14 @@ final class TemplateLayerViewModel: ObservableObject {
     @Injected private var settings: VDEVMediaEditorSettings
     @Published private(set) var isLoading = false
     @Published var templateLayers: IdentifiedArrayOf<CanvasItemModel> = []
+    
     private(set) var item: CanvasTemplateModel
     
-    var canRemoveOrChangeTemplate: Bool { settings.сanRemoveOrChangeTemplate }
+    var canRemoveOrChangeTemplate: Bool {
+        settings.сanRemoveOrChangeTemplate
+    }
     
     private var operation: Task<Void, Never>?
-    
     weak var delegate: CanvasEditorDelegate?
 
     init(item: CanvasTemplateModel, delegate: CanvasEditorDelegate?) {
@@ -35,16 +37,16 @@ final class TemplateLayerViewModel: ObservableObject {
         templateLayers.removeAll()
         Log.d("❌ Deinit[TEMPLATE]: TemplateLayerViewModel")
     }
-}
-
-fileprivate extension TemplateLayerViewModel {
+    
     @MainActor
-    func set(layers: [CanvasItemModel]) async {
+    private func set(layers: [CanvasItemModel]) async {
         self.isLoading = false
         self.templateLayers = .init(uniqueElements: layers)
         self.item.update(layerItems: templateLayers)
     }
+}
 
+fileprivate extension TemplateLayerViewModel {
     func makeLayers() {
         isLoading = true
 
@@ -97,22 +99,22 @@ fileprivate extension TemplateLayerViewModel {
         } else {
             if item.isLocked {
                 guard let url = item.url else { return nil }
-
+                
                 let cacheResult = try await ImageCache.default.retrieveImage(
                     downloadAndStoreIfNeededFrom: url,
                     forKey: url.absoluteString
                 )
-
+                
                 guard let image = cacheResult.image else { return nil }
-
+                
                 let offset = CGSize.centralOffset(withTemplateRect: item.rect, canvasSize: canvasSize)
-
+                
                 return CanvasImageModel(image: image,
                                         asset: nil,
                                         bounds: item.rect,
                                         offset: offset,
                                         blendingMode: item.blendingMode)
-
+                
             } else {
                 let offset = CGSize.centralOffset(withTemplateRect: item.rect, canvasSize: canvasSize)
                 

@@ -17,7 +17,17 @@ extension UIImage {
     }
 
     var aspectRatio: CGFloat {
-        self.size.width / self.size.height
+        size.width / size.height
+    }
+    
+    var pixelSize: CGSize {
+        let heightInPoints = size.height
+        let heightInPixels = heightInPoints * scale
+
+        let widthInPoints = size.width
+        let widthInPixels = widthInPoints * scale
+
+        return CGSize(width: widthInPixels, height: heightInPixels)
     }
 }
 

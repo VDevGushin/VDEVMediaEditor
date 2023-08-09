@@ -14,7 +14,8 @@ struct DiController {
                          images: VDEVImageConfig,
                          strings: VDEVMediaEditorStrings,
                          resultSettings: VDEVMediaEditorResultSettings,
-                         logger: VDEVLogger?) {
+                         logger: VDEVLogger?,
+                         networkModulesConfig: [VDEVNetworkModuleConfig]) {
         let resolutionService = ResolutionService(resolution: resultSettings.resolution)
         
         container.register(type: VDEVMediaEditorSettings.self,
@@ -34,6 +35,8 @@ struct DiController {
         container.register(type: MementoService.self,
                            service: MementoService(settings: settings))
         
+        registerNetworkConfig(with: container, networkModulesConfig: networkModulesConfig)
+        
         if let logger = logger {
             container.register(type: VDEVLogger.self,
                                service: logger)
@@ -50,5 +53,16 @@ struct DiController {
     
     static func clean(with container: DIContainer = DIContainer.shared) {
         container.clean()
+    }
+    
+    private static func registerNetworkConfig(
+        with container: DIContainer,
+        networkModulesConfig: [VDEVNetworkModuleConfig]
+    ) {
+        let networkConfig = VDEVNetworkConfig()
+        networkModulesConfig.forEach {
+            networkConfig.add($0.type, $0)
+        }
+        container.register(type: VDEVNetworkConfig.self, service: networkConfig)
     }
 }

@@ -23,6 +23,7 @@ struct ToolAdjustments: View {
     @State private var shadow: Double = 0
     @State private var blurRadius: Double = 0
     @State private var alpha: Double = 0
+    @State private var sharpen: Double = 0.40
     
     @Binding private var state: ToolsEditState
     
@@ -33,80 +34,119 @@ struct ToolAdjustments: View {
         self._state = state
         self.memento = memento
         
-        let colorFilters = CIFilter(name: "CIColorControls")!
-        
-        let currentContrastValue: Double = colorFilters.value(forKey: kCIInputContrastKey) as? Double ?? 0.0
-        let currentBrightnessValue: Double = colorFilters.value(forKey: kCIInputBrightnessKey) as? Double ?? 0.0
-        let currentSaturationValue: Double = colorFilters.value(forKey: kCIInputSaturationKey) as? Double ?? 1.0
-        
         
         toolItems = [
-            AdjustToolItem(title: strings.brightness, min: -0.2, max: 0.2, normal: currentBrightnessValue),
-            AdjustToolItem(title: strings.contrast, min: 0.8, max: 1.2, normal: currentContrastValue),
-            AdjustToolItem(title: strings.saturation, min: 0, max: 2, normal: currentSaturationValue),
-            AdjustToolItem(title: strings.highlight, min: 0, max: 1, normal: 0.5),
-            AdjustToolItem(title: strings.shadow, min: -1, max: 1, normal: 0),
-            AdjustToolItem(title: strings.blurRadius, min: 0, max: 15, normal: 0),
-            AdjustToolItem(title: strings.alpha, min: 0, max: 1, normal: 1),
+            AdjustToolItem(
+                title: strings.brightness,
+                min: AdjustmentSettings.DefaultValues.currentBrightnessValue.value - 0.2,
+                max: AdjustmentSettings.DefaultValues.currentBrightnessValue.value + 0.2,
+                normal: AdjustmentSettings.DefaultValues.currentBrightnessValue.value
+            ),
+            AdjustToolItem(
+                title: strings.contrast,
+                min: AdjustmentSettings.DefaultValues.currentContrastValue.value - 0.2,
+                max: AdjustmentSettings.DefaultValues.currentContrastValue.value + 0.2,
+                normal: AdjustmentSettings.DefaultValues.currentContrastValue.value
+            ),
+            AdjustToolItem(
+                title: strings.saturation,
+                min: AdjustmentSettings.DefaultValues.currentSaturationValue.value - 1,
+                max: AdjustmentSettings.DefaultValues.currentSaturationValue.value + 1,
+                normal: AdjustmentSettings.DefaultValues.currentSaturationValue.value
+            ),
+            AdjustToolItem(
+                title: strings.highlight,
+                min: 0,
+                max: AdjustmentSettings.DefaultValues.currentHighlightValue.value,
+                normal: AdjustmentSettings.DefaultValues.currentHighlightValue.value
+            ),
+            AdjustToolItem(
+                title: strings.shadow,
+                min: AdjustmentSettings.DefaultValues.currentShadowValue.value - 1,
+                max: AdjustmentSettings.DefaultValues.currentShadowValue.value + 1,
+                normal: AdjustmentSettings.DefaultValues.currentShadowValue.value
+            ),
+            AdjustToolItem(
+                title: strings.blurRadius,
+                min: 0,
+                max: 15,
+                normal: AdjustmentSettings.DefaultValues.currentGaussianValue.value
+            ),
+            AdjustToolItem(
+                title: strings.alpha,
+                min: 0,
+                max: 1,
+                normal: AdjustmentSettings.DefaultValues.currentAlphaValue.value
+            ),
+            AdjustToolItem(
+                title: strings.sharpen,
+                min: AdjustmentSettings.DefaultValues.currentSharpenValue.value,
+                max: 2,
+                normal: AdjustmentSettings.DefaultValues.currentSharpenValue.value
+            ),
         ]
     }
     
     var body: some View {
-        VStack(spacing: 18) {
-            ForEach(0..<toolItems.count, id: \.self) { i in
-                let item = toolItems[i]
-                
-                HStack {
-                    Text(item.title)
-                        .font(AppFonts.elmaTrioRegular(12))
-                        .foregroundColor(AppColors.whiteWithOpacity)
-                        .frame(maxWidth: 80, alignment: .leading)
-                    
-                    Slider(value: Binding<Double> {
-                        switch i {
-                        case 0: return brightness
-                        case 1: return contrast
-                        case 2: return saturation
-                        case 3: return highlight
-                        case 4: return shadow
-                        case 5: return blurRadius
-                        case 6: return alpha
-                        default: fatalError()
-                        }
-                    } set: { newValue in
-                        switch i {
-                        case 0: brightness = newValue
-                        case 1: contrast = newValue
-                        case 2: saturation = newValue
-                        case 3: highlight = newValue
-                        case 4: shadow = newValue
-                        case 5: blurRadius = newValue
-                        case 6: alpha = newValue
-                        default: ()
-                        }
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 18) {
+                ForEach(0..<toolItems.count, id: \.self) { i in
+                    let item = toolItems[i]
+                    HStack {
+                        Text(item.title)
+                            .font(AppFonts.elmaTrioRegular(12))
+                            .foregroundColor(AppColors.whiteWithOpacity)
+                            .frame(maxWidth: 80, alignment: .leading)
                         
-                        let settings: AdjustmentSettings = .init(
-                            brightness: brightness,
-                            contrast: contrast,
-                            saturation: saturation,
-                            highlight: highlight,
-                            shadow: shadow,
-                            blurRadius: blurRadius,
-                            alpha: alpha
-                        )
-                        self.item.apply(adjustmentSettings: settings)
-                        
-                    }, in: item.min...item.max, onEditingChanged: { value in
-                        if !value {
-                            state = .idle
-                        } else {
-                            memento?.forceSave()
-                            state = .edit(i)
-                        }
-                    })
-                    .accentColor(AppColors.white)
-                    .contentShape(Rectangle())
-                    .opacity(state.getOpacity(for: i))
+                        Slider(value: Binding<Double> {
+                            switch i {
+                            case 0: return brightness
+                            case 1: return contrast
+                            case 2: return saturation
+                            case 3: return highlight
+                            case 4: return shadow
+                            case 5: return blurRadius
+                            case 6: return alpha
+                            case 7: return sharpen
+                            default: fatalError()
+                            }
+                        } set: { newValue in
+                            switch i {
+                            case 0: brightness = newValue
+                            case 1: contrast = newValue
+                            case 2: saturation = newValue
+                            case 3: highlight = newValue
+                            case 4: shadow = newValue
+                            case 5: blurRadius = newValue
+                            case 6: alpha = newValue
+                            case 7: sharpen = newValue
+                            default: ()
+                            }
+                            
+                            let settings: AdjustmentSettings = .init(
+                                brightness: brightness,
+                                contrast: contrast,
+                                saturation: saturation,
+                                highlight: highlight,
+                                shadow: shadow,
+                                blurRadius: blurRadius,
+                                alpha: alpha,
+                                sharpen: sharpen
+                            )
+                            self.item.apply(adjustmentSettings: settings)
+                            
+                        }, in: item.min...item.max, onEditingChanged: { value in
+                            if !value {
+                                state = .idle
+                            } else {
+                                memento?.forceSave()
+                                state = .edit(i)
+                            }
+                        })
+                        .accentColor(AppColors.white)
+                        .contentShape(Rectangle())
+                        .opacity(state.getOpacity(for: i))
+                    }
                 }
             }
             
@@ -131,7 +171,6 @@ struct ToolAdjustments: View {
             .opacity(state.getOpacity())
         }
         .onAppear { resetState() }
-        .padding(.top)
     }
     
     private func resetState() {
@@ -143,6 +182,7 @@ struct ToolAdjustments: View {
             shadow = item.adjustmentSettings?.shadow ?? toolItems[4].normal
             blurRadius = item.adjustmentSettings?.blurRadius ?? toolItems[5].normal
             alpha = item.adjustmentSettings?.alpha ?? toolItems[6].normal
+            sharpen = item.adjustmentSettings?.sharpen ?? toolItems[7].normal
         }
     }
 }

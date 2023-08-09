@@ -14,11 +14,12 @@ import AVKit
 struct PhotoPickerView: UIViewControllerRepresentable {
     @Injected private var resultSettings: VDEVMediaEditorResultSettings
     @Injected private var resolution: ResolutionService
-    
     @Environment(\.presentationManager) var presentationManager
     
     typealias UIViewControllerType = UIImagePickerController
+    
     private(set) var type: PhotoPickerViewType
+    private(set) var needOriginal: Bool
     private(set) var onComplete: (PickerMediaOutput?) -> Void
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -32,8 +33,6 @@ struct PhotoPickerView: UIViewControllerRepresentable {
         switch type {
         case .image:
             uiViewController.mediaTypes = [UTType.image.identifier]
-            uiViewController.videoExportPreset = AVAssetExportPreset640x480
-            uiViewController.videoQuality = .type640x480
             uiViewController.overrideUserInterfaceStyle = .dark
         case .video:
             uiViewController.videoMaximumDuration = resultSettings.maximumVideoDuration
@@ -50,15 +49,17 @@ struct PhotoPickerView: UIViewControllerRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(with: self)
+        Coordinator(with: self, needOriginal: needOriginal)
     }
 
     final class Coordinator: NSObject, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
         private let photoPicker: PhotoPickerView
         private let mediaPickerGetter: MediaPickerGetter
+        private let needOriginal: Bool
 
-        init(with photoPicker: PhotoPickerView) {
+        init(with photoPicker: PhotoPickerView, needOriginal: Bool) {
             self.photoPicker = photoPicker
+            self.needOriginal = needOriginal
             self.mediaPickerGetter = .init()
         }
         
@@ -85,7 +86,10 @@ struct PhotoPickerView: UIViewControllerRepresentable {
             defer { photoPicker.presentationManager.dismiss() }
             
             Task(priority: .high) {
-                guard let result = await mediaPickerGetter.makeResult(info: info) else {
+                guard let result = await mediaPickerGetter.makeResult(
+                    info: info,
+                    needOriginal: needOriginal
+                ) else {
                     return emptyResult()
                 }
                 setResult(result)

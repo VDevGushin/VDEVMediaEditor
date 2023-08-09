@@ -21,19 +21,23 @@ public struct VDEVMediaEditorConfig {
     private(set) var resultSettings: VDEVMediaEditorResultSettings
     // logger
     private(set) var logger: VDEVLogger?
+    // modules for internal newtork
+    private(set) var networkModulesConfig: [VDEVNetworkModuleConfig]
     
     public init(settings: VDEVMediaEditorSettings,
                 networkService: VDEVMediaEditorSourceService,
                 images: VDEVImageConfig,
                 strings: VDEVMediaEditorStrings,
                 resultSettings: VDEVMediaEditorResultSettings,
-                logger: VDEVLogger? = nil) {
+                logger: VDEVLogger? = nil,
+                networkModulesConfig: [VDEVNetworkModuleConfig]) {
         self.settings = settings
         self.networkService = networkService
         self.images = images
         self.strings = strings
         self.resultSettings = resultSettings
         self.logger = logger
+        self.networkModulesConfig = networkModulesConfig
     }
 }
 
@@ -114,6 +118,7 @@ public protocol VDEVMediaEditorStrings {
     var shadow: String { get }
     var blurRadius: String { get }
     var alpha: String { get }
+    var sharpen: String { get }
     var `default`: String { get }
     var mask: String { get }
     var filter: String { get }
@@ -174,4 +179,5 @@ public protocol VDEVMediaEditorStrings {
     var hint: String { get }
     var submit: String { get }
     var random: String { get }
+    var doingSomeMagic: String { get }
 }

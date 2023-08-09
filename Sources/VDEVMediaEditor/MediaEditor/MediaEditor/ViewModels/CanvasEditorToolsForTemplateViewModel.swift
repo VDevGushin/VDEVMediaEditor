@@ -13,7 +13,7 @@ import SwiftUI
 protocol CanvasEditorSelectMediaFromMediaPickerForTemplate {
     // Select media from camera rall
     var pickSelector: ((PickerMediaOutput?) -> Void)? { get set }
-    func showMediaPicker()
+    func showMediaPicker(workWithNeural: Bool)
     func hideMediaPicker()
 }
 
@@ -49,7 +49,7 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
     var editText: ((CanvasTextModel) -> Void)?
     
     @Published var state: State = .empty
-    @Published var showPhotoPicker: Bool = false
+    @Published var showPhotoPicker: PhotoPickerType? = nil
     @Published var showVideoPicker: Bool = false
     @Published private(set) var isAnyViewOpen: Bool = false
 
@@ -64,8 +64,7 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         )
         .eraseToAnyPublisher()
         
-        checkAnyView
-        .map { $0 == true || $1 == true || $2 != .empty }
+        checkAnyView.map { $0 != nil || $1 == true || $2 != .empty }
         .removeDuplicates()
         .receiveOnMain()
         .weakAssign(to: \.isAnyViewOpen, on: self)
@@ -76,9 +75,18 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         if state != .empty { set(.empty) }
     }
     
-    func showMediaPicker() {
+    func showMediaPicker(workWithNeural: Bool) {
         hideAllOverlayViews()
-        if state != .mediaPick { set(.mediaPick) }
+        switch state {
+        case .mediaPick: break
+        default:
+            if workWithNeural {
+                set(showPhotoPicker: .original)
+            } else {
+                hideMediaPicker()
+                set(.mediaPick)
+            }
+        }
     }
 
     func hideMediaPicker() {
@@ -111,7 +119,7 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         if state.id != 5 { set(.filter(item: item)) }
     }
     
-    func set(showPhotoPicker value: Bool) {
+    func set(showPhotoPicker value: PhotoPickerType?) {
         if self.showPhotoPicker != value {
             showPhotoPicker = value
         }
@@ -164,6 +172,13 @@ extension CanvasEditorToolsForTemplateViewModel {
 
         static func == (lhs: State, rhs: State) -> Bool { lhs.id == rhs.id }
 
+        func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    }
+    
+    enum PhotoPickerType: Int, Identifiable, Equatable, Hashable {
+        case original = 0 // work with media and neural
+        case compressed = 1 // default work with media
+        var id: Int { self.rawValue }
         func hash(into hasher: inout Hasher) { hasher.combine(id) }
     }
 }

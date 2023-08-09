@@ -8,25 +8,38 @@
 import Foundation
 import Combine
 
-protocol ApiClient: BaseApiClient {
+public protocol ApiClient: BaseApiClient {
     func execute<Operation: ApiOperation>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error>
+
     func execute<Operation: ApiOperationWithBody>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error>
+    
+    func execute<Operation: ApiOperationWithMultipartRequest>(
+        _ operation: Operation
+    ) async throws -> Operation.Response
+    
+    func execute<Operation: ApiOperation>(
+        _ operation: Operation
+    ) async throws -> Operation.Response
+    
+    func execute<Operation: ApiOperationWithBody>(
+        _ operation: Operation
+    ) async throws -> Operation.Response
 }
 
-final class ApiClientImpl: ApiClient {
-    private(set) var host: String
+public final class ApiClientImpl: ApiClient {
+    private(set) public var host: String
 
-    var decoder: JSONDecoder = {
+    public var decoder: JSONDecoder = {
        let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .useDefaultKeys
         return decoder
     }()
     
-    var scheme: String { "https" }
+    public var scheme: String { "https" }
 
-    init(host: String) { self.host = host }
+    public init(host: String) { self.host = host }
 
-    func execute<Operation: ApiOperation>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error> {
+    public func execute<Operation: ApiOperation>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error> {
 
         let request = makeURLRequest(operation: operation)
 
@@ -35,7 +48,7 @@ final class ApiClientImpl: ApiClient {
                                        with: Operation.Response.self)
     }
 
-    func execute<Operation: ApiOperationWithBody>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error> {
+    public func execute<Operation: ApiOperationWithBody>(_ operation: Operation) -> AnyPublisher<Operation.Response, Error> {
 
         let request = makeURLRequest(operation: operation)
 
@@ -44,14 +57,21 @@ final class ApiClientImpl: ApiClient {
                                        with: Operation.Response.self)
     }
     
-    func execute<Operation: ApiOperation>(
+    public func execute<Operation: ApiOperationWithMultipartRequest>(
+        _ operation: Operation
+    ) async throws -> Operation.Response {
+        let request = makeURLRequest(operation: operation)
+        return try await URLSession.shared.fetch(for: request, with: Operation.Response.self)
+    }
+    
+    public func execute<Operation: ApiOperation>(
         _ operation: Operation
     ) async throws -> Operation.Response {
         let request = makeURLRequest(operation: operation)
         return try await URLSession.shared.fetch(for: request, decoder: decoder, with: Operation.Response.self)
     }
     
-    func execute<Operation: ApiOperationWithBody>(
+    public func execute<Operation: ApiOperationWithBody>(
         _ operation: Operation
     ) async throws -> Operation.Response {
         let request = makeURLRequest(operation: operation)

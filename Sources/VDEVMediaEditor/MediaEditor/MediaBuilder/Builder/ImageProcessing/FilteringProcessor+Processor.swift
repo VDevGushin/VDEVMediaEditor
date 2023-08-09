@@ -9,58 +9,80 @@ import UIKit
 import Photos
 import AVFoundation
 
+private enum ProcessingFilter {
+    case filter(CIFilter, FilterDescriptor)
+    case neural(NeuralFilter)
+    
+    init?(filterDescriptor: FilterDescriptor) {
+        if let ciFilter = CIFilter(name: filterDescriptor.name) {
+            self = .filter(ciFilter, filterDescriptor)
+            return
+        }
+        if let neuralProcessorFilter = NeuralFilter(descriptor: filterDescriptor) {
+            self = .neural(neuralProcessorFilter)
+            return
+        }
+        return nil
+    }
+}
+
 extension FilteringProcessor {
     final class Processor {
-        private var filterChain: [FilterDescriptor]
-        private var filters: [CIFilter]
-        private var bootstrapped: Bool = false
+        private var filterChain: [ProcessingFilter]
         
         init?(filterChain: [FilterDescriptor]) {
-            let _filters = filterChain.compactMap { CIFilter(name: $0.name) }
-            guard !_filters.isEmpty else { return nil}
-            self.filterChain = filterChain
-            self.filters = _filters
+            guard !filterChain.isEmpty else { return nil }
+            self.filterChain = filterChain.compactMap {
+                ProcessingFilter(filterDescriptor: $0)
+            }
         }
         
         func applyFilters(to sourceImage: CIImage) -> CIImage {
-            bootstrapIfNeeded(forSource: sourceImage)
+            bootstrap(forSource: sourceImage)
             var imageOutput = sourceImage
             autoreleasepool {
-                filters.enumerated().forEach { (offset, filter) in
-                    if let customImageTargetKey = filterChain[offset].customImageTargetKey {
-                        filter.setValue(imageOutput, forKey: customImageTargetKey)
-                    } else {
-                        filter.setValue(imageOutput, forKey: kCIInputImageKey)
+                for filter in filterChain {
+                    switch filter {
+                    case let .neural(neuralFilter):
+                        imageOutput = neuralFilter.execute(imageOutput) ?? imageOutput
+                    case let .filter(ciFilter, descriptor):
+                        if let customImageTargetKey = descriptor.customImageTargetKey {
+                            ciFilter.setValue(imageOutput, forKey: customImageTargetKey)
+                        } else {
+                            ciFilter.setValue(imageOutput, forKey: kCIInputImageKey)
+                        }
+                        imageOutput = ciFilter.outputImage ?? imageOutput
                     }
-                    imageOutput = filter.outputImage ?? imageOutput
                 }
             }
             return imageOutput
         }
         
-        private func bootstrapIfNeeded(forSource source: CIImage) {
-            for (offset, filter) in filters.enumerated() {
-                guard let descriptor = filterChain[safe: offset] else { continue }
-                for (key, value) in descriptor.params ?? [:] where value != .unsupported {
-                    if case let FilterDescriptor.Param.image(image, contentMode, url) = value {
-                        let uniqKey = [
-                            "resized-content-mode",
-                            url.absoluteString,
-                            "\(contentMode?.rawValue ?? -1)",
-                            "\(source.extent.width)|\(source.extent.height)"
-                        ].joined(separator: "-")
-                        let modifiedImage = SessionCache<CIImage>.data(
-                            fromIdentifier: uniqKey,
-                            storeCache: true,
-                            extractor: image.resized(to: source.extent.size, withContentMode: contentMode ?? .bottomLeft)
-                        )
-                        filter.setValue(modifiedImage, forKey: key)
-                    } else {
-                        filter.setValue(value.valueForParams, forKey: key)
+        private func bootstrap(forSource source: CIImage) {
+            for filter in filterChain {
+                switch filter {
+                case .neural: continue
+                case let .filter(ciFilter, descriptor):
+                    for (key, value) in descriptor.params ?? [:] where value != .unsupported {
+                        if case let FilterDescriptor.Param.image(image, contentMode, url) = value {
+                            let uniqKey = [
+                                "resized-content-mode",
+                                url.absoluteString,
+                                "\(contentMode?.rawValue ?? -1)",
+                                "\(source.extent.width)|\(source.extent.height)"
+                            ].joined(separator: "-")
+                            let modifiedImage = SessionCache<CIImage>.data(
+                                fromIdentifier: uniqKey,
+                                storeCache: true,
+                                extractor: image.resized(to: source.extent.size, withContentMode: contentMode ?? .bottomLeft)
+                            )
+                            ciFilter.setValue(modifiedImage, forKey: key)
+                        } else {
+                            ciFilter.setValue(value.valueForParams, forKey: key)
+                        }
                     }
                 }
             }
-            bootstrapped = true
         }
     }
 }
