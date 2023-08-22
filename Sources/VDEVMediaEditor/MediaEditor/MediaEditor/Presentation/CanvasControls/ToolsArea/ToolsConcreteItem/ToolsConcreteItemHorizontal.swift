@@ -6,17 +6,15 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ToolsConcreteItemHorizontal: View {
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var settings: VDEVMediaEditorSettings
-    
     @State private var isOpen = false
-    
     private weak var item: CanvasItemModel?
-    
     private var onClose: () -> Void
     private var onBringToFront: (CanvasItemModel) -> Void
     private var onBringToBack: (CanvasItemModel) -> Void
@@ -34,6 +32,7 @@ struct ToolsConcreteItemHorizontal: View {
     private var removeBackgroundML: (CanvasItemModel) -> Void
     private var onMerge: ([CanvasItemModel]) -> Void
     private var onVolume: (CanvasItemModel, Float) -> Void
+    private var onNeuralFilter: (CanvasItemModel) -> Void
     
     private let buttonSize: CGFloat = 40
     private let lineHeight: CGFloat = 60
@@ -58,7 +57,8 @@ struct ToolsConcreteItemHorizontal: View {
          onDublicate: @escaping (CanvasItemModel) -> Void,
          removeBackgroundML: @escaping (CanvasItemModel) -> Void,
          onMerge: @escaping ([CanvasItemModel]) -> Void,
-         onVolume: @escaping (CanvasItemModel, Float) -> Void) {
+         onVolume: @escaping (CanvasItemModel, Float) -> Void,
+         onNeuralFilter: @escaping (CanvasItemModel) -> Void) {
         self.item = item
         self.onClose = onClose
         self.onBringToBack = onBringToBack
@@ -77,6 +77,7 @@ struct ToolsConcreteItemHorizontal: View {
         self.removeBackgroundML = removeBackgroundML
         self.onMerge = onMerge
         self.onVolume = onVolume
+        self.onNeuralFilter = onNeuralFilter
     }
     
     var body: some View {
@@ -93,35 +94,45 @@ struct ToolsConcreteItemHorizontal: View {
                     if let item = item {
                         switch item.type {
                         case .image:
-                            
-                            ToolRow(image: images.currentItem.currentItemMask,
-                                    title: strings.mask) { onMaskFilter(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            
-                            ToolRow(image: images.currentItem.currentItemFilter,
-                                    title: strings.filter) { onColorFilter(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            
-                            ToolRow(image: images.currentItem.currentItemTexture,
-                                    title: strings.texture) { onTextureFilter(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            
-                            ToolRow(image: images.currentItem.currentItemAdjustments,
-                                    title: strings.adjustments) { onAdjustments(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            
-                            ToolRow(image: images.currentItem.currentItemCrop,
-                                    title: strings.crop) { onCropImage(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            
-//                            ToolRow(image: images.currentItem.currentItemRMBack,
-//                                    title: strings.removeBack) { removeBackgroundML(item) }
-                            
+                            OrView(item.isNeuralProgress) {
+                                ActivityIndicator(
+                                    isAnimating: true,
+                                    style: .medium,
+                                    color: UIColor(AppColors.whiteWithOpacity))
+                                .frame(width: buttonSize, height: buttonSize)
+                            } secondView: {
+                                if settings.showNeuralFilters {
+                                    ToolRow(image: images.currentItem.currentItemFilter,
+                                            title: strings.neuralFilter) { onNeuralFilter(item) }
+                                        .opacity(isOpen ? 1.0 : 0.0)
+                                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                }
+                                
+                                ToolRow(image: images.currentItem.currentItemFilter,
+                                        title: strings.filter) { onColorFilter(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                
+                                ToolRow(image: images.currentItem.currentItemMask,
+                                        title: strings.mask) { onMaskFilter(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                
+                                ToolRow(image: images.currentItem.currentItemTexture,
+                                        title: strings.texture) { onTextureFilter(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                
+                                ToolRow(image: images.currentItem.currentItemAdjustments,
+                                        title: strings.adjustments) { onAdjustments(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                
+                                ToolRow(image: images.currentItem.currentItemCrop,
+                                        title: strings.crop) { onCropImage(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            }
                         case .audio:
                             let video: CanvasAudioModel? = CanvasItemModel.toTypeOptional(model: item)
                             if let volume = video?.volume {
@@ -183,37 +194,39 @@ struct ToolsConcreteItemHorizontal: View {
                         default: EmptyView()
                         }
                         
-                        if !vm.data.isLimit {
-                            switch item.type {
-                            case .image, .video, .text, .sticker, .drawing:
-                                ToolRow(image: images.currentItem.currentIteDublicate,
-                                        title: strings.dublicate) { onDublicate(item) }
+                        OrViewWithEmpty(!item.isNeuralProgress) {
+                            if !vm.data.isLimit {
+                                switch item.type {
+                                case .image, .video, .text, .sticker, .drawing:
+                                    ToolRow(image: images.currentItem.currentIteDublicate,
+                                            title: strings.dublicate) { onDublicate(item) }
                                         .opacity(isOpen ? 1.0 : 0.0)
                                         .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            default: EmptyView()
+                                default: EmptyView()
+                                }
                             }
-                        }
-                        
-                        if item.canReset {
-                            ToolRow(image: images.currentItem.currentItemReset,
-                                    title: strings.reset,
-                                    tintColor: AppColors.greenWithOpacity) { onReset(item) }
+                            
+                            if item.canReset {
+                                ToolRow(image: images.currentItem.currentItemReset,
+                                        title: strings.reset,
+                                        tintColor: AppColors.greenWithOpacity) { onReset(item) }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            }
+                            
+                            ToolRow(image: images.currentItem.currentItemRM,
+                                    title: strings.remove,
+                                    tintColor: AppColors.redWithOpacity) { onDelete(item) }
                                 .opacity(isOpen ? 1.0 : 0.0)
                                 .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         }
-                        
-                        ToolRow(image: images.currentItem.currentItemRM,
-                                title: strings.remove,
-                                tintColor: AppColors.redWithOpacity) { onDelete(item) }
-                            .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         Rectangle()
                             .fill(AppColors.whiteWithOpacity)
                             .frame(height: lineHeight)
                             .frame(width: 1)
                         
-                        if item.type != .template {
+                        OrViewWithEmpty(item.type != .template) {
                             ToolRow(image: images.currentItem.currentItemUp,
                                     title: strings.up) { onUp(item) }
                                     .opacity(isOpen ? 1.0 : 0.0)
@@ -235,11 +248,14 @@ struct ToolsConcreteItemHorizontal: View {
                                 .opacity(isOpen ? 1.0 : 0.0)
                                 .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
-                        if let withItem = vm.data.canMerge(item: item) {
-                            ToolRow(image: images.currentItem.currentItemMerge,
-                                    title: strings.merge) { onMerge([withItem, item]) }
+                        OrViewWithEmpty(!item.isNeuralProgress) {
+                            if let withItem = vm.data.canMerge(item: item),
+                               !withItem.isNeuralProgress {
+                                ToolRow(image: images.currentItem.currentItemMerge,
+                                        title: strings.merge) { onMerge([withItem, item]) }
                                     .opacity(isOpen ? 1.0 : 0.0)
                                     .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            }
                         }
                     }
                 }

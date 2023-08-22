@@ -23,6 +23,8 @@ public struct StartMetaConfig {
 public protocol VDEVMediaEditorSourceService {
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter]
     
+    func neuralFilters(forChallenge baseChallengeId: String) async throws -> [NeuralEditorFilter]
+    
     func textures(forChallenge baseChallengeId: String) async throws -> [EditorFilter]
     
     func masks(forChallenge baseChallengeId: String) async throws -> [EditorFilter]

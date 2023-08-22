@@ -11,27 +11,31 @@ import Photos
 
 // MARK: - Image
 final class CanvasImageModel: CanvasItemModel {
+    @Published private(set) var image: UIImage
+    @Published private(set) var inProgress: ProgresOperationType?
+    
     private(set) var asset: CanvasItemAsset?
     private(set) var originalImage: UIImage
-    
-    @Published private(set) var image: UIImage
-    @Published private(set) var inProgress: Bool = false
+    private(set) var imageWithNeural: UIImage? // Картинка с нейронкой
     
     private let aplayer: CanvasApplayer = .init()
     private var storage = Cancellables()
-
+    
     init(image: UIImage,
          asset: CanvasItemAsset?,
          originalImage: UIImage? = nil,
+         imageWithNeural: UIImage? = nil,
          bounds: CGRect = .zero,
          offset: CGSize = .zero,
          adjustmentSettings: AdjustmentSettings? = nil,
          colorFilter: EditorFilter? = nil,
+         neuralFilter: NeuralEditorFilter? = nil,
          textures: EditorFilter? = nil,
          masks: EditorFilter? = nil,
          blendingMode: BlendingMode = .normal) {
         
         self.originalImage = originalImage ?? image
+        self.imageWithNeural = imageWithNeural
         self.image = image
         self.asset = asset
         
@@ -41,6 +45,7 @@ final class CanvasImageModel: CanvasItemModel {
             type: .image,
             adjustmentSettings: adjustmentSettings,
             colorFilter: colorFilter,
+            neuralFilter: neuralFilter,
             textures: textures,
             masks: masks,
             blendingMode: blendingMode)
@@ -49,6 +54,10 @@ final class CanvasImageModel: CanvasItemModel {
     deinit {
         storage.cancelAll()
         Log.d("❌ Deinit: CanvasImageModel")
+    }
+    
+    override func apply(neuralFilter: NeuralEditorFilter?) {
+        setNeuralFilters(neuralFilter: neuralFilter)
     }
     
     override func apply(masks: EditorFilter?) {
@@ -71,13 +80,51 @@ final class CanvasImageModel: CanvasItemModel {
         setAllFilters()
     }
     
-    private func setAllFilters() {
-        inProgress = true
+    override func copy() -> CanvasImageModel {
+        let new = CanvasImageModel(image: image,
+                                   asset: asset,
+                                   originalImage: originalImage,
+                                   imageWithNeural: imageWithNeural,
+                                   adjustmentSettings: adjustmentSettings,
+                                   colorFilter: colorFilter,
+                                   neuralFilter: neuralFilter,
+                                   textures: textures,
+                                   masks: masks)
+        new.update(offset: offset, scale: scale, rotation: rotation)
+        return new
+    }
+}
+
+private extension CanvasImageModel {
+    func setNeuralFilters(neuralFilter: NeuralEditorFilter?) {
+        let isWithNeural = setupBeforeAIProcessing(neuralFilter)
+        storage.cancelAll()
         
+        inProgress = .neural(image)
+        
+        aplayer.applyFilters(
+            for: originalImage,
+            neuralFilters: neuralFilter
+        )
+        .sink(on: .main, object: self) { wSelf, output in
+            switch output.value {
+            case .image(let value):
+                wSelf.imageWithNeural = isWithNeural ? value: nil
+                wSelf.image = value
+            default:
+                wSelf.imageWithNeural = nil
+                wSelf.image = wSelf.originalImage
+            }
+            wSelf.inProgress = nil
+        }
+        .store(in: &storage)
+    }
+    
+    // Применение фильтров пользователя
+    func setAllFilters() {
         storage.limitCancel()
-        
-        aplayer.applyFilters(for: originalImage,
-                             baseFilters: [],
+        inProgress = .simple
+        aplayer.applyFilters(for: imageWithNeural ?? originalImage,
                              adjustmentSettings: adjustmentSettings,
                              colorFilter: colorFilter,
                              textures: textures,
@@ -86,33 +133,30 @@ final class CanvasImageModel: CanvasItemModel {
             switch output.value {
             case .image(let value):
                 wSelf.image = value
-            case .empty:
-                wSelf.image = wSelf.originalImage
-            case .video, .cancel:
-                break
+            default:
+                wSelf.image = wSelf.imageWithNeural ?? wSelf.originalImage
             }
-            wSelf.inProgress = false
+            wSelf.inProgress = nil
         }
         .store(in: &storage)
     }
     
-    override func copy() -> CanvasImageModel {
-        let new = CanvasImageModel(image: image,
-                                   asset: asset,
-                                   originalImage: originalImage,
-                                   adjustmentSettings: adjustmentSettings,
-                                   colorFilter: colorFilter,
-                                   textures: textures,
-                                   masks: masks)
-        
-        new.update(offset: offset, scale: scale, rotation: rotation)
-        
-        return new
+    private func setupBeforeAIProcessing(
+        _ neuralFilter: NeuralEditorFilter?
+    ) -> Bool {
+        self.neuralFilter = neuralFilter
+        guard neuralFilter != nil else { return false }
+        masks = nil
+        textures = nil
+        adjustmentSettings = nil
+        colorFilter = nil
+        return true
     }
 }
 
 extension CanvasImageModel {
     func getFilteredOriginal() async -> UIImage? {
-       await getFilteredOriginal(asset: asset)
+        // Если передать nil, то builder будет брать изображение с канваса
+        await getFilteredOriginal(asset: imageWithNeural != nil ? nil : asset)
     }
 }

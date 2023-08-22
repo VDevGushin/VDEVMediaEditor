@@ -54,6 +54,7 @@ extension CanvasItemModel {
 class CanvasItemModel: Identifiable, ObservableObject {
     var adjustmentSettings: AdjustmentSettings?
     var colorFilter: EditorFilter?
+    var neuralFilter: NeuralEditorFilter?
     var textures: EditorFilter?
     var masks: EditorFilter?
 
@@ -83,6 +84,16 @@ class CanvasItemModel: Identifiable, ObservableObject {
     var canReset: Bool {
         offset != .zero || scale != 1 || rotation != .zero
     }
+    
+    var isNeuralProgress: Bool {
+        guard let canvasImageModel: CanvasImageModel = CanvasItemModel.toTypeOptional(model: self),
+              let progress = canvasImageModel.inProgress
+        else { return false }
+        switch progress {
+        case .neural: return true
+        case .simple: return false
+        }
+    }
 
     init(id: UUID = UUID(),
          offset: CGSize = .zero,
@@ -92,6 +103,7 @@ class CanvasItemModel: Identifiable, ObservableObject {
          type: CanvasItemType = .empty,
          adjustmentSettings: AdjustmentSettings? = nil,
          colorFilter: EditorFilter? = nil,
+         neuralFilter: NeuralEditorFilter? = nil,
          textures: EditorFilter? = nil,
          masks: EditorFilter? = nil,
          blendingMode: BlendingMode = .normal) {
@@ -103,6 +115,7 @@ class CanvasItemModel: Identifiable, ObservableObject {
         self.type = type
         self.adjustmentSettings = adjustmentSettings
         self.colorFilter = colorFilter
+        self.neuralFilter = neuralFilter
         self.masks = masks
         self.textures = textures
         self.blendingMode = blendingMode
@@ -136,6 +149,10 @@ class CanvasItemModel: Identifiable, ObservableObject {
     }
 
     func apply(colorFilter: EditorFilter?) {
+        Log.i("------> base apply")
+    }
+    
+    func apply(neuralFilter: NeuralEditorFilter?) {
         Log.i("------> base apply")
     }
 

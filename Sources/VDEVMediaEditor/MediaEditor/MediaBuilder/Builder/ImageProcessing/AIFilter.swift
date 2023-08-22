@@ -1,5 +1,5 @@
 //
-//  NeuralFilter.swift
+//  AIFilter.swift
 //  
 //
 //  Created by Vladislav Gushin on 10.08.2023.
@@ -8,13 +8,15 @@
 import UIKit
 import CollectionConcurrencyKit
 
-public final class NeuralFilter {
+public final class AIFilter {
     @Injected private var networkConfig: VDEVNetworkConfig
-    private let networkConfigType: VDEVNetworkModuleConfigType = .image2image
     private var service: Image2ImageService?
     private var neuralFilterDescriptor: FilterDescriptor?
     
-    public init?(descriptor: FilterDescriptor) {
+    public init?(
+        _ descriptor: FilterDescriptor,
+        _ networkConfigType: VDEVNetworkModuleConfigType = .image2image
+    ) {
         guard descriptor.isNeural else { return nil }
         self.service = .init(networkConfig[networkConfigType])
         self.neuralFilterDescriptor = descriptor
@@ -35,9 +37,7 @@ private final class Image2ImageService {
     private(set) public var client: ApiClient
     
     init?(_ image2imageNetworkModule: VDEVNetworkModuleConfig?) {
-        guard let image2imageNetworkModule = image2imageNetworkModule else {
-            return nil
-        }
+        guard let image2imageNetworkModule = image2imageNetworkModule else { return nil }
         self.image2imageNetworkModule = image2imageNetworkModule
         self.client = ApiClientImpl(host: image2imageNetworkModule.host)
     }
@@ -97,7 +97,7 @@ private extension Image2ImageService {
         typealias Response = Data
         var multipartRequest: MultipartRequest = .init()
         var encoder: JSONEncoder = .init()
-        var timeOut: TimeInterval { 30 }
+        var timeOut: TimeInterval { image2imageNetworkConfig.timeOut }
         var method: HTTPMethod { .post }
         var path: String { image2imageNetworkConfig.path }
         var headers: [String: String]? { image2imageNetworkConfig.headers }
@@ -113,20 +113,28 @@ private extension Image2ImageService {
             filterStepId: String
         ) {
             guard let image = image else { return nil }
+            
             self.image2imageNetworkConfig = image2imageNetworkConfig
             self.token = image2imageNetworkConfig.token
             self.image = image
             self.editorFilterId = editorFilterId
             self.filterStepId = filterStepId
-            let body = Body(editorFilterId: editorFilterId, editorFilterStepId: filterStepId)
+            
+            let body = Body(
+                editorFilterId: editorFilterId,
+                editorFilterStepId: filterStepId
+            )
+            
             guard let imageData = image.jpegData(compressionQuality: 0.8),
                   let bodyPart = try? encoder.encode(body)else {
                 return nil
             }
+            
             self.multipartRequest.add(
                 key: "body",
                 value: String(decoding: bodyPart, as: UTF8.self)
             )
+            
             self.multipartRequest.add(
                 key: "image",
                 fileName: "image2image.jpg",
@@ -140,21 +148,4 @@ private extension Image2ImageService {
             let editorFilterStepId: String
         }
     }
-}
-
-// - MARK: Box for sync operation (problem with render autoreleasepool)
-private func BlockingTask<T>(_ body: @escaping () async -> T?) -> T? {
-    let semaphore = DispatchSemaphore(value: 0)
-    let box = Box<T>()
-    Task {
-        let result = await body()
-        box.result = result
-        semaphore.signal()
-    }
-    semaphore.wait()
-    return box.result
-}
-
-private final class Box<T> {
-    var result: T?
 }

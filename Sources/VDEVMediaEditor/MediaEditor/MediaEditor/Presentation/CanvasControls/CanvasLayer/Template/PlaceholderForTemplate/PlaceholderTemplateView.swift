@@ -9,9 +9,7 @@ import SwiftUI
 
 struct PlaceholderTemplateView: View {
     @Environment(\.guideLinesColor) private var guideLinesColor
-    
     @Injected private var images: VDEVImageConfig
-    @Injected private var strings: VDEVMediaEditorStrings
     
     @StateObject private var vm: PlaceholderTemplateViewModel
     
@@ -37,55 +35,10 @@ struct PlaceholderTemplateView: View {
             }
         }
         .overlay {
-            Loader(
-                message: strings.doingSomeMagic,
-                inProgress: vm.inProgress
+            NeuralLoader(
+                progresOperationType: vm.inProgress,
+                guideLinesColor: guideLinesColor
             )
-        }
-    }
-}
-
-// MARK: - Loader
-private extension PlaceholderTemplateView {
-    @ViewBuilder
-    func Loader(
-        message: String,
-        inProgress: PlaceholderTemplateViewModel.ProgresType?
-    ) -> some View {
-        vm.inProgress.map {
-            switch $0 {
-            case .simple:
-                ActivityIndicator(
-                    isAnimating: true,
-                    style: .medium,
-                    color: .init(guideLinesColor)
-                )
-            case let .neural(image):
-                ZStack {
-                    image.map {
-                        Image(uiImage: $0)
-                            .resizable()
-                            .scaledToFill()
-                            .blur(radius: 8, opaque: false)
-                            .overlay {
-                                AppColors.blackWithOpacity1
-                            }
-                    }
-                    
-                    VStack(alignment: .center) {
-                        Text(message)
-                            .multilineTextAlignment(.center)
-                            .font(AppFonts.gramatika(size: 16))
-                            .foregroundColor(AppColors.white)
-                        
-                        ActivityIndicator(
-                            isAnimating: true,
-                            style: .medium,
-                            color: .init(guideLinesColor)
-                        )
-                    }
-                }
-            }
         }
     }
 }

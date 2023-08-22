@@ -183,6 +183,15 @@ public class FilterDescriptor: Codable, Hashable {
 }
 
 public extension FilterDescriptor {
+    convenience init?(step: NeuralEditorFilter.Step, id: String?) {
+        guard let id else { return nil }
+        
+        let neuralConfig = step.neuralConfig
+        self.init(name: NeuralFilterDescriptorName,
+                  params: [neuralConfig.stepID: .neural(neuralConfig)],
+                  id: id)
+    }
+    
     convenience init?(step: EditorFilter.Step, id: String?) {
         switch step.type {
         case .lut:

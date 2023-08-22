@@ -67,7 +67,7 @@ struct CanvasApplayer {
     }
 
     func applyFilters(for image: UIImage,
-                      baseFilters: [EditorFilter],
+                      baseFilters: [EditorFilter] = [],
                       adjustmentSettings: AdjustmentSettings?,
                       colorFilter: EditorFilter?,
                       textures: EditorFilter?,
@@ -98,6 +98,29 @@ struct CanvasApplayer {
 
                 let image = UIImage(cgImage: cgImage)
 
+                seal(.success(.imageAdjustmentOutput(image: image)))
+            }
+        }.eraseToAnyPublisher()
+    }
+    
+    func applyFilters(
+        for image: UIImage,
+        neuralFilters: NeuralEditorFilter?
+    ) -> AnyPublisher<CanvasApplayerOutput, Never> {
+        Future<CanvasApplayerOutput, Never> { seal in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let filterChain = neuralFilters?.steps.makeFilterDescriptors(id: neuralFilters?.id) ?? []
+                guard !filterChain.isEmpty else {
+                    seal(.success(.empty()))
+                    return
+                }
+                guard let updatedImage = FilteringProcessor().process(image: image,
+                                                                           filteringChain: filterChain),
+                      let cgImage = FilteringProcessor().createCGImage(from: updatedImage) else {
+                    seal(.success(.empty()))
+                    return
+                }
+                let image = UIImage(cgImage: cgImage)
                 seal(.success(.imageAdjustmentOutput(image: image)))
             }
         }.eraseToAnyPublisher()

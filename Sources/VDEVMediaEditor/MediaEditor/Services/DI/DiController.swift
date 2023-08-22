@@ -49,6 +49,8 @@ struct DiController {
             container.register(type: ImageResultChecker.self,
                                service: ImageResultChecker(config: .init()))
         }
+        
+        container.register(type: ItemProcessingWatcher.self, service: ItemProcessingWatcherImpl())
     }
     
     static func clean(with container: DIContainer = DIContainer.shared) {

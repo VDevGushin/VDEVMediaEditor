@@ -15,6 +15,8 @@ public protocol VDEVMediaEditorResultSettings: AnyObject {
 }
 
 public protocol VDEVMediaEditorSettings {
+    // Дать ли возможность применять фильтры с нейросетями
+    var showNeuralFilters: Bool { get }
     // Показывать ли кнопку undo
     var canUndo: Bool { get }
     // Показывать или не показывать онбординг

@@ -26,6 +26,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     case concreteItem(CanvasItemModel)
     case imageCropper(CanvasImageModel)
     case colorFilter(CanvasItemModel)
+    case neuralFilters(CanvasItemModel)
     case textureFilter(CanvasItemModel)
     case masksFilter(CanvasItemModel)
     case adjustment(CanvasItemModel)
@@ -71,6 +72,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         case .concreteItem(let item): return item
         case .imageCropper(let item): return item
         case .colorFilter(let item): return item
+        case .neuralFilters(let item): return item
         case .textureFilter(let item): return item
         case .masksFilter(let item): return item
         case .adjustment(let item): return item
@@ -101,7 +103,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.drawing
         case .backgroundColor:
             return Strings.background
-        case  .aspectRatio, .settings, .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
+        case  .aspectRatio, .settings, .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter, .neuralFilters:
             return ""
         }
     }
@@ -133,7 +135,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             fatalError("No image")
         case .aspectRatio:
             fatalError("No image")
-        case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter:
+        case .empty, .concreteItem, .imageCropper, .adjustment, .colorFilter, .textureFilter, .masksFilter, .neuralFilters:
             fatalError("No image")
         }
     }

@@ -8,10 +8,21 @@
 import SwiftUI
 
 struct TransparentBlurView: UIViewRepresentable {
-    var removeAllFilters: Bool = false
+    let removeAllFilters: Bool
+    let blurStyle: UIBlurEffect.Style
+    init(
+        removeAllFilters: Bool = false,
+        blurStyle: UIBlurEffect.Style = .systemUltraThinMaterialDark
+    ) {
+        self.removeAllFilters = removeAllFilters
+        self.blurStyle = blurStyle
+    }
     
     func makeUIView(context: Context) -> TransparentBlurViewHelper {
-        let view = TransparentBlurViewHelper(removeAllFilters: removeAllFilters)
+        let view = TransparentBlurViewHelper(
+            removeAllFilters: removeAllFilters,
+            blurStyle: blurStyle
+        )
         return view
     }
     
@@ -19,8 +30,11 @@ struct TransparentBlurView: UIViewRepresentable {
 }
 
 final class TransparentBlurViewHelper: UIVisualEffectView {
-    init(removeAllFilters: Bool) {
-        super.init(effect: UIBlurEffect (style: .systemUltraThinMaterialDark))
+    init(
+        removeAllFilters: Bool,
+        blurStyle: UIBlurEffect.Style
+    ) {
+        super.init(effect: UIBlurEffect (style: blurStyle))
         
         if subviews.indices.contains(1) {
             subviews[1].alpha = 0

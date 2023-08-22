@@ -136,6 +136,7 @@ public protocol VDEVMediaEditorStrings {
     var bringToBottom: String { get }
     var selectMedia: String { get }
     var colorFilter: String { get }
+    var neuralFilter: String { get }
     var close: String { get }
     var layers: String { get }
     var templatePack: String { get }
@@ -180,4 +181,5 @@ public protocol VDEVMediaEditorStrings {
     var submit: String { get }
     var random: String { get }
     var doingSomeMagic: String { get }
+    var none: String { get }
 }

@@ -89,13 +89,10 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
             .aspectRatio(item.image.aspectRatio, contentMode: .fill)
             .frame(size)
             .overlay(alignment: .center) {
-                if item.inProgress {
-                    ActivityIndicator(
-                        isAnimating: true,
-                        style: .large,
-                        color: .init(guideLinesColor)
-                    )
-                }
+                NeuralLoader(
+                    progresOperationType: item.inProgress,
+                    guideLinesColor: guideLinesColor
+                )
             }
         
     case .sticker:

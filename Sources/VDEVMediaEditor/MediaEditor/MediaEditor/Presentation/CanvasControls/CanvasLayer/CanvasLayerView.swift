@@ -136,7 +136,13 @@ struct CanvasLayerView<Content: View>: View {
                 .background(selectionColor)
                 .border(guideLinesColor.opacity(0.5),
                         width: borderType.border(scale: vm.scale))
-                .overlay(selectionOverlay)
+                .overlay(
+                    SelectionView(
+                        scale: $vm.scale,
+                        borderType: borderType,
+                        guideLinesColor: guideLinesColor
+                    )
+                )
                 .scaleEffect(vm.scale)
                 .rotationEffect(vm.rotation)
                 .offset(vm.offset)
@@ -304,33 +310,6 @@ fileprivate extension CanvasLayerView {
     }
 }
 
-// MARK: - Selection border type
-fileprivate extension CanvasLayerView {
-    @ViewBuilder
-    var selectionOverlay: some View {
-        switch borderType {
-        case .selected:
-            Rectangle()
-                .inset(by: -borderType.borderOverlay(scale: vm.scale))
-                .stroke(guideLinesColor.opacity(0.8), style:
-                            StrokeStyle(lineWidth: borderType.borderOverlay(scale: vm.scale),
-                                        lineCap: .round,
-                                        lineJoin: .round,
-                                        dash: [10, 10],
-                                        dashPhase: phase)
-                )
-                .animation(
-                    Animation.linear(duration: 15)
-                        .repeatForever(autoreverses: true),
-                    value: phase)
-                .onAppear {
-                    phase -= 100
-                }
-        default: EmptyView()
-        }
-    }
-}
-
 // MARK: - ManipulationWatcher
 // Следим, чтобы объект манипуляции был только один
 private final class ManipulationWatcher: ObservableObject {
@@ -359,24 +338,86 @@ private final class ManipulationWatcher: ObservableObject {
     }
 }
 // MARK: - Helps
-fileprivate extension CanvasLayerView {
-    enum BorderType {
-        case empty
-        case selected
-        case manipulated
-        
-        func border(scale: CGFloat) -> CGFloat {
-            switch self {
-            case .manipulated: return 1 / scale
-            default: return 0.0
-            }
+
+fileprivate enum BorderType: Equatable, Identifiable {
+    case empty
+    case selected
+    case manipulated
+    
+    func border(scale: CGFloat) -> CGFloat {
+        switch self {
+        case .manipulated: return 1 / scale
+        default: return 0.0
         }
-        
-        func borderOverlay(scale: CGFloat) -> CGFloat {
-            switch self {
-            case .selected: return 1 / scale
-            default: return 0.0
-            }
+    }
+    
+    func borderOverlay(scale: CGFloat) -> CGFloat {
+        switch self {
+        case .selected: return 1 / scale
+        default: return 0.0
+        }
+    }
+    
+    static func == (
+        lhs: BorderType,
+        rhs: BorderType
+    ) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    var id: Int {
+        switch self {
+        case .empty:
+            return 0
+        case .selected:
+            return 1
+        case .manipulated:
+            return 2
         }
     }
 }
+
+fileprivate struct SelectionView: View {
+    @Binding private var scale: CGFloat
+    @State private var phase = 0.0
+    private var borderType: BorderType
+    private var guideLinesColor: Color
+    
+    init(
+        scale: Binding<CGFloat>,
+        borderType: BorderType,
+        guideLinesColor: Color
+    ) {
+        self._scale = scale
+        self.borderType = borderType
+        self.guideLinesColor = guideLinesColor
+        self.phase = phase
+    }
+    
+    var body: some View {
+        if case .selected = borderType {
+            Rectangle()
+                .inset(
+                    by: -borderType.borderOverlay(scale: scale)
+                )
+                .stroke(
+                    guideLinesColor.opacity(0.8),
+                    style: StrokeStyle(
+                        lineWidth: borderType.borderOverlay(scale: scale),
+                        lineCap: .round,
+                        lineJoin: .round,
+                        dash: [10, 10],
+                        dashPhase: phase)
+                )
+                .animation(
+                    Animation
+                        .linear(duration: 15)
+                        .repeatForever(autoreverses: true),
+                    value: phase)
+                .onAppear {
+                    phase -= 100
+                }
+        }
+    }
+}
+

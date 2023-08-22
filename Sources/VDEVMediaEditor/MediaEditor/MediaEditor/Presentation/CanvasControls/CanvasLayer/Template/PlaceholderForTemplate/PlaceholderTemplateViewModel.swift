@@ -9,22 +9,11 @@ import SwiftUI
 import AVKit
 import Combine
 
-extension PlaceholderTemplateViewModel {
-    enum ProgresType {
-        case simple
-        case neural(UIImage?)
-        
-        init(withNeural: Bool, image: UIImage? = nil) {
-            self = withNeural ? .neural(image) : .simple
-        }
-    }
-}
-
 final class PlaceholderTemplateViewModel: ObservableObject {
     unowned let item: CanvasPlaceholderModel
     weak var delegate: CanvasEditorDelegate?
     
-    @Published private(set) var inProgress: ProgresType? = nil
+    @Published private(set) var inProgress: ProgresOperationType? = nil
     @Published private(set) var imageModel: CanvasImagePlaceholderModel?
     @Published private(set) var videoModel: CanvasVideoPlaceholderModel?
     @Published private(set) var showSelection: Bool = false

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 private final class ColorFilterToolLoader {
     @Injected private var sourceService: VDEVMediaEditorSourceService
     
@@ -31,6 +30,7 @@ private final class ColorFilterToolLoader {
 }
 
 struct ColorFilterTool: View {
+    @Injected private var strings: VDEVMediaEditorStrings
     @State private var items: [EditorFilter] = []
     @State private var update = false
     @State private var loader: ColorFilterToolLoader!
@@ -50,7 +50,11 @@ struct ColorFilterTool: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                Cell(imageURL: nil, text: "None", selected: layerModel.colorFilter == nil) {
+                Cell(
+                    imageURL: nil,
+                    text: strings.none,
+                    selected: layerModel.colorFilter == nil
+                ) {
                     layerModel.apply(colorFilter: nil)
                     update.toggle()
                 }
@@ -83,8 +87,8 @@ struct ColorFilterTool: View {
         let selected: Bool
         let action: () -> ()
 
-        private let width: CGFloat = 90
-        private let ratio: CGFloat = 16/9
+        private let width: CGFloat = 120
+        private let ratio: CGFloat = 3/2
 
         var body: some View {
             Button {

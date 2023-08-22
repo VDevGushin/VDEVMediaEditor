@@ -11,6 +11,30 @@ public final class GetChallengeEditorFilterQuery: GraphQLQuery {
     query GetChallengeEditorFilter($baseChallengeId: ID!) {
       baseChallenge(id: $baseChallengeId) {
         __typename
+        appEditorNeuralFilters {
+          __typename
+          id
+          name
+          cover
+          stepsFull {
+            __typename
+            type
+            url
+            id
+            filterId
+            neuralConfig {
+              __typename
+              minPixels
+              maxPixels
+              allowedDimensions {
+                __typename
+                width
+                height
+              }
+              dimensionsMultipleOf
+            }
+          }
+        }
         appEditorFilters {
           __typename
           id
@@ -72,6 +96,7 @@ public final class GetChallengeEditorFilterQuery: GraphQLQuery {
       public static var selections: [GraphQLSelection] {
         return [
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("appEditorNeuralFilters", type: .nonNull(.list(.nonNull(.object(AppEditorNeuralFilter.selections))))),
           GraphQLField("appEditorFilters", type: .nonNull(.list(.nonNull(.object(AppEditorFilter.selections))))),
         ]
       }
@@ -82,8 +107,8 @@ public final class GetChallengeEditorFilterQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(appEditorFilters: [AppEditorFilter]) {
-        self.init(unsafeResultMap: ["__typename": "BaseChallenge", "appEditorFilters": appEditorFilters.map { (value: AppEditorFilter) -> ResultMap in value.resultMap }])
+      public init(appEditorNeuralFilters: [AppEditorNeuralFilter], appEditorFilters: [AppEditorFilter]) {
+        self.init(unsafeResultMap: ["__typename": "BaseChallenge", "appEditorNeuralFilters": appEditorNeuralFilters.map { (value: AppEditorNeuralFilter) -> ResultMap in value.resultMap }, "appEditorFilters": appEditorFilters.map { (value: AppEditorFilter) -> ResultMap in value.resultMap }])
       }
 
       public var __typename: String {
@@ -95,12 +120,287 @@ public final class GetChallengeEditorFilterQuery: GraphQLQuery {
         }
       }
 
+      public var appEditorNeuralFilters: [AppEditorNeuralFilter] {
+        get {
+          return (resultMap["appEditorNeuralFilters"] as! [ResultMap]).map { (value: ResultMap) -> AppEditorNeuralFilter in AppEditorNeuralFilter(unsafeResultMap: value) }
+        }
+        set {
+          resultMap.updateValue(newValue.map { (value: AppEditorNeuralFilter) -> ResultMap in value.resultMap }, forKey: "appEditorNeuralFilters")
+        }
+      }
+
       public var appEditorFilters: [AppEditorFilter] {
         get {
           return (resultMap["appEditorFilters"] as! [ResultMap]).map { (value: ResultMap) -> AppEditorFilter in AppEditorFilter(unsafeResultMap: value) }
         }
         set {
           resultMap.updateValue(newValue.map { (value: AppEditorFilter) -> ResultMap in value.resultMap }, forKey: "appEditorFilters")
+        }
+      }
+
+      public struct AppEditorNeuralFilter: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["EditorFilter"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+            GraphQLField("name", type: .nonNull(.scalar(String.self))),
+            GraphQLField("cover", type: .scalar(String.self)),
+            GraphQLField("stepsFull", type: .nonNull(.list(.nonNull(.object(StepsFull.selections))))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID, name: String, cover: String? = nil, stepsFull: [StepsFull]) {
+          self.init(unsafeResultMap: ["__typename": "EditorFilter", "id": id, "name": name, "cover": cover, "stepsFull": stepsFull.map { (value: StepsFull) -> ResultMap in value.resultMap }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+
+        public var name: String {
+          get {
+            return resultMap["name"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "name")
+          }
+        }
+
+        public var cover: String? {
+          get {
+            return resultMap["cover"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "cover")
+          }
+        }
+
+        public var stepsFull: [StepsFull] {
+          get {
+            return (resultMap["stepsFull"] as! [ResultMap]).map { (value: ResultMap) -> StepsFull in StepsFull(unsafeResultMap: value) }
+          }
+          set {
+            resultMap.updateValue(newValue.map { (value: StepsFull) -> ResultMap in value.resultMap }, forKey: "stepsFull")
+          }
+        }
+
+        public struct StepsFull: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["EditorFilterStep"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("type", type: .nonNull(.scalar(String.self))),
+              GraphQLField("url", type: .scalar(String.self)),
+              GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+              GraphQLField("filterId", type: .nonNull(.scalar(GraphQLID.self))),
+              GraphQLField("neuralConfig", type: .object(NeuralConfig.selections)),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(type: String, url: String? = nil, id: GraphQLID, filterId: GraphQLID, neuralConfig: NeuralConfig? = nil) {
+            self.init(unsafeResultMap: ["__typename": "EditorFilterStep", "type": type, "url": url, "id": id, "filterId": filterId, "neuralConfig": neuralConfig.flatMap { (value: NeuralConfig) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var type: String {
+            get {
+              return resultMap["type"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "type")
+            }
+          }
+
+          public var url: String? {
+            get {
+              return resultMap["url"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "url")
+            }
+          }
+
+          public var id: GraphQLID {
+            get {
+              return resultMap["id"]! as! GraphQLID
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "id")
+            }
+          }
+
+          public var filterId: GraphQLID {
+            get {
+              return resultMap["filterId"]! as! GraphQLID
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "filterId")
+            }
+          }
+
+          public var neuralConfig: NeuralConfig? {
+            get {
+              return (resultMap["neuralConfig"] as? ResultMap).flatMap { NeuralConfig(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "neuralConfig")
+            }
+          }
+
+          public struct NeuralConfig: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["AppNeuralFilterConfig"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("minPixels", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("maxPixels", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("allowedDimensions", type: .list(.nonNull(.object(AllowedDimension.selections)))),
+                GraphQLField("dimensionsMultipleOf", type: .nonNull(.scalar(Int.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(minPixels: Int, maxPixels: Int, allowedDimensions: [AllowedDimension]? = nil, dimensionsMultipleOf: Int) {
+              self.init(unsafeResultMap: ["__typename": "AppNeuralFilterConfig", "minPixels": minPixels, "maxPixels": maxPixels, "allowedDimensions": allowedDimensions.flatMap { (value: [AllowedDimension]) -> [ResultMap] in value.map { (value: AllowedDimension) -> ResultMap in value.resultMap } }, "dimensionsMultipleOf": dimensionsMultipleOf])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var minPixels: Int {
+              get {
+                return resultMap["minPixels"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "minPixels")
+              }
+            }
+
+            public var maxPixels: Int {
+              get {
+                return resultMap["maxPixels"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "maxPixels")
+              }
+            }
+
+            public var allowedDimensions: [AllowedDimension]? {
+              get {
+                return (resultMap["allowedDimensions"] as? [ResultMap]).flatMap { (value: [ResultMap]) -> [AllowedDimension] in value.map { (value: ResultMap) -> AllowedDimension in AllowedDimension(unsafeResultMap: value) } }
+              }
+              set {
+                resultMap.updateValue(newValue.flatMap { (value: [AllowedDimension]) -> [ResultMap] in value.map { (value: AllowedDimension) -> ResultMap in value.resultMap } }, forKey: "allowedDimensions")
+              }
+            }
+
+            public var dimensionsMultipleOf: Int {
+              get {
+                return resultMap["dimensionsMultipleOf"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "dimensionsMultipleOf")
+              }
+            }
+
+            public struct AllowedDimension: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Dimension"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("width", type: .nonNull(.scalar(Int.self))),
+                  GraphQLField("height", type: .nonNull(.scalar(Int.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(width: Int, height: Int) {
+                self.init(unsafeResultMap: ["__typename": "Dimension", "width": width, "height": height])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              public var width: Int {
+                get {
+                  return resultMap["width"]! as! Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "width")
+                }
+              }
+
+              public var height: Int {
+                get {
+                  return resultMap["height"]! as! Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "height")
+                }
+              }
+            }
+          }
         }
       }
 

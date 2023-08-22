@@ -1,5 +1,25 @@
 query GetChallengeEditorFilter($baseChallengeId: ID!) {
   baseChallenge(id: $baseChallengeId) {
+    appEditorNeuralFilters {
+      id
+      name
+      cover
+      stepsFull {
+        type
+        url
+        id
+        filterId
+        neuralConfig {
+            minPixels
+            maxPixels
+            allowedDimensions {
+                    width
+                    height
+                }
+            dimensionsMultipleOf
+        }
+      }
+    }
     appEditorFilters {
       id
       name

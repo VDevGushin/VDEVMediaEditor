@@ -10,11 +10,11 @@ import Apollo
 import UIKit
 
 extension NetworkClient {
+    typealias NeuralFilter = GetChallengeEditorFilterQuery.Data.BaseChallenge.AppEditorNeuralFilter
     typealias EditorColorFilter = GetChallengeEditorFilterQuery.Data.BaseChallenge.AppEditorFilter
     typealias EditorMasksFilter = GetChallengeEditorMasksFiltersQuery.Data.BaseChallenge.AppEditorMask
     typealias EditorTexturesFilter = GetChallengeEditorTexturesFiltersQuery.Data.BaseChallenge.AppEditorTexture
     typealias EditorTemplate = GetChallengeEditorTemplatesQuery.Data.BaseChallenge.AppEditorTemplate
-    typealias AttachedEditorTemplate = GetChallengeMetaQuery.Data.BaseChallenge.AppAttachedEditorTemplate
     typealias StickerPack = GetChallengeStickerPacksFullQuery.Data.BaseChallenge.AppStickerPack
     typealias BaseChallenge = GetChallengeMetaQuery.Data.BaseChallenge
 }
@@ -22,11 +22,13 @@ extension NetworkClient {
 protocol NetworkClient {
     func removeBackground(for image: UIImage) async throws -> (UIImage, URL)
     func filters(forChallenge baseChallengeId: GraphQLID) async throws -> [EditorColorFilter]
+    func neuralFilters(forChallenge baseChallengeId: GraphQLID) async throws -> [NeuralFilter]
     func masks(forChallenge baseChallengeId: GraphQLID) async throws -> [EditorMasksFilter]
     func textures(forChallenge baseChallengeId: GraphQLID) async throws -> [EditorTexturesFilter]
     func editorTemplates(forChallenge baseChallengeId: GraphQLID, renderSize: CGSize) async throws -> [EditorTemplate]
     func stickers(forChallenge baseChallengeId: GraphQLID) async throws -> [StickerPack]
     func challengeMeta(for baseChallengeId: GraphQLID) async throws -> BaseChallenge?
+    func challengeLocalizedTitle(baseChallengeId: GraphQLID) async throws -> String?
 }
 
 enum NetworkClientError: Error {
@@ -37,7 +39,7 @@ enum NetworkClientError: Error {
 final class NetworkClientImpl: NetworkClient {
     static private let APIDomain = "app.w1d1.com"
     static private let demoAPIDomain = "v2.w1d1.com"
-    static private var currentAPIDomain: String { demoAPIDomain }
+    static private var currentAPIDomain: String { APIDomain }
     
     private let apollo: ApolloClient
     
@@ -117,6 +119,14 @@ final class NetworkClientImpl: NetworkClient {
         }
     }
     
+    func neuralFilters(forChallenge baseChallengeId: GraphQLID) async throws -> [NeuralFilter] {
+        let requestRes = try await apollo
+            .fetch(
+                query: GetChallengeEditorFilterQuery(baseChallengeId: baseChallengeId),
+                queue: .global()
+            )
+        return requestRes.data?.baseChallenge.appEditorNeuralFilters ?? []
+    }
     
     func filters(forChallenge baseChallengeId: GraphQLID) async throws -> [EditorColorFilter] {
         let requestRes = try await apollo
@@ -173,5 +183,9 @@ final class NetworkClientImpl: NetworkClient {
                 query: GetChallengeMetaQuery(baseChallengeId: baseChallengeId),
                 queue: .global()
             ).data?.baseChallenge
+    }
+    
+    func challengeLocalizedTitle(baseChallengeId: GraphQLID) async throws -> String? {
+        try await challengeMeta(for: baseChallengeId)?.titleLocalized
     }
 }

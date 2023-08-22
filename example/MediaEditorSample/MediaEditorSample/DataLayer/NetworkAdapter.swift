@@ -110,6 +110,27 @@ extension NetworkAdapter {
     }
 }
 
+// MARK: - Neural Filters
+extension NetworkAdapter {
+    func neuralFilters(forChallenge baseChallengeId: String) async throws -> [NeuralEditorFilter] {
+        return try await client
+            .neuralFilters(forChallenge: baseChallengeId)
+            .compactMap { filter in
+            .init(id: filter.id,
+                  name: filter.name,
+                  cover: filter.cover?.url,
+                  steps: filter.stepsFull.compactMap { step in
+                    .init(
+                        id: step.id,
+                        filterID: step.filterId,
+                        url: step.url?.url,
+                        neuralConfig: .make(from: step)
+                    )
+            })
+        }
+    }
+}
+
 // MARK: - INITS
 extension EditorFilter {
     init(from networkFilter: NetworkClient.EditorTemplate.Variant.ClientConfig.Item.Filter) {
@@ -196,6 +217,25 @@ extension TemplatePack {
 fileprivate extension NeuralConfig {
     static func make(from stepFull: NetworkClient.EditorTemplate.Variant.ClientConfig.Item.Filter.StepsFull) -> NeuralConfig? {
         guard let config = stepFull.neuralConfig else { return nil }
+        
+        let dimension: [NeuralConfig.AllowedDimension] = config.allowedDimensions?
+            .map {
+                .init(width: $0.width, height: $0.height)
+            } ?? []
+        
+        return .init(
+            stepID: stepFull.id,
+            minPixels: config.minPixels,
+            maxPixels: config.maxPixels,
+            allowedDimensions: dimension,
+            dimensionsMultipleOf: config.dimensionsMultipleOf
+        )
+    }
+    
+    static func make(from stepFull: GetChallengeEditorFilterQuery.Data.BaseChallenge.AppEditorNeuralFilter.StepsFull) -> NeuralConfig? {
+        guard let config = stepFull.neuralConfig else {
+            return nil
+        }
         
         let dimension: [NeuralConfig.AllowedDimension] = config.allowedDimensions?
             .map {

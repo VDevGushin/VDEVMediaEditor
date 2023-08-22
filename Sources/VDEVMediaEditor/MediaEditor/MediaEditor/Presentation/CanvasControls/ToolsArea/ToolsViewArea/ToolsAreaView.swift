@@ -100,6 +100,10 @@ struct ToolsAreaView: View {
                 filterTool(item)
                     .transition(.bottomTransition)
                 
+            case .neuralFilters(let item):
+                neuralFilterTool(item)
+                    .transition(.bottomTransition)
+                
             case .textureFilter(let item):
                 textureTool(item)
                     .transition(.bottomTransition)
@@ -175,7 +179,12 @@ struct ToolsAreaView: View {
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
-                    vm.data.add(CanvasImageModel(image: image, asset: model.itemAsset))
+                    vm.data.add(
+                        CanvasImageModel(
+                            image: image,
+                            asset: model.itemAsset
+                        )
+                    )
                 default: break
                 }
             }
@@ -374,6 +383,9 @@ struct ToolsAreaView: View {
             vm.tools.closeTools(false)
             let itemWithNewSound = vm.data.set(sound: volume, for: item)
             vm.tools.currentCloseActionFor(itemWithNewSound)
+        } onNeuralFilter: { item in
+            vm.tools.closeTools()
+            vm.tools.seletedTool(.neuralFilters(item))
         }
     }
 }
@@ -474,6 +486,22 @@ fileprivate extension ToolsAreaView {
             ColorFilterTool(layerModel: item,
                             challengeId: vm.tools.baseChallengeId,
                             memento: mementoObject)
+        }
+    }
+    
+    // Добавление нейронных фильтров
+    @ViewBuilder
+    func neuralFilterTool(_ item: CanvasItemModel) -> some View {
+        ToolWrapper(title: strings.neuralFilter, fullScreen: false) {
+            vm.tools.currentCloseActionFor(item)
+        } tool: {
+            NeuralFilterTool(
+                layerModel: item,
+                challengeId: vm.tools.baseChallengeId,
+                memento: mementoObject
+            ) {
+                vm.tools.currentCloseActionFor(item)
+            }
         }
     }
     

@@ -11,14 +11,14 @@ import AVFoundation
 
 private enum ProcessingFilter {
     case filter(CIFilter, FilterDescriptor)
-    case neural(NeuralFilter)
+    case neural(AIFilter)
     
     init?(filterDescriptor: FilterDescriptor) {
         if let ciFilter = CIFilter(name: filterDescriptor.name) {
             self = .filter(ciFilter, filterDescriptor)
             return
         }
-        if let neuralProcessorFilter = NeuralFilter(descriptor: filterDescriptor) {
+        if let neuralProcessorFilter = AIFilter(filterDescriptor) {
             self = .neural(neuralProcessorFilter)
             return
         }
