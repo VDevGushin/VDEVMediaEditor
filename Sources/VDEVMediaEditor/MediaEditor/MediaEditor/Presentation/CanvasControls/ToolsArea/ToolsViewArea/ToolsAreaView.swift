@@ -236,11 +236,17 @@ struct ToolsAreaView: View {
             }
         }
         .imageCropper(show: $showImageCropper,
-                      item: vm.tools.currentToolItem) { new in
+                      item: vm.tools.currentToolItem) { result in
             mementoObject?.forceSave()
-            vm.data.delete(vm.tools.currentToolItem.innerCanvasModel, withSave: false)
-            vm.data.add(new, withSave: false)
-            vm.tools.currentCloseActionFor(new)
+            switch result {
+            case let .current(item):
+                vm.tools.currentCloseActionFor(item)
+            case .new(let canvasImageModel):
+                vm.data.delete(vm.tools.currentToolItem.innerCanvasModel, withSave: false)
+                vm.data.add(canvasImageModel, withSave: false)
+                vm.tools.currentCloseActionFor(canvasImageModel)
+            }
+            
         }.sheet(isPresented: $showOnboarding) {
             OnboardingView()
         }

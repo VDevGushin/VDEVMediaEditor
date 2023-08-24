@@ -9,23 +9,30 @@ import SwiftUI
 import UIKit
 import Mantis
 
+enum CropperResult {
+    case current(CanvasImageModel)
+    case new(CanvasImageModel)
+}
+
 extension View {
     @ViewBuilder
     func imageCropper(show: Binding<Bool>,
                       item: ToolItem,
-                      onComplete: @escaping (CanvasImageModel) -> Void) -> some View {
+                      onComplete: @escaping (CropperResult) -> Void) -> some View {
         switch item {
         case .imageCropper(let item):
             self.fullScreenCover(isPresented: show, content: {
                 ImageCropperWrapper(show: show, item: item) { cropped in
-                    let newItem = CanvasImageModel(image: cropped ?? item.image,
+                    guard let cropped else {
+                        onComplete(.current(item))
+                        return
+                    }
+                    let newItem = CanvasImageModel(image: cropped,
                                                    asset: nil)
-
                     newItem.update(offset: item.offset,
                                    scale: item.scale,
                                 rotation: item.rotation)
-
-                    onComplete(newItem)
+                    onComplete(.new(newItem))
                 }
                 .edgesIgnoringSafeArea(.all)
             })
