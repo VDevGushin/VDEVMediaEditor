@@ -49,10 +49,17 @@ struct NeuralLoader: View {
                             .scaledToFill()
                     }
                     
-                    TransparentBlurView(
-                        removeAllFilters: false,
-                        blurStyle: .systemChromeMaterialDark
-                    )
+                    ZStack {
+                        TransparentBlurView(
+                            removeAllFilters: false,
+                            blurStyle: .systemChromeMaterialDark
+                        )
+                        
+                        AnimatedGradientViewVertical(
+                            color: AppColors.redWithOpacity,
+                            duration: 3
+                        )
+                    }
                     
                     VStack(alignment: .center) {
                         Text(message)

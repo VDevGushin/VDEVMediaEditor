@@ -259,6 +259,11 @@ struct ToolsConcreteItemHorizontal: View {
                         }
                     }
                 }
+                .background {
+                    if let item = self.item, item.isNeuralProgress {
+                            AnimatedGradientViewVertical(color: AppColors.whiteWithOpacity2, duration: 3)
+                    }
+                }
                 .padding(.horizontal, horizontalPadding)
             }
         }

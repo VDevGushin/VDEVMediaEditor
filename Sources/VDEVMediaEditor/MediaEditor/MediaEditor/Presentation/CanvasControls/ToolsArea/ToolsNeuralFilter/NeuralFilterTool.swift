@@ -9,9 +9,7 @@ import SwiftUI
 
 private final class NeuralFilterToolLoader {
     @Injected private var sourceService: VDEVMediaEditorSourceService
-    
-    @MainActor
-    @Binding private var items: [NeuralEditorFilter]
+    @MainActor @Binding private var items: [NeuralEditorFilter]
 
     private let challengeId: String
 
@@ -23,9 +21,7 @@ private final class NeuralFilterToolLoader {
 
     func load() async throws {
         let filters = try await sourceService.neuralFilters(forChallenge: challengeId)
-        await MainActor.run {
-            items = filters
-        }
+        await MainActor.run { items = filters }
     }
 }
 
@@ -63,9 +59,7 @@ struct NeuralFilterTool: View {
                 }
                 
                 OrView(items.isEmpty) {
-                    LoadingCell {
-                        refresh()
-                    }
+                    LoadingCell { refresh() }
                     .transition(.opacityTransition(withAnimation: false, speed: 0.2))
                 } secondView: {
                     ForEach(0..<items.count, id: \.self) { idx in
@@ -129,6 +123,9 @@ struct NeuralFilterTool: View {
                         .strokeBorder(AppColors.white, lineWidth: 3)
                 }
             )
+            .background {
+                AnimatedGradientViewVertical(color: AppColors.whiteWithOpacity2, duration: 3)
+            }
         }
     }
 
