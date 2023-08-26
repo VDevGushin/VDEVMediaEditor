@@ -80,10 +80,13 @@ struct AnimatedGradientViewVertical: View {
         LinearGradient(gradient: Gradient(colors: colors), startPoint: start, endPoint: end)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
-                withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
+                withAnimation(
+                    .easeInOut(duration: duration).repeatForever(autoreverses: true)
+                ) {
                     end = nextPointFrom(self.end)
                 }
             }
+            .padding(.bottom)
             .blur(radius: 20)
             .opacity(0.5)
     }
@@ -100,4 +103,3 @@ struct AnimatedGradientViewVertical: View {
         }
     }
 }
-

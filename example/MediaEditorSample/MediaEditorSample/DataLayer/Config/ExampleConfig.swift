@@ -37,7 +37,7 @@ struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
         "id": "a3542326-e295-4ab0-acdb-596928f15015",
         "x-w1d1-version": Bundle.main.shortVersion
     ]
-    var timeOut: TimeInterval { 30 }
+    var timeOut: TimeInterval { 60 }
     var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
 }
 

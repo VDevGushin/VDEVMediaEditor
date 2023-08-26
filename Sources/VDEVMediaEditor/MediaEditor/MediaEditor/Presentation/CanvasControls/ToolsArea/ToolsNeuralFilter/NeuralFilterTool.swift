@@ -124,7 +124,10 @@ struct NeuralFilterTool: View {
                 }
             )
             .background {
-                AnimatedGradientViewVertical(color: AppColors.whiteWithOpacity2, duration: 3)
+                AnimatedGradientViewVertical(
+                    color: AppColors.whiteWithOpacity2,
+                    duration: 3
+                )
             }
         }
     }

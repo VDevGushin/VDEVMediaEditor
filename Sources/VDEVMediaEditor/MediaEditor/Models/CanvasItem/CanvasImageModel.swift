@@ -102,22 +102,31 @@ private extension CanvasImageModel {
         
         inProgress = .neural(image)
         
-        aplayer.applyFilters(
-            for: originalImage,
-            neuralFilters: neuralFilter
-        )
-        .sink(on: .main, object: self) { wSelf, output in
-            switch output.value {
-            case .image(let value):
-                wSelf.imageWithNeural = isWithNeural ? value: nil
-                wSelf.image = value
-            default:
-                wSelf.imageWithNeural = nil
-                wSelf.image = wSelf.originalImage
+        aplayer
+            .applyFilters(
+                for: originalImage,
+                neuralFilters: neuralFilter
+            )
+            .sink(
+                on: .main,
+                object: self
+            ) { wSelf, output in
+                makeHaptics()
+                switch output.value {
+                case .image(let value):
+                    wSelf.imageWithNeural = isWithNeural ? value: nil
+                    if wSelf.imageWithNeural == nil {
+                        wSelf.neuralFilter = nil
+                    }
+                    wSelf.image = value
+                default:
+                    wSelf.imageWithNeural = nil
+                    wSelf.neuralFilter = nil
+                    wSelf.image = wSelf.originalImage
+                }
+                wSelf.inProgress = nil
             }
-            wSelf.inProgress = nil
-        }
-        .store(in: &storage)
+            .store(in: &storage)
     }
     
     // Применение фильтров пользователя
