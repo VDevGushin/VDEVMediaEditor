@@ -148,10 +148,18 @@ struct NeuralFilterTool: View {
             } label: {
                 VStack(alignment: .leading) {
                     Spacer()
-                    Text(text)
-                        .font(AppFonts.mabry(size: 13))
-                        .foregroundColor(AppColors.white)
-                        .padding(8)
+                    if selected {
+                        Text(text)
+                            .font(AppFonts.mabry(size: 13))
+                            .foregroundColor(AppColors.white)
+                            .underline()
+                            .padding(8)
+                    } else {
+                        Text(text)
+                            .font(AppFonts.mabry(size: 13))
+                            .foregroundColor(AppColors.white)
+                            .padding(8)
+                    }
                 }
                 .frame(width: width, height: width * ratio)
                 .background {
@@ -170,7 +178,6 @@ struct NeuralFilterTool: View {
                 .cornerRadius(8)
             }
             .buttonStyle(ScaleButtonStyle())
-            .disabled(selected)
             .overlay(
                 ZStack {
                     if selected {
