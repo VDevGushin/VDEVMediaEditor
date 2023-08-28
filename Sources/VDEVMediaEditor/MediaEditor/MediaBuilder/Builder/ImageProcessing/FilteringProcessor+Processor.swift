@@ -14,11 +14,11 @@ private enum ProcessingFilter {
     case neural(AIFilter)
     
     init?(filterDescriptor: FilterDescriptor) {
-        if let ciFilter = CIFilter(name: filterDescriptor.name) {
+        if let ciFilter: CIFilter = .init(name: filterDescriptor.name) {
             self = .filter(ciFilter, filterDescriptor)
             return
         }
-        if let neuralProcessorFilter = AIFilter(filterDescriptor) {
+        if let neuralProcessorFilter: AIFilter = .init(filterDescriptor) {
             self = .neural(neuralProcessorFilter)
             return
         }
@@ -44,7 +44,7 @@ extension FilteringProcessor {
                 for filter in filterChain {
                     switch filter {
                     case let .neural(neuralFilter):
-                        imageOutput = neuralFilter.execute(imageOutput) ?? imageOutput
+                        imageOutput = neuralFilter.execute(imageOutput)
                     case let .filter(ciFilter, descriptor):
                         if let customImageTargetKey = descriptor.customImageTargetKey {
                             ciFilter.setValue(imageOutput, forKey: customImageTargetKey)

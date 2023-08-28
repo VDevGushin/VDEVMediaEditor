@@ -82,15 +82,25 @@ struct ToolsConcreteItemHorizontal: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            ImageButton(image: images.common.backArrow,
-                        size: .init(width: backButtonSize,
-                                    height: backButtonSize),
-                        tintColor: AppColors.white) {
+            ImageButton(
+                image: images.common.backArrow,
+                size: .init(
+                    width: backButtonSize,
+                    height: backButtonSize
+                ),
+                tintColor: AppColors.white
+            ) {
                 onClose()
             }
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .center, spacing: buttonSpacing) {
+            ScrollView(
+                .horizontal,
+                showsIndicators: false
+            ) {
+                HStack(
+                    alignment: .center,
+                    spacing: buttonSpacing
+                ) {
                     if let item = item {
                         switch item.type {
                         case .image:
@@ -102,50 +112,89 @@ struct ToolsConcreteItemHorizontal: View {
                                 .frame(width: buttonSize, height: buttonSize)
                             } secondView: {
                                 if settings.showNeuralFilters {
-                                    ToolRow(image: images.currentItem.currentItemFilter,
-                                            title: strings.neuralFilter) { onNeuralFilter(item) }
-                                        .opacity(isOpen ? 1.0 : 0.0)
-                                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    ToolRow(
+                                        image: images.currentItem.currentItemFilter,
+                                        title: strings.neuralFilter
+                                    ) {
+                                        onNeuralFilter(item)
+                                        
+                                    }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 }
                                 
-                                ToolRow(image: images.currentItem.currentItemFilter,
-                                        title: strings.filter) { onColorFilter(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                ToolRow(
+                                    image: images.currentItem.currentItemFilter,
+                                    title: strings.filter
+                                ) {
+                                    onColorFilter(item)
+                                    
+                                }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 
-                                ToolRow(image: images.currentItem.currentItemMask,
-                                        title: strings.mask) { onMaskFilter(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                ToolRow(
+                                    image: images.currentItem.currentItemMask,
+                                    title: strings.mask
+                                ) {
+                                    onMaskFilter(item)
+                                    
+                                }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 
-                                ToolRow(image: images.currentItem.currentItemTexture,
-                                        title: strings.texture) { onTextureFilter(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                ToolRow(
+                                    image: images.currentItem.currentItemTexture,
+                                    title: strings.texture
+                                ) {
+                                    onTextureFilter(item)
+                                    
+                                }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 
-                                ToolRow(image: images.currentItem.currentItemAdjustments,
-                                        title: strings.adjustments) { onAdjustments(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                ToolRow(
+                                    image: images.currentItem.currentItemAdjustments,
+                                    title: strings.adjustments
+                                ) {
+                                    onAdjustments(item)
+                                }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 
-                                ToolRow(image: images.currentItem.currentItemCrop,
-                                        title: strings.crop) { onCropImage(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                ToolRow(
+                                    image: images.currentItem.currentItemCrop,
+                                    title: strings.crop
+                                ) {
+                                    onCropImage(item)
+                                    
+                                }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             }
                         case .audio:
                             let video: CanvasAudioModel? = CanvasItemModel.toTypeOptional(model: item)
                             if let volume = video?.volume {
                                 if volume <= 0.0 {
-                                    ToolRow(image: images.currentItem.currentItemSoundON,
-                                            title: strings.sound) {  onVolume(item, 1.0) }
-                                            .opacity(isOpen ? 1.0 : 0.0)
-                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    ToolRow(
+                                        image: images.currentItem.currentItemSoundON,
+                                        title: strings.sound
+                                    ) {
+                                        onVolume(item, 1.0)
+                                        
+                                    }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 } else {
-                                    ToolRow(image: images.currentItem.currentItemSoundOFF,
-                                            title: strings.sound) { onVolume(item, 0.0) }
-                                            .opacity(isOpen ? 1.0 : 0.0)
-                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    ToolRow(
+                                        image: images.currentItem.currentItemSoundOFF,
+                                        title: strings.sound
+                                    ) {
+                                        onVolume(item, 0.0)
+                                        
+                                    }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 }
                             }
                             
@@ -154,43 +203,72 @@ struct ToolsConcreteItemHorizontal: View {
                                 let video: CanvasVideoModel? = CanvasItemModel.toTypeOptional(model: item)
                                 if let volume = video?.volume {
                                     if volume <= 0.0 {
-                                        ToolRow(image: images.currentItem.currentItemSoundON,
-                                                title: strings.sound) { onVolume(item, 1.0) }
-                                                .opacity(isOpen ? 1.0 : 0.0)
-                                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                        ToolRow(
+                                            image: images.currentItem.currentItemSoundON,
+                                            title: strings.sound) {
+                                                onVolume(item, 1.0)
+                                            }
+                                            .opacity(isOpen ? 1.0 : 0.0)
+                                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                     } else {
                                         ToolRow(image: images.currentItem.currentItemSoundOFF,
-                                                title: strings.sound) { onVolume(item, 0.0) }
-                                                .opacity(isOpen ? 1.0 : 0.0)
-                                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                                title: strings.sound
+                                        ) {
+                                            onVolume(item, 0.0)
+                                            
+                                        }
+                                        .opacity(isOpen ? 1.0 : 0.0)
+                                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                     }
                                 }
                             }
                             
-                            ToolRow(image: images.currentItem.currentItemMask,
-                                    title: strings.mask) { onMaskFilter(item) }
+                            ToolRow(
+                                image: images.currentItem.currentItemMask,
+                                    title: strings.mask
+                            ) {
+                                onMaskFilter(item)
+                                
+                            }
                                 .opacity(isOpen ? 1.0 : 0.0)
                                 .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
-                            ToolRow(image: images.currentItem.currentItemTexture,
-                                    title: strings.texture) { onTextureFilter(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            ToolRow(
+                                image: images.currentItem.currentItemTexture,
+                                title: strings.texture
+                            ) {
+                                onTextureFilter(item)
+                                
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
-                            ToolRow(image: images.currentItem.currentItemFilter,
-                                    title: strings.filter) { onColorFilter(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            ToolRow(
+                                image: images.currentItem.currentItemFilter,
+                                title: strings.filter
+                            ) {
+                                onColorFilter(item)
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
-                            ToolRow(image: images.currentItem.currentItemAdjustments,
-                                    title: strings.adjustments) { onAdjustments(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            ToolRow(
+                                image: images.currentItem.currentItemAdjustments,
+                                title: strings.adjustments
+                            ) {
+                                onAdjustments(item)
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         case .text:
-                            ToolRow(image: images.currentItem.currentItemEditText,
-                                    title: strings.editText) { onEditText(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            ToolRow(
+                                image: images.currentItem.currentItemEditText,
+                                title: strings.editText
+                            ) {
+                                onEditText(item)
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         default: EmptyView()
                         }
                         
@@ -198,27 +276,40 @@ struct ToolsConcreteItemHorizontal: View {
                             if !vm.data.isLimit {
                                 switch item.type {
                                 case .image, .video, .text, .sticker, .drawing:
-                                    ToolRow(image: images.currentItem.currentIteDublicate,
-                                            title: strings.dublicate) { onDublicate(item) }
-                                        .opacity(isOpen ? 1.0 : 0.0)
-                                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    ToolRow(
+                                        image: images.currentItem.currentIteDublicate,
+                                        title: strings.dublicate
+                                    ) {
+                                        onDublicate(item)
+                                        
+                                    }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                                 default: EmptyView()
                                 }
                             }
                             
                             if item.canReset {
-                                ToolRow(image: images.currentItem.currentItemReset,
-                                        title: strings.reset,
-                                        tintColor: AppColors.greenWithOpacity) { onReset(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
-                            }
-                            
-                            ToolRow(image: images.currentItem.currentItemRM,
-                                    title: strings.remove,
-                                    tintColor: AppColors.redWithOpacity) { onDelete(item) }
+                                ToolRow(
+                                    image: images.currentItem.currentItemReset,
+                                    title: strings.reset,
+                                    tintColor: AppColors.greenWithOpacity
+                                ) {
+                                    onReset(item)
+                                }
                                 .opacity(isOpen ? 1.0 : 0.0)
                                 .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            }
+                            
+                            ToolRow(
+                                image: images.currentItem.currentItemRM,
+                                title: strings.remove,
+                                tintColor: AppColors.redWithOpacity
+                            ) {
+                                onDelete(item)
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         }
                         
                         Rectangle()
@@ -227,41 +318,64 @@ struct ToolsConcreteItemHorizontal: View {
                             .frame(width: 1)
                         
                         OrViewWithEmpty(item.type != .template) {
-                            ToolRow(image: images.currentItem.currentItemUp,
-                                    title: strings.up) { onUp(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            ToolRow(
+                                image: images.currentItem.currentItemUp,
+                                title: strings.up
+                            ) {
+                                onUp(item)
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             
-                            ToolRow(image: images.currentItem.currentItemDown,
-                                    title: strings.down) { onBack(item) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            ToolRow(
+                                image: images.currentItem.currentItemDown,
+                                title: strings.down
+                            ) {
+                                onBack(item)
+                            }
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         }
                         
-                        ToolRow(image: images.currentItem.currentItemBringToTop,
-                                title: strings.bringToTop) { onBringToFront(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                        ToolRow(
+                            image: images.currentItem.currentItemBringToTop,
+                            title: strings.bringToTop
+                        ) {
+                            onBringToFront(item)
+                        }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
-                        ToolRow(image: images.currentItem.currentItemBringToBottom,
-                                title: strings.bringToBottom) { onBringToBack(item) }
-                                .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                        ToolRow(
+                            image: images.currentItem.currentItemBringToBottom,
+                            title: strings.bringToBottom
+                        ) {
+                            onBringToBack(item)
+                        }
+                        .opacity(isOpen ? 1.0 : 0.0)
+                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                         
                         OrViewWithEmpty(!item.isNeuralProgress) {
                             if let withItem = vm.data.canMerge(item: item),
                                !withItem.isNeuralProgress {
-                                ToolRow(image: images.currentItem.currentItemMerge,
-                                        title: strings.merge) { onMerge([withItem, item]) }
-                                    .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                ToolRow(
+                                    image: images.currentItem.currentItemMerge,
+                                    title: strings.merge
+                                ) {
+                                    onMerge([withItem, item])
+                                }
+                                .opacity(isOpen ? 1.0 : 0.0)
+                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
                             }
                         }
                     }
                 }
                 .background {
                     if let item = self.item, item.isNeuralProgress {
-                            AnimatedGradientViewVertical(color: AppColors.whiteWithOpacity2, duration: 3)
+                        AnimatedGradientViewVertical(
+                            color: AppColors.whiteWithOpacity2,
+                            duration: 3
+                        )
                     }
                 }
                 .padding(.horizontal, horizontalPadding)
@@ -276,16 +390,19 @@ struct ToolsConcreteItemHorizontal: View {
     }
     
     @ViewBuilder
-    func ToolRow(image: UIImage,
-                 title: String,
-                 tintColor: Color = AppColors.whiteWithOpacity,
-                 action: @escaping () -> Void) -> some View {
-        
-        ImageButton(image: image,
-                    title: title,
-                    fontSize: 12,
-                    size: .init(width: buttonSize, height: buttonSize),
-                    tintColor: AppColors.whiteWithOpacity) {
+    func ToolRow(
+        image: UIImage,
+        title: String,
+        tintColor: Color = AppColors.whiteWithOpacity,
+        action: @escaping () -> Void
+    ) -> some View {
+        ImageButton(
+            image: image,
+            title: title,
+            fontSize: 12,
+            size: .init(width: buttonSize, height: buttonSize),
+            tintColor: AppColors.whiteWithOpacity
+        ) {
             action()
         }
     }

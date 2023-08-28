@@ -22,13 +22,13 @@ public final class AIFilter {
         self.neuralFilterDescriptor = descriptor
     }
     
-    func execute(_ image: CIImage) -> CIImage? {
+    func execute(_ image: CIImage) -> CIImage {
         return BlockingTask { [neuralFilterDescriptor] in
             await self.service?.execute(
                 image: UIImage(ciImage: image),
                 filterDescriptor: neuralFilterDescriptor
             ) ?? nil
-        }
+        } ?? image
     }
 }
 
@@ -37,7 +37,7 @@ private final class Image2ImageService {
     private(set) public var client: ApiClient
     
     init?(_ image2imageNetworkModule: VDEVNetworkModuleConfig?) {
-        guard let image2imageNetworkModule = image2imageNetworkModule else { return nil }
+        guard let image2imageNetworkModule else { return nil }
         self.image2imageNetworkModule = image2imageNetworkModule
         self.client = ApiClientImpl(host: image2imageNetworkModule.host)
     }
@@ -47,6 +47,7 @@ private final class Image2ImageService {
         filterDescriptor: FilterDescriptor?
     ) async -> CIImage? {
         guard let filterDescriptor else { return nil }
+        
         var resultImage: UIImage? = image
         await filterDescriptor.params?.asyncForEach { id, value in
             guard case .neural(let config) = value,
@@ -54,10 +55,15 @@ private final class Image2ImageService {
                 resultImage = resultImage
                 return
             }
-            resultImage = await picturePreparation(image: resultImage, config: config)
-            if let operation = Image2ImageRequestOperation(
-                image2imageNetworkConfig: image2imageNetworkModule,
+            
+            resultImage = await picturePreparation(
                 image: resultImage,
+                config: config
+            )
+            
+            if let operation = Image2ImageRequestOperation(
+                image: resultImage,
+                image2imageNetworkConfig: image2imageNetworkModule,
                 editorFilterId: filterID,
                 filterStepId: id
             ),
@@ -72,12 +78,11 @@ private final class Image2ImageService {
 private extension Image2ImageService {
     func picturePreparation(image: UIImage?, config: NeuralConfig) async -> UIImage? {
         guard let image = image else { return nil }
-        func getNearest(
-            value: CGFloat,
-            multipleOf: CGFloat
-        ) -> CGFloat {
+        
+        func getNearest(value: CGFloat, multipleOf: CGFloat) -> CGFloat {
             floor(value / multipleOf)
         }
+        
         let maxPixels = CGFloat(config.maxPixels)
         let ratio = image.size.width / image.size.height
         let psWidth = floor(sqrt(maxPixels * ratio))
@@ -107,8 +112,8 @@ private extension Image2ImageService {
         private let filterStepId: String
         
         init?(
-            image2imageNetworkConfig: VDEVNetworkModuleConfig,
             image: UIImage?,
+            image2imageNetworkConfig: VDEVNetworkModuleConfig,
             editorFilterId: String,
             filterStepId: String
         ) {
@@ -137,7 +142,7 @@ private extension Image2ImageService {
             
             self.multipartRequest.add(
                 key: "image",
-                fileName: "image2image.jpg",
+                fileName: "\(UUID().uuidString).jpg",
                 fileMimeType: "image/png",
                 fileData: imageData
             )
