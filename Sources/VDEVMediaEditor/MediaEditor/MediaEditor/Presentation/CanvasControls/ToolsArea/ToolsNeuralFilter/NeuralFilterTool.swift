@@ -163,7 +163,8 @@ struct NeuralFilterTool: View {
                 }
                 .frame(width: width, height: width * ratio)
                 .background {
-                    OrViewWithObject(imageURL) { url in
+                    ZStack {
+                        OrViewWithObject(imageURL) { url in
                             AsyncImageView(url: url) {
                                 Image(uiImage: $0)
                                     .resizable()
@@ -174,6 +175,12 @@ struct NeuralFilterTool: View {
                         } secondView: {
                             AppColors.black
                         }
+                        
+                        AnimatedGradientViewVertical(
+                            color: AppColors.whiteWithOpacity,
+                            duration: 5
+                        )
+                    }
                 }
                 .cornerRadius(8)
             }
