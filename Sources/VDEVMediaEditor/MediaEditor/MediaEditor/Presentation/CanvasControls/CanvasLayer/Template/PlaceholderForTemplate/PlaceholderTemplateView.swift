@@ -136,10 +136,8 @@ private extension PlaceholderTemplateView {
                 Selection()
             }
         }
-        .background {
-            if isShowSelection {
-                AnimatedGradientView(color: guideLinesColor.opacity(0.3))
-            }
+        .background($isShowSelection) {
+            AnimatedGradientView(color: guideLinesColor.opacity(0.3))
         }
     }
 }

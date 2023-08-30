@@ -8,31 +8,38 @@
 import SwiftUI
 
 struct AnimatedGradientView: View {
-    private let color: Color
     @State private var start = UnitPoint.bottom
     @State private var end = UnitPoint.top
-    
+    private let color: Color
     private var duration: Double
-
-    private var colors: [Color] {
-        [color, .clear]
-    }
+    private var colors: [Color] { [color, .clear] }
     
-    init(color: Color, duration: Double = 2) {
+    init(
+        color: Color,
+        duration: Double = 2
+    ) {
         self.color = color
         self.duration = duration
     }
-
+    
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: colors), startPoint: start, endPoint: end)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
+        LinearGradient(
+            gradient: Gradient(colors: colors),
+            startPoint: start,
+            endPoint: end
+        )
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )
+        .onAppear {
+            withAnimation(.easeInOut(duration: duration)
+                .repeatForever(autoreverses: true)) {
                     start = nextPointFrom(self.start)
                     end = nextPointFrom(self.end)
                 }
-            }
-            .blur(radius: 5)
+        }
+        .blur(radius: 5)
     }
     
     /// cycle to the next point
@@ -61,45 +68,49 @@ struct AnimatedGradientView: View {
 }
 
 struct AnimatedGradientViewVertical: View {
-    private let color: Color
     @State private var start = UnitPoint.bottom
     @State private var end = UnitPoint.top
-    
+    private let color: Color
     private var duration: Double
-
-    private var colors: [Color] {
-        [color, .clear]
-    }
+    private var colors: [Color] { [color, .clear] }
     
-    init(color: Color, duration: Double = 2) {
+    init(
+        color: Color,
+        duration: Double = 2
+    ) {
         self.color = color
         self.duration = duration
     }
-
+    
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: colors), startPoint: start, endPoint: end)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                withAnimation(
-                    .easeInOut(duration: duration).repeatForever(autoreverses: true)
-                ) {
-                    end = nextPointFrom(self.end)
-                }
+        LinearGradient(
+            gradient: Gradient(colors: colors),
+            startPoint: start,
+            endPoint: end
+        )
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )
+        .onAppear {
+            withAnimation(
+                .easeInOut(duration: duration)
+                .repeatForever(autoreverses: true)
+            ) {
+                end = nextPointFrom(self.end)
             }
-            .padding(.bottom)
-            .blur(radius: 20)
-            .opacity(0.5)
+        }
+        .padding(.bottom)
+        .blur(radius: 20)
+        .opacity(0.5)
     }
     
     /// cycle to the next point
     func nextPointFrom(_ currentPoint: UnitPoint) -> UnitPoint {
         switch currentPoint {
-        case .top:
-            return .center
-        case .center:
-            return .top
-        default:
-            return currentPoint
+        case .top: return .center
+        case .center: return .top
+        default: return currentPoint
         }
     }
 }

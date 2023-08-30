@@ -97,6 +97,8 @@ struct ToolAdjustments: View {
                             .font(AppFonts.elmaTrioRegular(12))
                             .foregroundColor(AppColors.whiteWithOpacity)
                             .frame(maxWidth: 80, alignment: .leading)
+                            .opacity(state.getOpacity(for: i))
+                            .scaleEffect(state.inEdit(for: i) ? 1.1 : 1.0, anchor: .leading)
                         
                         Slider(value: Binding<Double> {
                             switch i {

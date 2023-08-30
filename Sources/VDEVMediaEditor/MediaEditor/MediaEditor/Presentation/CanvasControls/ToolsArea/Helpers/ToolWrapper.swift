@@ -7,9 +7,16 @@
 
 import SwiftUI
 
-enum ToolsEditState {
+enum ToolsEditState: Equatable {
     case edit(Int)
     case idle
+    
+    func inEdit(for index: Int) -> Bool {
+        switch self {
+        case .idle: return false
+        case .edit(let i): return i == index
+        }
+    }
     
     func getOpacity(for index: Int) -> CGFloat {
         switch self {
@@ -21,7 +28,7 @@ enum ToolsEditState {
     func getOpacity() -> CGFloat {
         switch self {
         case .idle: return 1.0
-        case .edit: return 0.1
+        case .edit: return 0.05
         }
     }
 }
@@ -65,12 +72,8 @@ struct ToolWrapperWithBinding<Tool: View>: View {
                 tool($editState)
             }
             .padding(.vertical)
-            .background(
-                BlurView(style: .systemChromeMaterialDark)
-                    .clipShape(RoundedCorner(radius: 16, corners: [.topLeft, .topRight]))
-                    .edgesIgnoringSafeArea([.bottom, .trailing, .leading])
-                    .opacity(editState.getOpacity())
-            )
+            .transparentBlurBackground(opacity: editState.getOpacity)
+            .animation(.interactiveSpring(), value: editState)
         }
     }
 }
@@ -110,12 +113,7 @@ struct ToolWrapper<Tool: View>: View {
                 tool
             }
             .padding(.vertical)
-            .background(
-                BlurView(style: .systemChromeMaterialDark)
-                    .clipShape(RoundedCorner(radius: 16, corners: [.topLeft, .topRight]))
-                    .edgesIgnoringSafeArea([.bottom, .trailing, .leading])
-            )
+            .transparentBlurBackground()
         }
     }
 }
-

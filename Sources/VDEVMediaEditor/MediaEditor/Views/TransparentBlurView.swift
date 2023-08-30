@@ -7,6 +7,44 @@
 
 import SwiftUI
 
+extension View {
+    func transparentBlurBackground(opacity: @escaping () -> CGFloat) -> some View {
+        modifier(TransparentBlurViewMod(opacity: opacity))
+    }
+    
+    func transparentBlurBackground() -> some View {
+        modifier(TransparentBlurViewMod(opacity: { return 1 }))
+    }
+}
+
+private struct TransparentBlurViewMod: ViewModifier {
+    var opacity: () -> CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .background(
+                TransparentBlurView(
+                    removeAllFilters: true,
+                    blurStyle: .regular
+                )
+                .blur(radius: 9, opaque: true)
+                .clipShape(
+                    RoundedCorner(
+                        radius: 16,
+                        corners: [.topLeft, .topRight]
+                    )
+                )
+                .edgesIgnoringSafeArea([.bottom, .trailing, .leading])
+                .shadow(
+                    color: AppColors.whiteWithOpacity2,
+                    radius: 5, x: 0, y: 0
+                )
+                .mask(Rectangle().padding(.top, -20))
+                .opacity(opacity())
+            )
+    }
+}
+
 struct TransparentBlurView: UIViewRepresentable {
     let removeAllFilters: Bool
     let blurStyle: UIBlurEffect.Style

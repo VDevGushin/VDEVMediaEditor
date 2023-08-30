@@ -146,12 +146,10 @@ struct EditorPreview: View {
                 .transition(.bottomTransition)
             }
         }
-        .background {
-            if showAnimation {
-                TransparentBlurView(removeAllFilters: false)
-                    .edgesIgnoringSafeArea(.all)
-                    .transition(.opacity)
-            }
+        .background($showAnimation) {
+            TransparentBlurView(removeAllFilters: false)
+                .edgesIgnoringSafeArea(.all)
+                .transition(.opacity)
         }
         .onAppear {
             challengeTitle = settings.title
