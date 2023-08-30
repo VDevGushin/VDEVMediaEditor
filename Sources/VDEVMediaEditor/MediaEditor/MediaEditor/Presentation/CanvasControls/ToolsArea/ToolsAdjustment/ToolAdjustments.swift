@@ -6,15 +6,84 @@
 //
 
 import SwiftUI
+import Combine
+
+private final class ToolAdjustmentsVM: ObservableObject {
+    @Injected var strings: VDEVMediaEditorStrings
+    var toolItems: [AdjustToolItem] = []
+    
+    init() {
+        let colorFilters = CIFilter(name: "CIColorControls")!
+        let sharpenLuminanceFilters = CIFilter(name: "CISharpenLuminance")!
+        let highlightShadowAdjustFilters = CIFilter(name: "CIHighlightShadowAdjust")!
+        let colorMatrixFilters = CIFilter(name: "CIColorMatrix")!
+        let currentContrastValue = colorFilters.value(forKey: kCIInputContrastKey) as? Double ?? 0.0
+        let currentBrightnessValue = colorFilters.value(forKey: kCIInputBrightnessKey) as? Double ?? 0.0
+        let currentSaturationValue = colorFilters.value(forKey: kCIInputSaturationKey) as? Double ?? 1.0
+        let currentSharpenValue = sharpenLuminanceFilters.value(forKey: kCIInputSharpnessKey) as? Double ?? 0.4
+        let currentHighlightValue = highlightShadowAdjustFilters.value(forKey: "inputHighlightAmount") as? Double ?? 0.5
+        let currentShadowValue = highlightShadowAdjustFilters.value(forKey: "inputShadowAmount") as? Double ?? 0
+        let currentGaussianValue = 0.0
+        let currentAlphaValue = colorMatrixFilters.value(forKey: "inputAVector") as? Double ?? 1
+        
+        toolItems = [
+            AdjustToolItem(
+                title: strings.brightness,
+                min: currentBrightnessValue - 0.2,
+                max: currentBrightnessValue + 0.2,
+                normal: currentBrightnessValue
+            ),
+            AdjustToolItem(
+                title: strings.contrast,
+                min: currentContrastValue - 0.1,
+                max: currentContrastValue + 0.1,
+                normal: currentContrastValue
+            ),
+            AdjustToolItem(
+                title: strings.saturation,
+                min: currentSaturationValue - 1,
+                max: currentSaturationValue + 1,
+                normal: currentSaturationValue
+            ),
+            AdjustToolItem(
+                title: strings.highlight,
+                min: 0,
+                max: currentHighlightValue,
+                normal: currentHighlightValue
+            ),
+            AdjustToolItem(
+                title: strings.shadow,
+                min: currentShadowValue - 1,
+                max: currentShadowValue + 1,
+                normal: currentShadowValue
+            ),
+            AdjustToolItem(
+                title: strings.blurRadius,
+                min: 0,
+                max: 15,
+                normal: currentGaussianValue
+            ),
+            AdjustToolItem(
+                title: strings.alpha,
+                min: 0,
+                max: 1,
+                normal: currentAlphaValue
+            ),
+//            AdjustToolItem(
+//                title: strings.sharpen,
+//                min: currentSharpenValue,
+//                max: 2,
+//                normal: currentSharpenValue
+//            ),
+        ]
+    }
+}
 
 struct ToolAdjustments: View {
-    @Injected private var strings: VDEVMediaEditorStrings
     @EnvironmentObject private var vm: CanvasEditorViewModel
+    @StateObject private var toolsAdjVM: ToolAdjustmentsVM = .init()
     private weak var memento: MementoObject? // for save state
-    
     private let item: CanvasItemModel
-    
-    private var toolItems: [AdjustToolItem] = []
     
     @State private var brightness: Double = 0
     @State private var contrast: Double = 0
@@ -23,7 +92,7 @@ struct ToolAdjustments: View {
     @State private var shadow: Double = 0
     @State private var blurRadius: Double = 0
     @State private var alpha: Double = 0
-    @State private var sharpen: Double = 0.40
+    //@State private var sharpen: Double = 0.40
     
     @Binding private var state: ToolsEditState
     
@@ -33,65 +102,13 @@ struct ToolAdjustments: View {
         self.item = item
         self._state = state
         self.memento = memento
-        
-        
-        toolItems = [
-            AdjustToolItem(
-                title: strings.brightness,
-                min: AdjustmentSettings.DefaultValues.currentBrightnessValue.value - 0.2,
-                max: AdjustmentSettings.DefaultValues.currentBrightnessValue.value + 0.2,
-                normal: AdjustmentSettings.DefaultValues.currentBrightnessValue.value
-            ),
-            AdjustToolItem(
-                title: strings.contrast,
-                min: AdjustmentSettings.DefaultValues.currentContrastValue.value - 0.2,
-                max: AdjustmentSettings.DefaultValues.currentContrastValue.value + 0.2,
-                normal: AdjustmentSettings.DefaultValues.currentContrastValue.value
-            ),
-            AdjustToolItem(
-                title: strings.saturation,
-                min: AdjustmentSettings.DefaultValues.currentSaturationValue.value - 1,
-                max: AdjustmentSettings.DefaultValues.currentSaturationValue.value + 1,
-                normal: AdjustmentSettings.DefaultValues.currentSaturationValue.value
-            ),
-            AdjustToolItem(
-                title: strings.highlight,
-                min: 0,
-                max: AdjustmentSettings.DefaultValues.currentHighlightValue.value,
-                normal: AdjustmentSettings.DefaultValues.currentHighlightValue.value
-            ),
-            AdjustToolItem(
-                title: strings.shadow,
-                min: AdjustmentSettings.DefaultValues.currentShadowValue.value - 1,
-                max: AdjustmentSettings.DefaultValues.currentShadowValue.value + 1,
-                normal: AdjustmentSettings.DefaultValues.currentShadowValue.value
-            ),
-            AdjustToolItem(
-                title: strings.blurRadius,
-                min: 0,
-                max: 15,
-                normal: AdjustmentSettings.DefaultValues.currentGaussianValue.value
-            ),
-            AdjustToolItem(
-                title: strings.alpha,
-                min: 0,
-                max: 1,
-                normal: AdjustmentSettings.DefaultValues.currentAlphaValue.value
-            ),
-            AdjustToolItem(
-                title: strings.sharpen,
-                min: AdjustmentSettings.DefaultValues.currentSharpenValue.value,
-                max: 2,
-                normal: AdjustmentSettings.DefaultValues.currentSharpenValue.value
-            ),
-        ]
     }
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 18) {
-                ForEach(0..<toolItems.count, id: \.self) { i in
-                    let item = toolItems[i]
+                ForEach(0..<toolsAdjVM.toolItems.count, id: \.self) { i in
+                    let item = toolsAdjVM.toolItems[i]
                     HStack {
                         Text(item.title)
                             .font(AppFonts.elmaTrioRegular(12))
@@ -109,7 +126,7 @@ struct ToolAdjustments: View {
                             case 4: return shadow
                             case 5: return blurRadius
                             case 6: return alpha
-                            case 7: return sharpen
+                            //case 7: return sharpen
                             default: fatalError()
                             }
                         } set: { newValue in
@@ -121,7 +138,7 @@ struct ToolAdjustments: View {
                             case 4: shadow = newValue
                             case 5: blurRadius = newValue
                             case 6: alpha = newValue
-                            case 7: sharpen = newValue
+                            //case 7: sharpen = newValue
                             default: ()
                             }
                             
@@ -132,8 +149,8 @@ struct ToolAdjustments: View {
                                 highlight: highlight,
                                 shadow: shadow,
                                 blurRadius: blurRadius,
-                                alpha: alpha,
-                                sharpen: sharpen
+                                alpha: alpha
+                                //sharpen: sharpen
                             )
                             self.item.apply(adjustmentSettings: settings)
                             
@@ -157,7 +174,7 @@ struct ToolAdjustments: View {
                 item.apply(adjustmentSettings: nil)
                 resetState()
             } label: {
-                Text(strings.default)
+                Text(toolsAdjVM.strings.default)
                     .font(AppFonts.elmaTrioRegular(12))
                     .foregroundColor(AppColors.whiteWithOpacity)
             }
@@ -177,23 +194,21 @@ struct ToolAdjustments: View {
     
     private func resetState() {
         withAnimation(.interactiveSpring()) {
-            brightness = item.adjustmentSettings?.brightness ?? toolItems[0].normal
-            contrast = item.adjustmentSettings?.contrast ?? toolItems[1].normal
-            saturation = item.adjustmentSettings?.saturation ?? toolItems[2].normal
-            highlight = item.adjustmentSettings?.highlight ?? toolItems[3].normal
-            shadow = item.adjustmentSettings?.shadow ?? toolItems[4].normal
-            blurRadius = item.adjustmentSettings?.blurRadius ?? toolItems[5].normal
-            alpha = item.adjustmentSettings?.alpha ?? toolItems[6].normal
-            sharpen = item.adjustmentSettings?.sharpen ?? toolItems[7].normal
+            brightness = item.adjustmentSettings?.brightness ?? toolsAdjVM.toolItems[0].normal
+            contrast = item.adjustmentSettings?.contrast ?? toolsAdjVM.toolItems[1].normal
+            saturation = item.adjustmentSettings?.saturation ?? toolsAdjVM.toolItems[2].normal
+            highlight = item.adjustmentSettings?.highlight ?? toolsAdjVM.toolItems[3].normal
+            shadow = item.adjustmentSettings?.shadow ?? toolsAdjVM.toolItems[4].normal
+            blurRadius = item.adjustmentSettings?.blurRadius ?? toolsAdjVM.toolItems[5].normal
+            alpha = item.adjustmentSettings?.alpha ?? toolsAdjVM.toolItems[6].normal
+//            sharpen = item.adjustmentSettings?.sharpen ?? toolsAdjVM.toolItems[7].normal
         }
     }
 }
 
-extension ToolAdjustments {
-    private struct AdjustToolItem {
-        var title: String
-        var min: Double
-        var max: Double
-        var normal: Double
-    }
+private struct AdjustToolItem {
+    var title: String
+    var min: Double
+    var max: Double
+    var normal: Double
 }

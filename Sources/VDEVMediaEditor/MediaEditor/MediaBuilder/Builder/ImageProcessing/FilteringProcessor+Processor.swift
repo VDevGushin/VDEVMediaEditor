@@ -31,29 +31,28 @@ extension FilteringProcessor {
         private var filterChain: [ProcessingFilter]
         
         init?(filterChain: [FilterDescriptor]) {
-            guard !filterChain.isEmpty else { return nil }
-            self.filterChain = filterChain.compactMap {
-                ProcessingFilter(filterDescriptor: $0)
-            }
+            let chain = filterChain.compactMap { ProcessingFilter(filterDescriptor: $0) }
+            guard !chain.isEmpty else { return nil }
+            self.filterChain = chain
         }
         
         func applyFilters(to sourceImage: CIImage) -> CIImage {
             bootstrap(forSource: sourceImage)
             var imageOutput = sourceImage
-            autoreleasepool {
                 for filter in filterChain {
                     switch filter {
                     case let .neural(neuralFilter):
                         imageOutput = neuralFilter.execute(imageOutput)
                     case let .filter(ciFilter, descriptor):
-                        if let customImageTargetKey = descriptor.customImageTargetKey {
-                            ciFilter.setValue(imageOutput, forKey: customImageTargetKey)
-                        } else {
-                            ciFilter.setValue(imageOutput, forKey: kCIInputImageKey)
+                        autoreleasepool {
+                            if let customImageTargetKey = descriptor.customImageTargetKey {
+                                ciFilter.setValue(imageOutput, forKey: customImageTargetKey)
+                            } else {
+                                ciFilter.setValue(imageOutput, forKey: kCIInputImageKey)
+                            }
+                            imageOutput = ciFilter.outputImage ?? imageOutput
                         }
-                        imageOutput = ciFilter.outputImage ?? imageOutput
                     }
-                }
             }
             return imageOutput
         }

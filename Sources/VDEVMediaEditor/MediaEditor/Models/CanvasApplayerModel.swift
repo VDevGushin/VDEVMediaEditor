@@ -75,8 +75,9 @@ struct CanvasApplayer {
 
         Future<CanvasApplayerOutput, Never> { seal in
             DispatchQueue.global(qos: .userInitiated).async {
-
-                let baseFiltersFDs = baseFilters.flatMap { $0.steps.makeFilterDescriptors() }
+                let baseFiltersFDs = baseFilters.flatMap {
+                    $0.steps.makeFilterDescriptors()
+                }
                 let adjustSettingsFDs = adjustmentSettings?.makeFilterDescriptors() ?? []
                 let colorFD = colorFilter?.steps.makeFilterDescriptors() ?? []
                 let texturesFD = textures?.steps.makeFilterDescriptors() ?? []
@@ -88,10 +89,12 @@ struct CanvasApplayer {
                     seal(.success(.empty()))
                     return
                 }
+                
+                let processor = FilteringProcessor()
 
-                guard let updatedImage = FilteringProcessor().process(image: image,
-                                                                           filteringChain: filterChain),
-                      let cgImage = FilteringProcessor().createCGImage(from: updatedImage) else {
+                guard let updatedImage = processor.process(image: image,
+                                                           filteringChain: filterChain),
+                      let cgImage = processor.createCGImage(from: updatedImage) else {
                     seal(.success(.empty()))
                     return
                 }

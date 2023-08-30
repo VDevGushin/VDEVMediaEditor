@@ -133,11 +133,15 @@ private extension CanvasImageModel {
     func setAllFilters() {
         storage.limitCancel()
         inProgress = .simple
-        aplayer.applyFilters(for: imageWithNeural ?? originalImage,
-                             adjustmentSettings: adjustmentSettings,
-                             colorFilter: colorFilter,
-                             textures: textures,
-                             masks: masks)
+        
+        aplayer.applyFilters(
+            for: imageWithNeural ?? originalImage,
+            adjustmentSettings: adjustmentSettings,
+            colorFilter: colorFilter,
+            textures: textures,
+            masks: masks
+        )
+        .throttle(for: 0.2, scheduler: DispatchQueue.main, latest: true)
         .sink(on: .main, object: self) { wSelf, output in
             switch output.value {
             case .image(let value):
