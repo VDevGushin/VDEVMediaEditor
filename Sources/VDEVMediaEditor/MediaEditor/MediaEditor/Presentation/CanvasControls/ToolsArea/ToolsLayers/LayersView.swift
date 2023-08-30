@@ -123,7 +123,16 @@ struct LayersView: View {
                     }
                     .padding(.vertical, 15)
                     .frame(maxWidth: .infinity)
-                    .background(BlurView(style: .systemChromeMaterialDark))
+                    .transparentBlurBackground(
+                        radius: 12,
+                        blurStyle: .regular
+                    )
+                    .background {
+                        AnimatedGradientViewVertical(
+                            color: AppColors.whiteWithOpacity,
+                            duration: 2
+                        )
+                    }
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
                 .frame(minHeight: proxy.size.height)
