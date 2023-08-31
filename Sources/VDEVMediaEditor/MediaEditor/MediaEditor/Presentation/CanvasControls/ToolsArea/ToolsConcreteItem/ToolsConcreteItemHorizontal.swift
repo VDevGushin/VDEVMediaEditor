@@ -113,7 +113,7 @@ struct ToolsConcreteItemHorizontal: View {
                             } secondView: {
                                 if settings.showNeuralFilters {
                                     ToolRow(
-                                        image: images.currentItem.currentItemFilter,
+                                        image: images.currentItem.currentItemAIFilter,
                                         title: strings.neuralFilter
                                     ) {
                                         onNeuralFilter(item)

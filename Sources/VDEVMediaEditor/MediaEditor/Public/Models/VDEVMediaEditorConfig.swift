@@ -85,6 +85,7 @@ public protocol VDEVMediaEditorButtonsCurrentItemImages {
     var currentItemMerge: UIImage { get }
     var currentItemSoundON: UIImage { get }
     var currentItemSoundOFF: UIImage { get }
+    var currentItemAIFilter: UIImage { get }
 }
 
 // MARK: - Text editing tools

@@ -173,6 +173,7 @@ struct Images: VDEVImageConfig {
         var currentItemMerge: UIImage = .init(named: "CurrentItemMerge")!
         var currentItemSoundON: UIImage = .init(named: "CurrentItemSoundON")!
         var currentItemSoundOFF: UIImage = .init(named: "CurrentItemSoundOFF")!
+        var currentItemAIFilter: UIImage = .init(named: "CurrentItemAIFilter")!
     }
     
     struct TextEdit: VDEVMediaEditorButtonsTextEditingImages {
