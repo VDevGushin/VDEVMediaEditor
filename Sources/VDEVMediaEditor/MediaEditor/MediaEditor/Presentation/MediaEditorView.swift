@@ -199,9 +199,9 @@ fileprivate extension MediaEditorView {
                     .padding()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .background(
-                        AnimatedGradientViewVertical(
+                        AnimatedGradientViewVerticalInvert(
                             color: AppColors.whiteWithOpacity2,
-                            duration: 3
+                            duration: 10
                         )
                     )
                     .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
