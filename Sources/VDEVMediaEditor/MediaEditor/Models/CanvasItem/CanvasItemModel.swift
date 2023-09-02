@@ -212,9 +212,7 @@ class CanvasItemModel: Identifiable, ObservableObject {
 extension CanvasItemModel {
     func getOriginalURLFrom(asset: CanvasItemAsset?) async -> URL? {
         guard let asset = asset, asset.type == .video else { return nil }
-        
         let originalURL: URL? = await getOriginalURLFrom(asset: asset.asset) ?? asset.url
-        
         return originalURL
     }
 }

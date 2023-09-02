@@ -46,6 +46,27 @@ public protocol VDEVImageConfig {
     var currentItem: VDEVMediaEditorButtonsCurrentItemImages { get }
     var textEdit: VDEVMediaEditorButtonsTextEditingImages { get }
     var typed: VDEVMediaEditorButtonsTypedImages { get }
+    var adjustments: VDEVAdjustmentsButtonsCommonImages { get }
+}
+
+
+// MARK: - Common Images
+public protocol VDEVAdjustmentsButtonsCommonImages {
+    var blur: UIImage { get }
+    var brightness: UIImage { get }
+    var color: UIImage { get }
+    var contrast: UIImage { get }
+    var fade: UIImage { get }
+    var highlights: UIImage { get }
+    var magic: UIImage { get }
+    var mask: UIImage { get }
+    var saturation: UIImage { get }
+    var shadows: UIImage { get }
+    var sharpen: UIImage { get }
+    var sliderThumb: UIImage { get }
+    var structure: UIImage { get }
+    var temperature: UIImage { get }
+    var vignette: UIImage { get }
 }
 
 // MARK: - Common Images
@@ -183,4 +204,7 @@ public protocol VDEVMediaEditorStrings {
     var random: String { get }
     var doingSomeMagic: String { get }
     var none: String { get }
+    var temperature: String { get }
+    var vignette: String { get }
+    var radius: String { get }
 }

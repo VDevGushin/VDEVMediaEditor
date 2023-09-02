@@ -63,11 +63,11 @@ final class CanvasImagePlaceholderModel: CanvasItemModel {
     
     override func apply(adjustmentSettings: AdjustmentSettings?) {
         self.adjustmentSettings = adjustmentSettings
-        applyUserFilters()
+        applyUserFilters(isFromAdjustment: true)
     }
     
-    private func applyUserFilters() {
-        inProgress = true
+    private func applyUserFilters(isFromAdjustment: Bool = false) {
+        inProgress = isFromAdjustment ? false : true
         
         storage.limitCancel()
         

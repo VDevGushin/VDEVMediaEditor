@@ -72,7 +72,7 @@ final class CanvasVideoModel: CanvasItemModel {
 
     override func apply(adjustmentSettings: AdjustmentSettings?) {
         self.adjustmentSettings = adjustmentSettings
-        setAllFilters()
+        setAllFilters(fromAdjustment: true)
     }
 
     override func apply(textures: EditorFilter?) {
@@ -80,8 +80,8 @@ final class CanvasVideoModel: CanvasItemModel {
         setAllFilters()
     }
     
-    private func setAllFilters() {
-        inProgress = true
+    private func setAllFilters(fromAdjustment: Bool = false) {
+        inProgress = fromAdjustment ? false : true
 
         storage.limitCancel()
 

@@ -88,14 +88,14 @@ extension PlaceholderTemplateViewModel {
             showSelection = false
             self.storage.removeAll()
             let hasNeural = self.hasNeural
-            self.inProgress = .init(withNeural: hasNeural)
+            self.inProgress = .neural(withNeural: hasNeural)
             Task {
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
                     
                     await MainActor.run {
-                        self.inProgress = .init(withNeural: hasNeural, image: image)
+                        self.inProgress = .neural(withNeural: hasNeural, image: image)
                     }
                     
                     await self.reset()

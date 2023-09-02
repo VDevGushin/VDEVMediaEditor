@@ -9,6 +9,12 @@ import UIKit
 import Photos
 import AVFoundation
 
+fileprivate extension CIFilter {
+    var isBlur: Bool {
+        name == "CIGaussianBlur"
+    }
+}
+
 private enum ProcessingFilter {
     case filter(CIFilter, FilterDescriptor)
     case neural(AIFilter)
@@ -47,10 +53,16 @@ extension FilteringProcessor {
                         autoreleasepool {
                             if let customImageTargetKey = descriptor.customImageTargetKey {
                                 ciFilter.setValue(imageOutput, forKey: customImageTargetKey)
+                                imageOutput = ciFilter.outputImage ?? imageOutput
                             } else {
-                                ciFilter.setValue(imageOutput, forKey: kCIInputImageKey)
+                                if ciFilter.isBlur {
+                                    ciFilter.setValue(imageOutput, forKey: kCIInputImageKey)
+                                    imageOutput = ciFilter.outputImage?.cropped(to: imageOutput.extent) ?? imageOutput
+                                } else {
+                                    ciFilter.setValue(imageOutput, forKey: kCIInputImageKey)
+                                    imageOutput = ciFilter.outputImage ?? imageOutput
+                                }
                             }
-                            imageOutput = ciFilter.outputImage ?? imageOutput
                         }
                     }
             }

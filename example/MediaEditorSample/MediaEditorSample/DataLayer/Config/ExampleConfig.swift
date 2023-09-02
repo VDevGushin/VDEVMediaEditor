@@ -155,6 +155,26 @@ struct Images: VDEVImageConfig {
     
     var typed: VDEVMediaEditorButtonsTypedImages = Typed()
     
+    var adjustments: VDEVAdjustmentsButtonsCommonImages = AdjustmentsItem()
+    
+    struct AdjustmentsItem: VDEVAdjustmentsButtonsCommonImages {
+        var blur: UIImage = .init(named: "blur")!
+        var brightness: UIImage = .init(named: "brightness")!
+        var color: UIImage = .init(named: "color")!
+        var contrast: UIImage = .init(named: "contrast")!
+        var fade: UIImage = .init(named: "fade")!
+        var highlights: UIImage = .init(named: "highlights")!
+        var magic: UIImage = .init(named: "magic")!
+        var mask: UIImage = .init(named: "mask")!
+        var saturation: UIImage = .init(named: "saturation")!
+        var shadows: UIImage = .init(named: "shadows")!
+        var sharpen: UIImage = .init(named: "sharpen")!
+        var sliderThumb: UIImage = .init(named: "slider_thumb")!
+        var structure: UIImage = .init(named: "structure")!
+        var temperature: UIImage = .init(named: "temperature")!
+        var vignette: UIImage = .init(named: "vignette")!
+    }
+    
     struct CurrentItem: VDEVMediaEditorButtonsCurrentItemImages {
         var currentIteDublicate: UIImage = .init(named: "CurrentIteDublicate")!
         var currentItemAdjustments: UIImage = .init(named: "CurrentItemAdjustments")!
@@ -286,4 +306,7 @@ struct Strings: VDEVMediaEditorStrings {
     var doingSomeMagic = "DOING SOME\nMAGIC"
     var sharpen = "SHARPEN"
     var none = "NONE"
+    var vignette = "VIGNETTE"
+    var temperature = "TEMP"
+    var radius = "RADIUS"
 }

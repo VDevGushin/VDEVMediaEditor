@@ -11,8 +11,25 @@ enum ProgresOperationType {
     case simple
     case neural(UIImage?)
     
-    init(withNeural: Bool, image: UIImage? = nil) {
-        self = withNeural ? .neural(image) : .simple
+    static func simple(fromAdjustment: Bool) -> ProgresOperationType? {
+        guard fromAdjustment else {
+            return .simple
+        }
+        return nil
+    }
+    
+    static func neural(
+        withNeural: Bool,
+        fromAdjustment: Bool = false,
+        image: UIImage? = nil
+    ) -> ProgresOperationType? {
+        if withNeural {
+            return .neural(image)
+        }
+        if !fromAdjustment {
+            return .simple
+        }
+        return nil
     }
 }
 

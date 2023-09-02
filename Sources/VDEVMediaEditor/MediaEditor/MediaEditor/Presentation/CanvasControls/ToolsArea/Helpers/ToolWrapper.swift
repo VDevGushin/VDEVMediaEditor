@@ -8,22 +8,8 @@
 import SwiftUI
 
 enum ToolsEditState: Equatable {
-    case edit(Int)
+    case edit
     case idle
-    
-    func inEdit(for index: Int) -> Bool {
-        switch self {
-        case .idle: return false
-        case .edit(let i): return i == index
-        }
-    }
-    
-    func getOpacity(for index: Int) -> CGFloat {
-        switch self {
-        case .idle: return 1.0
-        case .edit(let i): return i == index ? 1.0 : 0.1
-        }
-    }
     
     func getOpacity() -> CGFloat {
         switch self {
@@ -33,21 +19,27 @@ enum ToolsEditState: Equatable {
     }
 }
 
+enum ToolsTitleState: Equatable {
+    case title
+    case noTitle
+}
+
 struct ToolWrapperWithBinding<Tool: View>: View {
     let title: String
     let fullScreen: Bool
     let withBackground: Bool
     let returnPressed: () -> ()
     
-    @ViewBuilder var tool: (Binding<ToolsEditState>) -> Tool
+    @ViewBuilder var tool: (Binding<ToolsEditState>, Binding<ToolsTitleState>) -> Tool
     
     @State private var editState: ToolsEditState = .idle
+    @State private var titleState: ToolsTitleState = .title
     
     init(title: String,
          fullScreen: Bool,
          withBackground: Bool = true,
          returnPressed: @escaping () -> Void,
-         @ViewBuilder  tool: @escaping (Binding<ToolsEditState>) -> Tool) {
+         @ViewBuilder tool: @escaping (Binding<ToolsEditState>, Binding<ToolsTitleState>) -> Tool) {
         self.title = title
         self.fullScreen = fullScreen
         self.withBackground = withBackground
@@ -64,12 +56,14 @@ struct ToolWrapperWithBinding<Tool: View>: View {
             }
 
             VStack(spacing: 20) {
-                HeadWithTitle(title: title,
-                              returnPressed: returnPressed)
-                .padding(.horizontal)
-                .opacity(editState.getOpacity())
+                if titleState == .title {
+                    HeadWithTitle(title: title,
+                                  returnPressed: returnPressed)
+                    .padding(.horizontal)
+                    .opacity(editState.getOpacity())
+                }
                 
-                tool($editState)
+                tool($editState, $titleState)
             }
             .padding(.vertical)
             .transparentBlurBackground(opacity: editState.getOpacity)

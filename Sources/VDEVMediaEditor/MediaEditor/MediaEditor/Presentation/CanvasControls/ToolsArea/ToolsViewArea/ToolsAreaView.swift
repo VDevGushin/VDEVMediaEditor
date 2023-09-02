@@ -550,9 +550,14 @@ fileprivate extension ToolsAreaView {
     func adjustment(_ item: CanvasItemModel) -> some View {
         ToolWrapperWithBinding(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.tools.currentCloseActionFor(item)
-        } tool: { state in
-            ToolAdjustments(item,
+        } tool: { state, titleState in
+//            ToolAdjustments(item,
+//                            state: state,
+//                            memento: mementoObject)
+//                .padding(.horizontal)
+            ToolAdjustmentsDetail(item,
                             state: state,
+                            titleState: titleState,
                             memento: mementoObject)
                 .padding(.horizontal)
         }

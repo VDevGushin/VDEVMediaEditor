@@ -152,9 +152,13 @@ fileprivate extension MediaEditorToolsForTemplateView {
         ToolWrapperWithBinding(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.endWorkWithItem?()
             vm.hideAllOverlayViews()
-        } tool: { state in
-            ToolAdjustments(item, state: state)
-                .padding(.horizontal)
+        } tool: { state, titleState in
+            ToolAdjustmentsDetail(
+                item,
+                state: state,
+                titleState: titleState
+            )
+            .padding(.horizontal)
         }
     }
     

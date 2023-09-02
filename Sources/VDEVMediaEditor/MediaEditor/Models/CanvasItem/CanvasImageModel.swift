@@ -77,7 +77,7 @@ final class CanvasImageModel: CanvasItemModel {
     
     override func apply(adjustmentSettings: AdjustmentSettings?) {
         self.adjustmentSettings = adjustmentSettings
-        setAllFilters()
+        setAllFilters(fromAdjustment: true)
     }
     
     override func copy() -> CanvasImageModel {
@@ -100,7 +100,11 @@ private extension CanvasImageModel {
         let isWithNeural = setupBeforeAIProcessing(neuralFilter)
         storage.cancelAll()
         
-        inProgress = .neural(image)
+        inProgress = .neural(
+            withNeural: isWithNeural,
+            fromAdjustment: false,
+            image: image
+        )
         
         aplayer
             .applyFilters(
@@ -130,9 +134,9 @@ private extension CanvasImageModel {
     }
     
     // Применение фильтров пользователя
-    func setAllFilters() {
+    func setAllFilters(fromAdjustment: Bool = false) {
         storage.limitCancel()
-        inProgress = .simple
+        inProgress = .simple(fromAdjustment: fromAdjustment)
         
         aplayer.applyFilters(
             for: imageWithNeural ?? originalImage,
