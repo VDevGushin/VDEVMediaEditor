@@ -39,44 +39,51 @@ struct AlphaAdjustments: View {
                     .font(AppFonts.elmaTrioRegular(12))
                     .foregroundColor(AppColors.whiteWithOpacity)
                     .frame(maxWidth: 80, alignment: .center)
-                
-                Slider(value:
-                        Binding<Double> {
-                    return value
-                } set: { newValue in
-                    if newValue == filter.normal { makeHaptics(.light) }
-                    value = newValue
-                    let settings: AdjustmentSettings = makeSettings(value: value)
-                    self.item.apply(adjustmentSettings: settings)
-                }, in: filter.min...filter.max, onEditingChanged: { value in
-                    if !value {
-                        state = .idle
-                    } else {
-                        memento?.forceSave()
-                        state = .edit
-                    }
-                })
+                Slider(
+                    value:  Binding<Double> {
+                        return value
+                    } set: { newValue in
+                        if newValue == filter.normal { makeHaptics(.light) }
+                        value = newValue
+                        let settings: AdjustmentSettings = makeSettings(value: value)
+                        self.item.apply(adjustmentSettings: settings)
+                    },
+                    in: filter.min...filter.max,
+                    onEditingChanged: { value in
+                        if !value {
+                            state = .idle
+                        } else {
+                            memento?.forceSave()
+                            state = .edit
+                        }
+                    })
                 .accentColor(AppColors.white)
                 .contentShape(Rectangle())
+                .alignmentGuide(VerticalAlignment.center) { $0[VerticalAlignment.center]}
+                .padding(.top, 20)
+                .overlay(alignment: .top) {
+                    GeometryReader { gp in
+                        VStack {
+                            Text(
+                                ValueCalc.make(
+                                    value: value,
+                                    max: filter.max,
+                                    min: filter.min
+                                )
+                            )
+                            .font(AppFonts.elmaTrioRegular(12))
+                            .foregroundColor(AppColors.whiteWithOpacity)
+                            Spacer().frame(height: 6)
+                        }
+                        .alignmentGuide(HorizontalAlignment.leading) {
+                            return $0[HorizontalAlignment.leading] - (gp.size.width - $0.width) * (value - filter.min) / ( filter.max - filter.min)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
             }
             
             HStack {
-                Button {
-                    haptics(.light)
-                    onClose()
-                } label: {
-                    Text(strings.close)
-                        .font(AppFonts.elmaTrioRegular(12))
-                        .foregroundColor(AppColors.redWithOpacity)
-                }
-                .frame(height: 32)
-                .background {
-                    InvisibleTapZoneView { onClose() }
-                }
-                .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
                 Button {
                     haptics(.light)
                     reset()
@@ -90,6 +97,22 @@ struct AlphaAdjustments: View {
                     InvisibleTapZoneView {
                         reset()
                     }
+                }
+                .buttonStyle(PlainButtonStyle())
+                
+                Spacer()
+                
+                Button {
+                    haptics(.light)
+                    onClose()
+                } label: {
+                    Text(strings.done)
+                        .font(AppFonts.elmaTrioRegular(14))
+                        .foregroundColor(AppColors.greenWithOpacity)
+                }
+                .frame(height: 32)
+                .background {
+                    InvisibleTapZoneView { onClose() }
                 }
                 .buttonStyle(PlainButtonStyle())
             }

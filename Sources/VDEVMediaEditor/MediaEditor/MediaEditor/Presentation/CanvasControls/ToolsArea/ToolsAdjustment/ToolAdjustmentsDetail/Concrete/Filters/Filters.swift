@@ -90,3 +90,15 @@ struct FilterSharpen {
         let normal: Double = 0
     }
 }
+
+enum ValueCalc {
+    static func make(
+        value: CGFloat,
+        max: CGFloat,
+        min: CGFloat
+    ) -> String {
+        let minValue = min <= 0 ? 0 : abs(min)
+        let allValue = minValue + max
+        return "\(Int((value * 100) / allValue)) %"
+    }
+}
