@@ -45,6 +45,7 @@ struct SharpenAdjustments: View {
                         Binding<Double> {
                     return value
                 } set: { newValue in
+                    if newValue == filter.value.normal { makeHaptics(.light) }
                     value = newValue
                     let settings: AdjustmentSettings = makeSettings(value: value, radius: radius)
                     self.item.apply(adjustmentSettings: settings)
@@ -70,6 +71,7 @@ struct SharpenAdjustments: View {
                         Binding<Double> {
                     return radius
                 } set: { newValue in
+                    if newValue == filter.radius.normal { makeHaptics(.light) }
                     radius = newValue
                     let settings: AdjustmentSettings = makeSettings(value: value, radius: radius)
                     self.item.apply(adjustmentSettings: settings)

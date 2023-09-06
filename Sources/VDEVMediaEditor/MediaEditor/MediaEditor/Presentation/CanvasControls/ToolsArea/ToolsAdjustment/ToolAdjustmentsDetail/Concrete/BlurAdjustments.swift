@@ -44,6 +44,7 @@ struct BlurAdjustments: View {
                         Binding<Double> {
                     return value
                 } set: { newValue in
+                    if newValue == filter.normal { makeHaptics(.light) }
                     value = newValue
                     let settings: AdjustmentSettings = makeSettings(value: value)
                     self.item.apply(adjustmentSettings: settings)
