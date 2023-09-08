@@ -83,40 +83,11 @@ struct AlphaAdjustments: View {
                 }
             }
             
-            HStack {
-                Button {
-                    haptics(.light)
-                    reset()
-                } label: {
-                    Text(strings.default)
-                        .font(AppFonts.elmaTrioRegular(12))
-                        .foregroundColor(AppColors.whiteWithOpacity)
-                }
-                .frame(height: 32)
-                .background {
-                    InvisibleTapZoneView {
-                        reset()
-                    }
-                }
-                .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Button {
-                    haptics(.light)
-                    onClose()
-                } label: {
-                    Text(strings.done)
-                        .font(AppFonts.elmaTrioRegular(14))
-                        .foregroundColor(AppColors.greenWithOpacity)
-                }
-                .frame(height: 32)
-                .background {
-                    InvisibleTapZoneView { onClose() }
-                }
-                .buttonStyle(PlainButtonStyle())
+            AdjustmentsDetailButtons(state: $state) {
+                reset()
+            } doneAction: {
+                onClose()
             }
-            .opacity(state.getOpacity())
         }
         .onAppear {
             startState()

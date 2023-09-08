@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 enum ToolsEditState: Equatable {
     case edit
     case idle
@@ -15,6 +16,13 @@ enum ToolsEditState: Equatable {
         switch self {
         case .idle: return 1.0
         case .edit: return 0.05
+        }
+    }
+    
+    var inEdit: Bool {
+        switch self {
+        case .idle: return false
+        case .edit: return true
         }
     }
 }
@@ -46,7 +54,7 @@ struct ToolWrapperWithBinding<Tool: View>: View {
         self.returnPressed = returnPressed
         self.tool = tool
     }
-
+    
     var body: some View {
         VStack {
             if !fullScreen {
@@ -54,7 +62,7 @@ struct ToolWrapperWithBinding<Tool: View>: View {
                     returnPressed()
                 }
             }
-
+            
             VStack(spacing: 20) {
                 if titleState == .title {
                     HeadWithTitle(title: title,
@@ -90,7 +98,7 @@ struct ToolWrapper<Tool: View>: View {
         self.returnPressed = returnPressed
         self.tool = tool()
     }
-
+    
     var body: some View {
         VStack {
             if !fullScreen {
@@ -98,12 +106,12 @@ struct ToolWrapper<Tool: View>: View {
                     returnPressed()
                 }
             }
-
+            
             VStack(spacing: 20) {
                 HeadWithTitle(title: title,
                               returnPressed: returnPressed)
-                    .padding()
-
+                .padding()
+                
                 tool
             }
             .padding(.vertical)

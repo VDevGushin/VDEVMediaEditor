@@ -59,40 +59,11 @@ struct VignetteAdjustments: View {
                 .contentShape(Rectangle())
             }
             
-            HStack {
-                Button {
-                    haptics(.light)
-                    onClose()
-                } label: {
-                    Text(strings.close)
-                        .font(AppFonts.elmaTrioRegular(12))
-                        .foregroundColor(AppColors.redWithOpacity)
-                }
-                .frame(height: 32)
-                .background {
-                    InvisibleTapZoneView { onClose() }
-                }
-                .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Button {
-                    haptics(.light)
-                    reset()
-                } label: {
-                    Text(strings.default)
-                        .font(AppFonts.elmaTrioRegular(12))
-                        .foregroundColor(AppColors.whiteWithOpacity)
-                }
-                .frame(height: 32)
-                .background {
-                    InvisibleTapZoneView {
-                        reset()
-                    }
-                }
-                .buttonStyle(PlainButtonStyle())
+            AdjustmentsDetailButtons(state: $state) {
+                reset()
+            } doneAction: {
+                onClose()
             }
-            .opacity(state.getOpacity())
         }
         .onAppear {
             startState()
