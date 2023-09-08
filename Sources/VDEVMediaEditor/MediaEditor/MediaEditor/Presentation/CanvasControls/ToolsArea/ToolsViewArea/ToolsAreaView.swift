@@ -303,7 +303,6 @@ struct ToolsAreaView: View {
                 
             case .text(let text):
                 let newItem = CanvasTextModel.with(text: text)
-                vm.data.add(newItem)
                 vm.tools.closeTools(false)
                 vm.tools.seletedTool(.text(newItem))
             }
@@ -313,7 +312,7 @@ struct ToolsAreaView: View {
     @ViewBuilder
     func toolsLayersManager() -> some View {
         HStack(alignment: .bottom) {
-            LayersView()
+            LayersView(vm: vm)
                 .padding(.leading, 10)
             
             if !vm.data.isLimit {

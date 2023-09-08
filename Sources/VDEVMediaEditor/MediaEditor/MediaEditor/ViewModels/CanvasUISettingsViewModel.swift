@@ -22,24 +22,30 @@ final class CanvasUISettingsViewModel: ObservableObject {
     var canvasCornerRadius: CGFloat { 16 }
     var bottomBarHeight: CGFloat { 76 }
     var needGuideLinesGrid: Bool { settings.needGuideLinesGrid }
-
+    
     private var storage = Cancellables()
     private var colorOp: AnyCancellable?
-
+    
     init() {
         // необходимо инверсить гайд цвета при смене главного фона
         // чтобы не сливались цвета
         colorOp = $mainLayerBackgroundColor
             .receiveOnGlobal()
             .map { UIColor($0) }
-            .sink(on: .main, object: self) { wSelf, value in
+            .sink(
+                on: .main,
+                object: self
+            ) { wSelf, value in
                 let color = Color(uiColor: value.contrast(dark: .orange))
                 wSelf.guideLinesColor = color
             }
         
         $editorSize
             .removeDuplicates()
-            .sink(on: .main, object: self) { wSelf, value in
+            .sink(
+                on: .main,
+                object: self
+            ) { wSelf, value in
                 wSelf.roundedEditorSize = value.rounded(.up)
             }
             .store(in: &storage)

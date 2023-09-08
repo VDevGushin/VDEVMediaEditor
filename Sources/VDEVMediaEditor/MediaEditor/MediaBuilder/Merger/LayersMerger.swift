@@ -23,8 +23,6 @@ extension LayersMerger {
 
 final class LayersMerger: ObservableObject {
     @Injected private var strings: VDEVMediaEditorStrings
-    @Injected private var resolution: ResolutionService
-    
     @Published var state: State = .idle
     
     private lazy var builder: MediaBuilder = .init()
@@ -32,7 +30,7 @@ final class LayersMerger: ObservableObject {
     func merge(layers: [CanvasItemModel], on editorSize: CGSize) {
         makeMediaItem(layers: layers,
                       size: editorSize,
-                      resolution: resolution.value)
+                      resolution: .fullHD)
     }
 }
 
@@ -80,10 +78,9 @@ private extension LayersMerger {
             guard let image = await AssetExtractionUtil.image(fromURL: model.url) else {
                 return .idle
             }
-            
-            guard let image = image.cropAlpha() else {
-                return .idle
-            }
+//            guard let image = image.cropAlpha() else {
+//                return .idle
+//            }
             let item = CanvasImageModel(image: image, asset: nil)
             return .successImage(item)
         }
@@ -97,40 +94,5 @@ private extension LayersMerger {
     func set(_ error: Error) async {
         Log.e(error)
         state = .error(error)
-    }
-    
-    func getSize(layers: [CanvasItemModel]) -> CGSize {
-        var resultMinX: CGFloat = .nan
-        var resultMaxX: CGFloat = .nan
-        var resultMinY: CGFloat = .nan
-        var resultMaxY: CGFloat = .nan
-        
-        for item in layers {
-            let minX = item.offset.width - item.frameFetchedSize.width / 2
-            
-            if resultMinX.isNaN || resultMinX >= minX {
-                resultMinX = minX
-            }
-            
-            let maxX = item.offset.width + item.frameFetchedSize.width / 2
-            
-            if resultMaxX.isNaN || resultMaxX <= maxX {
-                resultMaxX = maxX
-            }
-            
-            let minY = item.offset.height - item.frameFetchedSize.width / 2
-            
-            if resultMinY.isNaN || resultMinY >= minY {
-                resultMinY = minY
-            }
-            
-            let maxY = item.offset.height + item.frameFetchedSize.width / 2
-            
-            if resultMaxY.isNaN || resultMaxY <= maxY {
-                resultMaxY = maxY
-            }
-        }
-        
-        return .init(width: resultMaxX - resultMinX, height: resultMaxY - resultMinY)
     }
 }

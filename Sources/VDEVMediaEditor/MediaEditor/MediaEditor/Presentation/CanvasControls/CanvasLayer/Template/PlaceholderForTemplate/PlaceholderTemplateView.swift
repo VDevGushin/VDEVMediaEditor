@@ -9,10 +9,8 @@ import SwiftUI
 
 struct PlaceholderTemplateView: View {
     @Environment(\.guideLinesColor) private var guideLinesColor
-    @Injected private var images: VDEVImageConfig
-    
     @StateObject private var vm: PlaceholderTemplateViewModel
-    
+    @Injected private var images: VDEVImageConfig
     //для того, чтобы узнать манипулируем мы с картинкой или видосом
     @State private var isInManipulation: Bool = false
     @State private var isShowSelection: Bool = false
@@ -21,7 +19,12 @@ struct PlaceholderTemplateView: View {
         item: CanvasPlaceholderModel,
         delegate: CanvasEditorDelegate?
     ) {
-        _vm = .init(wrappedValue: .init(item: item, delegate: delegate))
+        _vm = .init(
+            wrappedValue: .init(
+                item: item,
+                delegate: delegate
+            )
+        )
     }
     
     var body: some View {
@@ -59,8 +62,8 @@ private extension PlaceholderTemplateView {
                         .resizable()
                         .frame(size)
                 } onTap: {
+                    haptics(.light)
                     vm.hideAllOverlayViews()
-                    // haptics(.light)
                     // vm.openMediaSelector()
                 } onDoubleTap: {
                     haptics(.light)
@@ -147,18 +150,18 @@ private extension PlaceholderTemplateView {
     @ViewBuilder
     private func AddMediaButton() -> some View {
         Button {
-            vm.openMediaSelector()
             haptics(.light)
+            vm.openMediaSelector()
         } label: {
             if let placholderURL = vm.item.url {
                 AsyncImageView(url: placholderURL) { img in
-                    Image(uiImage: img)
-                        .resizable()
+                    Image(uiImage: img).resizable()
                 } placeholder: {
                     LoadingView(
                         inProgress: true,
                         color: AppColors.white.uiColor,
-                        cornerRadius: 0)
+                        cornerRadius: 0
+                    )
                 }
             } else {
                 addButton()

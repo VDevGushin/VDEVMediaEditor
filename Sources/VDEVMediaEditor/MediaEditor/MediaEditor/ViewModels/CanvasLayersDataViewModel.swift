@@ -38,8 +38,8 @@ final class CanvasLayersDataViewModel: ObservableObject {
             .store(in: &storage)
     }
     
-    func removeAll() {
-        forceSave()
+    func removeAll(withSave: Bool = true) {
+        if withSave { forceSave() }
         layers.removeAll()
     }
     
@@ -68,8 +68,9 @@ final class CanvasLayersDataViewModel: ObservableObject {
     }
     
     func delete(_ item: CanvasItemModel, withSave: Bool = true) {
+        guard let index = layers.index(id: item.id) else { return }
         if withSave { forceSave() }
-        layers.remove(id: item.id)
+        layers.remove(at: index)
     }
     
     func delete(_ item: CanvasItemModel?, withSave: Bool = true) {

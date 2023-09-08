@@ -45,6 +45,11 @@ struct DiController {
         container.register(type: RemoveLayersService.self,
                            service: RemoveLayersService())
         
+        if settings.canMergeAllLayers {
+            container.register(type: MergeLayersService.self,
+                               service: MergeLayersService())
+        }
+        
         if settings.canGenerateImageByPrompt {
             container.register(type: ImageResultChecker.self,
                                service: ImageResultChecker(config: .init()))

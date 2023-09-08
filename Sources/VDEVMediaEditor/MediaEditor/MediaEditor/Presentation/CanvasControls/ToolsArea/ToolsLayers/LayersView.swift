@@ -6,15 +6,66 @@
 //
 
 import SwiftUI
+import Combine
+import IdentifiedCollections
+
+final class LayersViewVM: ObservableObject {
+    @Injected private var settings: VDEVMediaEditorSettings
+    @Published private(set) var canMergeLayers: Bool = false
+    private var storage = Cancellables()
+    
+    var canMergeAllLayers: Bool {
+        settings.canMergeAllLayers
+    }
+    
+    var canRemoveAllLayers: Bool {
+        settings.canRemoveAllLayers
+    }
+    
+    var showAspectRatioSettings: Bool {
+        settings.showAspectRatioSettings
+    }
+    
+    var showCommonSettings: Bool {
+        settings.showCommonSettings
+    }
+    
+    init(layers: Published<IdentifiedArrayOf<CanvasItemModel>>.Publisher) {
+        let hasVideos = layers
+            .flatMap { result -> AnyPublisher<Bool, Never> in
+                result.elements.withVideoAsync()
+            }
+        let moreThenOne = layers.map { result -> Bool in result.count > 1 }
+        
+        moreThenOne.combineLatest(hasVideos)
+            .map { moreThenOne, hasVideos in
+                moreThenOne && !hasVideos
+            }
+            .removeDuplicates()
+            .sink(
+                on: .main,
+                object: self
+            ) { wSelf, value in
+                wSelf.canMergeLayers = value
+            }
+            .store(in: &storage)
+    }
+}
 
 struct LayersView: View {
-    @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
     @Injected private var strings: VDEVMediaEditorStrings
-    @Injected private var settings: VDEVMediaEditorSettings
     @Injected private var removeLayersService: RemoveLayersService
     
+    @ObservedObject private var vm: CanvasEditorViewModel
+    @StateObject private var innerVM: LayersViewVM
+    
     private var mementoObject: MementoObject? { vm.data }
+    
+    init(vm: CanvasEditorViewModel) {
+        self.vm = vm
+        _innerVM = .init(wrappedValue: .init(layers: vm.data.$layers))
+    }
     
     var body: some View {
         Group {
@@ -75,12 +126,30 @@ struct LayersView: View {
                             mementoObject?.forceSave()
                         }
                         
-                        if !vm.data.isEmpty && settings.canRemoveAllLayers {
+                        if innerVM.canMergeAllLayers &&
+                            innerVM.canMergeLayers {
+                            // Мерж всех слоев
+                            NoShadowRoundButtonSystem(
+                                image: Image(systemName: "photo.fill.on.rectangle.fill"),
+                                size: 40,
+                                backgroundColor: AppColors.layerButtonsLightBlack,
+                                tintColor: AppColors.white
+                            ) {
+                                Log.d("Merge all layeres")
+                                mementoObject?.forceSave()
+                                vm.tools.openLayersList(false)
+                                vm.onMergeAllLayers()
+                            }.scaleEffect(0.95)
+                        }
+                        
+                        if !vm.data.isEmpty && innerVM.canRemoveAllLayers {
                             // Удаление всего
-                            NoShadowRoundButtonSystem(image: Image(systemName: "rectangle.on.rectangle.slash.fill"),
-                                                      size: 40,
-                                                      backgroundColor: AppColors.layerButtonsLightBlack,
-                                                      tintColor: AppColors.white) {
+                            NoShadowRoundButtonSystem(
+                                image: Image(systemName: "rectangle.on.rectangle.slash.fill"),
+                                size: 40,
+                                backgroundColor: AppColors.layerButtonsLightBlack,
+                                tintColor: AppColors.white
+                            ) {
                                 removeLayersService.needToRemoveAllLayers()
                                 vm.tools.openLayersList(false)
                                 Log.d("Remove all layeres")
@@ -97,7 +166,7 @@ struct LayersView: View {
                             Log.d("Select tool backgroundColor")
                         }.scaleEffect(0.95)
                         
-                        if settings.showAspectRatioSettings {
+                        if innerVM.showAspectRatioSettings {
                             //Aspect ratio
                             NoShadowRoundButtonSystem(image: Image(systemName: "aspectratio"),
                                                       size: 40,
@@ -109,7 +178,7 @@ struct LayersView: View {
                             }.scaleEffect(0.95)
                         }
                         
-                        if settings.showCommonSettings {
+                        if innerVM.showCommonSettings {
                             //Format
                             NoShadowRoundButtonSystem(image: Image(systemName: "gearshape"),
                                                       size: 40,

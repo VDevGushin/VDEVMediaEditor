@@ -39,8 +39,16 @@ protocol CanvasEditorDelegate: AnyObject,
     func hideAllOverlayViews()
 }
 
-final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEditorDelegate {
+final class CanvasEditorToolsForTemplateViewModel:
+    ObservableObject, CanvasEditorDelegate {
+    
     @Injected private var settings: VDEVMediaEditorSettings
+    
+    @Published var state: State = .empty
+    @Published var showPhotoPicker: PhotoPickerType? = nil
+    @Published var showVideoPicker: Bool = false
+    @Published private(set) var isAnyViewOpen: Bool = false
+    
     var baseChallengeId: String { settings.resourceID }
     var endWorkWithItem: (() -> Void)?
     var pickSelector: ((PickerMediaOutput?) -> Void)?
@@ -48,29 +56,28 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
     var changeSound: ((CanvasVideoPlaceholderModel, Float) -> Void)?
     var editText: ((CanvasTextModel) -> Void)?
     
-    @Published var state: State = .empty
-    @Published var showPhotoPicker: PhotoPickerType? = nil
-    @Published var showVideoPicker: Bool = false
-    @Published private(set) var isAnyViewOpen: Bool = false
-
     private var storage = Cancellables()
-
+    
     init() {
-        // Если у на вообще, что либо открыто на оверлее
-        let checkAnyView = Publishers.CombineLatest3(
+        Publishers.CombineLatest3(
             $showPhotoPicker,
             $showVideoPicker,
             $state
-        )
-        .eraseToAnyPublisher()
-        
-        checkAnyView.map { $0 != nil || $1 == true || $2 != .empty }
-        .removeDuplicates()
+        ).map {
+            ($0 != nil || $1 == true || $2 != .empty)
+            
+        }
+        //.removeDuplicates()
         .receiveOnMain()
-        .weakAssign(to: \.isAnyViewOpen, on: self)
+        .sink(
+            on: .main,
+            object: self
+        ) { wSelf, value in
+            wSelf.isAnyViewOpen = value
+        }
         .store(in: &storage)
     }
-
+    
     func hideAllOverlayViews() {
         if state != .empty { set(.empty) }
     }
@@ -81,6 +88,7 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         case .mediaPick: break
         default:
             if workWithNeural {
+                endWorkWithItem?()
                 set(showPhotoPicker: .original)
             } else {
                 hideMediaPicker()
@@ -88,7 +96,7 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
             }
         }
     }
-
+    
     func hideMediaPicker() {
         hideAllOverlayViews()
         endWorkWithItem?()
@@ -103,17 +111,17 @@ final class CanvasEditorToolsForTemplateViewModel: ObservableObject, CanvasEdito
         hideAllOverlayViews()
         if state.id != 2 { set(.editVariants(item: item)) }
     }
-
+    
     func showAdjustments(item: CanvasItemModel) {
         hideAllOverlayViews()
         if state.id != 3 { set(.adjustments(item: item)) }
     }
-
+    
     func showTexture(item: CanvasItemModel) {
         hideAllOverlayViews()
         if state.id != 4 { set(.texture(item: item)) }
     }
-
+    
     func showFilters(item: CanvasItemModel) {
         hideAllOverlayViews()
         if state.id != 5 { set(.filter(item: item)) }
@@ -157,7 +165,7 @@ extension CanvasEditorToolsForTemplateViewModel {
         case texture(item: CanvasItemModel)
         case filter(item: CanvasItemModel)
         case editText(item: CanvasTextModel)
-
+        
         var id: Int {
             switch self {
             case .empty: return 0
@@ -169,9 +177,9 @@ extension CanvasEditorToolsForTemplateViewModel {
             case .editText: return 6
             }
         }
-
+        
         static func == (lhs: State, rhs: State) -> Bool { lhs.id == rhs.id }
-
+        
         func hash(into hasher: inout Hasher) { hasher.combine(id) }
     }
     

@@ -6,33 +6,96 @@
 //
 
 import SwiftUI
-import NVActivityIndicatorView
 
 struct LoadingModel {
     let value: Bool
-    let message: String
+    let message: String?
     let loadingType: LoadingType
+    let color: UIColor
+    let blurStyle: UIBlurEffect.Style
+    let cornerRadius: CGFloat
+    let onClose: (() -> Void)?
     
-    static let `false`: LoadingModel = .init(
-        value: false,
-        message: "",
-        loadingType: .loading
-    )
-    static let `true`: LoadingModel = .init(
-        value: true,
-        message: DI.resolve(VDEVMediaEditorStrings.self).loading,
-        loadingType: .loading
-    )
-    static let processing: LoadingModel = .init(
-        value: true,
-        message: DI.resolve(VDEVMediaEditorStrings.self).processing,
-        loadingType: .processing
-    )
-    static let buildMedia: LoadingModel = .init(
-        value: true,
-        message: DI.resolve(VDEVMediaEditorStrings.self).processing,
-        loadingType: .buildMedia
-    )
+    static func `false`(
+        color: UIColor = AppColors.gray.uiColor,
+        blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
+        cornerRadius: CGFloat = 15
+    ) -> LoadingModel {
+        .init(
+            value: false,
+            message: nil,
+            loadingType: .loading,
+            color: color,
+            blurStyle: blurStyle,
+            cornerRadius: cornerRadius,
+            onClose: nil
+        )
+    }
+    
+    static func `true`(
+        color: UIColor = AppColors.gray.uiColor,
+        blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
+        cornerRadius: CGFloat = 15
+    ) -> LoadingModel {
+        .init(
+            value: true,
+            message: DI.resolve(VDEVMediaEditorStrings.self).loading,
+            loadingType: .loading,
+            color: color,
+            blurStyle: blurStyle,
+            cornerRadius: cornerRadius,
+            onClose: nil
+        )
+    }
+    
+    static func processing(
+        color: UIColor = AppColors.gray.uiColor,
+        blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
+        cornerRadius: CGFloat = 15
+    ) -> LoadingModel {
+        .init(
+            value: true,
+            message: DI.resolve(VDEVMediaEditorStrings.self).processing,
+            loadingType: .processing,
+            color: color,
+            blurStyle: blurStyle,
+            cornerRadius: cornerRadius,
+            onClose: nil
+        )
+    }
+    
+    static func buildMedia(
+        color: UIColor = AppColors.gray.uiColor,
+        blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
+        cornerRadius: CGFloat = 15,
+        onClose: @escaping () -> Void
+    ) -> LoadingModel {
+        .init(
+            value: true,
+            message: DI.resolve(VDEVMediaEditorStrings.self).processing,
+            loadingType: .buildMedia,
+            color: color,
+            blurStyle: blurStyle,
+            cornerRadius: cornerRadius,
+            onClose: onClose
+        )
+    }
+    
+    static func mergeAll(
+        color: UIColor = AppColors.gray.uiColor,
+        blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
+        cornerRadius: CGFloat = 15
+    ) -> LoadingModel {
+        .init(
+            value: true,
+            message: nil,
+            loadingType: .loading,
+            color: color,
+            blurStyle: blurStyle,
+            cornerRadius: cornerRadius,
+            onClose: nil
+        )
+    }
 }
 
 enum LoadingType {
@@ -45,54 +108,57 @@ struct LoadingView: View {
     private var inProgress: Bool
     private let color: UIColor
     private let blurStyle: UIBlurEffect.Style
-    private let message: String
+    private let message: String?
     private let cornerRadius: CGFloat
-    private let showMessage: Bool
     private let onClose: (() -> Void)?
     private let loadingType: LoadingType
     
-    init(inProgress: LoadingModel,
-         color: UIColor = AppColors.gray.uiColor,
-         blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
-         cornerRadius: CGFloat = 15,
-         showMessage: Bool = true,
-         onClose: (() -> Void)? = nil) {
-        self.inProgress = inProgress.value
-        self.color = color
-        self.blurStyle = blurStyle
-        self.message = inProgress.message
-        self.cornerRadius = cornerRadius
-        self.showMessage = showMessage
-        self.onClose = onClose
-        self.loadingType = inProgress.loadingType
+    init(model: LoadingModel) {
+        self.inProgress = model.value
+        self.color = model.color
+        self.blurStyle = model.blurStyle
+        self.message = model.message
+        self.cornerRadius = model.cornerRadius
+        self.onClose = model.onClose
+        self.loadingType = model.loadingType
     }
     
-    init(inProgress: Bool,
-         color: UIColor = AppColors.whiteWithOpacity.uiColor,
-         blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
-         cornerRadius: CGFloat = 15,
-         showMessage: Bool = true,
-         onClose: (() -> Void)? = nil) {
-        self.inProgress = inProgress
-        self.color = color
-        self.blurStyle = blurStyle
-        self.message = ""
-        self.cornerRadius = cornerRadius
-        self.showMessage = showMessage
-        self.onClose = onClose
-        self.loadingType = .loading
+    init(inProgress: Bool) {
+        let model: LoadingModel = inProgress ? .true() : .false()
+        self.inProgress = model.value
+        self.color = model.color
+        self.blurStyle = model.blurStyle
+        self.message = model.message
+        self.cornerRadius = model.cornerRadius
+        self.onClose = model.onClose
+        self.loadingType = model.loadingType
+    }
+    
+    init(
+        inProgress: Bool,
+        color: UIColor,
+        cornerRadius: CGFloat = 15
+    ) {
+        let model: LoadingModel = inProgress ? .true(color: color, cornerRadius: cornerRadius) : .false(color: color, cornerRadius: cornerRadius)
+        self.inProgress = model.value
+        self.color = model.color
+        self.blurStyle = model.blurStyle
+        self.message = model.message
+        self.cornerRadius = model.cornerRadius
+        self.onClose = model.onClose
+        self.loadingType = model.loadingType
     }
     
     var body: some View {
-        
         VStack(alignment: .center) {
-            Activity(isAnimating: inProgress,
-                     size: .init(width: 40, height: 40),
-                     color: color)
-            .frame(width: 40, height: 40)
             
+            ActivityIndicator(
+                isAnimating: inProgress,
+                style: .medium,
+                color: color
+            )
             
-            if showMessage {
+            message.map { message in
                 if !message.isEmpty || message != "" {
                     Text(message)
                         .font(AppFonts.gramatika(size: 12))
@@ -117,44 +183,15 @@ struct LoadingView: View {
         }
         .clipShape(RoundedCorner(radius: cornerRadius))
         .overlay(alignment: .topTrailing) {
-            onClose.map { action in
-                CloseButton { action() }
-            }
+            onClose
+                .map { action in
+                    CloseButton { action() }
+                }
         }
-        .visible(inProgress, animation: .easeOut(duration: 0.4))
-    }
-}
-
-private struct Activity: UIViewRepresentable {
-    private let isAnimating: Bool
-    private let size: CGSize
-    private let type: NVActivityIndicatorType
-    private var color: UIColor = AppColors.gray.uiColor
-    
-    init(
-        isAnimating: Bool,
-        size: CGSize,
-        type: NVActivityIndicatorType = .ballScaleRippleMultiple,
-        color: UIColor
-    ) {
-        self.isAnimating = isAnimating
-        self.size = size
-        self.type = type
-        self.color = color
-    }
-    
-    func makeUIView(context: Context) -> NVActivityIndicatorView {
-        let view = NVActivityIndicatorView(
-            frame: .init(origin: .zero, size: size),
-            type: type,
-            color: color,
-            padding: nil)
-        view.sizeToFit()
-        return view
-    }
-    
-    func updateUIView(_ uiView: NVActivityIndicatorView, context: Context) {
-        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
-        uiView.color = color
+        .visible(
+            inProgress,
+            animation: .easeOut(duration: 0.4)
+        )
+        .allowsHitTesting(inProgress ? true : false)
     }
 }

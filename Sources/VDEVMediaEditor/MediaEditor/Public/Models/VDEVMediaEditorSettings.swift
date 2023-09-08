@@ -23,6 +23,8 @@ public protocol VDEVMediaEditorSettings {
     var canShowOnboarding: Bool { get }
     // Возможность удаление слоев
     var canRemoveAllLayers: Bool { get }
+    // Возможность мержить все слои
+    var canMergeAllLayers: Bool { get }
     // Кол-во возможных слоев на канвасе
     var maximumLayers: Int { get }
     // На сколько шагов назад нужно вернуться по истории

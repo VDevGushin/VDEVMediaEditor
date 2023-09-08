@@ -243,7 +243,8 @@ extension CanvasToolsViewModel {
             showAddItemSelector(false)
             openLayersList(false)
             seletedTool(.text(textItem))
-        default: break
+        default:
+            break
         }
     }
 }

@@ -93,6 +93,7 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var historyLimit: Int { 200 }
     var maximumLayers: Int { 20 }
     var canRemoveAllLayers: Bool { true }
+    var canMergeAllLayers: Bool { true }
     var canShowOnboarding: Bool { false }
     var canUndo: Bool { true }
     var canGenerateImageByPrompt: Bool { false }

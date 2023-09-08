@@ -18,7 +18,7 @@ final class PlaceholderTemplateViewModel: ObservableObject {
     @Published private(set) var videoModel: CanvasVideoPlaceholderModel?
     @Published private(set) var showSelection: Bool = false
     @Published private(set) var isEmpty: Bool = true
-
+    
     private let aplayer: CanvasApplayer = .init()
     private var storage = Cancellables()
     private var hasNeural: Bool { item.filters.hasNeural }
@@ -65,26 +65,28 @@ extension PlaceholderTemplateViewModel {
             delegate?.changeSound = { [weak self] item, volume in
                 guard let self = self else { return }
                 self.videoModel?.update(volume: volume)
-
+                
                 self.showSelection = false
             }
             
             delegate?.showMediaEditor(item: canvasItem)
         }
     }
-
+    
     func openMediaSelector() {
         if inProgress != nil { return }
         
         hideAllOverlayViews()
+        
         delegate?.endWorkWithItem = { [weak self] in
             self?.showSelection = false
         }
+        
         showSelection = true
         
         self.delegate?.pickSelector = { [weak self] model in
-            guard let self = self else { return }
-            guard let model = model else { return }
+            guard let self = self, let model = model else { return }
+            
             showSelection = false
             self.storage.removeAll()
             let hasNeural = self.hasNeural
@@ -95,7 +97,10 @@ extension PlaceholderTemplateViewModel {
                     guard let image = model.image else { return }
                     
                     await MainActor.run {
-                        self.inProgress = .neural(withNeural: hasNeural, image: image)
+                        self.inProgress = .neural(
+                            withNeural: hasNeural,
+                            image: image
+                        )
                     }
                     
                     await self.reset()
@@ -104,19 +109,21 @@ extension PlaceholderTemplateViewModel {
                                      image: image,
                                      asset: model.itemAsset,
                                      filters: self.item.filters)
-
+                    
                     await self.setImage(model: model)
                     
                 case .video:
                     guard let url = model.url else { return }
                     await self.reset()
                     let model = await CanvasVideoPlaceholderModel
-                        .applyFilter(applyer:  self.aplayer,
-                                     url: url,
-                                     thumbnail: model.image,
-                                     asset: model.itemAsset,
-                                     filters: self.item.filters)
-
+                        .applyFilter(
+                            applyer: self.aplayer,
+                            url: url,
+                            thumbnail: model.image,
+                            asset: model.itemAsset,
+                            filters: self.item.filters
+                        )
+                    
                     await self.setVideo(model: model)
                 default: break
                 }
@@ -139,7 +146,7 @@ fileprivate extension PlaceholderTemplateViewModel {
         item.update(videoModel: nil)
         isEmpty = imageModel == nil && videoModel == nil
     }
-
+    
     @MainActor
     func setImage(model: CanvasImagePlaceholderModel?) async {
         inProgress = nil
@@ -150,7 +157,7 @@ fileprivate extension PlaceholderTemplateViewModel {
         isEmpty = false
         makeHaptics()
     }
-
+    
     @MainActor
     func setVideo(model: CanvasVideoPlaceholderModel?) async {
         inProgress = nil

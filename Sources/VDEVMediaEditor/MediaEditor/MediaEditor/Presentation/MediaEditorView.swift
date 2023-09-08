@@ -31,12 +31,7 @@ struct MediaEditorView: View {
             
             ToolsAreaView(rootMV: vm)
             
-            LoadingView(
-                inProgress: vm.isLoading,
-                color: vm.ui.guideLinesColor.uiColor
-            ) {
-                vm.onCancelBuildMedia()
-            }
+            LoadingView(model: vm.isLoading)
         }
         .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
             vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))

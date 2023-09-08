@@ -13,13 +13,7 @@ extension PasteboardService {
         case text(String)
         case empty
     }
-    
-    enum AllowTypes {
-        case image
-        case text
-    }
 }
-
 
 final class PasteboardService {
     private let pasteboard = UIPasteboard.general
@@ -29,22 +23,23 @@ final class PasteboardService {
     }
         
     func tryPaste(canPasteOnlyImages: Bool) -> PasteboardService.Result {
-        let types: [PasteboardService.AllowTypes] = canPasteOnlyImages ? [.image] : [.image, .text]
-        return tryPaste(types)
-    }
-
-    func tryPaste(_ alowTypes: [AllowTypes] = [.text, .image]) -> PasteboardService.Result {
         guard canPaste else { return .empty }
         
-        if alowTypes.contains(.image) {
-            if let image = pasteboard.image { return .image(image) }
+        let images: [PasteboardService.Result] = pasteboard
+            .images?.map { .image($0) } ?? []
+        
+        var texts: [PasteboardService.Result] = []
+        if !canPasteOnlyImages {
+            texts = pasteboard.strings?.map { .text($0) } ?? []
         }
         
-        if alowTypes.contains(.text) {
-            if let text = pasteboard.string { return .text(text) }
+        let result = (images + texts).first
+        
+        guard let result else {
+            return .empty
         }
         
-        return .empty
+        return result
     }
     
     func clear() {

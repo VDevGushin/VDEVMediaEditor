@@ -10,15 +10,15 @@ import SwiftUI
 private final class NeuralFilterToolLoader {
     @Injected private var sourceService: VDEVMediaEditorSourceService
     @MainActor @Binding private var items: [NeuralEditorFilter]
-
+    
     private let challengeId: String
-
+    
     init(challengeId: String,
          items: Binding<[NeuralEditorFilter]>) {
         self._items = items
         self.challengeId = challengeId
     }
-
+    
     func load() async throws {
         let filters = try await sourceService.neuralFilters(forChallenge: challengeId)
         await MainActor.run { items = filters }
@@ -34,7 +34,7 @@ struct NeuralFilterTool: View {
     private let action: () -> ()
     private var layerModel: CanvasItemModel
     private let challengeId: String
-
+    
     init(layerModel: CanvasItemModel,
          challengeId: String,
          memento: MementoObject? = nil,
@@ -44,7 +44,7 @@ struct NeuralFilterTool: View {
         self.memento = memento
         self.action = action
     }
-
+    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
@@ -60,13 +60,15 @@ struct NeuralFilterTool: View {
                 
                 OrView(items.isEmpty) {
                     LoadingCell { refresh() }
-                    .transition(.opacityTransition(withAnimation: false, speed: 0.2))
+                        .transition(.opacityTransition(withAnimation: false, speed: 0.2))
                 } secondView: {
                     ForEach(0..<items.count, id: \.self) { idx in
                         let item = items[idx]
                         Cell(
                             imageURL: item.cover,
-                            text: item.name.trimmingCharacters(in: .whitespacesAndNewlines),
+                            text: item.name.trimmingCharacters(
+                                in: .whitespacesAndNewlines
+                            ),
                             selected: layerModel.neuralFilter == item
                         ) {
                             memento?.forceSave()
@@ -82,7 +84,7 @@ struct NeuralFilterTool: View {
             .padding(.horizontal)
         }
         .onAppear {
-           refresh()
+            refresh()
         }
     }
     
@@ -106,7 +108,7 @@ struct NeuralFilterTool: View {
                 VStack(alignment: .center) {
                     ActivityIndicator(
                         isAnimating: true,
-                        style: .large,
+                        style: .medium,
                         color: .init(AppColors.white)
                     )
                 }
@@ -120,7 +122,10 @@ struct NeuralFilterTool: View {
             .overlay(
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(AppColors.white, lineWidth: 3)
+                        .strokeBorder(
+                            AppColors.white,
+                            lineWidth: 3
+                        )
                 }
             )
             .background {
@@ -131,16 +136,16 @@ struct NeuralFilterTool: View {
             }
         }
     }
-
+    
     struct Cell: View {
         let imageURL: URL?
         let text: String
         let selected: Bool
         let action: () -> ()
-
+        
         private let width: CGFloat = 120
         private let ratio: CGFloat = 3/2
-
+        
         var body: some View {
             Button {
                 haptics(.light)
@@ -161,7 +166,10 @@ struct NeuralFilterTool: View {
                             .padding(8)
                     }
                 }
-                .frame(width: width, height: width * ratio)
+                .frame(
+                    width: width,
+                    height: width * ratio
+                )
                 .background {
                     ZStack {
                         OrViewWithObject(imageURL) { url in
@@ -189,7 +197,10 @@ struct NeuralFilterTool: View {
                 ZStack {
                     if selected {
                         RoundedRectangle(cornerRadius: 8)
-                            .strokeBorder(AppColors.white, lineWidth: 3)
+                            .strokeBorder(
+                                AppColors.white,
+                                lineWidth: 3
+                            )
                     }
                 }
             )

@@ -13,7 +13,10 @@ struct MediaEditorToolsForTemplateView: View {
     @Binding private var mainBackgroundColor: Color
     @State private var textForEdit: CanvasTextModel?
     
-    init(vm: CanvasEditorToolsForTemplateViewModel, backColor: Binding<Color>) {
+    init(
+        vm: CanvasEditorToolsForTemplateViewModel,
+        backColor: Binding<Color>
+    ) {
         self.vm = vm
         self._mainBackgroundColor = backColor
     }
@@ -128,7 +131,8 @@ private struct PickMediaContainer: View {
        
         ToolSelectorHorizontalView(
             tools: [toolImage, toolVideo],
-            canPasteOnlyImages: true, onClose: onClose
+            canPasteOnlyImages: true,
+            onClose: onClose
         ) { item in
             switch item {
             case .photoPicker: pickPhoto()
