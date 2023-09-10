@@ -8,14 +8,16 @@
 import Foundation
 
 struct DiController {
-    static func register(with container: DIContainer = DIContainer.shared,
-                         settings: VDEVMediaEditorSettings,
-                         dataService: VDEVMediaEditorSourceService,
-                         images: VDEVImageConfig,
-                         strings: VDEVMediaEditorStrings,
-                         resultSettings: VDEVMediaEditorResultSettings,
-                         logger: VDEVLogger?,
-                         networkModulesConfig: [VDEVNetworkModuleConfig]) {
+    static func register(
+        with container: DIContainer = DIContainer.shared,
+        settings: VDEVMediaEditorSettings,
+        dataService: VDEVMediaEditorSourceService,
+        images: VDEVImageConfig,
+        strings: VDEVMediaEditorStrings,
+        resultSettings: VDEVMediaEditorResultSettings,
+        logger: VDEVLogger?,
+        networkModulesConfig: [VDEVNetworkModuleConfig]
+    ) {
         let resolutionService = ResolutionService(resolution: resultSettings.resolution)
         
         container.register(type: VDEVMediaEditorSettings.self,

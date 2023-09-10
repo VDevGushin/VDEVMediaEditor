@@ -109,7 +109,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     isAnimating: true,
                                     style: .medium,
                                     color: UIColor(AppColors.whiteWithOpacity))
-                                .frame(width: buttonSize, height: buttonSize)
+                                .frame(
+                                    width: buttonSize,
+                                    height: buttonSize
+                                )
                             } secondView: {
                                 if settings.showNeuralFilters {
                                     ToolRow(
@@ -117,10 +120,12 @@ struct ToolsConcreteItemHorizontal: View {
                                         title: strings.neuralFilter
                                     ) {
                                         onNeuralFilter(item)
-                                        
                                     }
                                     .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    .scaleEffect(
+                                        isOpen ? 1.0 : 0.001,
+                                        anchor: .trailing
+                                    )
                                 }
                                 
                                 ToolRow(
@@ -131,7 +136,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                                 
                                 ToolRow(
                                     image: images.currentItem.currentItemMask,
@@ -141,7 +149,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                                 
                                 ToolRow(
                                     image: images.currentItem.currentItemTexture,
@@ -151,7 +162,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                                 
                                 ToolRow(
                                     image: images.currentItem.currentItemAdjustments,
@@ -160,7 +174,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     onAdjustments(item)
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                                 
                                 ToolRow(
                                     image: images.currentItem.currentItemCrop,
@@ -170,7 +187,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                             }
                         case .audio:
                             let video: CanvasAudioModel? = CanvasItemModel.toTypeOptional(model: item)
@@ -184,7 +204,10 @@ struct ToolsConcreteItemHorizontal: View {
                                         
                                     }
                                     .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    .scaleEffect(
+                                        isOpen ? 1.0 : 0.001,
+                                        anchor: .trailing
+                                    )
                                 } else {
                                     ToolRow(
                                         image: images.currentItem.currentItemSoundOFF,
@@ -194,7 +217,10 @@ struct ToolsConcreteItemHorizontal: View {
                                         
                                     }
                                     .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    .scaleEffect(
+                                        isOpen ? 1.0 : 0.001,
+                                        anchor: .trailing
+                                    )
                                 }
                             }
                             
@@ -218,7 +244,10 @@ struct ToolsConcreteItemHorizontal: View {
                                             
                                         }
                                         .opacity(isOpen ? 1.0 : 0.0)
-                                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                        .scaleEffect(
+                                            isOpen ? 1.0 : 0.001,
+                                            anchor: .trailing
+                                        )
                                     }
                                 }
                             }
@@ -231,7 +260,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 
                             }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                             
                             ToolRow(
                                 image: images.currentItem.currentItemTexture,
@@ -241,7 +273,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                             
                             ToolRow(
                                 image: images.currentItem.currentItemFilter,
@@ -250,7 +285,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 onColorFilter(item)
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                             
                             ToolRow(
                                 image: images.currentItem.currentItemAdjustments,
@@ -259,7 +297,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 onAdjustments(item)
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                         case .text:
                             ToolRow(
                                 image: images.currentItem.currentItemEditText,
@@ -268,7 +309,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 onEditText(item)
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                         default: EmptyView()
                         }
                         
@@ -284,7 +328,10 @@ struct ToolsConcreteItemHorizontal: View {
                                         
                                     }
                                     .opacity(isOpen ? 1.0 : 0.0)
-                                    .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                    .scaleEffect(
+                                        isOpen ? 1.0 : 0.001,
+                                        anchor: .trailing
+                                    )
                                 default: EmptyView()
                                 }
                             }
@@ -298,7 +345,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     onReset(item)
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                             }
                             
                             ToolRow(
@@ -309,7 +359,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 onDelete(item)
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                         }
                         
                         Rectangle()
@@ -325,7 +378,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 onUp(item)
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                             
                             ToolRow(
                                 image: images.currentItem.currentItemDown,
@@ -334,7 +390,10 @@ struct ToolsConcreteItemHorizontal: View {
                                 onBack(item)
                             }
                             .opacity(isOpen ? 1.0 : 0.0)
-                            .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                            .scaleEffect(
+                                isOpen ? 1.0 : 0.001,
+                                anchor: .trailing
+                            )
                         }
                         
                         ToolRow(
@@ -344,7 +403,10 @@ struct ToolsConcreteItemHorizontal: View {
                             onBringToFront(item)
                         }
                         .opacity(isOpen ? 1.0 : 0.0)
-                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                        .scaleEffect(
+                            isOpen ? 1.0 : 0.001,
+                            anchor: .trailing
+                        )
                         
                         ToolRow(
                             image: images.currentItem.currentItemBringToBottom,
@@ -353,7 +415,10 @@ struct ToolsConcreteItemHorizontal: View {
                             onBringToBack(item)
                         }
                         .opacity(isOpen ? 1.0 : 0.0)
-                        .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                        .scaleEffect(
+                            isOpen ? 1.0 : 0.001,
+                            anchor: .trailing
+                        )
                         
                         OrViewWithEmpty(!item.isNeuralProgress) {
                             if let withItem = vm.data.canMerge(item: item),
@@ -365,7 +430,10 @@ struct ToolsConcreteItemHorizontal: View {
                                     onMerge([withItem, item])
                                 }
                                 .opacity(isOpen ? 1.0 : 0.0)
-                                .scaleEffect(isOpen ? 1.0 : 0.001, anchor: .trailing)
+                                .scaleEffect(
+                                    isOpen ? 1.0 : 0.001,
+                                    anchor: .trailing
+                                )
                             }
                         }
                     }

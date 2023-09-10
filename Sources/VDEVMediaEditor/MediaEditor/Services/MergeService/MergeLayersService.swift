@@ -44,9 +44,10 @@ final class MergeLayersService: ObservableObject {
     }
     
     private func proccess(result: CanvasImageModel) {
-        guard let tools, let data, result.type == .image else {
-            state = .idle
-            return
+        guard let tools,
+              let data,
+              result.type == .image else {
+            return state = .idle
         }
         
         tools.showAddItemSelector(false)
@@ -59,14 +60,17 @@ final class MergeLayersService: ObservableObject {
         tools.openLayersList(true)
         
         state = .idle
-        
     }
     
     func merge(
         layers: [CanvasItemModel],
         size: CGSize
     ) {
-        builder.merge(layers: layers, on: size)
+        builder
+            .merge(
+                layers: layers,
+                on: size
+            )
     }
 }
 
