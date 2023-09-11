@@ -421,7 +421,8 @@ struct ToolsConcreteItemHorizontal: View {
                         )
                         
                         OrViewWithEmpty(!item.isNeuralProgress) {
-                            if let withItem = vm.data.canMerge(item: item),
+                            if settings.canMergeAllLayers,
+                               let withItem = vm.data.canMerge(item: item),
                                !withItem.isNeuralProgress {
                                 ToolRow(
                                     image: images.currentItem.currentItemMerge,

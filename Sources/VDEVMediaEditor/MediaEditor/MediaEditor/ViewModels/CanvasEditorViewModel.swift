@@ -36,7 +36,6 @@ final class CanvasEditorViewModel: ObservableObject {
     @Published private var contentPreviewDidLoad: Bool = false
     
     private let builder: MediaBuilder
-    private let merger: LayersMerger // мерж текущего слоя
     
     private var onPublish: (@MainActor (CombinerOutput) -> Void)?
     private var onClose: (@MainActor () -> Void)?
@@ -45,12 +44,10 @@ final class CanvasEditorViewModel: ObservableObject {
     
     init(
         builder: MediaBuilder = .init(),
-        merger: LayersMerger = .init(),
         onPublish: (@MainActor (CombinerOutput) -> Void)?,
         onClose: (@MainActor () -> Void)?
     ) {
         self.builder = builder
-        self.merger = merger
         self.onClose = onClose
         self.onPublish = onPublish
         
@@ -90,44 +87,6 @@ final class CanvasEditorViewModel: ObservableObject {
                 if wSelf.data.isEmpty { return }
                 makeHaptics()
                 wSelf.showRemoveAllAlert = value
-            }
-            .store(in: &storage)
-        
-        merger
-            .$state
-            .sink(
-                on: .main,
-                object: self
-            ) { wSelf, value in
-                switch value {
-                case .idle:
-                    wSelf.isLoading = .false()
-                    wSelf.contentPreview = nil
-                case .inProgress:
-                    wSelf.isLoading = .processing(
-                        color: wSelf.ui.guideLinesColor.uiColor
-                    )
-                case .successImage(let imageItem):
-                    makeHaptics(.light)
-                    wSelf.data.add(imageItem)
-                    wSelf.tools.showAddItemSelector(false)
-                    wSelf.tools.openLayersList(false)
-                    wSelf.tools.seletedTool(.concreteItem(imageItem))
-                    wSelf.isLoading = .false()
-                case .successVideo(let videoItem):
-                    makeHaptics(.light)
-                    wSelf.data.add(videoItem)
-                    wSelf.tools.showAddItemSelector(false)
-                    wSelf.tools.openLayersList(false)
-                    wSelf.tools.seletedTool(.concreteItem(videoItem))
-                    wSelf.isLoading = .false()
-                case .error(let error):
-                    Log.e(error)
-                    makeHaptics(.light)
-                    wSelf.isLoading = .false()
-                    wSelf.contentPreview = nil
-                    wSelf.alertData = .init(error)
-                }
             }
             .store(in: &storage)
         
@@ -260,21 +219,19 @@ extension CanvasEditorViewModel {
     
     func onMergeAllLayers() {
         allLayersMerger?
+            .merge(size: ui.editorSize)
+    }
+    
+    func onMergeMedia(_ layers: [CanvasItemModel]) {
+        allLayersMerger?
             .merge(
-                layers: data.layers.elements,
+                layers: layers,
                 size: ui.editorSize
             )
     }
     
     func onCancelBuildMedia() {
         builder.cancel()
-    }
-    
-    func onMergeMedia(_ layers: [CanvasItemModel]) {
-        merger.merge(
-            layers: layers,
-            on: ui.editorSize
-        )
     }
     
     func onRemoveAllLayers() {

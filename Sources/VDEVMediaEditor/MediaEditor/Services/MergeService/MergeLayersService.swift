@@ -19,6 +19,8 @@ final class MergeLayersService: ObservableObject {
     private weak var tools: CanvasToolsViewModel?
     private weak var data: CanvasLayersDataViewModel?
     
+    private var layersForDelete: [CanvasItemModel]? = nil
+    
     func setup(
         tools: CanvasToolsViewModel,
         data: CanvasLayersDataViewModel
@@ -50,27 +52,41 @@ final class MergeLayersService: ObservableObject {
             return state = .idle
         }
         
-        tools.showAddItemSelector(false)
-        tools.seletedTool(.empty)
+        if let layersForDelete = layersForDelete {
+            data.add(result)
+            layersForDelete.forEach {
+                data.delete($0, withSave: false)
+            }
+            tools.showAddItemSelector(false)
+            tools.openLayersList(false)
+            tools.seletedTool(.concreteItem(result))
+        } else {
+            tools.showAddItemSelector(false)
+            tools.seletedTool(.empty)
+            data.removeAll(withSave: false)
+            removeLayersService.notNeedToRemoveAllLayers()
+            data.add(result, withSave: false)
+            tools.openLayersList(true)
+        }
         
-        data.removeAll(withSave: false)
-        removeLayersService.notNeedToRemoveAllLayers()
-        
-        data.add(result, withSave: false)
-        tools.openLayersList(true)
-        
+        layersForDelete = nil
         state = .idle
+    }
+    
+    func merge(size: CGSize) {
+        guard let data else { return }
+        layersForDelete = nil
+        builder.merge(layers: data.layers.elements, on: size)
     }
     
     func merge(
         layers: [CanvasItemModel],
         size: CGSize
     ) {
-        builder
-            .merge(
-                layers: layers,
-                on: size
-            )
+        let allCanMerge = layers.allSatisfy { $0.canMerge }
+        guard allCanMerge else { return }
+        layersForDelete = layers
+        builder.merge(layers: layers, on: size)
     }
 }
 
