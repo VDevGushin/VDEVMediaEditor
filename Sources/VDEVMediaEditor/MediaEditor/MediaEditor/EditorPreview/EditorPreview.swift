@@ -12,7 +12,7 @@ import AVFoundation
 // MARK: - Modifier
 
 extension View {
-    func editorPreview(with contentPreview: Binding<EditorPreview.Content?>,
+    func editorPreview(with contentPreview: Binding<PreviewContent?>,
                        cornerRadius: CGFloat,
                        onPublish: @escaping (CombinerOutput) -> Void,
                        onClose: @escaping () -> Void) -> some View {
@@ -25,15 +25,15 @@ extension View {
     }
 }
 
-struct EditorPreviewModifier: ViewModifier {
+private struct EditorPreviewModifier: ViewModifier {
     @Injected private var images: VDEVImageConfig
-    @Binding private var model: EditorPreview.Content?
+    @Binding private var model: PreviewContent?
     private let cornerRadius: CGFloat
     @State private var showResult = false
     private let onPublish: (CombinerOutput) -> Void
     private let onClose: () -> Void
     
-    init(model: Binding<EditorPreview.Content?>,
+    init(model: Binding<PreviewContent?>,
          cornerRadius: CGFloat,
          onPublish: @escaping (CombinerOutput) -> Void,
          onClose: @escaping () -> Void) {
@@ -69,13 +69,13 @@ struct EditorPreviewModifier: ViewModifier {
 }
 
 // MARK: - View
-struct EditorPreview: View {
+private struct EditorPreview: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vm: CanvasEditorViewModel
     @Injected private var images: VDEVImageConfig
     @Injected private var settings: VDEVMediaEditorSettings
     
-    @State var model: Content
+    @State var model: PreviewContent
     @State private var challengeTitle: String = ""
     @State private var needShare: Bool = false
     @State private var showAnimation: Bool = false
@@ -173,30 +173,27 @@ struct EditorPreview: View {
     }
 }
 
-// MARK: - Model
-extension EditorPreview {
-    struct Content: Identifiable, Equatable {
-        enum ResultType { case video, image }
-        let type: ResultType
-        let model: CombinerOutput
-        let aspect: CGFloat
-        var id: String { model.url.absoluteString }
-        var url: URL { model.url }
-        var cover: URL { model.cover }
-        
-        init(model: CombinerOutput) {
-            self.model = model
-            self.aspect = model.aspect
-            if model.url.absoluteString.lowercased().hasSuffix("mov") ||
-                model.url.absoluteString.lowercased().hasSuffix("mp4"){
-                self.type = .video
-            } else {
-                self.type = .image
-            }
+struct PreviewContent: Identifiable, Equatable {
+    enum ResultType { case video, image }
+    let type: ResultType
+    let model: CombinerOutput
+    let aspect: CGFloat
+    var id: String { model.url.absoluteString }
+    var url: URL { model.url }
+    var cover: URL { model.cover }
+    
+    init(model: CombinerOutput) {
+        self.model = model
+        self.aspect = model.aspect
+        if model.url.absoluteString.lowercased().hasSuffix("mov") ||
+            model.url.absoluteString.lowercased().hasSuffix("mp4"){
+            self.type = .video
+        } else {
+            self.type = .image
         }
-        
-        public static func == (lhs: Content, rhs: Content) -> Bool {
-            lhs.id == rhs.id
-        }
+    }
+    
+    public static func == (lhs: PreviewContent, rhs: PreviewContent) -> Bool {
+        lhs.id == rhs.id
     }
 }

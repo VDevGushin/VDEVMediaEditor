@@ -16,17 +16,20 @@ final class AssetCombiner {
     @Injected private var resolution: ResolutionService
     
     // MARK: - public
-    func combine(_ input: [CombinerAsset],
-                 scaleFactor: CGFloat,
-                 canvasNativeSize: CGSize,
-                 progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {
+    func combine(
+        _ input: CombineAssetCollection,
+        scaleFactor: CGFloat,
+        canvasNativeSize: CGSize,
+        progressObserver: ProgressObserver? = nil
+    ) async throws -> CombinerOutput {
         
         // Создание видео
-        if input.contains(where: { $0.body.videoBody != nil }) {
+        if input.withVideo {
+            // Очень мендленная работа - нужно ускорить
             let result = try await VideoMixer.composeVideo(
                 renderSize: canvasNativeSize,
                 progressObserver: progressObserver,
-                data: input,
+                data: input.data,
                 videoExportPreset: resolution.videoExportPreset(),
                 withAudio: settings.canTurnOnSoundInVideos
             )
@@ -35,32 +38,34 @@ final class AssetCombiner {
             let result = try ImageMixer.combineAndStore(
                 renderSize: canvasNativeSize,
                 progressObserver: progressObserver,
-                assets: input,
+                assets: input.data,
                 needAutoEnhance: resultSettings.needAutoEnhance.value,
                 alsoSaveToPhotos: false)
             return result
         }
     }
     
-    func combineForMerge(_ input: [CombinerAsset],
-                         scaleFactor: CGFloat,
-                         canvasNativeSize: CGSize,
-                         progressObserver: ProgressObserver? = nil) async throws -> CombinerOutput {
+    func combineForMerge(
+        _ input: CombineAssetCollection,
+        scaleFactor: CGFloat,
+        canvasNativeSize: CGSize,
+        progressObserver: ProgressObserver? = nil
+    ) async throws -> CombinerOutput {
         
         // Создание видео
-        if input.contains(where: { $0.body.videoBody != nil }) {
+        if input.withVideo {
             let result = try await VideoMixer.composeVideo(
                 renderSize: canvasNativeSize,
                 progressObserver: progressObserver,
-                data: input,
+                data: input.data,
                 videoExportPreset: resolution.videoExportPreset(),
                 withAudio: false
             )
             return result
-        // Создание картиртинки
+            // Создание картиртинки
         } else {
             let mixer = ImageMixerPng(renderSize: canvasNativeSize, progressObserver: progressObserver)
-            let resultPack = try mixer.combineAndStore(assets: input, alsoSaveToPhotos: false)
+            let resultPack = try mixer.combineAndStore(assets: input.data, alsoSaveToPhotos: false)
             return CombinerOutput(cover: resultPack.cover, url: resultPack.uri, aspect: canvasNativeSize.width / canvasNativeSize.height)
         }
     }

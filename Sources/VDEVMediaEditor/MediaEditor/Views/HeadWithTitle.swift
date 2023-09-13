@@ -27,6 +27,7 @@ struct HeadWithTitle: View {
                             BlurView(style: .systemChromeMaterialDark)
                                 .clipShape(Circle())
                         )
+                        .rotationEffect(.degrees(-90))
                     
                     
                     Text(title)

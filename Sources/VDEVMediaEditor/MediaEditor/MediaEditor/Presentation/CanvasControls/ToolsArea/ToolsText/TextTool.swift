@@ -83,7 +83,7 @@ struct TextTool: View {
     }
 
     var body: some View {
-        ZStackWithClearColor {
+        ZClear {
             VStack {
                 ZStack {
                     InvisibleTapZoneView(tapCount: 1) {

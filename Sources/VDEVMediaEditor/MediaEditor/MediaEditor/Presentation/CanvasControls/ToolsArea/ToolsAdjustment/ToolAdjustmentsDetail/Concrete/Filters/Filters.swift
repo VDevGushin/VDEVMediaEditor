@@ -70,9 +70,20 @@ struct FilterTemperature {
 }
 
 struct FilterVignette {
-    let min: Double = 0
-    let max: Double = 2
-    let normal: Double = 0
+    let value: Vignette = .init()
+    let radius: Radius = .init()
+    
+    struct Radius {
+        let min: Double = 0
+        let max: Double = 10
+        let normal: Double = 0
+    }
+    
+    struct Vignette {
+        let min: Double = 0
+        let max: Double = 2
+        let normal: Double = 0
+    }
 }
 
 struct FilterSharpen {
@@ -84,6 +95,7 @@ struct FilterSharpen {
         let max: Double = 20
         let normal: Double = 0
     }
+    
     struct Sharpness {
         let min: Double = 0
         let max: Double = 1

@@ -96,7 +96,6 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var canMergeAllLayers: Bool { true }
     var canShowOnboarding: Bool { false }
     var canUndo: Bool { true }
-    var canGenerateImageByPrompt: Bool { false }
     var сanRemoveOrChangeTemplate: Bool { true }
     var showNeuralFilters: Bool { true }
     

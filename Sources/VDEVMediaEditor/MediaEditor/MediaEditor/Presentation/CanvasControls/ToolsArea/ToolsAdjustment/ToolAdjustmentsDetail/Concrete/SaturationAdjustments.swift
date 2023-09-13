@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct SaturationAdjustments: View {
-    @Injected var strings: VDEVMediaEditorStrings
+    @Injected private var processingWatcher: ItemProcessingWatcher
+    @Injected private var strings: VDEVMediaEditorStrings
     @Binding private var state: ToolsEditState
     @State private var value: Double = AllAdjustmentsFilters.saturation.normal
     
@@ -53,8 +54,10 @@ struct SaturationAdjustments: View {
                     onEditingChanged: { value in
                         if !value {
                             state = .idle
+                            processingWatcher.finishProcessing()
                         } else {
                             memento?.forceSave()
+                            processingWatcher.startProcessing()
                             state = .edit
                         }
                     })

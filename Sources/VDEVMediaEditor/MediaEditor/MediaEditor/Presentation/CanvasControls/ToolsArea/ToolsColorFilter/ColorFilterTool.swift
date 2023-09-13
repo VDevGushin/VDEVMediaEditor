@@ -7,44 +7,50 @@
 
 import SwiftUI
 
-private final class ColorFilterToolLoader {
+private final class ColorFilterToolVM: ObservableObject {
     @Injected private var sourceService: VDEVMediaEditorSourceService
     
     @MainActor
-    @Binding private var items: [EditorFilter]
+    @Published private(set) var items: [EditorFilter] = []
+    
+    @Published private(set) var selectedItem: EditorFilter?
 
     private let challengeId: String
 
-    init(challengeId: String,
-         items: Binding<[EditorFilter]>) {
-        self._items = items
+    init(challengeId: String) {
         self.challengeId = challengeId
     }
 
-    func load() async throws {
-        let editorFilters = try await sourceService.filters(forChallenge: challengeId)
+    func load() async {
+        let editorFilters = try? await sourceService.filters(forChallenge: challengeId)
         await MainActor.run {
-            items = editorFilters
+            items = editorFilters ?? []
         }
+    }
+    
+    func set(selectedItem: EditorFilter?) {
+        self.selectedItem = selectedItem
+    }
+    
+    func isSelected(_ selectedItem: EditorFilter?) -> Bool {
+        self.selectedItem == selectedItem
     }
 }
 
 struct ColorFilterTool: View {
     @Injected private var strings: VDEVMediaEditorStrings
-    @State private var items: [EditorFilter] = []
-    @State private var update = false
-    @State private var loader: ColorFilterToolLoader!
+    @StateObject private var vm: ColorFilterToolVM
     private weak var memento: MementoObject? // for save state
-
     private var layerModel: CanvasItemModel
-    private let challengeId: String
 
-    init(layerModel: CanvasItemModel,
-         challengeId: String,
-         memento: MementoObject? = nil) {
+    init(
+        layerModel: CanvasItemModel,
+        challengeId: String,
+        memento: MementoObject? = nil
+    ) {
         self.layerModel = layerModel
-        self.challengeId = challengeId
         self.memento = memento
+        self._vm = .init(wrappedValue: .init(challengeId: challengeId))
     }
 
     var body: some View {
@@ -53,30 +59,29 @@ struct ColorFilterTool: View {
                 Cell(
                     imageURL: nil,
                     text: strings.none,
-                    selected: layerModel.colorFilter == nil
+                    selected: vm.isSelected(nil)
                 ) {
+                    vm.set(selectedItem: nil)
                     layerModel.apply(colorFilter: nil)
-                    update.toggle()
                 }
 
-                ForEach(0..<items.count, id: \.self) { idx in
-                    let item = items[idx]
+                ForEach(0..<vm.items.count, id: \.self) { idx in
+                    let item = vm.items[idx]
                     Cell(imageURL: item.cover,
                          text: item.name,
-                         selected: layerModel.colorFilter == item) {
+                         selected: vm.isSelected(item)) {
                         memento?.forceSave()
                         layerModel.apply(colorFilter: item)
-                        update.toggle()
+                        vm.set(selectedItem: item)
                     }
                 }
             }
-            .id(update)
             .padding(.horizontal)
         }
-        .onAppear {
+        .viewDidLoad {
             Task {
-                loader = ColorFilterToolLoader(challengeId: challengeId, items: $items)
-                try await loader.load()
+                await vm.load()
+                vm.set(selectedItem: layerModel.colorFilter)
             }
         }
     }
@@ -97,8 +102,7 @@ struct ColorFilterTool: View {
             } label: {
                 ZStack(alignment: .bottomLeading) {
                     Group {
-                        // ?.uc.resized(width: width)
-                        if let url = imageURL {
+                        OBJECT(imageURL) { url in
                             AsyncImageView(url: url) {
                                 Image(uiImage: $0)
                                     .resizable()
@@ -106,11 +110,14 @@ struct ColorFilterTool: View {
                             } placeholder: {
                                 LoadingView(inProgress: true)
                             }
-                        } else {
+                        } secondView: {
                             AppColors.black
                         }
                     }
-                    .frame(width: width, height: width * ratio)
+                    .frame(
+                        width: width,
+                        height: width * ratio
+                    )
 
                     Text(text)
                         .font(AppFonts.mabry(size: 13))
@@ -121,11 +128,9 @@ struct ColorFilterTool: View {
             }
             .disabled(selected)
             .overlay(
-                ZStack {
-                    if selected {
-                        RoundedRectangle(cornerRadius: 8)
-                            .strokeBorder(AppColors.white, lineWidth: 3)
-                    }
+                IF(selected) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(AppColors.whiteWithOpacity1, lineWidth: 2)
                 }
             )
         }

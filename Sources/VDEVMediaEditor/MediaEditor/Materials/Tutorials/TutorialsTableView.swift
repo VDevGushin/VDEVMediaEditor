@@ -171,7 +171,7 @@ struct TutorialsVideoView: View {
     
     var body: some View {
         VideoPlayer(player: model.player) {
-            if !model.isPlaying {
+            IF(!model.isPlaying) {
                 ZStack {
                     AppColors.blackWithOpacity1
                     VStack {
@@ -182,7 +182,6 @@ struct TutorialsVideoView: View {
                             .padding(.top)
                         Spacer()
                     }
-                    
                 }
                 .transition(.opacityTransition())
             }

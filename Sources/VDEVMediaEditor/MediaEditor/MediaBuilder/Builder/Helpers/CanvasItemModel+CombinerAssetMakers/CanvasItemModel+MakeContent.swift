@@ -101,9 +101,11 @@ extension CanvasItemModel {
         let asset = AVAsset(url: item.audioURL)
         
         return CombinerAsset(
-            body: .init(asset: asset,
-                        preferredVolume: item.volume,
-                        cycleMode: .loopToLongestVideo),
+            body: .init(
+                asset: asset,
+                preferredVolume: item.volume,
+                cycleMode: .loopToLongestVideo
+            ),
             transform: Transform(
                 zIndex: Double(i),
                 offset: offset * scaleFactor,
@@ -149,11 +151,12 @@ extension CanvasItemModel {
             
             Log.d("Apply filters to video [filters count: \(filterChain.count)]")
             
-            guard let filteredURL = try? await FilteringProcessor().processAndExport(
-                asset: asset,
-                filterChain: filterChain,
-                resize: (targetAssetSize, .scaleAspectFill),
-                exportQuality: .HEVCHighestWithAlpha) else {
+            guard let filteredURL = try? await FilteringProcessor()
+                .processAndExport(
+                    asset: asset,
+                    filterChain: filterChain,
+                    resize: (targetAssetSize, .scaleAspectFill),
+                    exportQuality: .HEVCHighestWithAlpha) else {
                 Log.e("Error to apply filters to video")
                 return nil
             }
@@ -164,10 +167,11 @@ extension CanvasItemModel {
         Log.d("End to make video asset")
         
         return CombinerAsset(
-            body: .init(asset: AVAsset(url: processedUrl),
-                        preferredVolume: item.volume,
-                        cycleMode: .loopToLongestVideo),
-
+            body: .init(
+                asset: AVAsset(url: processedUrl),
+                preferredVolume: item.volume,
+                cycleMode: .loopToLongestVideo
+            ),
             transform: Transform(
                 zIndex: Double(i),
                 offset: offset * scaleFactor,

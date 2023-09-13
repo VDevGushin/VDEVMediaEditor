@@ -30,13 +30,12 @@ struct ToolColorView: View {
                                         .strokeBorder(AppColors.white, lineWidth: 3)
                                         .isVisible(curColor.uiColor == color.uiColor)
                                 )
-                                .aspectRatio(1, contentMode: .fit)
+                                .aspectRatio(1, contentMode: .fill)
                         }
                     }
                 }
             }
         }
-        .cornerRadius(8)
     }
 
     func color(forRow row: Int, col: Int) -> Color {

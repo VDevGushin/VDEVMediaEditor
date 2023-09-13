@@ -1,5 +1,5 @@
 //
-//  OrView.swift
+//  ConditionView.swift
 //  
 //
 //  Created by Vladislav Gushin on 19.08.2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OrView<V1: View, V2: View>: View {
+struct OR<V1: View, V2: View>: View {
     private let _view1: V1
     private let _view2: V2
     private let condition: Bool
@@ -30,7 +30,7 @@ struct OrView<V1: View, V2: View>: View {
     }
 }
 
-struct OrViewWithEmpty<V1: View>: View {
+struct IF<V1: View>: View {
     private let _view1: V1
     private let condition: Bool
     
@@ -48,7 +48,7 @@ struct OrViewWithEmpty<V1: View>: View {
     }
 }
 
-struct OrViewWithObject<T, V1: View, V2: View>: View {
+struct OBJECT<T, V1: View, V2: View>: View {
     private let _view1: (T) -> V1
     private let _view2: () -> V2
     private let checkObject: T?

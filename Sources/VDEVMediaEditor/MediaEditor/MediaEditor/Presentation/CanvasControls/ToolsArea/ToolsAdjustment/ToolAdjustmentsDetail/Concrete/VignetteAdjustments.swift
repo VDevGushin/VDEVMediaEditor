@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct VignetteAdjustments: View {
-    @Injected var strings: VDEVMediaEditorStrings
+    @Injected private var processingWatcher: ItemProcessingWatcher
+    @Injected private var strings: VDEVMediaEditorStrings
     @Binding private var state: ToolsEditState
-    @State private var value: Double = AllAdjustmentsFilters.vignette.normal
+    @State private var value: Double = AllAdjustmentsFilters.vignette.value.normal
+    @State private var radius: Double = AllAdjustmentsFilters.vignette.radius.normal
     
     private weak var memento: MementoObject?
     private let title: String
     private let item: CanvasItemModel
     private let filter = AllAdjustmentsFilters.vignette
     private let onClose: () -> Void
-    
     init(
         _ title: String,
         item: CanvasItemModel,
@@ -40,23 +41,102 @@ struct VignetteAdjustments: View {
                     .foregroundColor(AppColors.whiteWithOpacity)
                     .frame(maxWidth: 80, alignment: .center)
                 
-                Slider(value:
-                        Binding<Double> {
-                    return value
-                } set: { newValue in
-                    value = newValue
-                    let settings: AdjustmentSettings = makeSettings(value: value)
-                    self.item.apply(adjustmentSettings: settings)
-                }, in: filter.min...filter.max, onEditingChanged: { value in
-                    if !value {
-                        state = .idle
-                    } else {
-                        memento?.forceSave()
-                        state = .edit
-                    }
-                })
+                Slider(
+                    value: Binding<Double> {
+                        return value
+                    } set: { newValue in
+                        if newValue == filter.value.normal { makeHaptics(.light) }
+                        value = newValue
+                        let settings: AdjustmentSettings = makeSettings(value: value, radius: radius)
+                        self.item.apply(adjustmentSettings: settings)
+                    },
+                    in: filter.value.min...filter.value.max,
+                    onEditingChanged: { value in
+                        if !value {
+                            state = .idle
+                            processingWatcher.finishProcessing()
+                        } else {
+                            memento?.forceSave()
+                            processingWatcher.startProcessing()
+                            state = .edit
+                        }
+                    })
                 .accentColor(AppColors.white)
                 .contentShape(Rectangle())
+                .alignmentGuide(VerticalAlignment.center) { $0[VerticalAlignment.center]}
+                .padding(.top, 20)
+                .overlay(alignment: .top) {
+                    GeometryReader { gp in
+                        VStack {
+                            Text(
+                                ValueCalc.make(
+                                    value: value,
+                                    max: filter.value.max,
+                                    min: filter.value.min
+                                )
+                            )
+                            .font(AppFonts.elmaTrioRegular(12))
+                            .foregroundColor(AppColors.whiteWithOpacity)
+                            Spacer().frame(height: 6)
+                        }
+                        .alignmentGuide(HorizontalAlignment.leading) {
+                            return $0[HorizontalAlignment.leading] - (gp.size.width - $0.width) * (value - filter.value.min) / ( filter.value.max - filter.value.min)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+            }
+            
+            HStack {
+                Text(strings.radius)
+                    .font(AppFonts.elmaTrioRegular(12))
+                    .foregroundColor(AppColors.whiteWithOpacity)
+                    .frame(maxWidth: 80, alignment: .center)
+                
+                Slider(
+                    value: Binding<Double> {
+                        return radius
+                    } set: { newValue in
+                        if newValue == filter.radius.normal { makeHaptics(.light) }
+                        radius = newValue
+                        let settings: AdjustmentSettings = makeSettings(value: value, radius: radius)
+                        self.item.apply(adjustmentSettings: settings)
+                    },
+                    in: filter.radius.min...filter.radius.max,
+                    onEditingChanged: { value in
+                        if !value {
+                            state = .idle
+                            processingWatcher.finishProcessing()
+                        } else {
+                            memento?.forceSave()
+                            processingWatcher.startProcessing()
+                            state = .edit
+                        }
+                    })
+                .accentColor(AppColors.white)
+                .contentShape(Rectangle())
+                .alignmentGuide(VerticalAlignment.center) { $0[VerticalAlignment.center]}
+                .padding(.top, 20)
+                .overlay(alignment: .top) {
+                    GeometryReader { gp in
+                        VStack {
+                            Text(
+                                ValueCalc.make(
+                                    value: radius,
+                                    max: filter.radius.max,
+                                    min: filter.radius.min
+                                )
+                            )
+                            .font(AppFonts.elmaTrioRegular(12))
+                            .foregroundColor(AppColors.whiteWithOpacity)
+                            Spacer().frame(height: 6)
+                        }
+                        .alignmentGuide(HorizontalAlignment.leading) {
+                            return $0[HorizontalAlignment.leading] - (gp.size.width - $0.width) * (radius - filter.radius.min) / ( filter.radius.max - filter.radius.min)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
             }
             
             AdjustmentsDetailButtons(state: $state) {
@@ -72,33 +152,24 @@ struct VignetteAdjustments: View {
     
     private func startState() {
         withAnimation(.interactiveSpring()) {
-            value = item.adjustmentSettings?.vignette?.0 ?? filter.normal
+            value = item.adjustmentSettings?.vignette?.vignette ?? filter.value.normal
+            radius = item.adjustmentSettings?.vignette?.radius ?? filter.radius.normal
         }
     }
     
     private func reset() {
         withAnimation(.interactiveSpring()) {
-            value = filter.normal
-            let settings: AdjustmentSettings = makeSettings(value: value)
+            value = filter.value.normal
+            radius = filter.radius.normal
+            let settings: AdjustmentSettings = makeSettings(value: value, radius: radius)
             item.apply(adjustmentSettings: settings)
         }
     }
     
-    private func makeSettings(value: Double) -> AdjustmentSettings {
-        guard let imageModel: CanvasImageModel = CanvasImageModel.toTypeOptional(model: item) else {
-            return .init(
-                brightness: item.adjustmentSettings?.brightness,
-                contrast: item.adjustmentSettings?.contrast,
-                saturation: item.adjustmentSettings?.saturation,
-                highlight: item.adjustmentSettings?.highlight,
-                shadow: item.adjustmentSettings?.shadow,
-                blurRadius: item.adjustmentSettings?.blurRadius,
-                alpha: item.adjustmentSettings?.alpha,
-                temperature: item.adjustmentSettings?.temperature,
-                vignette:  item.adjustmentSettings?.vignette
-            )
-        }
-    
+    private func makeSettings(
+        value: Double,
+        radius: Double
+    ) -> AdjustmentSettings {
         return .init(
             brightness: item.adjustmentSettings?.brightness,
             contrast: item.adjustmentSettings?.contrast,
@@ -108,11 +179,8 @@ struct VignetteAdjustments: View {
             blurRadius: item.adjustmentSettings?.blurRadius,
             alpha: item.adjustmentSettings?.alpha,
             temperature: item.adjustmentSettings?.temperature,
-            vignette: (value, imageModel.image.size.rect),
+            vignette: (value, radius),
             sharpness: item.adjustmentSettings?.sharpness
         )
     }
 }
-
-
-

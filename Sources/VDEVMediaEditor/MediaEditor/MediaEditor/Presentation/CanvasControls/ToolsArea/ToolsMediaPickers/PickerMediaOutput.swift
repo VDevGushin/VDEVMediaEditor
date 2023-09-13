@@ -68,19 +68,19 @@ final class MediaPickerGetter {
             
             if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
                 let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
-                return .init(with: compressed, asset: .image(asset: asset, image: nil))
+                return await .init(with: compressed, asset: .image(asset: asset, image: nil))
             }
             
             let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
             
-            return .init(with: compressed, asset: .image(asset: nil, image: image))
+            return await .init(with: compressed, asset: .image(asset: nil, image: image))
         case String(UTType.movie.identifier):
             guard let videoURL = info[.mediaURL] as? URL else { return nil }
             let thumbnail = await generateThumbnail(path: videoURL)
 //            if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
 //                return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: asset, url: nil))
 //            }
-            return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: nil, url: videoURL))
+            return await .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: nil, url: videoURL))
         default:
             return nil
         }

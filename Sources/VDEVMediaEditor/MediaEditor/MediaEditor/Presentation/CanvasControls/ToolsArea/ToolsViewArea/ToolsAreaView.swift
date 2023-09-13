@@ -13,6 +13,7 @@ struct ToolsAreaView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var settings: VDEVMediaEditorSettings
+    
     @ObservedObject private var vm: CanvasEditorViewModel
     
     private var mementoObject: MementoObject? { vm.data }
@@ -33,7 +34,6 @@ struct ToolsAreaView: View {
     
     var body: some View {
         // let _ = Self._printChanges()
-        
         ZStack {
             toolsOverlay()
             
@@ -43,7 +43,7 @@ struct ToolsAreaView: View {
                     .bottomTool()
                     .transition(.trailingTransition)
             case (true, false):
-                if settings.isInternalModule {
+                OR(settings.isInternalModule) {
                     ZStack {
                         toolsLayersManager()
                             .bottomTool()
@@ -54,7 +54,7 @@ struct ToolsAreaView: View {
                         .topTool()
                     }
                     .transition(.leadingTransition)
-                } else {
+                } secondView: {
                     toolsLayersManager()
                         .bottomTool()
                         .transition(.leadingTransition)
@@ -72,10 +72,6 @@ struct ToolsAreaView: View {
                 toolConcrete(item)
                     .bottomTool()
                     .transition(.trailingTransition)
-                
-            case .promptImageGenerator:
-                    promptImageGeneratorTool()
-                        .transition(.bottomTransition)
             case .template:
                 templatesTool()
                     .transition(.bottomTransition)
@@ -165,7 +161,12 @@ struct ToolsAreaView: View {
                     vm.data.add(CanvasImageModel(image: image, asset: model.itemAsset))
                 case .video:
                     guard let url = model.url else { return }
-                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.itemAsset)
+                    let videoModel = CanvasVideoModel(
+                        videoURL: url,
+                        thumbnail: model.image,
+                        asset: model.itemAsset,
+                        bounds: model.itemAsset?.bounds ?? .zero
+                    )
                     vm.data.add(videoModel)
                 default: break
                 }
@@ -197,7 +198,12 @@ struct ToolsAreaView: View {
                 switch model.mediaType {
                 case .video:
                     guard let url = model.url else { return }
-                    let videoModel = CanvasVideoModel(videoURL: url, thumbnail: model.image, asset: model.itemAsset)
+                    let videoModel = CanvasVideoModel(
+                        videoURL: url,
+                        thumbnail: model.image,
+                        asset: model.itemAsset,
+                        bounds: model.itemAsset?.bounds ?? .zero
+                    )
                     vm.data.add(videoModel)
                 default: break
                 }
@@ -212,8 +218,10 @@ struct ToolsAreaView: View {
             }
         }
         .fullScreenCover(item: $textForEdit.removeDuplicates()) { item in
-            TextTool(textItem: item,
-                     labelContainerToCanvasWidthRatio: 0.8) { newModel in
+            TextTool(
+                textItem: item,
+                labelContainerToCanvasWidthRatio: 0.8
+            ) { newModel in
                 vm.data.delete(item)
                 textForEdit = nil
                 vm.data.add(newModel)
@@ -225,8 +233,10 @@ struct ToolsAreaView: View {
             }
         }
         .fullScreenCover(isPresented: $showNewTextInput.removeDuplicates()) {
-            TextTool(textItem: nil,
-                     labelContainerToCanvasWidthRatio: 0.8) { newModel in
+            TextTool(
+                textItem: nil,
+                labelContainerToCanvasWidthRatio: 0.8
+            ) { newModel in
                 showNewTextInput = false
                 vm.data.add(newModel)
                 vm.tools.closeTools(false)
@@ -273,7 +283,7 @@ struct ToolsAreaView: View {
             .topTool()
             .transition(.opacityTransition(withAnimation: false))
         default:
-            if vm.canUndo && settings.canUndo {
+            IF(vm.canUndo && settings.canUndo) {
                 UndoButton {
                     vm.tools.closeTools()
                     vm.tools.overlay.hideAllOverlayViews()
@@ -315,7 +325,7 @@ struct ToolsAreaView: View {
             LayersView(vm: vm)
                 .padding(.leading, 10)
             
-            if !vm.data.isLimit {
+            IF(!vm.data.isLimit) {
                 ImageButton(image: images.common.add,
                             title: strings.addMedia,
                             fontSize: 9,
@@ -466,38 +476,31 @@ fileprivate extension ToolsAreaView {
             vm.data.addTemplate(CanvasTemplateModel(variants: variants, editorSize: vm.ui.roundedEditorSize))
         }
     }
-    
-    @ViewBuilder
-    func promptImageGeneratorTool() -> some View {
-        ToolWrapper(title: strings.promptImageGenerate, fullScreen: true) {
-            vm.tools.closeTools(false)
-        } tool: {
-            PromptImageGeneratorView { image in
-                vm.tools.closeTools(false)
-                vm.data.add(CanvasImageModel(image: image, asset: nil))
-                makeHaptics()
-            }
-        }
-    }
 }
 // MARK: - Work with concrete element
 fileprivate extension ToolsAreaView {
     // добавление фильтров
     @ViewBuilder
     func filterTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: strings.colorFilter, fullScreen: false) {
+        ToolWrapper(
+            title: strings.colorFilter,
+            fullScreen: false
+        ) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
-            ColorFilterTool(layerModel: item,
-                            challengeId: vm.tools.baseChallengeId,
-                            memento: mementoObject)
+            ColorFilterTool(
+                layerModel: item,
+                challengeId: vm.tools.baseChallengeId,
+                memento: mementoObject
+            )
         }
     }
     
     // Добавление нейронных фильтров
     @ViewBuilder
     func neuralFilterTool(_ item: CanvasItemModel) -> some View {
-        ToolWrapper(title: strings.neuralFilter, fullScreen: false) {
+        ToolWrapper(
+            title: strings.neuralFilter, fullScreen: false) {
             vm.tools.currentCloseActionFor(item)
         } tool: {
             NeuralFilterTool(
@@ -550,10 +553,6 @@ fileprivate extension ToolsAreaView {
         ToolWrapperWithBinding(title: strings.adjustments, fullScreen: false, withBackground: false) {
             vm.tools.currentCloseActionFor(item)
         } tool: { state, titleState in
-//            ToolAdjustments(item,
-//                            state: state,
-//                            memento: mementoObject)
-//                .padding(.horizontal)
             ToolAdjustmentsDetail(item,
                             state: state,
                             titleState: titleState,
@@ -567,7 +566,10 @@ fileprivate extension ToolsAreaView {
 extension ToolsAreaView {
     @ViewBuilder
     func aspectRatio() -> some View {
-        ToolWrapper(title: strings.aspectRatio, fullScreen: false) {
+        ToolWrapper(
+            title: strings.aspectRatio,
+            fullScreen: false
+        ) {
             vm.tools.closeTools(false)
         } tool: {
             ToolsAspectRatioView { result in

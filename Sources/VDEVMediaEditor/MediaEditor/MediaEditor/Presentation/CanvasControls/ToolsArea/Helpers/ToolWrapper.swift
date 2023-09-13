@@ -67,7 +67,7 @@ struct ToolWrapperWithBinding<Tool: View>: View {
                 if titleState == .title {
                     HeadWithTitle(title: title,
                                   returnPressed: returnPressed)
-                    .padding(.horizontal)
+                    .padding([.top, .horizontal])
                     .opacity(editState.getOpacity())
                 }
                 
@@ -110,7 +110,7 @@ struct ToolWrapper<Tool: View>: View {
             VStack(spacing: 20) {
                 HeadWithTitle(title: title,
                               returnPressed: returnPressed)
-                .padding()
+                .padding([.top, .horizontal])
                 
                 tool
             }

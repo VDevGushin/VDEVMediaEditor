@@ -160,7 +160,8 @@ fileprivate extension MediaEditorToolsForTemplateView {
             ToolAdjustmentsDetail(
                 item,
                 state: state,
-                titleState: titleState
+                titleState: titleState,
+                fromTemplate: true
             )
             .padding(.horizontal)
         }

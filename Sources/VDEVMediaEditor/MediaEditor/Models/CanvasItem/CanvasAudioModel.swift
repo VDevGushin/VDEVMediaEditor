@@ -24,7 +24,8 @@ final class CanvasAudioModel: CanvasItemModel {
          title: String?,
          albumTitle: String?,
          albumArtist: String?,
-         comments: String?) {
+         comments: String?
+    ) {
         self.thumbnail = thumbnail
         self.audioURL = audioURL
         self.volume = volume
@@ -32,10 +33,10 @@ final class CanvasAudioModel: CanvasItemModel {
         self.albumTitle = albumTitle
         self.albumArtist = albumArtist
         self.comments = comments
-
+        
         super.init(type: .audio)
     }
-
+    
     deinit {
         thumbnail = nil
         Log.d("❌ Deinit: CanvasAudioModel")
@@ -44,7 +45,7 @@ final class CanvasAudioModel: CanvasItemModel {
     func update(volume: Float) {
         self.volume = volume
     }
-
+    
     override func copy() -> CanvasAudioModel {
         let new = CanvasAudioModel(audioURL: audioURL,
                                    thumbnail: thumbnail,

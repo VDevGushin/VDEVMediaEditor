@@ -86,13 +86,19 @@ class CanvasItemModel: Identifiable, ObservableObject {
     }
     
     var isNeuralProgress: Bool {
-        guard let canvasImageModel: CanvasImageModel = CanvasItemModel.toTypeOptional(model: self),
-              let progress = canvasImageModel.inProgress
-        else { return false }
-        switch progress {
-        case .neural: return true
-        case .simple: return false
+        if let canvasImageModel: CanvasImageModel = CanvasItemModel.toTypeOptional(model: self), let progress = canvasImageModel.inProgress {
+            switch progress {
+            case .neural: return true
+            case .simple: return false
+            }
         }
+        if let canvasDrawModel: CanvasDrawModel = CanvasItemModel.toTypeOptional(model: self), let progress = canvasDrawModel.inProgress {
+            switch progress {
+            case .neural: return true
+            case .simple: return false
+            }
+        }
+        return false
     }
 
     init(id: UUID = UUID(),
@@ -133,6 +139,12 @@ class CanvasItemModel: Identifiable, ObservableObject {
     @discardableResult
     func update(frameFetchedSize: CGSize) -> Self {
         self.frameFetchedSize = frameFetchedSize
+        return self
+    }
+    
+    @discardableResult
+    func update(bounds: CGRect) -> Self {
+        self.bounds = bounds
         return self
     }
 
@@ -244,19 +256,32 @@ final class CanvasItemAsset {
     let image: UIImage?
     let url: URL?
     let type: `Type`
+    let bounds: CGRect
     
-    init(asset: PHAsset?, image: UIImage?, url: URL?, type: `Type`) {
+    init(
+        asset: PHAsset?,
+        image: UIImage?,
+        url: URL?,
+        type: `Type`,
+        bounds: CGRect = .zero
+    ) {
         self.asset = asset
         self.image = image
         self.url = url
         self.type = type
+        self.bounds = bounds
     }
     
-    static func image(asset: PHAsset?, image: UIImage?)  -> CanvasItemAsset{
+    static func image(asset: PHAsset?, image: UIImage?) async  -> CanvasItemAsset {
         return .init(asset: asset, image: image, url: nil, type: .image)
     }
     
-    static func video(asset: PHAsset?, url: URL?) -> CanvasItemAsset{
-        return .init(asset: asset, image: nil, url: url, type: .video)
+    static func video(asset: PHAsset?, url: URL?) async -> CanvasItemAsset{
+        var bounds: CGRect = .zero
+        if let url = url,
+           let size = await AVAsset(url: url).getSize() {
+            bounds = .init(origin: .zero, size: size)
+        }
+        return .init(asset: asset, image: nil, url: url, type: .video, bounds: bounds)
     }
 }

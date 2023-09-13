@@ -46,8 +46,6 @@ public protocol VDEVMediaEditorSettings {
     var canTurnOnSoundInVideos: Bool { get }
     // Можно ли добавлять музыку
     var canAddMusic: Bool { get }
-    // Можно работать с генерацией картинок
-    var canGenerateImageByPrompt: Bool { get }
     
     // Можно ли удалять или рефрешить шаблоны
     var сanRemoveOrChangeTemplate: Bool { get }

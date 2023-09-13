@@ -18,8 +18,8 @@ struct AdjustmentSettings: Identifiable {
     var blurRadius: Double?
     var alpha: Double?
     var temperature: Double?
-    var vignette: (Double, CGRect)?
-    var sharpness: (radius: Double, sharpness: Double)?
+    var vignette: (vignette: Double, radius: Double)?
+    var sharpness: (sharpness: Double, radius: Double)?
     
     init(
         brightness: Double? = nil,
@@ -30,8 +30,8 @@ struct AdjustmentSettings: Identifiable {
         blurRadius: Double? = nil,
         alpha: Double? = nil,
         temperature: Double? = nil,
-        vignette: (Double, CGRect)? = nil,
-        sharpness: (radius: Double, sharpness: Double)? = nil
+        vignette: (vignette: Double, radius: Double)? = nil,
+        sharpness: (sharpness: Double, radius: Double)? = nil
     ) {
         if let brightness = brightness,
            AllAdjustmentsFilters.highlights.normal != brightness {
@@ -74,7 +74,9 @@ struct AdjustmentSettings: Identifiable {
         }
         
         if let vignette = vignette,
-           AllAdjustmentsFilters.vignette.normal != vignette.0 {
+           AllAdjustmentsFilters.vignette.value.normal != vignette.vignette ||
+            AllAdjustmentsFilters.vignette.radius.normal != vignette.radius
+        {
             self.vignette = vignette
         }
         
@@ -100,7 +102,7 @@ struct AdjustmentSettings: Identifiable {
             makeCIGaussianBlur(blurRadius: blurRadius),
             makeCIColorMatrix(alpha: alpha),
             makeCITemperatureAndTint(temperature: temperature),
-            // makeCIVignette(vignette: vignette),
+            makeCIVignette(filter: vignette),
             makeCISharpenLuminance(sharpness: sharpness),
         ]
         return result.compactMap { $0 }
@@ -108,7 +110,7 @@ struct AdjustmentSettings: Identifiable {
 }
 
 fileprivate extension AdjustmentSettings {
-    func makeCISharpenLuminance(sharpness: (radius: Double, sharpness: Double)?) -> FilterDescriptor? {
+    func makeCISharpenLuminance(sharpness: (sharpness: Double, radius: Double)?) -> FilterDescriptor? {
         var params = [String: FilterDescriptor.Param]()
         
         if let sharpness = sharpness {
@@ -124,14 +126,12 @@ fileprivate extension AdjustmentSettings {
         )
     }
     
-    func makeCIVignette(vignette: (Double, CGRect)?) -> FilterDescriptor? {
+    func makeCIVignette(filter: (vignette: Double, radius: Double)?) -> FilterDescriptor? {
         var params = [String: FilterDescriptor.Param]()
         
-        if let vignette = vignette {
-            let radius = RadiusCalculator.radius(value: vignette.0, max: AllAdjustmentsFilters.vignette.max, imageExtent: vignette.1)
-            
-            params[kCIInputRadiusKey] = .number(NSNumber(value: radius))
-            params[kCIInputIntensityKey] = .number(NSNumber(value: vignette.0))
+        if let filter = filter {
+            params[kCIInputRadiusKey] = .number(NSNumber(value: filter.radius))
+            params[kCIInputIntensityKey] = .number(NSNumber(value: filter.vignette))
         }
         
         if params.isEmpty { return nil }
@@ -245,14 +245,5 @@ fileprivate extension AdjustmentSettings {
             name: "CIColorControls",
             params: params
         )
-    }
-}
-
-// MARK: - Helpers
-fileprivate enum RadiusCalculator {
-    static func radius(value: Double, max: Double, imageExtent: CGRect) -> Double {
-        let base = Double(sqrt(pow(imageExtent.width, 2) + pow(imageExtent.height, 2)))
-        let c = base / 20
-        return c * value / max
     }
 }

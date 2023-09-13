@@ -31,10 +31,12 @@ final class LayersViewVM: ObservableObject {
     }
     
     init(layers: Published<IdentifiedArrayOf<CanvasItemModel>>.Publisher) {
+        
         let hasVideos = layers
             .flatMap { result -> AnyPublisher<Bool, Never> in
                 result.elements.withVideoAsync()
             }
+        
         let moreThenOne = layers.map { result -> Bool in result.count > 1 }
         
         moreThenOne.combineLatest(hasVideos)
@@ -172,9 +174,7 @@ struct LayersView: View {
                                                       size: 40,
                                                       backgroundColor: AppColors.layerButtonsLightBlack,
                                                       tintColor: AppColors.white) {
-                                vm.tools.openLayersList(false)
-                                vm.tools.seletedTool(.aspectRatio)
-                                Log.d("Select tool aspect ratio")
+                                vm.tools.openAspectRatio()
                             }.scaleEffect(0.95)
                         }
                         
@@ -184,9 +184,7 @@ struct LayersView: View {
                                                       size: 40,
                                                       backgroundColor: AppColors.layerButtonsLightBlack,
                                                       tintColor: AppColors.white) {
-                                vm.tools.openLayersList(false)
-                                vm.tools.seletedTool(.settings)
-                                Log.d("Select tool settings")
+                                vm.tools.openSettings()
                             }.scaleEffect(0.95)
                         }
                     }

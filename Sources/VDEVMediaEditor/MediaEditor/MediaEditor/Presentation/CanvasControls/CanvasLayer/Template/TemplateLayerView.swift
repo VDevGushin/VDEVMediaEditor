@@ -20,7 +20,11 @@ struct TemplateLayerView: View {
         ZStack {
             ZStack {
                 ForEach(vm.templateLayers, id: \.self) { item in
-                    ItemBuilder(item, width: vm.item.bounds.size.width, delegate: vm.delegate)
+                    ItemBuilder(
+                        item,
+                        width: vm.item.bounds.size.width,
+                        delegate: vm.delegate
+                    )
                 }
             }
             .frame(vm.item.bounds.size)
@@ -28,11 +32,14 @@ struct TemplateLayerView: View {
             LoadingView(inProgress: vm.isLoading)
         }
         .overlay {
-            if vm.canRemoveOrChangeTemplate {
+            IF(vm.canRemoveOrChangeTemplate) {
                 toolsOverlay()
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )
     }
     
     @ViewBuilder

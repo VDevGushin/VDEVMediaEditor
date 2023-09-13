@@ -103,8 +103,33 @@ struct ToolsConcreteItemHorizontal: View {
                 ) {
                     if let item = item {
                         switch item.type {
+                        case .drawing:
+                            OR(item.isNeuralProgress) {
+                                ActivityIndicator(
+                                    isAnimating: true,
+                                    style: .medium,
+                                    color: UIColor(AppColors.whiteWithOpacity))
+                                .frame(
+                                    width: buttonSize,
+                                    height: buttonSize
+                                )
+                            } secondView: {
+                                if settings.showNeuralFilters {
+                                    ToolRow(
+                                        image: images.currentItem.currentItemAIFilter,
+                                        title: strings.neuralFilter
+                                    ) {
+                                        onNeuralFilter(item)
+                                    }
+                                    .opacity(isOpen ? 1.0 : 0.0)
+                                    .scaleEffect(
+                                        isOpen ? 1.0 : 0.001,
+                                        anchor: .trailing
+                                    )
+                                }
+                            }
                         case .image:
-                            OrView(item.isNeuralProgress) {
+                            OR(item.isNeuralProgress) {
                                 ActivityIndicator(
                                     isAnimating: true,
                                     style: .medium,
@@ -316,7 +341,7 @@ struct ToolsConcreteItemHorizontal: View {
                         default: EmptyView()
                         }
                         
-                        OrViewWithEmpty(!item.isNeuralProgress) {
+                        IF(!item.isNeuralProgress) {
                             if !vm.data.isLimit {
                                 switch item.type {
                                 case .image, .video, .text, .sticker, .drawing:
@@ -370,7 +395,7 @@ struct ToolsConcreteItemHorizontal: View {
                             .frame(height: lineHeight)
                             .frame(width: 1)
                         
-                        OrViewWithEmpty(item.type != .template) {
+                        IF(item.type != .template) {
                             ToolRow(
                                 image: images.currentItem.currentItemUp,
                                 title: strings.up
@@ -420,7 +445,7 @@ struct ToolsConcreteItemHorizontal: View {
                             anchor: .trailing
                         )
                         
-                        OrViewWithEmpty(!item.isNeuralProgress) {
+                        IF(!item.isNeuralProgress) {
                             if settings.canMergeAllLayers,
                                let withItem = vm.data.canMerge(item: item),
                                !withItem.isNeuralProgress {

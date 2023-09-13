@@ -74,7 +74,7 @@ struct CanvasApplayer {
                       masks: EditorFilter?) -> AnyPublisher<CanvasApplayerOutput, Never> {
 
         Future<CanvasApplayerOutput, Never> { seal in
-            DispatchQueue.global(qos: .userInitiated).async {
+            DispatchQueue.global().async {
                 let baseFiltersFDs = baseFilters.flatMap {
                     $0.steps.makeFilterDescriptors()
                 }

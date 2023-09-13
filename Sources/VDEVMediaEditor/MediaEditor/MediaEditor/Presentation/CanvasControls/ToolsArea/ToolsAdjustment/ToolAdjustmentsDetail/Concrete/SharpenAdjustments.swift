@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct SharpenAdjustments: View {
-    @Injected var strings: VDEVMediaEditorStrings
+    @Injected private var processingWatcher: ItemProcessingWatcher
+    @Injected private var strings: VDEVMediaEditorStrings
     @Binding private var state: ToolsEditState
     @State private var value: Double = AllAdjustmentsFilters.sharpen.value.normal
     @State private var radius: Double = AllAdjustmentsFilters.sharpen.radius.normal
@@ -54,8 +55,10 @@ struct SharpenAdjustments: View {
                     onEditingChanged: { value in
                         if !value {
                             state = .idle
+                            processingWatcher.finishProcessing()
                         } else {
                             memento?.forceSave()
+                            processingWatcher.startProcessing()
                             state = .edit
                         }
                     })
@@ -104,8 +107,10 @@ struct SharpenAdjustments: View {
                     onEditingChanged: { value in
                         if !value {
                             state = .idle
+                            processingWatcher.finishProcessing()
                         } else {
                             memento?.forceSave()
+                            processingWatcher.startProcessing()
                             state = .edit
                         }
                     })

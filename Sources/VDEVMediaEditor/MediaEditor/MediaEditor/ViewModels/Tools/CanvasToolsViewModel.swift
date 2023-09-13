@@ -32,59 +32,78 @@ final class CanvasToolsViewModel: ObservableObject {
     private var objectPrepareOperations = Cancellables()
     private var storage = Cancellables()
     
-    @Published var overlay: CanvasEditorToolsForTemplateViewModel = .init()
+    @Published private(set) var overlay: CanvasEditorToolsForTemplateViewModel = .init()
 
     init() {
-        observe(nested: self.overlay).store(in: &storage)
-        
-        $layerInManipulation
-            .removeDuplicates()
-            .combineLatest(overlay.$isAnyViewOpen)
-            .sink(on: .main, object: self) { wSelf, result  in
-                let layerInManipulation = result.0
-                guard let value = layerInManipulation else { return }
-                if value is CanvasTemplateModel {
-                    wSelf.openLayersList(false)
-                    return
-                }
-                
-                wSelf.overlay.hideAllOverlayViews()
-                wSelf.openLayersList(false)
-                wSelf.hideAllTools()
-            }
+        observe(nested: self.overlay)
             .store(in: &storage)
+        
+        Publishers.CombineLatest(
+            $layerInManipulation.removeDuplicates(),
+            overlay.$isAnyViewOpen.removeDuplicates()
+        )
+        .sink(
+            on: .main,
+            object: self
+        ) { wSelf, result  in
+            let layerInManipulation = result.0
+            guard let value = layerInManipulation else { return }
+            if value is CanvasTemplateModel {
+                wSelf.openLayersList(false)
+                return
+            }
+            
+            wSelf.overlay.hideAllOverlayViews()
+            wSelf.openLayersList(false)
+            wSelf.hideAllTools()
+        }
+        .store(in: &storage)
         
         // Если закрываем наши менюхи
         // то надо обрывать операции загрузки(если они в процессе)
-        $currentToolItem.combineLatest($showAddItemSelector)
-            .map { $0.0 == .empty && $0.1 == false }
-            .removeDuplicates()
-            .sink(on: .main, object: self) { wSelf, value in
-                if value {
-                    wSelf.objectPrepareOperations.cancelAll()
-                    wSelf.setPrepareOjectOperation(false)
-                }
+        Publishers.CombineLatest(
+            $currentToolItem,
+            $showAddItemSelector
+        )
+        .map { $0.0 == .empty && $0.1 == false }
+        .sink(
+            on: .main,
+            object: self
+        ) { wSelf, value in
+            if value {
+                wSelf.objectPrepareOperations.cancelAll()
+                wSelf.setPrepareOjectOperation(false)
             }
-            .store(in: &storage)
+        }
+        .store(in: &storage)
         
-        $currentToolItem.combineLatest(overlay.$isAnyViewOpen)
-            .sink(on: .main, object: self) { (wSelf, result) in
-                let currentToolItem = result.0
-                let isAnyViewOpen = result.1
-                if currentToolItem != .empty {
-                    wSelf.openLayersList(false)
-                    wSelf.disableLayersAndAddNewItem(true)
-                } else {
-                    if isAnyViewOpen { return }
-                    wSelf.disableLayersAndAddNewItem(false)
-                }
+        Publishers.CombineLatest(
+            $currentToolItem,
+            overlay.$isAnyViewOpen
+        )
+        .sink(
+            on: .main,
+            object: self
+        ) { (wSelf, result) in
+            let currentToolItem = result.0
+            let isAnyViewOpen = result.1
+            if currentToolItem != .empty {
+                wSelf.openLayersList(false)
+                wSelf.disableLayersAndAddNewItem(true)
+            } else {
+                if isAnyViewOpen { return }
+                wSelf.disableLayersAndAddNewItem(false)
             }
-            .store(in: &storage)
-    
+        }
+        .store(in: &storage)
+        
         overlay
             .$isAnyViewOpen
             .removeDuplicates()
-            .sink(on: .main, object: self) { wSelf, value in
+            .sink(
+                on: .main,
+                object: self
+            ) { wSelf, value in
                 if value {
                     wSelf.closeTools(false)
                     wSelf.disableLayersAndAddNewItem(true)
@@ -108,16 +127,21 @@ final class CanvasToolsViewModel: ObservableObject {
     
     func hideAllTools() {
         switch currentToolItem {
-        case .concreteItem: return
-        default: seletedTool(.empty)
+        case .concreteItem:
+            return
+        default:
+            seletedTool(.empty)
         }
     }
 
     // Oбнуление или показ конкретныз тулзов
     func seletedTool(_ tool: ToolItem) {
-        guard tool != currentToolItem else { return }
-
-        if tool != .empty  { set(showAddItemSelector: false) }
+        guard tool != currentToolItem else {
+            return
+        }
+        if tool != .empty  {
+            set(showAddItemSelector: false)
+        }
         set(currentToolItem: tool)
         makeHaptics()
     }
@@ -155,6 +179,22 @@ final class CanvasToolsViewModel: ObservableObject {
         }
     }
     
+    func openAspectRatio() {
+        defer { seletedTool(.aspectRatio) }
+        openLayersList(false)
+        set(showAddItemSelector: false)
+        disableLayersAndAddNewItem(true)
+        Log.d("Select tool aspect ratio")
+    }
+    
+    func openSettings() {
+        defer { seletedTool(.settings) }
+        openLayersList(false)
+        set(showAddItemSelector: false)
+        disableLayersAndAddNewItem(true)
+        Log.d("Select tool settings")
+    }
+    
     private func set(showAddItemSelector: Bool) {
         withAnimation(.interactiveSpring()) {
             self.showAddItemSelector = showAddItemSelector
@@ -176,15 +216,6 @@ final class CanvasToolsViewModel: ObservableObject {
 
 // MARK: - Helpers
 extension CanvasToolsViewModel {
-    // Если есть текущий слой в режиме модификации
-    // (закрывать управление некторомыми элементами)
-    private var currentCanvasItemInEditMode: CanvasItemModel? {
-        guard case .concreteItem(let canvasItem) = currentToolItem else {
-            return nil
-        }
-        return canvasItem
-    }
-
     func inEditMode(item: CanvasItemModel) -> Bool {
         guard let id = currentCanvasItemInEditMode?.id else { return true }
         return item.id == id
@@ -198,6 +229,15 @@ extension CanvasToolsViewModel {
     func needDisableIfNotCurrent(item: CanvasItemModel) -> Bool {
         guard let id = currentCanvasItemInEditMode?.id else { return false }
         return item.id != id
+    }
+    
+    // Если есть текущий слой в режиме модификации
+    // (закрывать управление некторомыми элементами)
+    private var currentCanvasItemInEditMode: CanvasItemModel? {
+        guard case .concreteItem(let canvasItem) = currentToolItem else {
+            return nil
+        }
+        return canvasItem
     }
 }
 

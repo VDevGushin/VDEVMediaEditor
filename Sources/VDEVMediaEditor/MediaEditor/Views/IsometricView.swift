@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct IsometricVideo: View {
-    let model: EditorPreview.Content
+    let model: PreviewContent
     @State private var animate: Bool = false
     @State private var b: CGFloat = 0
     @State private var c: CGFloat = 0

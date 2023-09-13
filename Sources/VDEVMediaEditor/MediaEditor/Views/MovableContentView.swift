@@ -26,14 +26,16 @@ struct MovableContentView<Content: View>: View {
 
     private let onTap: () -> Void
     private let onDoubleTap: () -> Void
-
-    init(item: CanvasItemModel,
-         size: CGSize,
-         isInManipulation: Binding<Bool>,
-         isShowSelection: Binding<Bool>,
-         @ViewBuilder content: @escaping () -> Content,
-         onTap: @escaping () -> Void,
-         onDoubleTap: @escaping () -> Void) {
+    
+    init(
+        item: CanvasItemModel,
+        size: CGSize,
+        isInManipulation: Binding<Bool>,
+        isShowSelection: Binding<Bool>,
+        @ViewBuilder content: @escaping () -> Content,
+        onTap: @escaping () -> Void,
+        onDoubleTap: @escaping () -> Void
+    ) {
         self.item = item
         self.size = size
         self.content = content
@@ -44,7 +46,7 @@ struct MovableContentView<Content: View>: View {
     }
 
     var body: some View {
-        ZStackWithClearColor {
+        ZClear {
             content()
                 .scaleEffect(scale)
                 .offset(position)

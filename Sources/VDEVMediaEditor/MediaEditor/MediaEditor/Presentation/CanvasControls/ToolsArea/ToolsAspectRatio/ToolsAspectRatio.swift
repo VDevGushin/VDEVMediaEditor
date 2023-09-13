@@ -76,35 +76,89 @@ struct ToolsAspectRatioView: View {
     }
     
     var body: some View {
-        VStack(spacing: 12) {
-            ForEach(0..<variants.count, id: \.self) { index in
-                Button {
-                    makeHaptics()
-                    onSelected(variants[index].value)
-                } label: {
-                    Group {
-                        if vm.aspectRatio == variants[index].value {
-                            Text(variants[index].title)
-                                .font(AppFonts.elmaTrioRegular(15))
-                                .foregroundColor(AppColors.whiteWithOpacity)
-                                .underline()
-                        } else {
-                            Text(variants[index].title)
-                                .font(AppFonts.elmaTrioRegular(15))
-                                .foregroundColor(AppColors.whiteWithOpacity)
+        HStack {
+            AnimatedGradientViewVertical(
+                color: AppColors.redWithOpacity,
+                duration: 2,
+                blur: 20
+            )
+            .background {
+                AppColors
+                    .whiteWithOpacity2
+                    .cornerRadius(8)
+                    .padding(2)
+            }
+            .background {
+                Image(systemName:  vm.aspectRatio  == nil ? "arrow.up.and.down.and.arrow.left.and.right" : "scribble.variable")
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundColor(AppColors.whiteWithOpacity1)
+                    .font(.system(size: 64, weight: .regular))
+                    .blur(radius: 2)
+                    .rotationEffect(.degrees(vm.aspectRatio  == nil ? 45 : 0))
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppColors.whiteWithOpacity2, lineWidth: 1)
+            )
+            .aspectRatio(vm.aspectRatio ?? 9/16, contentMode: .fill)
+            .frame(maxWidth: 100)
+            .frame(maxHeight: 100)
+            .animation(.interactiveSpring(), value: vm.aspectRatio)
+            .withParallaxCardEffect()
+            
+            VStack(
+                alignment: .leading,
+                spacing: 12
+            ) {
+                ForEach(0..<variants.count, id: \.self) { index in
+                    Button {
+                        makeHaptics()
+                        onSelected(variants[index].value)
+                    } label: {
+                        Group {
+                            if vm.aspectRatio == variants[index].value {
+                                Text(variants[index].title)
+                                    .font(AppFonts.elmaTrioRegular(18))
+                                    .foregroundColor(AppColors.whiteWithOpacity)
+                                    .underline()
+                                    .transition(.opacityTransition(speed: 0.2))
+                            } else {
+                                Text(variants[index].title)
+                                    .font(AppFonts.elmaTrioRegular(18))
+                                    .foregroundColor(AppColors.whiteWithOpacity)
+                                    .transition(.opacityTransition(speed: 0.2))
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .frame(minHeight: 32)
+                        .background {
+                            if vm.aspectRatio == variants[index].value {
+                                AppColors
+                                    .whiteWithOpacity2
+                                    .transition(.opacityTransition(speed: 0.2))
+                                
+                            } else {
+                                AnimatedGradientViewVertical(
+                                    color: AppColors.whiteWithOpacity2,
+                                    duration: 2,
+                                    blur: 20
+                                )
+                                .transition(.opacityTransition(speed: 0.2))
+                            }
+                        }
+                        .background {
+                            InvisibleTapZoneView {
+                                onSelected(variants[index].value)
+                            }
                         }
                     }
-                }
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(minHeight: 32)
-                .background {
-                    InvisibleTapZoneView {
-                        onSelected(variants[index].value)
-                    }
+                    .buttonStyle(ScaleButtonStyle())
+                    .cornerRadius(8)
+                    .disabled(vm.aspectRatio == variants[index].value)
                 }
             }
+            .cornerRadius(8)
         }
-        .cornerRadius(8)
     }
 }

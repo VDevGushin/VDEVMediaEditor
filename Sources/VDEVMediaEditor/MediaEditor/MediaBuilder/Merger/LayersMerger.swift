@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import UIKit
+import AVKit
 
 extension LayersMerger {
     enum State {
@@ -27,17 +28,24 @@ final class LayersMerger: ObservableObject {
     
     private lazy var builder: MediaBuilder = .init()
     
-    func merge(layers: [CanvasItemModel], on editorSize: CGSize) {
-        makeMediaItem(layers: layers,
-                      size: editorSize,
-                      resolution: .fullHD)
+    func merge(
+        layers: [CanvasItemModel],
+        on editorSize: CGSize
+    ) {
+        makeMediaItem(
+            layers: layers,
+            size: editorSize,
+            resolution: .fullHD
+        )
     }
 }
 
 private extension LayersMerger {
-    func makeMediaItem(layers: [CanvasItemModel],
-                       size: CGSize,
-                       resolution: MediaResolution) {
+    func makeMediaItem(
+        layers: [CanvasItemModel],
+        size: CGSize,
+        resolution: MediaResolution
+    ) {
         
         let sizeModel = CanvasNativeSizeMaker.make(from: resolution, size: size)
         
@@ -58,9 +66,11 @@ private extension LayersMerger {
             let combinerAsset = await assetBuilder.execute()
             
             do  {
-                let result = try await combiner.combineForMerge(combinerAsset,
-                                                                scaleFactor: sizeModel.finalScale,
-                                                                canvasNativeSize: sizeModel.finalCanvasSize)
+                let result = try await combiner.combineForMerge(
+                    combinerAsset,
+                    scaleFactor: sizeModel.finalScale,
+                    canvasNativeSize: sizeModel.finalCanvasSize
+                )
                 
                 let model = await self.proccess(result)
                 await self.set(model)
@@ -72,15 +82,24 @@ private extension LayersMerger {
     
     private func proccess(_ model: CombinerOutput) async -> State {
         if model.url.absoluteString.lowercased().hasSuffix("mov") {
-            let item = CanvasVideoModel(videoURL: model.url, thumbnail: nil, asset: nil)
+            var bounds: CGRect = .zero
+            if let size = await AVAsset(url: model.url).getSize() {
+                bounds = .init(origin: .zero, size: size)
+            }
+            let item = CanvasVideoModel(
+                videoURL: model.url,
+                thumbnail: nil,
+                asset: nil,
+                bounds: bounds
+            )
             return .successVideo(item)
         } else {
             guard let image = await AssetExtractionUtil.image(fromURL: model.url) else {
                 return .idle
             }
-//            guard let image = image.cropAlpha() else {
-//                return .idle
-//            }
+            //            guard let image = image.cropAlpha() else {
+            //                return .idle
+            //            }
             let item = CanvasImageModel(image: image, asset: nil)
             return .successImage(item)
         }

@@ -12,6 +12,7 @@ import Photos
 
 // MARK: - Video
 final class CanvasVideoModel: CanvasItemModel {
+    @Injected private var processingWatcher: ItemProcessingWatcher
     private(set) var asset: CanvasItemAsset?
     private(set) var volume: Float
     
@@ -33,7 +34,8 @@ final class CanvasVideoModel: CanvasItemModel {
          adjustmentSettings: AdjustmentSettings? = nil,
          colorFilter: EditorFilter? = nil,
          textures: EditorFilter? = nil,
-         masks: EditorFilter? = nil) {
+         masks: EditorFilter? = nil,
+         bounds: CGRect = .zero) {
 
         self.asset = asset
         self.thumbnail = thumbnail
@@ -42,11 +44,14 @@ final class CanvasVideoModel: CanvasItemModel {
         self.avVideoComposition = avVideoComposition
         self.volume = volume
 
-        super.init(type: .video,
-                   adjustmentSettings: adjustmentSettings,
-                   colorFilter: colorFilter,
-                   textures: textures,
-                   masks: masks)
+        super.init(
+            bounds: bounds,
+            type: .video,
+            adjustmentSettings: adjustmentSettings,
+            colorFilter: colorFilter,
+            textures: textures,
+            masks: masks
+        )
     }
 
     deinit {
@@ -62,12 +67,18 @@ final class CanvasVideoModel: CanvasItemModel {
 
     override func apply(colorFilter: EditorFilter?) {
         self.colorFilter = colorFilter
-        setAllFilters()
+        processingWatcher.startProcessing()
+        setAllFilters { [weak self] in
+            self?.processingWatcher.finishProcessing()
+        }
     }
 
     override func apply(masks: EditorFilter?) {
         self.masks = masks
-        setAllFilters()
+        processingWatcher.startProcessing()
+        setAllFilters { [weak self] in
+            self?.processingWatcher.finishProcessing()
+        }
     }
 
     override func apply(adjustmentSettings: AdjustmentSettings?) {
@@ -77,10 +88,16 @@ final class CanvasVideoModel: CanvasItemModel {
 
     override func apply(textures: EditorFilter?) {
         self.textures = textures
-        setAllFilters()
+        processingWatcher.startProcessing()
+        setAllFilters { [weak self] in
+            self?.processingWatcher.finishProcessing()
+        }
     }
     
-    private func setAllFilters(fromAdjustment: Bool = false) {
+    private func setAllFilters(
+        fromAdjustment: Bool = false,
+        completion: (() -> Void)? = nil
+    ) {
         inProgress = fromAdjustment ? false : true
 
         storage.limitCancel()
@@ -98,6 +115,7 @@ final class CanvasVideoModel: CanvasItemModel {
             case .image, .cancel: break
             }
             wSelf.inProgress = false
+            completion?()
         }
         .store(in: &storage)
     }
@@ -111,7 +129,8 @@ final class CanvasVideoModel: CanvasItemModel {
                                    adjustmentSettings: adjustmentSettings,
                                    colorFilter: colorFilter,
                                    textures: textures,
-                                   masks: masks)
+                                   masks: masks,
+                                   bounds: bounds)
         new.update(offset: offset, scale: scale, rotation: rotation)
         new.update(volume: volume)
         return new

@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-
 struct AlertData: Identifiable, Equatable {
     @Injected private var strings: VDEVMediaEditorStrings
     
@@ -16,7 +15,10 @@ struct AlertData: Identifiable, Equatable {
     private(set) var title: String = ""
     private(set) var detail: String?
     
-    init(title: String, detail: String?) {
+    init(
+        title: String,
+        detail: String?
+    ) {
         self.title = title
         self.detail = detail
     }
@@ -43,9 +45,11 @@ extension View {
         modifier(AlertModifier(alertData: alertData))
     }
     
-    func showRemoveAlert(isPresented: Binding<Bool>,
-                         onComfirm: @escaping () -> Void,
-                         onCancel: @escaping () -> Void) -> some View {
+    func showRemoveAlert(
+        isPresented: Binding<Bool>,
+        onComfirm: @escaping () -> Void,
+        onCancel: @escaping () -> Void
+    ) -> some View {
         modifier(RemoveAllLayersAlertModifier(isPresented: isPresented,
                                               onComfirm: onComfirm, onCancel: onCancel))
     }
@@ -57,9 +61,11 @@ struct RemoveAllLayersAlertModifier: ViewModifier {
     private let onComfirm: () -> Void
     private let onCancel: () -> Void
     
-    init(isPresented: Binding<Bool>,
-         onComfirm: @escaping () -> Void,
-         onCancel: @escaping () -> Void) {
+    init(
+        isPresented: Binding<Bool>,
+        onComfirm: @escaping () -> Void,
+        onCancel: @escaping () -> Void
+    ) {
         self._isPresented = isPresented
         self.onComfirm = onComfirm
         self.onCancel = onCancel

@@ -11,6 +11,7 @@ extension PasteboardService {
     enum Result {
         case image(UIImage)
         case text(String)
+        case url(URL)
         case empty
     }
 }
@@ -19,7 +20,7 @@ final class PasteboardService {
     private let pasteboard = UIPasteboard.general
     
     var canPaste: Bool {
-        pasteboard.hasImages || pasteboard.hasStrings
+        pasteboard.hasImages || pasteboard.hasStrings || pasteboard.hasURLs
     }
         
     func tryPaste(canPasteOnlyImages: Bool) -> PasteboardService.Result {
@@ -29,11 +30,22 @@ final class PasteboardService {
             .images?.map { .image($0) } ?? []
         
         var texts: [PasteboardService.Result] = []
+        var urls: [PasteboardService.Result] = []
+        
         if !canPasteOnlyImages {
-            texts = pasteboard.strings?.map { .text($0) } ?? []
+            texts = pasteboard
+                .strings?
+                .map {
+                    .text($0)
+                } ?? []
+            urls = pasteboard
+                .urls?
+                .map {
+                    url in .url(url)
+                } ?? []
         }
         
-        let result = (images + texts).first
+        let result = (images + texts + urls).first
         
         guard let result else {
             return .empty

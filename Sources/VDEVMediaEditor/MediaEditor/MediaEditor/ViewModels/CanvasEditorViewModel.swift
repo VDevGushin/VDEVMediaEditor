@@ -18,19 +18,20 @@ final class CanvasEditorViewModel: ObservableObject {
     @Injected private var mementoService: MementoService
     @InjectedOptional private var allLayersMerger: MergeLayersService?
     
-    // VM
+    // Inner vm
     @Published var ui: CanvasUISettingsViewModel = .init()
     @Published var data: CanvasLayersDataViewModel = .init()
     @Published var tools: CanvasToolsViewModel = .init()
     
+    @Published var addMediaButtonTitle: String = ""
+    @Published var addMediaButtonVisible: Bool = false
+    
     @Published private(set) var resultResolution: MediaResolution = .fullHD
-    @Published private(set) var addMediaButtonTitle: String = ""
-    @Published private(set) var addMediaButtonVisible: Bool = false
     @Published private(set) var canUndo: Bool = false
     
     @Published var alertData: AlertData?
     @Published var isLoading: LoadingModel = .true()
-    @Published var contentPreview: EditorPreview.Content?
+    @Published var contentPreview: PreviewContent?
     @Published var showRemoveAllAlert: Bool = false
     
     @Published private var contentPreviewDidLoad: Bool = false
@@ -101,7 +102,7 @@ final class CanvasEditorViewModel: ObservableObject {
                     wSelf.isLoading = .false()
                     wSelf.contentPreview = nil
                 case .inProgress:
-                    wSelf.isLoading = .mergeAll(
+                    wSelf.isLoading = .merge(
                         color: wSelf.ui.guideLinesColor.uiColor
                     )
                 }
@@ -265,4 +266,8 @@ extension CanvasEditorViewModel {
             onPublish?(output)
         }
     }
+}
+
+// MARK: - Inner models
+extension CanvasEditorViewModel {
 }

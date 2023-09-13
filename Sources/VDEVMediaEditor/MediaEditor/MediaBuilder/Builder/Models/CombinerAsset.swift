@@ -12,8 +12,15 @@ import AVFoundation
 struct CombinerAsset {
     var body: Body
     var transform: Transform
-
-    init(body: Body, transform: Transform) {
+    
+    var zIndex: Double {
+        transform.zIndex
+    }
+    
+    init(
+        body: Body,
+        transform: Transform
+    ) {
         self.body = body
         self.transform = transform
     }
@@ -52,7 +59,11 @@ extension CombinerAsset {
             self = .image(CombinerAsset.ImageBody(ciImage: ciImage))
         }
 
-        init(asset: AVAsset, preferredVolume: Float, cycleMode: CycleMode) {
+        init(
+            asset: AVAsset,
+            preferredVolume: Float,
+            cycleMode: CycleMode
+        ) {
             self = .video(CombinerAsset.VideoBody(asset: asset, preferredVolume: preferredVolume, cycleMode: cycleMode))
         }
     }

@@ -11,21 +11,36 @@ final class ToolAdjustmentsDetailVM: ObservableObject {
     @Injected var strings: VDEVMediaEditorStrings
     @Injected var images: VDEVImageConfig
     @Published var state: State = .first
-    
+    private let fromTemplate: Bool = false
     private(set) var allAdjustmentTools: [AdjustmentItemType] = []
     
-    init() {
-        allAdjustmentTools = [
-            .highlight(title: strings.highlight, image: images.adjustments.highlights),
-            .shadow(title: strings.shadow, image: images.adjustments.shadows),
-            .saturation(title: strings.saturation, image: images.adjustments.saturation),
-            .contrast(title: strings.contrast, image: images.adjustments.contrast),
-            .blurRadius(title: strings.blurRadius, image: images.adjustments.blur),
-            .temperature(title: strings.temperature, image: images.adjustments.temperature),
-            .brightness(title: strings.brightness, image: images.adjustments.brightness),
-            .alpha(title: strings.alpha, image: images.adjustments.mask),
-            .sharpness(title: strings.sharpen, image: images.adjustments.sharpen)
-        ]
+    init(fromTemplate: Bool) {
+        if !fromTemplate {
+            allAdjustmentTools = [
+                .highlight(title: strings.highlight, image: images.adjustments.highlights),
+                .shadow(title: strings.shadow, image: images.adjustments.shadows),
+                .saturation(title: strings.saturation, image: images.adjustments.saturation),
+                .contrast(title: strings.contrast, image: images.adjustments.contrast),
+                .blurRadius(title: strings.blurRadius, image: images.adjustments.blur),
+                .temperature(title: strings.temperature, image: images.adjustments.temperature),
+                .brightness(title: strings.brightness, image: images.adjustments.brightness),
+                .alpha(title: strings.alpha, image: images.adjustments.mask),
+                .sharpness(title: strings.sharpen, image: images.adjustments.sharpen),
+                .vignette(title: strings.vignette, image: images.adjustments.vignette)
+            ]
+        } else {
+            allAdjustmentTools = [
+                .highlight(title: strings.highlight, image: images.adjustments.highlights),
+                .shadow(title: strings.shadow, image: images.adjustments.shadows),
+                .saturation(title: strings.saturation, image: images.adjustments.saturation),
+                .contrast(title: strings.contrast, image: images.adjustments.contrast),
+                .blurRadius(title: strings.blurRadius, image: images.adjustments.blur),
+                .temperature(title: strings.temperature, image: images.adjustments.temperature),
+                .brightness(title: strings.brightness, image: images.adjustments.brightness),
+                .alpha(title: strings.alpha, image: images.adjustments.mask),
+                .sharpness(title: strings.sharpen, image: images.adjustments.sharpen)
+            ]
+        }
     }
 }
 
@@ -40,6 +55,7 @@ extension ToolAdjustmentsDetailVM {
         case brightness(title: String, image: UIImage)
         case sharpness(title: String, image: UIImage)
         case alpha(title: String, image: UIImage)
+        case vignette(title: String, image: UIImage)
         
         var title: String {
             switch self {
@@ -52,6 +68,7 @@ extension ToolAdjustmentsDetailVM {
             case .brightness(title: let title, image: _): return title
             case .sharpness(title: let title, image: _): return title
             case .alpha(title: let title, image: _): return title
+            case .vignette(title: let title, image: _): return title
             }
         }
         
@@ -66,6 +83,7 @@ extension ToolAdjustmentsDetailVM {
             case .temperature(title: _, image: let image): return image
             case .brightness(title: _, image: let image): return image
             case .alpha(title: _, image: let image): return image
+            case .vignette(title: _, image: let image): return image
             }
         }
     }

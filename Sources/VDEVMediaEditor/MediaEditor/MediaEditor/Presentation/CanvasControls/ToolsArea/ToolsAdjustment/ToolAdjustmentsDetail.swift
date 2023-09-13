@@ -12,20 +12,22 @@ struct ToolAdjustmentsDetail: View {
     private let item: CanvasItemModel
     @Binding private var state: ToolsEditState
     @Binding private var titleState: ToolsTitleState
+    @StateObject private var vm: ToolAdjustmentsDetailVM
     
     init(
         _ item: CanvasItemModel,
         state: Binding<ToolsEditState>,
         titleState: Binding<ToolsTitleState>,
-        memento: MementoObject? = nil
+        memento: MementoObject? = nil,
+        fromTemplate: Bool = false
     ) {
         self.item = item
         self._state = state
         self._titleState = titleState
         self.memento = memento
+        _vm = .init(wrappedValue: .init(fromTemplate: fromTemplate))
     }
     
-    @StateObject private var vm: ToolAdjustmentsDetailVM = .init()
     var body: some View {
         ZStack {
             let opacity: CGFloat = vm.state.showMenu ? 1.0 : 0.0
@@ -137,7 +139,17 @@ struct ToolAdjustmentsDetail: View {
             ) {
                 vm.state = .first
             }
+        case let .vignette(title: title, image: _):
+            VignetteAdjustments(
+                title,
+                item: item,
+                memento: memento,
+                state: $state
+            ) {
+                vm.state = .first
+            }
         }
+    
     }
     
     @ViewBuilder

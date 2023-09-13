@@ -12,7 +12,9 @@ import SwiftUI
 
 final class MergeLayersService: ObservableObject {
     @Injected private var removeLayersService: RemoveLayersService
+    
     @Published private(set) var state: State = .idle
+    
     private let builder: LayersMerger = .init()
     private var storage = Cancellables()
     

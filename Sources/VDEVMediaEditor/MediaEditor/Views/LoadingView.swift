@@ -81,7 +81,7 @@ struct LoadingModel {
         )
     }
     
-    static func mergeAll(
+    static func merge(
         color: UIColor = AppColors.gray.uiColor,
         blurStyle: UIBlurEffect.Style = .systemChromeMaterialDark,
         cornerRadius: CGFloat = 15

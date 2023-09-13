@@ -11,9 +11,14 @@ import Combine
 struct MediaEditorView: View {
     @ObservedObject private var vm: CanvasEditorViewModel
     
-    init(onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
-         onClose: (@MainActor () -> Void)? = nil) {
-        vm = .init(onPublish: onPublish, onClose: onClose)
+    init(
+        onPublish: (@MainActor (CombinerOutput) -> Void)? = nil,
+        onClose: (@MainActor () -> Void)? = nil
+    ) {
+        vm = .init(
+            onPublish: onPublish,
+            onClose: onClose
+        )
     }
     
     var body: some View {
@@ -33,8 +38,14 @@ struct MediaEditorView: View {
             
             LoadingView(model: vm.isLoading)
         }
-        .safeOnDrop(of: [.image, .plainText], isTargeted: nil) { providers in
-            vm.data.handleDragAndDrop(for: providers, completion: vm.tools.handle(_:))
+        .safeOnDrop(
+            of: [.image, .plainText],
+            isTargeted: nil
+        ) { providers in
+            vm.data.handleDragAndDrop(
+                for: providers,
+                completion: vm.tools.handle(_:)
+            )
         }
         .editorPreview(
             with: $vm.contentPreview.removeDuplicates(),
@@ -73,13 +84,17 @@ fileprivate extension MediaEditorView {
                         }
                         
                         ForEach(vm.data.layers, id: \.self) { item in
-                            CanvasLayerView(item: item,
-                                            toolsModel: vm.tools,
-                                            dataModel: vm.data) {
-                                CanvasItemViewBuilder(item: item,
-                                                      canvasSize: vm.ui.editorSize,
-                                                      guideLinesColor: vm.ui.guideLinesColor,
-                                                      delegate: vm.tools.overlay)
+                            CanvasLayerView(
+                                item: item,
+                                toolsModel: vm.tools,
+                                dataModel: vm.data
+                            ) {
+                                CanvasItemViewBuilder(
+                                    item: item,
+                                    canvasSize: vm.ui.editorSize,
+                                    guideLinesColor: vm.ui.guideLinesColor,
+                                    delegate: vm.tools.overlay
+                                )
                             } onSelect: { item in
                                 if vm.tools.currentToolItem == .empty {
                                     // Выбрать конкретный итем
@@ -115,13 +130,25 @@ fileprivate extension MediaEditorView {
             .opacity(vm.tools.currentToolItem == .backgroundColor ? 0.7 : 1.0)
             .animation(.interactiveSpring(), value: vm.tools.currentToolItem)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )
         .with(aspectRatio: vm.ui.aspectRatio)
         .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
         .fetchSize($vm.ui.editorSize)
         .overlay(content: CenterAxes)
         .overlay(content: Grids)
-        .overlay(content: AddMediaButton)
+        .overlay {
+            AddMediaButton(
+                isVisible: $vm.addMediaButtonVisible,
+                title: $vm.addMediaButtonTitle,
+                cornerRadius: vm.ui.canvasCornerRadius
+            ) {
+                vm.tools.openLayersList(false)
+                vm.tools.showAddItemSelector(true)
+            }
+        }
         .onChange(of: vm.ui.showHorizontalCenter) {
             if $0 { haptics(.light) }
         }
@@ -133,27 +160,29 @@ fileprivate extension MediaEditorView {
     @ViewBuilder
     func CenterAxes() -> some View {
         ZStack {
-            if vm.ui.showVerticalCenter {
+            IF(vm.ui.showVerticalCenter) {
                 Rectangle()
                     .foregroundColor(vm.ui.guideLinesColor.opacity(0.6))
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
             }
-            if vm.ui.showHorizontalCenter {
+            IF(vm.ui.showHorizontalCenter) {
                 Rectangle()
                     .foregroundColor(vm.ui.guideLinesColor.opacity(0.6))
                     .frame(height: 1.5)
                     .frame(maxWidth: .infinity)
-                
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )
         .allowsHitTesting(false)
     }
     
     @ViewBuilder
     func Grids() -> some View {
-        if vm.ui.needGuideLinesGrid {
+        IF(vm.ui.needGuideLinesGrid) {
             ZStack {
                 HStack {
                     ForEach(0..<3, id: \.self) { _ in
@@ -176,33 +205,6 @@ fileprivate extension MediaEditorView {
                 }
             }
             .allowsHitTesting(false)
-        }
-    }
-    
-    @ViewBuilder
-    func AddMediaButton() -> some View {
-        if vm.addMediaButtonVisible {
-            Button(action: {
-                makeHaptics()
-                vm.tools.openLayersList(false)
-                vm.tools.showAddItemSelector(true)
-                Log.d("Add new layer")
-            }) {
-                Text(vm.addMediaButtonTitle)
-                    .font(AppFonts.elmaTrioRegular(13))
-                    .foregroundColor(AppColors.whiteWithOpacity)
-                    .padding()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .background(
-                        AnimatedGradientViewVerticalInvert(
-                            color: AppColors.whiteWithOpacity2,
-                            duration: 10
-                        )
-                    )
-                    .clipShape(RoundedCorner(radius: vm.ui.canvasCornerRadius))
-            }
-        } else {
-            EmptyView()
         }
     }
 }

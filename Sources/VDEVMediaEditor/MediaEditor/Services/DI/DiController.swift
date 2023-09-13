@@ -52,11 +52,6 @@ struct DiController {
                                service: MergeLayersService())
         }
         
-        if settings.canGenerateImageByPrompt {
-            container.register(type: ImageResultChecker.self,
-                               service: ImageResultChecker(config: .init()))
-        }
-        
         container.register(type: ItemProcessingWatcher.self, service: ItemProcessingWatcherImpl())
     }
     

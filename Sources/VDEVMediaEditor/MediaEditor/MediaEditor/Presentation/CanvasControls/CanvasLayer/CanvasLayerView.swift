@@ -207,21 +207,24 @@ fileprivate extension CanvasLayerView {
     @ViewBuilder
     func HorizontOverlay() -> some View {
         ZStack {
-            if isHorizontalOrientation {
+            IF(isHorizontalOrientation) {
                 Rectangle()
                     .foregroundColor(guideLinesColor.opacity(0.6))
                     .frame(width: 1 / vm.scale)
                     .frame(maxHeight: .infinity)
             }
             
-            if isVerticalOrientation {
+           IF(isVerticalOrientation) {
                 Rectangle()
                     .foregroundColor(guideLinesColor.opacity(0.6))
                     .frame(height:  1 / vm.scale)
                     .frame(maxWidth: .infinity)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )
         .allowsHitTesting(false)
     }
 }

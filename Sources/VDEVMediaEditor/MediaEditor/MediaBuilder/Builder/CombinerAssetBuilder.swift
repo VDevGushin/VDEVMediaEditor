@@ -8,6 +8,15 @@
 import UIKit
 import Foundation
 
+struct CombineAssetCollection {
+    var withVideo: Bool
+    var data: [CombinerAsset]
+
+    var count: Int {
+        data.count
+    }
+}
+
 final class CombinerAssetBuilder {
     private let layers: [CanvasItemModel]
     private let scaleFactor: CGFloat
@@ -27,7 +36,7 @@ final class CombinerAssetBuilder {
         self.canvasNativeSize = canvasNativeSize
     }
     
-    func execute() async -> [CombinerAsset]  {
+    func execute() async -> CombineAssetCollection  {
         let bgImage = CIImage(color: CIColor(color: bgColor))
             .cropped(to: CGRect(origin: .zero, size: canvasNativeSize))
         
@@ -112,9 +121,13 @@ final class CombinerAssetBuilder {
         Log.d("Audio combine asset [count: \(audios.count)]")
 
         let res = [bg] + templates + images + videos + labels + audios
-        
+        let withVideo = res.contains(where: { $0.body.videoBody != nil })
+
         Log.d("Combine assets [count: \(res.count)]")
         
-        return res
+        return .init(
+            withVideo: withVideo,
+            data: res
+        )
     }
 }

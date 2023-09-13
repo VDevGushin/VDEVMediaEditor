@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct AlphaAdjustments: View {
-    @Injected var strings: VDEVMediaEditorStrings
+    @Injected private var processingWatcher: ItemProcessingWatcher
+    @Injected private var strings: VDEVMediaEditorStrings
     @Binding private var state: ToolsEditState
     @State private var value: Double = AllAdjustmentsFilters.alpha.normal
     
@@ -52,8 +53,10 @@ struct AlphaAdjustments: View {
                     onEditingChanged: { value in
                         if !value {
                             state = .idle
+                            processingWatcher.finishProcessing()
                         } else {
                             memento?.forceSave()
+                            processingWatcher.startProcessing()
                             state = .edit
                         }
                     })

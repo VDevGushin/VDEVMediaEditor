@@ -17,7 +17,6 @@ struct ToolSelectorHorizontalView: View {
     @Injected private var strings: VDEVMediaEditorStrings
     @Injected private var images: VDEVImageConfig
     @Injected private var pasteboardService: PasteboardService
-    @InjectedOptional private var imageResultChecker: ImageResultChecker?
     @State private var isLoading: Bool = false
     @State private var isOpen: Bool = false
     
@@ -59,11 +58,11 @@ struct ToolSelectorHorizontalView: View {
                     PasteButton()
                         .opacity(isOpen ? 1.0 : 0.0)
                         .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .center)
-                
+                    
                     ForEach(0..<tools.count , id: \.self) { i in
                         ToolRow(tool: tools[i])
-                        .opacity(isOpen ? 1.0 : 0.0)
-                        .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .trailing)
+                            .opacity(isOpen ? 1.0 : 0.0)
+                            .scaleEffect(isOpen ? 1.0 : 0.5, anchor: .trailing)
                     }
                 }
                 .padding(.horizontal, horizontalPadding)
@@ -73,16 +72,6 @@ struct ToolSelectorHorizontalView: View {
         .viewDidLoad {
             withAnimation(.myInteractiveSpring) {
                 isOpen = true
-            }
-        }
-        .onReceive(
-            (imageResultChecker?.state ??
-                .single(ImageResultChecker.State.notStarted))
-            .receiveOnMain()
-        ) { value in
-            switch value {
-            case .inProgress: isLoading = true
-            default: isLoading = false
             }
         }
     }
@@ -95,7 +84,7 @@ struct ToolSelectorHorizontalView: View {
                     tintColor: AppColors.whiteWithOpacity) {
             onSelect(tool)
         }.overlay(alignment: .topTrailing) {
-            if isLoading, case .promptImageGenerator = tool {
+            if isLoading {
                 Circle().fill(AppColors.whiteWithOpacity1)
                     .frame(.init(width: 18, height: 18))
                     .overlay {
@@ -111,7 +100,7 @@ struct ToolSelectorHorizontalView: View {
     
     @ViewBuilder func PasteButton() -> some View {
         switch pasteboardService.tryPaste(canPasteOnlyImages: canPasteOnlyImages) {
-        case .text(let text):
+        case let .text(text):
             ImageButton(image: images.typed.typePaste,
                         title: strings.paste,
                         fontSize: 12,
@@ -120,7 +109,7 @@ struct ToolSelectorHorizontalView: View {
                 defer { pasteboardService.clear() }
                 onPasteImageFromGeneralPasteboard(.text(text))
             }
-        case .image(let image):
+        case let .image(image):
             ImageButton(image: images.typed.typePaste,
                         title: strings.paste,
                         fontSize: 12,
@@ -129,7 +118,30 @@ struct ToolSelectorHorizontalView: View {
                 defer { pasteboardService.clear() }
                 onPasteImageFromGeneralPasteboard(.image(image))
             }
-        default: EmptyView()
+        case let .url(url):
+            ImageButton(image: images.typed.typePaste,
+                        title: strings.paste,
+                        fontSize: 12,
+                        size: .init(width: buttonSize, height: buttonSize),
+                        tintColor: AppColors.whiteWithOpacity) {
+                isLoading = true
+                Task {
+                    guard let image = await AssetExtractionUtil.image(fromURL: url) else {
+                        await MainActor.run {
+                            isLoading = false
+                            pasteboardService.clear()
+                        }
+                        return
+                    }
+                    await MainActor.run {
+                        onPasteImageFromGeneralPasteboard(.image(image))
+                        isLoading = false
+                        pasteboardService.clear()
+                    }
+                }
+            }
+        case .empty:
+            EmptyView()
         }
     }
 }

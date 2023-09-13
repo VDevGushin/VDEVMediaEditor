@@ -63,11 +63,8 @@ final class CanvasEditorToolsForTemplateViewModel:
             $showPhotoPicker,
             $showVideoPicker,
             $state
-        ).map {
-            ($0 != nil || $1 == true || $2 != .empty)
-            
-        }
-        //.removeDuplicates()
+        ).map { ($0 != nil || $1 == true || $2 != .empty) }
+        // .removeDuplicates()
         .receiveOnMain()
         .sink(
             on: .main,

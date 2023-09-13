@@ -28,8 +28,8 @@ struct PlaceholderTemplateView: View {
     }
     
     var body: some View {
-        ZStackWithClearColor {
-            OrView(vm.isEmpty) {
+        ZClear {
+            OR(vm.isEmpty) {
                 AddMediaButton()
                     .transition(.opacityTransition(withAnimation: true, speed: 0.2))
             } secondView: {

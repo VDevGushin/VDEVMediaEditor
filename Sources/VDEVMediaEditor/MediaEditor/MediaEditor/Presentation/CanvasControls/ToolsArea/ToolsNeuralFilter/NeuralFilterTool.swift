@@ -58,7 +58,7 @@ struct NeuralFilterTool: View {
                     action()
                 }
                 
-                OrView(items.isEmpty) {
+                OR(items.isEmpty) {
                     LoadingCell { refresh() }
                         .transition(.opacityTransition(withAnimation: false, speed: 0.2))
                 } secondView: {
@@ -172,7 +172,7 @@ struct NeuralFilterTool: View {
                 )
                 .background {
                     ZStack {
-                        OrViewWithObject(imageURL) { url in
+                        OBJECT(imageURL) { url in
                             AsyncImageView(url: url) {
                                 Image(uiImage: $0)
                                     .resizable()

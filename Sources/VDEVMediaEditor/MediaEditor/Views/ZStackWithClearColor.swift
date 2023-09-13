@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ZStackWithClearColor<Content: View>: View {
+struct ZClear<Content: View>: View {
     private let content: Content
     
     init(@ViewBuilder _ content: () -> Content) {

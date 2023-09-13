@@ -27,7 +27,7 @@ struct VideoMixer {
         let mixComposition = AVMutableComposition()
         let audioMix = AVMutableAudioMix()
         
-        let sortedData = data.sorted { $0.transform.zIndex < $1.transform.zIndex }
+        let sortedData = data.sorted { $0.zIndex < $1.zIndex }
         
         let videoData: [CombinerAsset.VideoBody] = sortedData
             .compactMap { $0.body.videoBody }

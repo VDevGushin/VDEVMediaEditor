@@ -17,10 +17,12 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         let item: CanvasAudioModel = CanvasItemModel.toType(model: item)
         
         ZStack {
-            VideoPlayerViewForLayers(assetURL: item.audioURL,
-                                     videoComposition: nil,
-                                     thumbnail: item.thumbnail,
-                                     volume: item.volume)
+            VideoPlayerViewForLayers(
+                assetURL: item.audioURL,
+                videoComposition: nil,
+                thumbnail: item.thumbnail,
+                volume: item.volume
+            )
             .frame(.init(width: 20, height: 20))
             .opacity(0.0)
             
@@ -65,18 +67,19 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         let item: CanvasVideoModel = CanvasItemModel.toType(model: item)
         let size = item.bounds.size.aspectFill(minimumSize: canvasSize).rounded(.up)
         
-        ZStack {
-            VideoPlayerViewForLayers(assetURL: item.videoURL,
-                                     videoComposition: item.avVideoComposition,
-                                     thumbnail: item.thumbnail,
-                                     volume: item.volume)
-            .frame(height: size.height)
-            .overlay(alignment: .center) {
-                if item.inProgress {
-                    ActivityIndicator(isAnimating: true,
-                                      style: .large,
-                                      color: .init(guideLinesColor))
-                }
+        
+        VideoPlayerViewForLayers(
+            assetURL: item.videoURL,
+            videoComposition: item.avVideoComposition,
+            thumbnail: item.thumbnail,
+            volume: item.volume
+        )
+        .frame(height: size.height)
+        .overlay(alignment: .center) {
+            if item.inProgress {
+                ActivityIndicator(isAnimating: true,
+                                  style: .large,
+                                  color: .init(guideLinesColor))
             }
         }
         
@@ -110,9 +113,31 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         
     case .drawing:
         let item: CanvasDrawModel = CanvasItemModel.toType(model: item)
-        Image(uiImage: item.image)
-            .frame(item.bounds.size)
-        
+        OR(item.withNeural) {
+            let size = item.image.size
+                .aspectFill(minimumSize: canvasSize)
+                .rounded(.up)
+            
+            Image(uiImage: item.image)
+                .resizable()
+                .aspectRatio(item.image.aspectRatio, contentMode: .fill)
+                .frame(size)
+                .overlay(alignment: .center) {
+                    NeuralLoader(
+                        progresOperationType: item.inProgress,
+                        guideLinesColor: guideLinesColor
+                    )
+                }
+        } secondView: {
+            Image(uiImage: item.image)
+                .frame(item.bounds.size)
+                .overlay(alignment: .center) {
+                    NeuralLoader(
+                        progresOperationType: item.inProgress,
+                        guideLinesColor: guideLinesColor
+                    )
+                }
+        }
     case .text:
         let item: CanvasTextModel = CanvasItemModel.toType(model: item)
         

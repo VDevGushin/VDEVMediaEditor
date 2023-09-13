@@ -11,9 +11,10 @@ import Combine
 import Photos
 
 final class CanvasVideoPlaceholderModel: CanvasItemModel {
+    @Injected private var processingWatcher: ItemProcessingWatcher
     private(set) var asset: CanvasItemAsset?
     private var originalVideoURL: URL
-
+    
     @Published private(set) var volume: Float
     @Published private(set) var avVideoComposition: AVVideoComposition?
     @Published private(set) var maskVideoComposition: AVVideoComposition?
@@ -24,7 +25,7 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     private(set) var aspect: CGFloat
     private(set) var size: CGSize
     private(set) var maskImageFromTemplate: UIImage?
-
+    
     private let aplayer = CanvasApplayer()
     private var storage = Cancellables()
     private(set) var filters: [EditorFilter]
@@ -32,7 +33,7 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     override var filterChain: [FilterDescriptor] {
         filters.noMask.flatMap { $0.steps.makeFilterDescriptors() } + super.filterChain
     }
-
+    
     init(url: URL,
          avVideoComposition: AVVideoComposition?,
          maskVideoComposition: AVVideoComposition?,
@@ -54,10 +55,10 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
         self.maskVideoComposition = maskVideoComposition
         self.filters = filters
         self.maskImageFromTemplate = maskImageFromTemplate
-
+        
         super.init(type: .video)
     }
-
+    
     deinit {
         storage.cancelAll()
         Log.d("❌ Deinit[TEMPLATE]: CanvasVideoPlaceholderModel")
@@ -66,27 +67,36 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
     func update(volume: Float) {
         self.volume = volume
     }
-
+    
     override func apply(textures: EditorFilter?) {
         self.textures = textures
-        setAllFilters()
+        processingWatcher.startProcessing()
+        setAllFilters { [weak self] in
+            self?.processingWatcher.finishProcessing()
+        }
     }
-
+    
     override func apply(colorFilter: EditorFilter?) {
         self.colorFilter = colorFilter
-        setAllFilters()
+        processingWatcher.startProcessing()
+        setAllFilters { [weak self] in
+            self?.processingWatcher.finishProcessing()
+        }
     }
-
+    
     override func apply(adjustmentSettings: AdjustmentSettings?) {
         self.adjustmentSettings = adjustmentSettings
         setAllFilters(fromAdjustment: true)
     }
-
-    private func setAllFilters(fromAdjustment: Bool = false) {
+    
+    private func setAllFilters(
+        fromAdjustment: Bool = false,
+        completion: (() -> Void)? = nil
+    ) {
         inProgress = fromAdjustment ? false : true
-
+        
         storage.limitCancel()
-
+        
         aplayer.applyFilters(for: originalVideoURL,
                              baseFilters: filters.noMask,
                              adjustmentSettings: adjustmentSettings,
@@ -100,6 +110,7 @@ final class CanvasVideoPlaceholderModel: CanvasItemModel {
             case .image, .cancel: break
             }
             wSelf.inProgress = false
+            completion?()
         }
         .store(in: &storage)
     }
@@ -114,13 +125,13 @@ extension CanvasVideoPlaceholderModel {
                             filters: [EditorFilter]) async -> CanvasVideoPlaceholderModel? {
         
         let size = await AVAsset(url: url).getSize()
-
+        
         var aspect: CGFloat? = nil
-
+        
         if let size = size  { aspect = size.width / size.height }
-
+        
         guard let size = size, let aspect = aspect else { return nil }
-
+        
         if filters.isEmpty {
             return .init(url: url,
                          avVideoComposition: nil,
@@ -133,19 +144,19 @@ extension CanvasVideoPlaceholderModel {
                          aspect: aspect,
                          filters: [])
         }
-
+        
         let noMaskFilters = filters.noMask
         let onlyMaskFilters =  filters.onlyMask
-
+        
         Log.i(" Template all filters: \(filters.map { $0.steps.map { $0.type }})")
         Log.i(" Template no mask filters: \(noMaskFilters.map { $0.steps.map { $0.type }})")
         Log.i(" Template only mask filters: \(onlyMaskFilters.map { $0.steps.map { $0.type }})")
-
+        
         var filteredFilter: CanvasApplayerOutput = .empty()
         if !noMaskFilters.isEmpty {
             filteredFilter = await applyer.applyFilters(for: url, filters: noMaskFilters)
         }
-
+        
         var maskedFilter: CanvasApplayerOutput = .empty()
         if !onlyMaskFilters.isEmpty {
             maskedFilter = await applyer.applyFilters(for: url, filters: onlyMaskFilters)
@@ -158,7 +169,7 @@ extension CanvasVideoPlaceholderModel {
         case .empty, .cancel, .image:
             originalVideoComposition = nil
         }
-
+        
         var maskedVideoComposition: AVVideoComposition?
         switch maskedFilter.value {
         case .video(let composition):
@@ -168,7 +179,7 @@ extension CanvasVideoPlaceholderModel {
         }
         
         let maskImageFromTemplate = await PlaceholderMaskLoader.load(from: onlyMaskFilters.maskImageURL)
-
+        
         return .init(url: url,
                      avVideoComposition: originalVideoComposition,
                      maskVideoComposition: maskedVideoComposition,
