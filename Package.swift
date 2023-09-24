@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/onevcat/Kingfisher.git",
-                 .upToNextMajor(from: "7.9.0")),
+                 .upToNextMajor(from: "7.9.1")),
         
         .package(url: "https://github.com/guoyingtao/Mantis.git",
                  from: "2.14.1"),
@@ -26,7 +26,7 @@ let package = Package(
         .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", .upToNextMajor(from: "0.2.0")),
         
         .package(url: "https://github.com/SwiftUIX/SwiftUIX",
-                 .upToNextMajor(from: "0.1.6")),
+                 .upToNextMajor(from: "0.1.7")),
         
         .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git",
                  from: "0.1.0"),
