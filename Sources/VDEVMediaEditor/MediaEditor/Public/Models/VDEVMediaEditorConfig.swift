@@ -67,6 +67,7 @@ public protocol VDEVAdjustmentsButtonsCommonImages {
     var structure: UIImage { get }
     var temperature: UIImage { get }
     var vignette: UIImage { get }
+    var flip: UIImage { get }
 }
 
 // MARK: - Common Images
@@ -207,4 +208,7 @@ public protocol VDEVMediaEditorStrings {
     var temperature: String { get }
     var vignette: String { get }
     var radius: String { get }
+    var flip: String { get }
+    var vertical: String { get }
+    var horizontal: String { get }
 }

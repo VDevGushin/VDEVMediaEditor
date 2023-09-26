@@ -20,6 +20,8 @@ struct AdjustmentSettings: Identifiable {
     var temperature: Double?
     var vignette: (vignette: Double, radius: Double)?
     var sharpness: (sharpness: Double, radius: Double)?
+    var flipVertical: FlipFilterInput?
+    var flipHorizontal: FlipFilterInput?
     
     init(
         brightness: Double? = nil,
@@ -31,7 +33,9 @@ struct AdjustmentSettings: Identifiable {
         alpha: Double? = nil,
         temperature: Double? = nil,
         vignette: (vignette: Double, radius: Double)? = nil,
-        sharpness: (sharpness: Double, radius: Double)? = nil
+        sharpness: (sharpness: Double, radius: Double)? = nil,
+        flipVertical: FlipFilterInput? = nil,
+        flipHorizontal: FlipFilterInput? = nil
     ) {
         if let brightness = brightness,
            AllAdjustmentsFilters.highlights.normal != brightness {
@@ -86,10 +90,22 @@ struct AdjustmentSettings: Identifiable {
                 self.sharpness = sharpness
             }
         }
+        
+        if let flipVertical {
+            self.flipVertical = flipVertical
+        }
+        
+        if let flipHorizontal {
+            self.flipHorizontal = flipHorizontal
+        }
     }
 
     func makeFilterDescriptors() -> [FilterDescriptor] {
         let result: [FilterDescriptor?] = [
+            makeFlip(
+                flipVertical: flipVertical,
+                flipHorizontal: flipHorizontal
+            ),
             makeCIColorControls(
                 brightness: brightness,
                 contrast: contrast,
@@ -110,6 +126,30 @@ struct AdjustmentSettings: Identifiable {
 }
 
 fileprivate extension AdjustmentSettings {
+    func makeFlip(
+        flipVertical: FlipFilterInput?,
+        flipHorizontal: FlipFilterInput?
+    ) -> FilterDescriptor? {
+        var params = [String: FilterDescriptor.Param]()
+        
+        if let flipVertical {
+            params[flipVertical.flipType.inputKey] = .flip(flipVertical.flipType)
+        }
+        
+        if let flipHorizontal {
+            params[flipHorizontal.flipType.inputKey] = .flip(flipHorizontal.flipType)
+        }
+        
+        guard !params.isEmpty else {
+            return nil
+        }
+        
+        return FilterDescriptor(
+            name: FlipFilterDescriptorName,
+            params: params
+        )
+    }
+    
     func makeCISharpenLuminance(sharpness: (sharpness: Double, radius: Double)?) -> FilterDescriptor? {
         var params = [String: FilterDescriptor.Param]()
         

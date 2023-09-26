@@ -58,6 +58,15 @@ struct ToolAdjustmentsDetail: View {
         _ aType: ToolAdjustmentsDetailVM.AdjustmentItemType
     ) -> some View {
         switch aType {
+        case let .flip(title: title, image: _):
+            FlipAdjustments(
+                title,
+                item: item,
+                memento: memento,
+                state: $state
+            ) {
+                vm.state = .first
+            }
         case let .highlight(title, _):
             HighlightAdjustments(
                 title,

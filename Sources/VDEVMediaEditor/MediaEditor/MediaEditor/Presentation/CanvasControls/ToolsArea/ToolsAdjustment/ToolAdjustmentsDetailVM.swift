@@ -26,7 +26,8 @@ final class ToolAdjustmentsDetailVM: ObservableObject {
                 .brightness(title: strings.brightness, image: images.adjustments.brightness),
                 .alpha(title: strings.alpha, image: images.adjustments.mask),
                 .sharpness(title: strings.sharpen, image: images.adjustments.sharpen),
-                .vignette(title: strings.vignette, image: images.adjustments.vignette)
+                .vignette(title: strings.vignette, image: images.adjustments.vignette),
+                .flip(title: strings.flip, image: images.adjustments.flip)
             ]
         } else {
             allAdjustmentTools = [
@@ -56,6 +57,7 @@ extension ToolAdjustmentsDetailVM {
         case sharpness(title: String, image: UIImage)
         case alpha(title: String, image: UIImage)
         case vignette(title: String, image: UIImage)
+        case flip(title: String, image: UIImage)
         
         var title: String {
             switch self {
@@ -69,6 +71,7 @@ extension ToolAdjustmentsDetailVM {
             case .sharpness(title: let title, image: _): return title
             case .alpha(title: let title, image: _): return title
             case .vignette(title: let title, image: _): return title
+            case .flip(title: let title, image: _): return title
             }
         }
         
@@ -84,6 +87,7 @@ extension ToolAdjustmentsDetailVM {
             case .brightness(title: _, image: let image): return image
             case .alpha(title: _, image: let image): return image
             case .vignette(title: _, image: let image): return image
+            case .flip(title: _, image: let image): return image
             }
         }
     }

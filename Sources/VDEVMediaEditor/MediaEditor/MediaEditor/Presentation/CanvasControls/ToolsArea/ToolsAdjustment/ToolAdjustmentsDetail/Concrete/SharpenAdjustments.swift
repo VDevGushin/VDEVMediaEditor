@@ -178,7 +178,9 @@ struct SharpenAdjustments: View {
             alpha: item.adjustmentSettings?.alpha,
             temperature: item.adjustmentSettings?.temperature,
             vignette: item.adjustmentSettings?.vignette,
-            sharpness: (value, radius)
+            sharpness: (value, radius),
+            flipVertical: item.adjustmentSettings?.flipVertical,
+            flipHorizontal: item.adjustmentSettings?.flipHorizontal
         )
     }
 }

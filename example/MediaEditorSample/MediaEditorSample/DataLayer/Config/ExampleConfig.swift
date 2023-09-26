@@ -173,6 +173,7 @@ struct Images: VDEVImageConfig {
         var structure: UIImage = .init(named: "structure")!
         var temperature: UIImage = .init(named: "temperature")!
         var vignette: UIImage = .init(named: "vignette")!
+        var flip: UIImage = .init(named: "flip")!
     }
     
     struct CurrentItem: VDEVMediaEditorButtonsCurrentItemImages {
@@ -301,12 +302,15 @@ struct Strings: VDEVMediaEditorStrings {
     let sound = "SOUND"
     let hint = "+ ADD MEDIA"
     let addMusic = "MUSIC"
-    var submit = "SUBMIT"
-    var random = "RANDOM"
-    var doingSomeMagic = "DOING SOME\nMAGIC"
-    var sharpen = "SHARPEN"
-    var none = "NONE"
-    var vignette = "VIGNETTE"
-    var temperature = "TEMP"
-    var radius = "RADIUS"
+    let submit = "SUBMIT"
+    let random = "RANDOM"
+    let doingSomeMagic = "DOING SOME\nMAGIC"
+    let sharpen = "SHARPEN"
+    let none = "NONE"
+    let vignette = "VIGNETTE"
+    let temperature = "TEMP"
+    let radius = "RADIUS"
+    let flip = "FLIP"
+    let vertical = "VERTICAL"
+    let horizontal = "HORIZONTAL"
 }

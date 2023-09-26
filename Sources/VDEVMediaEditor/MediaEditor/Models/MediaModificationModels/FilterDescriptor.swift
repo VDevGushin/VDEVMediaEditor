@@ -9,10 +9,10 @@ import UIKit
 import CoreImage
 
 public let NeuralFilterDescriptorName = "NeuralFilter"
+public let FlipFilterDescriptorName = "FlipFilter"
 
 public class FilterDescriptor: Codable, Hashable {
     public enum Param: Codable, Hashable {
-     
         enum ParamErrors: Error { case unableToDecodeBase64StringToData }
         
         case number(NSNumber)
@@ -23,8 +23,9 @@ public class FilterDescriptor: Codable, Hashable {
         case image(CIImage, UIView.ContentMode?, URL)
         case colorSpaceString(CGColorSpace, String)
         case neural(NeuralConfig)
+        case flip(FlipType)
         case unsupported
-
+        
         var valueForParams: Any {
             switch self {
             case .number(let number): return number
@@ -36,15 +37,16 @@ public class FilterDescriptor: Codable, Hashable {
             case .colorSpaceString(let colorSpace, _): return colorSpace
             case .unsupported: return NSNull()
             case .neural: return NSNull()
+            case .flip: return NSNull()
             }
         }
-
+        
         enum CodingKeys: CodingKey {
             case type
             case value
             case contentMode
         }
-
+        
         public init(dataURL: URL) {
             guard let data = SessionCache<NSData>.data(from: dataURL, storeCache: true, extractor: {
                 guard let data = NSData(contentsOf: dataURL) else { return nil }
@@ -55,15 +57,18 @@ public class FilterDescriptor: Codable, Hashable {
             }
             self = .dataURL(data, dataURL)
         }
-
-        public init(imageURL: URL, contentMode: UIView.ContentMode? = nil) {
+        
+        public init(
+            imageURL: URL,
+            contentMode: UIView.ContentMode? = nil
+        ) {
             guard let image = AssetExtractionUtil.image(fromUrl: imageURL) else {
                 self = .unsupported
                 return
             }
             self = .image(image, contentMode, imageURL)
         }
-
+        
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             let type = try container.decode(String.self, forKey: .type)
@@ -118,7 +123,7 @@ public class FilterDescriptor: Codable, Hashable {
                 self = .unsupported
             }
         }
-
+        
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             switch self {
@@ -147,24 +152,27 @@ public class FilterDescriptor: Codable, Hashable {
             case .colorSpaceString(_, let colorSpaceString):
                 try container.encode("color_space_string", forKey: .type)
                 try container.encode(colorSpaceString, forKey: .value)
-            case .unsupported, .neural:
+            case .unsupported, .neural, .flip:
                 try container.encode("unsupported", forKey: .type)
                 try container.encodeNil(forKey: .value)
             }
         }
     }
-
+    
     public var id: String?
     public var name: String
     public var params: [String: Param]?
     public var customImageTargetKey: String?
     
     var isNeural: Bool { name == NeuralFilterDescriptorName }
-
-    public init(name: String,
-                params: [String: Param]? = nil,
-                id: String? = nil,
-                customImageTargetKey: String? = nil) {
+    var isFlip: Bool { name == FlipFilterDescriptorName }
+    
+    public init(
+        name: String,
+        params: [String: Param]? = nil,
+        id: String? = nil,
+        customImageTargetKey: String? = nil
+    ) {
         self.id = id
         self.name = name
         self.params = params
@@ -174,7 +182,7 @@ public class FilterDescriptor: Codable, Hashable {
     public static func == (lhs: FilterDescriptor, rhs: FilterDescriptor) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
-
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(params)
@@ -183,7 +191,10 @@ public class FilterDescriptor: Codable, Hashable {
 }
 
 public extension FilterDescriptor {
-    convenience init?(step: NeuralEditorFilter.Step, id: String?) {
+    convenience init?(
+        step: NeuralEditorFilter.Step,
+        id: String?
+    ) {
         guard let id else { return nil }
         
         let neuralConfig = step.neuralConfig
@@ -192,7 +203,10 @@ public extension FilterDescriptor {
                   id: id)
     }
     
-    convenience init?(step: EditorFilter.Step, id: String?) {
+    convenience init?(
+        step: EditorFilter.Step,
+        id: String?
+    ) {
         switch step.type {
         case .lut:
             let colorSpaceString = "sRGB"
@@ -258,7 +272,10 @@ extension Sequence where Element == FilterDescriptor {
 }
 
 private final class ParamDataPreprocessor {
-    static func process(url: URL, data: NSData) -> NSData {
+    static func process(
+        url: URL,
+        data: NSData
+    ) -> NSData {
         if (data as Data).mimetype.type == .image ||
             ["png", "jpg", "jpeg"].contains(url.pathExtension.lowercased()),
            let lut = ImageFileLUT(imageData: data as Data) {

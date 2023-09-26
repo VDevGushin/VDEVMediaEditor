@@ -123,7 +123,9 @@ struct TemperatureAdjustments: View {
             alpha: item.adjustmentSettings?.alpha,
             temperature: value,
             vignette: item.adjustmentSettings?.vignette,
-            sharpness: item.adjustmentSettings?.sharpness
+            sharpness: item.adjustmentSettings?.sharpness,
+            flipVertical: item.adjustmentSettings?.flipVertical,
+            flipHorizontal: item.adjustmentSettings?.flipHorizontal
         )
     }
 }

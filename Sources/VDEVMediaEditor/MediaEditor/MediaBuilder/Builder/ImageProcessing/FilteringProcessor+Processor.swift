@@ -18,6 +18,7 @@ fileprivate extension CIFilter {
 private enum ProcessingFilter {
     case filter(CIFilter, FilterDescriptor)
     case neural(AIFilter)
+    case flip(FlipFilter)
     
     init?(filterDescriptor: FilterDescriptor) {
         if let ciFilter: CIFilter = .init(name: filterDescriptor.name) {
@@ -26,6 +27,10 @@ private enum ProcessingFilter {
         }
         if let neuralProcessorFilter: AIFilter = .init(filterDescriptor) {
             self = .neural(neuralProcessorFilter)
+            return
+        }
+        if let flipProcessorFilter: FlipFilter = .init(filterDescriptor) {
+            self = .flip(flipProcessorFilter)
             return
         }
         return nil
@@ -47,6 +52,8 @@ extension FilteringProcessor {
             var imageOutput = sourceImage
                 for filter in filterChain {
                     switch filter {
+                    case let .flip(flipFilter):
+                        imageOutput = flipFilter.execute(imageOutput)
                     case let .neural(neuralFilter):
                         imageOutput = neuralFilter.execute(imageOutput)
                     case let .filter(ciFilter, descriptor):
@@ -72,6 +79,7 @@ extension FilteringProcessor {
         private func bootstrap(forSource source: CIImage) {
             for filter in filterChain {
                 switch filter {
+                case .flip: continue
                 case .neural: continue
                 case let .filter(ciFilter, descriptor):
                     for (key, value) in descriptor.params ?? [:] where value != .unsupported {

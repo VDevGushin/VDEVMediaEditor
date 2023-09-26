@@ -19,6 +19,7 @@ enum AllAdjustmentsFilters {
     static let temperature = FilterTemperature()
     static let vignette = FilterVignette()
     static let sharpen = FilterSharpen()
+    static let flip = FilterFlip()
 }
 
 struct FilterHighlights {
@@ -84,6 +85,11 @@ struct FilterVignette {
         let max: Double = 2
         let normal: Double = 0
     }
+}
+
+struct FilterFlip {
+    let normalVertical: Bool = false
+    let normalHorizontal: Bool = false
 }
 
 struct FilterSharpen {
