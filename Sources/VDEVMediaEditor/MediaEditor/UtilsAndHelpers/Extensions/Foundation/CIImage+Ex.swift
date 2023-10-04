@@ -133,7 +133,7 @@ extension CIImage {
     func createMask(
         maskCG: CGImage?,
         for size: CGSize,
-        context: CIContext = CIContext(options: [.useSoftwareRenderer: false])
+        context: CIContext = .editorContext
     ) -> CIImage {
         guard let maskCG = maskCG else { return self }
         let context: CIContext = context

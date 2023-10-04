@@ -10,7 +10,7 @@ import Photos
 import AVFoundation
 
 final class FilteringProcessor {
-    private let renderContext =  CIContext(options: [.useSoftwareRenderer: false])
+    private let renderContext =  CIContext.editorContext
     
     deinit {
         renderContext.clearCaches()

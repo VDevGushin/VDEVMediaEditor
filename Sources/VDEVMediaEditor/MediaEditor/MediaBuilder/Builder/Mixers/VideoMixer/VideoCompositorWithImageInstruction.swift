@@ -56,7 +56,7 @@ final class VideoCompositorWithImage: NSObject, AVVideoCompositing {
     }
 
     private let colorSpace = CGColorSpaceCreateDeviceRGB()
-    private lazy var imageContext =  CIContext(options: [.useSoftwareRenderer: false]) 
+    private lazy var imageContext =  CIContext.editorContext
 
     func renderContextChanged(_ newRC: AVVideoCompositionRenderContext) {
         // do anything in here you need to before you start writing frames
