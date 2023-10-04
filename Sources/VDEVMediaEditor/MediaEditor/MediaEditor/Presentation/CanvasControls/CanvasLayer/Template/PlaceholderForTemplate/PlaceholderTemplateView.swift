@@ -186,7 +186,7 @@ private extension PlaceholderTemplateView {
                 .padding()
                 .clipShape(Rectangle())
                 .background(BlurView(style: .systemChromeMaterialLight))
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         } else {
             Image(uiImage: images.common.addMediaM)
                 .resizable()

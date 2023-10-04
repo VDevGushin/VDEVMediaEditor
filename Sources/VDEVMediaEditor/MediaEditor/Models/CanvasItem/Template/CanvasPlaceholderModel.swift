@@ -18,8 +18,6 @@ final class CanvasPlaceholderModel: CanvasItemModel {
 
     private(set) weak var imageModel: CanvasImagePlaceholderModel?
     private(set) weak var videoModel: CanvasVideoPlaceholderModel?
-
-    var isMovable: Bool { filters.isEmpty }
     
     init(url: URL?,
          bounds: CGRect = .zero,

@@ -195,7 +195,7 @@ extension CanvasItemModel {
         
         let item: CanvasTextModel = CanvasItemModel.toType(model: self)
 
-        var ciImage = TextView.makeLabelImage(
+        var ciImage = TextTools.makeLabelImage(
             naturalContainerWidth: frameFetchedSize.width * scaleFactor,
             scale: scaleFactor,
             text: item.text,

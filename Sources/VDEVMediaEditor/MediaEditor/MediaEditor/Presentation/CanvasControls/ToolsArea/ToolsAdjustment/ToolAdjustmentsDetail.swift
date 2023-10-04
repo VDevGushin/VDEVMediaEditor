@@ -199,7 +199,7 @@ struct ToolAdjustmentsDetail: View {
                         .background {
                             AnimatedGradientViewVertical(color: AppColors.white)
                         }
-                        .cornerRadius(12)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                     .buttonStyle(ScaleButtonStyle())
                 }

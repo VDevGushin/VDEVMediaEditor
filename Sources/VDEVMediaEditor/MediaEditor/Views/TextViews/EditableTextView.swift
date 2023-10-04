@@ -1,5 +1,5 @@
 //
-//  FancyTextView.swift
+//  EditableTextView.swift
 //  MediaEditor
 //
 //  Created by Vladislav Gushin on 13.02.2023.
@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-struct FancyTextView: View {
+struct EditableTextView: View {
     @Binding var text: String
     @Binding var isEditing: Bool
     @Binding var textSize: CGSize
+    
+    @State private var frameSize: CGSize = .zero
 
     let placeholder: String
     let fontSize: CGFloat
@@ -21,26 +23,22 @@ struct FancyTextView: View {
     let needTextBG: Bool
     let backgroundColor: UIColor
 
-    @State private var height: CGFloat = 0
-
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: alignment) {
-                TextView(
+                DynamicTextView(
                     text: $text,
                     isEditing: $isEditing,
+                    contentSize: $frameSize,
+                    textSize: $textSize,
                     fontSize: fontSize,
                     textColor: textColor,
                     textAlignment: textAlignment,
                     textStyle: textStyle,
                     needTextBG: needTextBG,
                     backgroundColor: backgroundColor
-                ) { contentSize in
-                    height = contentSize.height
-                } onFrameSize: { size in
-                    textSize = size
-                }
-                .frame(height: height)
+                )
+                .frame(height: frameSize.height)
 
                 if text.isEmpty {
                     Text(placeholder)
@@ -60,9 +58,9 @@ struct FancyTextView: View {
     }
 
     private func scaleFactor(forContainer container: CGSize) -> CGFloat {
-        let textSize = CGSize(width: container.width, height: height)
+        let textSize = CGSize(width: container.width, height: frameSize.height)
         let scaledTextSize = textSize.aspectFit(boundingSize: container)
-        let scaleFactor = scaledTextSize.height / height
+        let scaleFactor = scaledTextSize.height / frameSize.height
         return scaleFactor.isNaN ? 1 : scaleFactor
     }
 }

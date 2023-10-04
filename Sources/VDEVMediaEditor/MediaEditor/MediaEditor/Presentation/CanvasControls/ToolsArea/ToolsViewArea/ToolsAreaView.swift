@@ -219,29 +219,31 @@ struct ToolsAreaView: View {
         }
         .fullScreenCover(item: $textForEdit.removeDuplicates()) { item in
             TextTool(
-                textItem: item,
-                labelContainerToCanvasWidthRatio: 0.8
+                textItem: item
             ) { newModel in
+                guard let newModel else {
+                    textForEdit = nil
+                    vm.data.delete(item)
+                    vm.tools.closeTools(false)
+                    return
+                }
                 vm.data.delete(item)
                 textForEdit = nil
                 vm.data.add(newModel)
-                vm.tools.closeTools(false)
-            } deleteAction: {
-                textForEdit = nil
-                vm.data.delete(item)
                 vm.tools.closeTools(false)
             }
         }
         .fullScreenCover(isPresented: $showNewTextInput.removeDuplicates()) {
             TextTool(
-                textItem: nil,
-                labelContainerToCanvasWidthRatio: 0.8
+                textItem: nil
             ) { newModel in
+                guard let newModel else {
+                    showNewTextInput = false
+                    vm.tools.closeTools(false)
+                    return
+                }
                 showNewTextInput = false
                 vm.data.add(newModel)
-                vm.tools.closeTools(false)
-            } deleteAction: {
-                showNewTextInput = false
                 vm.tools.closeTools(false)
             }
         }
@@ -436,7 +438,7 @@ fileprivate extension ToolsAreaView {
                     }
                 }
             }
-            .cornerRadius(vm.ui.canvasCornerRadius)
+            .clipShape(RoundedRectangle(cornerRadius: vm.ui.canvasCornerRadius))
             .onAppear {
                 vm.tools.openLayersList(false)
             }

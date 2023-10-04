@@ -9,56 +9,46 @@ import SwiftUI
 
 // MARK: - Text style
 public struct CanvasTextStyle: CaseIterable, Equatable {
-    public struct ShadowCfg: Equatable {
-        var color: UIColor
-        var offset: CGSize
-        var blur: CGFloat
-        
-        public init(color: UIColor, offset: CGSize, blur: CGFloat) {
-            self.color = color
-            self.offset = offset
-            self.blur = blur
-        }
-
-        public static let `default` = ShadowCfg(
-            color: AppColors.black.uiColor.withAlphaComponent(0.2),
-            offset: .init(width: 3, height: 3),
-            blur: 12
-        )
-    }
-
     var fontFamily: String
     var lineHeightMultiple: CGFloat
     var kern: CGFloat
     var uppercased: Bool
-    var shadow: ShadowCfg?
+    var shadow: ShadowConfig?
     
-    public init(fontFamily: String, lineHeightMultiple: CGFloat, kern: CGFloat, uppercased: Bool, shadow: ShadowCfg? = nil) {
+    public init(
+        fontFamily: String,
+        lineHeightMultiple: CGFloat,
+        kern: CGFloat,
+        uppercased: Bool,
+        shadow: ShadowConfig? = nil
+    ) {
         self.fontFamily = fontFamily
         self.lineHeightMultiple = lineHeightMultiple
         self.kern = kern
         self.uppercased = uppercased
         self.shadow = shadow
     }
-
+    
     func font(ofSize size: CGFloat) -> UIFont {
-        return UIFont(name: fontFamily, size: size) ?? .systemFont(ofSize: size)
+        UIFont(name: fontFamily, size: size) ?? .systemFont(ofSize: size)
     }
+}
 
+extension CanvasTextStyle {
     public static let `default` = CanvasTextStyle(
         fontFamily: UIFont.systemFont(ofSize: 32).familyName,
         lineHeightMultiple: 0,
         kern: 0,
         uppercased: false
     )
-
+    
     public static let basicText = CanvasTextStyle(
         fontFamily: "VisueltPro-Regular",
         lineHeightMultiple: 32/30,
         kern: 0,
         uppercased: false
     )
-
+    
     public static let boldText = CanvasTextStyle(
         fontFamily: "Gramatika-Bold",
         lineHeightMultiple: 32/26,
@@ -66,14 +56,14 @@ public struct CanvasTextStyle: CaseIterable, Equatable {
         uppercased: true,
         shadow: .default
     )
-
+    
     public static let serifText =  CanvasTextStyle(
         fontFamily: "MaregrapheCaption-Regular",
         lineHeightMultiple: 32/30,
         kern: 0,
         uppercased: false
     )
-
+    
     public static let mono = CanvasTextStyle(
         fontFamily: "GTPressuraPro-Regular",
         lineHeightMultiple: 32/30,
@@ -90,6 +80,26 @@ public struct CanvasTextStyle: CaseIterable, Equatable {
     
     public static var allCases: [CanvasTextStyle] {
         [basicText, boldText, serifText, mono, t1]
+    }
+}
+
+extension CanvasTextStyle {
+    public struct ShadowConfig: Equatable {
+        var color: UIColor
+        var offset: CGSize
+        var blur: CGFloat
+        
+        public init(color: UIColor, offset: CGSize, blur: CGFloat) {
+            self.color = color
+            self.offset = offset
+            self.blur = blur
+        }
+
+        public static let `default` = ShadowConfig(
+            color: AppColors.black.uiColor.withAlphaComponent(0.2),
+            offset: .init(width: 3, height: 3),
+            blur: 12
+        )
     }
 }
 

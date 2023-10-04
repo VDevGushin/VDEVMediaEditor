@@ -1,5 +1,5 @@
 //
-//  TextView+Ex.swift
+//  TextTools.swift
 //  MediaEditor
 //
 //  Created by Vladislav Gushin on 01.03.2023.
@@ -7,7 +7,29 @@
 
 import UIKit
 
-extension TextView {
+struct TextTools {
+    static func textBackgroundColor(foregroundColor: UIColor) ->  UIColor {
+        if foregroundColor.hexString == "#ffffff".uppercased() {
+            return AppColors.white.uiColor.withAlphaComponent(0.3)
+        }
+
+        if foregroundColor.hexString == "#000000".uppercased()  {
+            return AppColors.black.uiColor.withAlphaComponent(0.3)
+        }
+        
+        let ciColor = CIColor(color: foregroundColor)
+        let compRed: CGFloat = 1.0 - ciColor.red
+        let compGreen: CGFloat = 1.0 - ciColor.green
+        let compBlue: CGFloat = 1.0 - ciColor.blue
+        
+        return UIColor(
+            red: compRed,
+            green: compGreen,
+            blue: compBlue,
+            alpha: 1.0
+        )
+    }
+    
     static func makeLabelImage(
         naturalContainerWidth: CGFloat,
         scale: CGFloat,
@@ -52,12 +74,12 @@ extension TextView {
             .kern: textStyle.kern,
             .paragraphStyle: paragraphStyle
         ]
+        
         if let shadowCfg = textStyle.shadow {
             let shadow = NSShadow()
             shadow.shadowOffset = shadowCfg.offset
             shadow.shadowBlurRadius = shadowCfg.blur
             shadow.shadowColor = shadowCfg.color
-
             attributes[.shadow] = shadow
         }
         return attributes
@@ -138,5 +160,42 @@ extension TextView {
         return textImage
             .transformed(by: .init(translationX: edgeInsets.left * scale, y: edgeInsets.top * scale))
             .composited(over: containerImage)
+    }
+}
+
+extension TextTools {
+    final class TextView: UITextView {
+        private var textBGColor: UIColor?
+        
+        func update(textBGColor: UIColor?) {
+            self.textBGColor = textBGColor
+            setNeedsDisplay()
+        }
+
+        override func draw(_ rect: CGRect) {
+            guard let ctx = UIGraphicsGetCurrentContext(),
+                  let textBGColor = textBGColor else {
+                super.draw(rect)
+                return
+            }
+
+            ctx.setFillColor(textBGColor.cgColor)
+            
+            let glyphRange = layoutManager.glyphRange(for: textContainer)
+            
+            layoutManager.enumerateLineFragments(
+                forGlyphRange: glyphRange
+            ) { [textContainerInset] rect, usedRect, textContainer, glyphRange, stop in
+                var usedRect = usedRect
+                usedRect.origin.y += textContainerInset.top
+                usedRect.origin.x += textContainerInset.left
+                let path = UIBezierPath(
+                    roundedRect: usedRect.insetBy(dx: -5, dy: -5),
+                    cornerRadius: 5
+                )
+                ctx.addPath(path.cgPath)
+            }
+            ctx.fillPath()
+        }
     }
 }

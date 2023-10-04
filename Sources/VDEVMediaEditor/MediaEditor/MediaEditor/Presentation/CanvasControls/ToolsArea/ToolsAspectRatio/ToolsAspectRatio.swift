@@ -85,7 +85,7 @@ struct ToolsAspectRatioView: View {
             .background {
                 AppColors
                     .whiteWithOpacity2
-                    .cornerRadius(8)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding(2)
             }
             .background {
@@ -154,11 +154,11 @@ struct ToolsAspectRatioView: View {
                         }
                     }
                     .buttonStyle(ScaleButtonStyle())
-                    .cornerRadius(8)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .disabled(vm.aspectRatio == variants[index].value)
                 }
             }
-            .cornerRadius(8)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }

@@ -68,7 +68,7 @@ struct DoneButtonStyle: ButtonStyle {
 
                     BlurView(style: .systemChromeMaterialDark)
                 }
-                    .cornerRadius(sizeClass.cornerRadius)
+                    .clipShape(RoundedRectangle(cornerRadius: sizeClass.cornerRadius))
             )
             .scaleEffect(configuration.isPressed ? 0.9 : 1)
     }

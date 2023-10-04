@@ -152,13 +152,13 @@ struct LoadingRectangle: View {
             ZStack(alignment: .leading) {
                 Rectangle()
                     .foregroundColor(Color.white.opacity(0.3))
-                    .cornerRadius(5)
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
 
                 if progress > 0 {
                     Rectangle()
                         .frame(width: size.width * progress, alignment: .leading)
                         .foregroundColor(Color.white.opacity(0.9))
-                        .cornerRadius(5)
+                        .clipShape(RoundedRectangle(cornerRadius: 5))
                 }
             }
         }

@@ -118,7 +118,7 @@ struct LayersView: View {
                                     .frame(width: 40,
                                            height: 40, alignment: .center)
                                     .background(AppColors.layerButtonsLightGray)
-                                    .cornerRadius(3)
+                                    .clipShape(RoundedRectangle(cornerRadius: 3))
                                     .setLayerScale(item, vm: vm.tools)
                                     .clipShape(Rectangle())
                                     .overlay(isDragged ? AppColors.white.opacity(0.2) : AppColors.clear)

@@ -61,13 +61,16 @@ struct MediaEditorToolsForTemplateView: View {
             vm.hideAllOverlayViews()
             textForEdit = nil
         }, content: { item in
-            TextTool(textItem: item,
-                     labelContainerToCanvasWidthRatio: 0.8,
-                     fromTemplate: true) { newModel in
+            TextTool(
+                textItem: item,
+                fromTemplate: true
+            ) { newModel in
+                guard let newModel else {
+                    vm.hideAllOverlayViews()
+                    textForEdit = nil
+                    return
+                }
                 vm.editText?(newModel)
-                vm.hideAllOverlayViews()
-                textForEdit = nil
-            } deleteAction: {
                 vm.hideAllOverlayViews()
                 textForEdit = nil
             }

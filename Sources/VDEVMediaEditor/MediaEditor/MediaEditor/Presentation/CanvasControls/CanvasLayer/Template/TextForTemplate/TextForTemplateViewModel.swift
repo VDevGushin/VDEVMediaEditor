@@ -28,14 +28,12 @@ final class TextForTemplateViewModel: ObservableObject {
     
     func editText() {
         delegate?.endWorkWithItem?()
-        
         delegate?.editText = {
             [weak self] newModel in
             guard let self = self else { return }
             self.text = newModel
             self.item.text = self.text
         }
-        
         delegate?.showTextEditor(item: item.text)
     }
     

@@ -21,7 +21,7 @@ struct TextForTemplateView: View {
     }
     
     var body: some View {
-        FancyTextView(
+        EditableTextView(
             text:.constant(vm.text.textStyle.uppercased ?
                            vm.text.text.uppercased() :
                             vm.text.text),

@@ -21,6 +21,6 @@ struct IconButton: View {
                 .foregroundColor(AppColors.white)
         }
         .frame(width: buttonWidth, height: buttonWidth)
-        .cornerRadius(buttonWidth / 2)
+        .clipShape(RoundedRectangle(cornerRadius: buttonWidth / 2))
     }
 }

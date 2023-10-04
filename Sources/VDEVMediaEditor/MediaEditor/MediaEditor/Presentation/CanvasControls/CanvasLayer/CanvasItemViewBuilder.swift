@@ -140,14 +140,15 @@ func CanvasItemViewBuilder(item: CanvasItemModel,
         }
     case .text:
         let item: CanvasTextModel = CanvasItemModel.toType(model: item)
-        
-        DisplayTextView(text: item.textStyle.uppercased ? item.text.uppercased() : item.text,
-                        fontSize: item.fontSize,
-                        textColor: item.color,
-                        textAlignment: item.textAlignment,
-                        textStyle: item.textStyle,
-                        needTextBG: item.needTextBG,
-                        backgroundColor: .clear)
+        CanvasStaticTextView(
+            text: item.textStyle.uppercased ? item.text.uppercased() : item.text,
+            fontSize: item.fontSize,
+            textColor: item.color,
+            textAlignment: item.textAlignment,
+            textStyle: item.textStyle,
+            needTextBG: item.needTextBG,
+            backgroundColor: .clear
+        )
         .frame(item.bounds.size)
         
     case .template:

@@ -116,7 +116,7 @@ struct NeuralFilterTool: View {
                 .background {
                     AppColors.blackInvisible
                 }
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(ScaleButtonStyle())
             .overlay(
@@ -190,7 +190,7 @@ struct NeuralFilterTool: View {
                         )
                     }
                 }
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(ScaleButtonStyle())
             .overlay(

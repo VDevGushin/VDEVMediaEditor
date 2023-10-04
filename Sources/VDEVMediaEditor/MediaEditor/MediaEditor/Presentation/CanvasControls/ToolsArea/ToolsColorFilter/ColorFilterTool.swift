@@ -124,7 +124,7 @@ struct ColorFilterTool: View {
                         .foregroundColor(AppColors.white)
                         .padding(8)
                 }
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .disabled(selected)
             .overlay(

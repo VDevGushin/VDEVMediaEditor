@@ -163,7 +163,7 @@ struct ToolsSettings: View {
                 }
             }
         }
-        .cornerRadius(8)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .fullScreenCover(isPresented: $showTutorials) {
             TutorialsTableView()
                 .background { BlurView(style: .systemChromeMaterialDark) }
