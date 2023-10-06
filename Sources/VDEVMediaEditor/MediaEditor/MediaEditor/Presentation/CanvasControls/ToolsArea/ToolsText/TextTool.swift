@@ -243,18 +243,14 @@ struct TextTool: View {
 // MARK: - Actions
 private extension TextTool {
     func colorPressed() {
-        withAnimation(.interactiveSpring()) {
-            isEditing.toggle()
-            colorSelectorOpen.toggle()
-        }
+        isEditing.toggle()
+        colorSelectorOpen.toggle()
     }
 
     func textStylePressed() {
         let currentStyleIndex = (CanvasTextStyle.allCases.firstIndex { $0 == textStyle }) ?? -1
         let newStyleIndex = (currentStyleIndex + 1) % CanvasTextStyle.allCases.count
-        withAnimation(.interactiveSpring()) {
-            textStyle = CanvasTextStyle.allCases[newStyleIndex]
-        }
+        textStyle = CanvasTextStyle.allCases[newStyleIndex]
     }
 
     func donePressed() {
@@ -290,17 +286,15 @@ private extension TextTool {
     }
 
     func textAlignmentPressed() {
-        withAnimation(.interactiveSpring()) {
-            switch textAlignment {
-            case .center:
-                textAlignment = .left
-            case .left:
-                textAlignment = .right
-            case .right:
-                textAlignment = .center
-            default:
-                textAlignment = .center
-            }
+        switch textAlignment {
+        case .center:
+            textAlignment = .left
+        case .left:
+            textAlignment = .right
+        case .right:
+            textAlignment = .center
+        default:
+            textAlignment = .center
         }
     }
     

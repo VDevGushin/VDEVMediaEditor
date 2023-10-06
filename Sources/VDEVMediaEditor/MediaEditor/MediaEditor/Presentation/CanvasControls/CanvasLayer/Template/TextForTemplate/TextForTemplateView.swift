@@ -7,24 +7,28 @@
 
 import SwiftUI
 
+// Текст в шаблоне - на который нажимает юзер
 struct TextForTemplateView: View {
+    @Environment(\.guideLinesColor) private var guideLinesColor
     @StateObject private var vm: TextForTemplateViewModel
     
-    @Environment(\.guideLinesColor) private var guideLinesColor
-    
-    @State private var size: CGSize = .zero
-    
-    init(item: CanvasTextForTemplateItemModel,
-         delegate: CanvasEditorDelegate?) {
-        _vm = .init(wrappedValue: .init(item: item,
-                                        delegate: delegate))
+    init(
+        item: CanvasTextForTemplateItemModel,
+        delegate: CanvasEditorDelegate?
+    ) {
+        _vm = .init(
+            wrappedValue: .init(
+                item: item,
+                delegate: delegate
+            )
+        )
     }
     
     var body: some View {
-        EditableTextView(
-            text:.constant(vm.text.textStyle.uppercased ?
-                           vm.text.text.uppercased() :
-                            vm.text.text),
+        let text = vm.text.textStyle.uppercased ? vm.text.text.uppercased() : vm.text.text
+        
+        TemplateEditableTextView(
+            text: .constant(text),
             isEditing: .constant(false),
             textSize: .constant(.zero),
             placeholder: vm.text.placeholder,
@@ -36,15 +40,16 @@ struct TextForTemplateView: View {
             needTextBG: vm.text.needTextBG,
             backgroundColor: .clear
         )
-        .overlay(
-            AppColors.black.opacity(0.0001)
-        )
+        .overlay(AppColors.black.opacity(0.0001))
         .blendMode(vm.text.blendingMode.swiftUI)
         .onTapGesture {
             haptics(.light)
             vm.editText()
         }
-        .fetchSize($size)
-        .onChange(of: size) { value in vm.updateSize(value) }
+        .background(AppColors.whiteWithOpacity4)
+        .clipShape(RoundedCorner(radius: 6))
+        .viewDidLoad {
+            vm.updateSize(vm.text.bounds.size)
+        }
     }
 }

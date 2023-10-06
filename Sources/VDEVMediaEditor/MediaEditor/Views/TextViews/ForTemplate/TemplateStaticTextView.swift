@@ -97,6 +97,7 @@ private struct StaticTextView: UIViewRepresentable {
             bottom: 8,
             right: 8
         )
+        view.isScrollEnabled = false
         view.contentInsetAdjustmentBehavior = .never
         view.delegate = context.coordinator
         view.update(textBGColor: needTextBG ? TextTools.textBackgroundColor(foregroundColor: textColor) : nil)

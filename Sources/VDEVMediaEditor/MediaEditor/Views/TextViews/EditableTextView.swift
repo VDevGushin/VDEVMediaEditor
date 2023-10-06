@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct EditableTextView: View {
+    @State private var frameSize: CGSize = .zero
+    
     @Binding var text: String
     @Binding var isEditing: Bool
     @Binding var textSize: CGSize
     
-    @State private var frameSize: CGSize = .zero
-
     let placeholder: String
     let fontSize: CGFloat
     let textColor: UIColor
@@ -36,7 +36,8 @@ struct EditableTextView: View {
                     textAlignment: textAlignment,
                     textStyle: textStyle,
                     needTextBG: needTextBG,
-                    backgroundColor: backgroundColor
+                    backgroundColor: backgroundColor,
+                    isScrollEnabled: false
                 )
                 .frame(height: frameSize.height)
 

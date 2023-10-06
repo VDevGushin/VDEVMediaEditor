@@ -95,7 +95,10 @@ struct TemplateLayerView: View {
             
         case .textForTemplate:
             let item: CanvasTextForTemplateItemModel = CanvasItemModel.toType(model: item)
-            TextForTemplateView(item: item, delegate: delegate)
+            TextForTemplateView(
+                item: item,
+                delegate: delegate
+            )
             .frame(item.text.bounds.size)
             .offset(item.text.offset)
         case .placeholder:

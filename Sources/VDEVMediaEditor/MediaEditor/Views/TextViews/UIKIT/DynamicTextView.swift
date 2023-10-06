@@ -19,6 +19,7 @@ struct DynamicTextView: UIViewRepresentable {
     private let textStyle: CanvasTextStyle
     private let needTextBG: Bool
     private let backgroundColor: UIColor
+    private let isScrollEnabled: Bool
     
     init(text: Binding<String>,
          isEditing: Binding<Bool>,
@@ -29,7 +30,8 @@ struct DynamicTextView: UIViewRepresentable {
          textAlignment: NSTextAlignment,
          textStyle: CanvasTextStyle,
          needTextBG: Bool,
-         backgroundColor: UIColor
+         backgroundColor: UIColor,
+         isScrollEnabled: Bool
     ) {
         self._text = text
         self._isEditing = isEditing
@@ -41,6 +43,7 @@ struct DynamicTextView: UIViewRepresentable {
         self.textStyle = textStyle
         self.needTextBG = needTextBG
         self.backgroundColor = backgroundColor
+        self.isScrollEnabled = isScrollEnabled
     }
     
     func makeCoordinator() -> Coordinator {
@@ -62,6 +65,7 @@ struct DynamicTextView: UIViewRepresentable {
             right: 8
         )
         
+        view.isScrollEnabled = isScrollEnabled
         view.contentInsetAdjustmentBehavior = .never
         view.delegate = context.coordinator
         view.update(textBGColor: needTextBG ? TextTools.textBackgroundColor(foregroundColor: textColor) : nil)
@@ -73,7 +77,7 @@ struct DynamicTextView: UIViewRepresentable {
         context: Context
     ) {
         defer {
-            context.coordinator.makeResults(with: uiView)
+            context.coordinator.makeResultsAndUpdate(with: uiView)
         }
         
         let attributes = context.coordinator.attributes(
@@ -114,7 +118,7 @@ struct DynamicTextView: UIViewRepresentable {
             }
         }
         
-        func makeResults(with uiView: UITextView) {
+        func makeResultsAndUpdate(with uiView: UITextView) {
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
                 
@@ -141,6 +145,8 @@ struct DynamicTextView: UIViewRepresentable {
                         height: CGFloat.greatestFiniteMagnitude
                     )
                 )
+                
+                uiView.setNeedsDisplay()
             }
         }
         

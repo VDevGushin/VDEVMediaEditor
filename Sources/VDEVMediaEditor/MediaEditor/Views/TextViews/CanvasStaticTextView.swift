@@ -21,6 +21,7 @@ struct CanvasStaticTextView: UIViewRepresentable {
         view.textContainerInset = .init(top: 8, left: 8, bottom: 8, right: 8)
         view.contentInsetAdjustmentBehavior = .never
         view.update(textBGColor: needTextBG ? TextTools.textBackgroundColor(foregroundColor: textColor) : nil)
+        view.isScrollEnabled = false
         return view
     }
 
