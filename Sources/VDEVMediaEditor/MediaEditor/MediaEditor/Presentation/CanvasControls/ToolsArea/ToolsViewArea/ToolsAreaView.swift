@@ -19,8 +19,7 @@ struct ToolsAreaView: View {
     private var mementoObject: MementoObject? { vm.data }
     
     @State private var showOnboarding = false
-    @State private var showPhoroPicker = false
-    @State private var showVideoPicker = false
+    @State private var showMediaPicker = false
     @State private var showCamera = false
     @State private var showImageCropper = false
     @State private var showMusicPicker = false
@@ -119,8 +118,7 @@ struct ToolsAreaView: View {
             case .empty: EmptyView()
             case .imageCropper: EmptyView()
             case .camera: EmptyView()
-            case .photoPicker: EmptyView()
-            case .videoPicker: EmptyView()
+            case .mediaPicker: EmptyView()
             case .musicPiker: EmptyView()
             case .text: EmptyView()
             }
@@ -130,8 +128,7 @@ struct ToolsAreaView: View {
             switch value {
             case .imageCropper: showImageCropper = true
             case .camera: showCamera = true
-            case .photoPicker: showPhoroPicker = true
-            case .videoPicker: showVideoPicker = true
+            case .mediaPicker: showMediaPicker = true
             case .musicPiker: showMusicPicker = true
             case .text(let text):
                 if let text = text {
@@ -144,8 +141,7 @@ struct ToolsAreaView: View {
             default:
                 textForEdit = nil
                 showNewTextInput = false
-                showVideoPicker = false
-                showPhoroPicker = false
+                showMediaPicker = false
                 showCamera = false
                 showImageCropper = false
                 showMusicPicker = false
@@ -173,10 +169,10 @@ struct ToolsAreaView: View {
             }
             .edgesIgnoringSafeArea(.all)
         }
-        .fullScreenCover(isPresented: $showPhoroPicker, content: {
-            PhotoPickerView(type: .image, needOriginal: false) { model in
+        .fullScreenCover(isPresented: $showMediaPicker) {
+            MediaPickerView(needOriginal: false) { model in
                 vm.tools.closeTools(false)
-                guard let model = model else { return }
+                guard let model else { return }
                 switch model.mediaType {
                 case .photo:
                     guard let image = model.image else { return }
@@ -186,30 +182,20 @@ struct ToolsAreaView: View {
                             asset: model.itemAsset
                         )
                     )
-                default: break
-                }
-            }
-            .edgesIgnoringSafeArea(.all)
-        })
-        .fullScreenCover(isPresented: $showVideoPicker, content: {
-            PhotoPickerView(type: .video, needOriginal: false) { model in
-                vm.tools.closeTools(false)
-                guard let model = model else { return }
-                switch model.mediaType {
                 case .video:
                     guard let url = model.url else { return }
-                    let videoModel = CanvasVideoModel(
-                        videoURL: url,
-                        thumbnail: model.image,
-                        asset: model.itemAsset,
-                        bounds: model.itemAsset?.bounds ?? .zero
+                    vm.data.add(
+                        CanvasVideoModel(
+                            videoURL: url,
+                            thumbnail: model.image,
+                            asset: model.itemAsset,
+                            bounds: model.itemAsset?.bounds ?? .zero
+                        )
                     )
-                    vm.data.add(videoModel)
                 default: break
                 }
             }
-            .edgesIgnoringSafeArea(.all)
-        })
+        }
         .fullScreenCover(isPresented: $showMusicPicker) {
             NativeMusicPicker { model in
                 vm.tools.closeTools(false)

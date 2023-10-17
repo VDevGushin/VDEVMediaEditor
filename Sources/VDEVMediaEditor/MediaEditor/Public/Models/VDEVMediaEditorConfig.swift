@@ -163,12 +163,13 @@ public protocol VDEVMediaEditorStrings {
     var close: String { get }
     var layers: String { get }
     var templatePack: String { get }
-    var addMedia: String { get }
     var challengeTitle: String { get }
     var shareOrSave: String { get }
     var template: String { get }
     var text: String { get }
     var stickersCustom: String { get }
+    var addMedia: String { get }
+    var addPhotoOrVideo: String { get }
     var addPhoto: String { get }
     var addVideo: String { get }
     var addMusic: String { get }

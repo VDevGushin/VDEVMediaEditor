@@ -235,6 +235,7 @@ struct Images: VDEVImageConfig {
 }
 
 struct Strings: VDEVMediaEditorStrings {
+    let addPhotoOrVideo = "MEDIA"
     let paste = "PASTE"
     let brightness = "BRIGHTNESS"
     let contrast = "CONTRAST"

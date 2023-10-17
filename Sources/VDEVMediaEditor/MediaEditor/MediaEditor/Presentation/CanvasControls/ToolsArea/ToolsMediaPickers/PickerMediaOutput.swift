@@ -9,6 +9,12 @@ import PhotosUI
 import MobileCoreServices
 import AVKit
 
+@globalActor
+struct GetMediaActor {
+  actor MediaActorType { }
+  static let shared: MediaActorType = MediaActorType()
+}
+
 enum PhotoPickerViewType {
     case video
     case image
@@ -41,15 +47,7 @@ struct PickerMediaOutput {
     }
 }
 
-@globalActor
-struct GetMediaActor {
-  actor MediaActorType { }
-  static let shared: MediaActorType = MediaActorType()
-}
-
-
 final class MediaPickerGetter {
-    
     @GetMediaActor
     func makeResult(
         info: [UIImagePickerController.InfoKey : Any],
@@ -73,14 +71,21 @@ final class MediaPickerGetter {
             
             let compressed = image.compressImage(compressionQuality: 0.1, longSize: 640)
             
-            return await .init(with: compressed, asset: .image(asset: nil, image: image))
+            return await .init(
+                with: compressed,
+                asset: .image(asset: nil, image: image)
+            )
         case String(UTType.movie.identifier):
             guard let videoURL = info[.mediaURL] as? URL else { return nil }
             let thumbnail = await generateThumbnail(path: videoURL)
-//            if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
-//                return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: asset, url: nil))
-//            }
-            return await .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: nil, url: videoURL))
+            //            if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
+            //                return .init(with: videoURL, thumbnail: thumbnail, videoAsset: .video(asset: asset, url: nil))
+            //            }
+            return await .init(
+                with: videoURL,
+                thumbnail: thumbnail,
+                videoAsset: .video(asset: nil, url: videoURL)
+            )
         default:
             return nil
         }

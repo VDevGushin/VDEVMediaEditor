@@ -75,32 +75,26 @@ struct MediaEditorToolsForTemplateView: View {
                 textForEdit = nil
             }
         })
-        .fullScreenCover(item: $vm.showPhotoPicker) { value in
+        .fullScreenCover(item: $vm.showMediaPicker) { value in
             switch value {
             case .compressed:
-                PhotoPickerView(type: .image, needOriginal: false) { result in
-                    vm.set(showPhotoPicker: nil)
+                MediaPickerView(needOriginal: false) { result in
+                    vm.set(showMediaPicker: nil)
                     vm.hideMediaPicker()
                     if let result = result {
                         vm.pickSelector?(result)
                     }
                 }
-            case .original:
-                PhotoPickerView(type: .image, needOriginal: true) { result in
-                    vm.set(showPhotoPicker: nil)
+            case .neural:
+                MediaPickerView(
+                    pickerType: .image,
+                    needOriginal: true
+                ) { result in
+                    vm.set(showMediaPicker: nil)
                     vm.hideMediaPicker()
                     if let result = result {
                         vm.pickSelector?(result)
                     }
-                }
-            }
-        }
-        .fullScreenCover(isPresented: $vm.showVideoPicker) {
-            PhotoPickerView(type: .video, needOriginal: true) { result in
-                vm.set(showVideoPicker: false)
-                vm.hideMediaPicker()
-                if let result = result {
-                    vm.pickSelector?(result)
                 }
             }
         }
@@ -117,29 +111,24 @@ private struct PickMediaContainer: View {
         } pasteImage: { result in
             vm.hideAllOverlayViews()
             vm.pickSelector?(result)
-        } pickPhoto: {
-            vm.set(showPhotoPicker: .compressed)
-        } pickVideo: {
-            vm.set(showVideoPicker: true)
+        } pickMedia: {
+            vm.set(showMediaPicker: .compressed)
         }
     }
     
     @ViewBuilder
-    func MediaPicker(onClose: @escaping () -> Void,
-                     pasteImage: @escaping (PickerMediaOutput) -> Void,
-                     pickPhoto: @escaping () -> Void,
-                     pickVideo: @escaping () -> Void) ->  some View {
-        let toolVideo = ToolItem.videoPicker
-        let toolImage = ToolItem.photoPicker
-       
+    func MediaPicker(
+        onClose: @escaping () -> Void,
+        pasteImage: @escaping (PickerMediaOutput) -> Void,
+        pickMedia: @escaping () -> Void
+    ) ->  some View {
         ToolSelectorHorizontalView(
-            tools: [toolImage, toolVideo],
+            tools: [ToolItem.mediaPicker],
             canPasteOnlyImages: true,
             onClose: onClose
         ) { item in
             switch item {
-            case .photoPicker: pickPhoto()
-            case .videoPicker: pickVideo()
+            case .mediaPicker: pickMedia()
             default: break
             }
         } onPasteImageFromGeneralPasteboard: { model in

@@ -11,8 +11,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
     // Тулзы, которые показываем в меню добавления новых слоев
     case template
     case stickers
-    case photoPicker // выбор только фоток
-    case videoPicker // выбор только видео
+    case mediaPicker
     case musicPiker // Выбор музыки
     case camera
     case drawing
@@ -38,8 +37,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         let settings = DI.resolve(VDEVMediaEditorSettings.self)
         
         var toolsItems: [ToolItem] = []
-        toolsItems.append(.photoPicker)
-        toolsItems.append(.videoPicker)
+        toolsItems.append(.mediaPicker)
         toolsItems.append(.camera)
         if settings.canAddMusic {
             toolsItems.append(.musicPiker)
@@ -55,8 +53,7 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
         switch self {
         case .template: return nil
         case .stickers: return nil
-        case .photoPicker: return nil
-        case .videoPicker: return nil
+        case .mediaPicker: return nil
         case .musicPiker: return nil
         case .camera: return nil
         case .drawing: return nil
@@ -84,10 +81,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return Strings.text
         case .stickers:
             return Strings.stickersCustom
-        case .photoPicker:
-            return Strings.addPhoto
-        case .videoPicker:
-            return Strings.addVideo
+        case .mediaPicker:
+            return Strings.addPhotoOrVideo
         case .musicPiker:
             return Strings.addMusic
         case .camera:
@@ -110,10 +105,8 @@ enum ToolItem: CaseIterable, Identifiable, Equatable {
             return images.typed.typeText
         case .stickers:
             return images.typed.typeStickers
-        case .photoPicker:
+        case .mediaPicker:
             return images.typed.typePhoto
-        case .videoPicker:
-            return images.typed.typeVideo
         case .musicPiker:
             return images.typed.typeVideo
         case .camera:

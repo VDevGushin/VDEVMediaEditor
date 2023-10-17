@@ -22,6 +22,10 @@ final class PasteboardService {
     var canPaste: Bool {
         pasteboard.hasImages || pasteboard.hasStrings || pasteboard.hasURLs
     }
+    
+    var canPasteImage: Bool {
+        pasteboard.hasImages
+    }
         
     func tryPaste(canPasteOnlyImages: Bool) -> PasteboardService.Result {
         guard canPaste else { return .empty }

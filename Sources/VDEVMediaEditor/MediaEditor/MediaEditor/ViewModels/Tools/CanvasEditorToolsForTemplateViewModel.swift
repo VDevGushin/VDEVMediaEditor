@@ -43,10 +43,10 @@ final class CanvasEditorToolsForTemplateViewModel:
     ObservableObject, CanvasEditorDelegate {
     
     @Injected private var settings: VDEVMediaEditorSettings
+    @Injected private var pasteboardService: PasteboardService
     
     @Published var state: State = .empty
-    @Published var showPhotoPicker: PhotoPickerType? = nil
-    @Published var showVideoPicker: Bool = false
+    @Published var showMediaPicker: PhotoPickerType? = nil
     @Published private(set) var isAnyViewOpen: Bool = false
     
     var baseChallengeId: String { settings.resourceID }
@@ -59,12 +59,10 @@ final class CanvasEditorToolsForTemplateViewModel:
     private var storage = Cancellables()
     
     init() {
-        Publishers.CombineLatest3(
-            $showPhotoPicker,
-            $showVideoPicker,
+        Publishers.CombineLatest(
+            $showMediaPicker,
             $state
-        ).map { ($0 != nil || $1 == true || $2 != .empty) }
-        // .removeDuplicates()
+        ).map { ($0 != nil || $1 != .empty) }
         .receiveOnMain()
         .sink(
             on: .main,
@@ -84,13 +82,23 @@ final class CanvasEditorToolsForTemplateViewModel:
         switch state {
         case .mediaPick: break
         default:
-            if workWithNeural {
+            // Если нужна работа с AI необходимо оригинал картинки
+            guard !workWithNeural else {
                 endWorkWithItem?()
-                set(showPhotoPicker: .original)
-            } else {
-                hideMediaPicker()
-                set(.mediaPick)
+                set(showMediaPicker: .neural)
+                return
             }
+            
+            // Если нет ничего для вставки (работает только с картинками)
+            guard pasteboardService.canPasteImage else {
+                endWorkWithItem?()
+                set(showMediaPicker: .compressed)
+                return
+            }
+            
+            // Показываем стандартный список [выбрать фото/видео, вставить картинку]
+            hideMediaPicker()
+            set(.mediaPick)
         }
     }
     
@@ -124,15 +132,9 @@ final class CanvasEditorToolsForTemplateViewModel:
         if state.id != 5 { set(.filter(item: item)) }
     }
     
-    func set(showPhotoPicker value: PhotoPickerType?) {
-        if self.showPhotoPicker != value {
-            showPhotoPicker = value
-        }
-    }
-    
-    func set(showVideoPicker value: Bool) {
-        if self.showVideoPicker != value {
-            showVideoPicker = value
+    func set(showMediaPicker value: PhotoPickerType?) {
+        if self.showMediaPicker != value {
+            showMediaPicker = value
         }
     }
     
@@ -181,9 +183,13 @@ extension CanvasEditorToolsForTemplateViewModel {
     }
     
     enum PhotoPickerType: Int, Identifiable, Equatable, Hashable {
-        case original = 0 // work with media and neural
+        case neural = 0 // work with media and neural
         case compressed = 1 // default work with media
-        var id: Int { self.rawValue }
+        
+        var id: Int {
+            self.rawValue
+        }
+        
         func hash(into hasher: inout Hasher) { hasher.combine(id) }
     }
 }

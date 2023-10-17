@@ -9,7 +9,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension View {
-    @ViewBuilder func isVisible(_ visible: Bool) -> some View {
+    @ViewBuilder
+    func isVisible(_ visible: Bool) -> some View {
         if visible {
             self
         } 
