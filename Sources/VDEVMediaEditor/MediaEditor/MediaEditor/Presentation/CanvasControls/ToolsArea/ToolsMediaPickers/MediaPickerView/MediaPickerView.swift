@@ -88,5 +88,6 @@ struct MediaPickerView: View {
             .animation(.easeInOut, value: segmentationSelection)
         }
         .edgesIgnoringSafeArea([.trailing, .leading, .bottom])
+        .background(.black)
     }
 }

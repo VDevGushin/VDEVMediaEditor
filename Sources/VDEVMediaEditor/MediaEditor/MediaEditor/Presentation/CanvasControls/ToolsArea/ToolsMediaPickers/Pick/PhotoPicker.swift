@@ -25,11 +25,13 @@ struct PhotoPickerView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = context.coordinator
+        imagePicker.view.backgroundColor = .clear
         return imagePicker
     }
 
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
         uiViewController.sourceType = .photoLibrary
+        uiViewController.view.backgroundColor = .clear
         switch type {
         case .image:
             uiViewController.mediaTypes = [UTType.image.identifier]
