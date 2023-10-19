@@ -562,6 +562,9 @@ extension ToolsAreaView {
         } tool: {
             ToolsAspectRatioView { result in
                 vm.ui.setAspectRatio(result)
+                // необходимо релод даты - бывает странно отрабатывает селектор размеров
+                // похоже на костыль
+                vm.data.reloadAll()
             }
             .padding(.horizontal)
             .environmentObject(vm.ui)

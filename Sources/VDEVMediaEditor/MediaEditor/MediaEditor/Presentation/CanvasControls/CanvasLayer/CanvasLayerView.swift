@@ -193,7 +193,7 @@ struct CanvasLayerView<Content: View>: View {
                 .onChange(of: size) { value in
                     vm.updateSize(value)
                 }
-                .frame($0.size)
+                .frame(width: $0.size.width, height: $0.size.height)
         }
         .onReceive(vm.manipulationWatcher.current) { value in
             //Если еще не было манипуляций ни с одним элементом нам надо разрешить действие

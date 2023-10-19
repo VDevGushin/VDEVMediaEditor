@@ -262,6 +262,14 @@ extension CanvasLayersDataViewModel {
     }
 }
 
+// - MARK: RELOADALL
+extension CanvasLayersDataViewModel {
+    func reloadAll() {
+        removeAll(withSave: true)
+        undo()
+    }
+}
+
 // - MARK: MEMENTO
 extension CanvasLayersDataViewModel: MementoObject {
     func undo() {
