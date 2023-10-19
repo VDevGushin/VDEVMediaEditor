@@ -19,7 +19,7 @@ struct MediaPickerView: View {
     
     private var containerCornerRadius: CGFloat = 8
     private let options: [Section] = [.photos, .videos]
-    private let insets: EdgeInsets = .zero
+    private let insets: EdgeInsets = .init(top: 4, leading: 4, bottom: 4, trailing: 4)
     private let interSegmentSpacing: CGFloat = 2
     private let needOriginal: Bool
     private let pickerType: MediaPickerViewType
