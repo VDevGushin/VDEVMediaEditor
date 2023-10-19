@@ -212,4 +212,6 @@ public protocol VDEVMediaEditorStrings {
     var flip: String { get }
     var vertical: String { get }
     var horizontal: String { get }
+    var photos: String { get }
+    var videos: String { get }
 }
