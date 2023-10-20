@@ -124,7 +124,7 @@ struct GestureOverlay<Content: View>: UIViewRepresentable {
         
         let Pinchgesture = UIPinchGestureRecognizer(target: context.coordinator, action: #selector(context.coordinator.handlePinch(sender:)))
         Pinchgesture.cancelsTouchesInView = true
-        Pinchgesture.delegate =  context.coordinator
+        Pinchgesture.delegate = context.coordinator
         hView.addGestureRecognizer(Pinchgesture)
         context.coordinator.pinchGest = Pinchgesture
         

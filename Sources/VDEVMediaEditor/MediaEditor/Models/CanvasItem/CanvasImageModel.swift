@@ -13,6 +13,7 @@ import Photos
 final class CanvasImageModel: CanvasItemModel {
     @Published private(set) var image: UIImage
     @Published private(set) var inProgress: ProgresOperationType?
+    @Injected private var processingWatcher: ItemProcessingWatcher
     
     private(set) var asset: CanvasItemAsset?
     private(set) var originalImage: UIImage
@@ -106,6 +107,8 @@ private extension CanvasImageModel {
             image: image
         )
         
+        processingWatcher.startAIProcessing(item: self)
+        
         aplayer
             .applyFilters(
                 for: originalImage,
@@ -129,6 +132,9 @@ private extension CanvasImageModel {
                     wSelf.image = wSelf.originalImage
                 }
                 wSelf.inProgress = nil
+                if wSelf.imageWithNeural != nil {
+                    wSelf.processingWatcher.finishAIProcessing(item: wSelf)
+                }
             }
             .store(in: &storage)
     }

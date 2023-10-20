@@ -9,9 +9,13 @@ import SwiftUI
 import Combine
 
 private final class CanvasLayerViewModel: ObservableObject {
+    @Injected private var processingWatcher: ItemProcessingWatcher
+    
     @Published var offset: CGSize = .zero
     @Published var scale: CGFloat = 1
     @Published var rotation: Angle = .zero
+    
+    private(set) var itemRevision: UUID = UUID()
     
     unowned let item: CanvasItemModel
     weak var memento: MementoObject? // for save state
@@ -36,6 +40,22 @@ private final class CanvasLayerViewModel: ObservableObject {
             let rotation = result.2
             wSelf.item.update(offset: offset, scale: scale, rotation: rotation)
         }
+        
+        watcherOperation = processingWatcher
+            .inAIProcessing
+            .sink(
+                on: .main,
+                object: self
+            ) { wSelf, value in
+                switch value.state {
+                case .finished:
+                    if wSelf.item == value.item {
+                        wSelf.itemRevision = UUID()
+                    }
+                case .processing, .notDetermined:
+                    break
+                }
+            }
     }
     
     // фактический размер итема на канвасе(для комбайна видосов)
@@ -132,6 +152,7 @@ struct CanvasLayerView<Content: View>: View {
                     onEdit?(vm.item)
                     haptics(.light)
                 } canManipulate: { canManipulate }
+                .id(vm.itemRevision)
                 .overlay(content: HorizontOverlay)
                 .background(selectionColor)
                 .border(guideLinesColor.opacity(0.5),
