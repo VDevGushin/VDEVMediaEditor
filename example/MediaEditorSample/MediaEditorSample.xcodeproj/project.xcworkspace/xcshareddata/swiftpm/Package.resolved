@@ -10,15 +10,6 @@
       }
     },
     {
-      "identity" : "backgroundremoval",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Ezaldeen99/BackgroundRemoval.git",
-      "state" : {
-        "revision" : "bac5ad72b68850ca583581106793be29c19f41e9",
-        "version" : "0.1.0"
-      }
-    },
-    {
       "identity" : "collectionconcurrencykit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/JohnSundell/CollectionConcurrencyKit.git",

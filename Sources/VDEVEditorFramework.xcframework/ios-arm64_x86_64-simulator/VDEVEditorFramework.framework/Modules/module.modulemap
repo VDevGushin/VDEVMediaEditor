@@ -1,0 +1,11 @@
+framework module VDEVEditorFramework {
+  umbrella header "VDEVEditorFramework.h"
+  export *
+
+  module * { export * }
+}
+
+module VDEVEditorFramework.Swift {
+  header "VDEVEditorFramework-Swift.h"
+  requires objc
+}

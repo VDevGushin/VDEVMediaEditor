@@ -15,39 +15,42 @@ let package = Package(
             targets: ["VDEVMediaEditor"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/onevcat/Kingfisher.git",
-                 .upToNextMajor(from: "7.9.1")),
-        
-        .package(url: "https://github.com/guoyingtao/Mantis.git",
-                 from: "2.14.1"),
-        
-        .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", .upToNextMajor(from: "1.0.0")),
-        
-        .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", .upToNextMajor(from: "0.2.0")),
-        
-        .package(url: "https://github.com/SwiftUIX/SwiftUIX",
-                 .upToNextMajor(from: "0.1.7")),
-        
-        .package(url: "https://github.com/Ezaldeen99/BackgroundRemoval.git",
-                 from: "0.1.0"),
+        .package(
+            url: "https://github.com/onevcat/Kingfisher.git",
+            from: "7.9.1"
+        ),
+        .package(
+            url: "https://github.com/guoyingtao/Mantis.git",
+            from: "2.14.1"
+        ),
+        .package(
+            url: "https://github.com/pointfreeco/swift-identified-collections.git",
+            from: "1.0.0"
+        ),
+        .package(
+            url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git",
+            from: "0.2.0"
+        ),
+        .package(
+            url: "https://github.com/SwiftUIX/SwiftUIX",
+            from: "0.1.7"
+        ),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "VDEVMediaEditor",
-            dependencies: ["Kingfisher",
-                           "Mantis",
-                           // "YPImagePicker",
-                           "SwiftUIX",
-                           "CollectionConcurrencyKit",
-                           .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
-                           "BackgroundRemoval",
-                          ],
-            resources: [.process("Resources")]
+            dependencies: [
+                .byName(name: "VDEVEditorFramework"),
+                "Kingfisher",
+                "Mantis",
+                "SwiftUIX",
+                "CollectionConcurrencyKit",
+                .product(name: "IdentifiedCollections", package: "swift-identified-collections")
+            ]
         ),
-        .testTarget(
-            name: "VDEVMediaEditorTests",
-            dependencies: ["VDEVMediaEditor"]),
+        .binaryTarget(
+            name: "VDEVEditorFramework",
+            path: "Sources/VDEVEditorFramework.xcframework"
+        )
     ]
 )

@@ -17,20 +17,29 @@ extension VDEVMediaEditorConfig {
         let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
        // let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
         //let id = "d32cb5c8-5810-437a-a895-1ca43983d253"
-        return .init(settings: EditorSettings(id, sourceService: source),
-                  networkService: source,
-                  images: Images(),
-                  strings: Strings(),
-                  resultSettings: ResultSettings(),
-                  logger: Logger(),
-        networkModulesConfig: [Imge2ImageModuleConfig()])
+        return .init(
+            security: Security(),
+            settings: EditorSettings(id, sourceService: source),
+            networkService: source,
+            images: Images(),
+            strings: Strings(),
+            resultSettings: ResultSettings(),
+            logger: Logger(),
+            networkModulesConfig: [Imge2ImageModuleConfig()]
+        )
+    }
+}
+
+struct Security: VDEVMediaEditorSecurity {
+    var apiKey: String {
+        "71176eac-70c6-4bd3-8a93-f738506a7fd2_sample"
     }
 }
 
 struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
     //Продакшн: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/app/image-to-image`
     //Test: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/test/image-to-image`
-    var type: VDEVMediaEditor.VDEVNetworkModuleConfigType = .image2image
+    var type: VDEVNetworkModuleConfigType = .image2image
     var host: String = "app.w1d1.com"
     var path: String = "/api/v2/fileProcessing/stable-diffusion/app/image-to-image"
     var headers: [String : String]? = [

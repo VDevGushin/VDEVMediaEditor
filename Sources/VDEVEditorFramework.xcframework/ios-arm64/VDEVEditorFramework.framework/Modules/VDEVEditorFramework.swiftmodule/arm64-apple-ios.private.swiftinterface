@@ -1,0 +1,897 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-module-flags: -target arm64-apple-ios15.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name VDEVEditorFramework
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import AVFoundation
+import AVKit
+import CoreImage.CIFilterBuiltins
+import CollectionConcurrencyKit
+import Combine
+import CoreGraphics
+import CoreImage
+import DeveloperToolsSupport
+import Foundation
+import IdentifiedCollections
+import Kingfisher
+import Mantis
+import MediaPlayer
+import MobileCoreServices
+import PencilKit
+import Photos
+import PhotosUI
+import Swift
+import SwiftUI
+import SwiftUIX
+import UIKit
+import UniformTypeIdentifiers
+@_exported import VDEVEditorFramework
+import _AVKit_SwiftUI
+import _Concurrency
+import _PhotosUI_SwiftUI
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum BlendingMode : Swift.String {
+  case addition
+  case color
+  case colorBurn
+  case colorDodge
+  case darken
+  case difference
+  case divide
+  case exclusion
+  case hardLight
+  case hue
+  case lighten
+  case linearBurn
+  case linearDodge
+  case luminosity
+  case maximum
+  case minimum
+  case multiplyBlendMode
+  case multiply
+  case overlay
+  case pinLight
+  case saturation
+  case screen
+  case softLight
+  case sourceAtop
+  case sourceIn
+  case sourceOut
+  case sourceOver
+  case subtract
+  public static let normal: VDEVEditorFramework.BlendingMode
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension VDEVEditorFramework.BlendingMode {
+  public var ciFilter: CoreImage.CIFilter {
+    get
+  }
+}
+extension VDEVEditorFramework.BlendingMode {
+  public var swiftUI: SwiftUI.BlendMode {
+    get
+  }
+}
+extension Swift.Array where Element : Swift.Comparable {
+  public func argmax() -> (Swift.Int, Element)
+  public func argsort(by areInIncreasingOrder: (Element, Element) -> Swift.Bool) -> [Swift.Array<Element>.Index]
+  public func gather(indices: [Swift.Array<Element>.Index]) -> [Element]
+}
+public struct MediaPickerSegmentControl<Option, SelectionView, SegmentContent> : SwiftUI.View where Option : Swift.Hashable, Option : Swift.Identifiable, SelectionView : SwiftUI.View, SegmentContent : SwiftUI.View {
+  public init(selection: SwiftUI.Binding<Option>, options: [Option], selectionView: @escaping () -> SelectionView, @SwiftUI.ViewBuilder segmentContent: @escaping (Option, Swift.Bool) -> SegmentContent)
+  @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s19VDEVEditorFramework25MediaPickerSegmentControlV4bodyQrvp", 0) __<Option, SelectionView, SegmentContent>
+}
+extension VDEVEditorFramework.MediaPickerSegmentControl {
+  public init(selection: SwiftUI.Binding<Option>, options: [Option], selectionView: SelectionView, @SwiftUI.ViewBuilder segmentContent: @escaping (Option, Swift.Bool) -> SegmentContent)
+}
+extension VDEVEditorFramework.MediaPickerSegmentControl {
+  public func segmentAccessibilityValue(_ completion: @escaping (Swift.Int, Swift.Int) -> Swift.String) -> VDEVEditorFramework.MediaPickerSegmentControl<Option, SelectionView, SegmentContent>
+}
+public struct PlaceholdersKeys {
+  public let challengeTitle: Swift.String
+}
+public let kPlaceholders: VDEVEditorFramework.PlaceholdersKeys
+@_Concurrency.MainActor public class TemplatePack : Combine.ObservableObject {
+  @_Concurrency.MainActor final public let isAttached: Swift.Bool
+  @_Concurrency.MainActor final public let variants: [VDEVEditorFramework.TemplatePack.Variant]
+  @_Concurrency.MainActor public init(id: Swift.String, name: Swift.String, cover: Foundation.URL?, isAttached: Swift.Bool, variants: [VDEVEditorFramework.TemplatePack.Variant])
+  public struct Variant {
+    public struct Item {
+      public struct FontPreset {
+        public init(fontSize: CoreFoundation.CGFloat, textStyle: VDEVEditorFramework.CanvasTextStyle, verticalAlignment: Swift.Int, textAlignment: Swift.Int, color: UIKit.UIColor)
+      }
+      public init(blendingMode: VDEVEditorFramework.BlendingMode, filters: [VDEVEditorFramework.EditorFilter], isLocked: Swift.Bool, isMovable: Swift.Bool, text: Swift.String, placeholderText: Swift.String, url: Foundation.URL?, rect: CoreFoundation.CGRect, fontPreset: VDEVEditorFramework.TemplatePack.Variant.Item.FontPreset?)
+    }
+    public let items: [VDEVEditorFramework.TemplatePack.Variant.Item]
+    public init(items: [VDEVEditorFramework.TemplatePack.Variant.Item], id: Swift.String, cover: Foundation.URL?)
+  }
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+extension Combine.AnyPublisher {
+  @inlinable internal static func single<T, F>(_ value: T) -> Combine.AnyPublisher<T, F> where F : Swift.Error {
+        Just(value).setFailureType(to: F.self).eraseToAnyPublisher()
+    }
+  @inlinable internal static func fail<T, F>(_ value: F) -> Combine.AnyPublisher<T, F> where F : Swift.Error {
+        Fail(error: value).eraseToAnyPublisher()
+    }
+}
+extension Combine.Publisher {
+  @inlinable public func receiveOnMain() -> Combine.Publishers.ReceiveOn<Self, Dispatch.DispatchQueue> {
+        receive(on: DispatchQueue.main)
+    }
+  @inlinable public func receiveOnGlobal(_ qos: Dispatch.DispatchQoS.QoSClass = .default) -> Combine.Publishers.ReceiveOn<Self, Dispatch.DispatchQueue> {
+        receive(on: DispatchQueue.global(qos: qos))
+    }
+}
+public protocol ApiOperation {
+  associatedtype Response : Swift.Decodable
+  var path: Swift.String { get }
+  var method: VDEVEditorFramework.HTTPMethod { get }
+  var params: [Swift.String : Swift.String] { get }
+  var headers: [Swift.String : Swift.String]? { get }
+  var scheme: Swift.String? { get }
+  var host: Swift.String? { get }
+  var token: Swift.String? { get set }
+  var timeOut: Foundation.TimeInterval { get }
+  mutating func update(token: Swift.String?) -> Self
+}
+extension VDEVEditorFramework.ApiOperation {
+  public mutating func update(token: Swift.String?) -> Self
+  public var timeOut: Foundation.TimeInterval {
+    get
+  }
+  public var headers: [Swift.String : Swift.String]? {
+    get
+  }
+  public var scheme: Swift.String? {
+    get
+  }
+  public var host: Swift.String? {
+    get
+  }
+  public var params: [Swift.String : Swift.String] {
+    get
+  }
+}
+public protocol ApiOperationWithBody : VDEVEditorFramework.ApiOperation {
+  associatedtype Body : Swift.Encodable
+  var encoder: Foundation.JSONEncoder { get }
+  var body: Self.Body { get }
+}
+public protocol ApiOperationWithMultipartRequest : VDEVEditorFramework.ApiOperation where Self.Response == Foundation.Data {
+  var multipartRequest: VDEVEditorFramework.MultipartRequest { get }
+}
+extension VDEVEditorFramework.ApiOperationWithBody {
+  public var method: VDEVEditorFramework.HTTPMethod {
+    get
+  }
+}
+extension VDEVEditorFramework.ApiOperationWithMultipartRequest {
+  public var method: VDEVEditorFramework.HTTPMethod {
+    get
+  }
+}
+extension Swift.String : Swift.Error, Foundation.LocalizedError {
+  public var localizedDescription: Swift.String {
+    get
+  }
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public struct VDEVDataBuilder {
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func stickers() async -> [(Swift.String, [VDEVEditorFramework.StickerItem])]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func masks() async -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func textures() async -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func filters() async -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func templates(canvasSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack]
+  #endif
+}
+extension VDEVEditorFramework.MediaPickerSegmentControl {
+  public func insets(_ insets: SwiftUI.EdgeInsets) -> some SwiftUI.View
+  
+  public func insets(top: CoreFoundation.CGFloat? = nil, leading: CoreFoundation.CGFloat? = nil, bottom: CoreFoundation.CGFloat? = nil, trailing: CoreFoundation.CGFloat? = nil) -> some SwiftUI.View
+  
+  public func insets(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreFoundation.CGFloat? = nil) -> some SwiftUI.View
+  
+}
+extension SwiftUI.View {
+  public func segmentedControl(interSegmentSpacing: CoreFoundation.CGFloat) -> some SwiftUI.View
+  
+  public func segmentedControlContentStyle(_ style: VDEVEditorFramework.CustomizableSegmentedControlContentStyle) -> some SwiftUI.View
+  
+  public func segmentedControlSlidingAnimation(_ animation: SwiftUI.Animation) -> some SwiftUI.View
+  
+}
+public struct MultipartRequest {
+  public let boundary: Swift.String
+  public init(boundary: Swift.String = UUID().uuidString)
+  public mutating func add(key: Swift.String, value: Swift.String)
+  public mutating func add(key: Swift.String, fileName: Swift.String, fileMimeType: Swift.String, fileData: Foundation.Data)
+  public var httpContentTypeHeadeValue: Swift.String {
+    get
+  }
+  public var httpBody: Foundation.Data {
+    get
+  }
+}
+public protocol VDEVMediaEditorResultSettings : AnyObject {
+  var needAutoEnhance: Combine.CurrentValueSubject<Swift.Bool, Swift.Never> { get set }
+  var maximumVideoDuration: Swift.Double { get }
+  var resolution: VDEVEditorFramework.VDEVMediaResolution { get }
+}
+public protocol VDEVMediaEditorSettings {
+  var showNeuralFilters: Swift.Bool { get }
+  var canUndo: Swift.Bool { get }
+  var canShowOnboarding: Swift.Bool { get }
+  var canRemoveAllLayers: Swift.Bool { get }
+  var canMergeAllLayers: Swift.Bool { get }
+  var maximumLayers: Swift.Int { get }
+  var historyLimit: Swift.Int { get }
+  var needGuideLinesGrid: Swift.Bool { get }
+  var isInternalModule: Swift.Bool { get }
+  var aspectRatio: CoreFoundation.CGFloat? { get }
+  var showAspectRatioSettings: Swift.Bool { get }
+  var showCommonSettings: Swift.Bool { get }
+  var canTurnOnSoundInVideos: Swift.Bool { get }
+  var canAddMusic: Swift.Bool { get }
+  var сanRemoveOrChangeTemplate: Swift.Bool { get }
+  var resourceID: Swift.String { get }
+  var title: Swift.String { get }
+  var subTitle: Swift.String? { get }
+  var withAttach: Swift.Bool { get }
+  var sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService { get }
+  var isLoading: Combine.CurrentValueSubject<Swift.Bool, Swift.Never> { get }
+  func getStartTemplate(for size: CoreFoundation.CGSize, completion: @escaping ([VDEVEditorFramework.TemplatePack.Variant.Item]?) -> Swift.Void)
+}
+public protocol ApiClient : VDEVEditorFramework.BaseApiClient {
+  func execute<Operation>(_ operation: Operation) -> Combine.AnyPublisher<Operation.Response, any Swift.Error> where Operation : VDEVEditorFramework.ApiOperation
+  func execute<Operation>(_ operation: Operation) -> Combine.AnyPublisher<Operation.Response, any Swift.Error> where Operation : VDEVEditorFramework.ApiOperationWithBody
+  #if compiler(>=5.3) && $AsyncAwait
+  func execute<Operation>(_ operation: Operation) async throws -> Operation.Response where Operation : VDEVEditorFramework.ApiOperationWithMultipartRequest
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func execute<Operation>(_ operation: Operation) async throws -> Operation.Response where Operation : VDEVEditorFramework.ApiOperation
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func execute<Operation>(_ operation: Operation) async throws -> Operation.Response where Operation : VDEVEditorFramework.ApiOperationWithBody
+  #endif
+}
+final public class ApiClientImpl : VDEVEditorFramework.ApiClient {
+  final public var host: Swift.String {
+    get
+  }
+  final public var decoder: Foundation.JSONDecoder
+  final public var scheme: Swift.String {
+    get
+  }
+  public init(host: Swift.String)
+  final public func execute<Operation>(_ operation: Operation) -> Combine.AnyPublisher<Operation.Response, any Swift.Error> where Operation : VDEVEditorFramework.ApiOperation
+  final public func execute<Operation>(_ operation: Operation) -> Combine.AnyPublisher<Operation.Response, any Swift.Error> where Operation : VDEVEditorFramework.ApiOperationWithBody
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func execute<Operation>(_ operation: Operation) async throws -> Operation.Response where Operation : VDEVEditorFramework.ApiOperationWithMultipartRequest
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func execute<Operation>(_ operation: Operation) async throws -> Operation.Response where Operation : VDEVEditorFramework.ApiOperation
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func execute<Operation>(_ operation: Operation) async throws -> Operation.Response where Operation : VDEVEditorFramework.ApiOperationWithBody
+  #endif
+  @objc deinit
+}
+extension Combine.Publisher {
+  @inlinable public func sink<Root, Output>(on queue: Dispatch.DispatchQueue = .main, object: Root, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Self.Failure == Swift.Never {
+        receive(on: queue)
+            .withUnretained(object)
+            .sink { root, value in
+                receiveValue(root, value)
+            }
+    }
+  @inlinable public func sink<Root, Output, Failure>(on queue: Dispatch.DispatchQueue = .main, object: Root, failure: Failure, receiveCompletion: @escaping (Root, Combine.Subscribers.Completion<Failure>) -> Swift.Void, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Failure == Self.Failure {
+        receive(on: queue)
+            .withUnretained(object, failure: failure)
+            .sink { [weak object] completion in
+                guard let object = object else { return }
+                receiveCompletion(object, completion)
+            } receiveValue: { root, value in
+                receiveValue(root, value)
+            }
+    }
+  @inlinable public func sink<Root, Output>(_ object: Root, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Self.Failure == Swift.Never {
+        withUnretained(object)
+            .sink { root, value in
+                receiveValue(root, value)
+            }
+    }
+  @inlinable public func sink<Root, Output, Failure>(_ object: Root, failure: Failure, receiveCompletion: @escaping (Root, Combine.Subscribers.Completion<Failure>) -> Swift.Void, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Failure == Self.Failure {
+        withUnretained(object, failure: failure)
+            .sink { [weak object] completion in
+                guard let object = object else { return }
+                receiveCompletion(object, completion)
+            } receiveValue: { root, value in
+                receiveValue(root, value)
+            }
+    }
+  @inlinable public func withUnretained<T, Output, Failure>(_ object: T, failure: Failure) -> Combine.AnyPublisher<(T, Self.Output), Self.Failure> where T : AnyObject, Output == Self.Output, Failure == Self.Failure {
+        flatMap {  [weak object] element -> AnyPublisher<(T, Output), Failure> in
+            guard let object = object else {
+                return AnyPublisher<(T, Output), Failure>.fail(failure)
+            }
+            return AnyPublisher<(T, Output), Failure>.single((object, element))
+        }
+        .eraseToAnyPublisher()
+    }
+  @inlinable public func withUnretained<T, Output>(_ object: T) -> Combine.Publishers.CompactMap<Self, (T, Self.Output)> where T : AnyObject, Output == Self.Output, Self.Failure == Swift.Never {
+        compactMap { [weak object] output in
+            guard let object = object else {
+                return nil
+            }
+            return (object, output)
+        }
+    }
+  @inlinable public func weakAssign<Root, Output>(to keyPath: Swift.ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output {
+        sink { _ in
+            //
+        } receiveValue: { [weak object] value in
+            object?[keyPath: keyPath] = value
+        }
+    }
+  @inlinable public func weakAssign<Root, Output>(to keyPath: Swift.ReferenceWritableKeyPath<Root, Output?>, on object: Root) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output {
+        sink { _ in
+            //
+        } receiveValue: { [weak object] value in
+            object?[keyPath: keyPath] = value
+        }
+    }
+  @inlinable public func weakAssign<Root, Output>(to keyPath: Swift.ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Self.Failure == Swift.Never {
+        sink { [weak object] value in
+            object?[keyPath: keyPath] = value
+        }
+    }
+  @inlinable public func weakAssign<Root, Output>(to keyPath: Swift.ReferenceWritableKeyPath<Root, Output?>, on object: Root) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Self.Failure == Swift.Never {
+        sink { [weak object] value in
+            object?[keyPath: keyPath] = value
+        }
+    }
+}
+public struct NeuralEditorFilter : Swift.Equatable {
+  public init(id: Swift.String, name: Swift.String, cover: Foundation.URL?, steps: [VDEVEditorFramework.NeuralEditorFilter.Step])
+  public static func == (lhs: VDEVEditorFramework.NeuralEditorFilter, rhs: VDEVEditorFramework.NeuralEditorFilter) -> Swift.Bool
+  public struct Step {
+    public init?(id: Swift.String?, filterID: Swift.String?, url: Foundation.URL?, settings: VDEVEditorFramework.NeuralEditorFilter.StepSettings? = nil, neuralConfig: VDEVEditorFramework.NeuralConfig?)
+  }
+  @dynamicMemberLookup final public class StepSettings {
+    final public var rawValue: [Swift.String : Any] {
+      get
+    }
+    public init(jsonValue value: Any)
+    final public subscript(dynamicMember member: Swift.String) -> VDEVEditorFramework.NeuralEditorFilter.StepSettings? {
+      get
+    }
+    final public subscript<T>(dynamicMember member: Swift.String) -> T? {
+      get
+    }
+    @objc deinit
+  }
+}
+public protocol BaseApiClient {
+  var scheme: Swift.String { get }
+  var host: Swift.String { get }
+  var decoder: Foundation.JSONDecoder { get }
+}
+extension VDEVEditorFramework.BaseApiClient {
+  public func makeURLRequest<Operation>(operation: Operation) -> Foundation.URLRequest where Operation : VDEVEditorFramework.ApiOperation
+  public func makeURLRequest<Operation>(operation: Operation) -> Foundation.URLRequest where Operation : VDEVEditorFramework.ApiOperationWithBody
+  public func makeURLRequest<Operation>(operation: Operation) -> Foundation.URLRequest where Operation : VDEVEditorFramework.ApiOperationWithMultipartRequest
+}
+public enum VDEVMediaResolution {
+  case ultraHD8k
+  case ultraHD4k
+  case fullHD
+  case hd
+  case sd
+  public static func == (a: VDEVEditorFramework.VDEVMediaResolution, b: VDEVEditorFramework.VDEVMediaResolution) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension ImageIO.CGImagePropertyOrientation {
+  public init(_ orientation: UIKit.UIImage.Orientation)
+}
+extension ImageIO.CGImagePropertyOrientation {
+  public init(_ orientation: UIKit.UIDeviceOrientation)
+}
+final public class VDEVMediaEditorViewModel : Combine.ObservableObject {
+  public init(config: VDEVEditorFramework.VDEVMediaEditorConfig)
+  @objc deinit
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+}
+@_Concurrency.MainActor(unsafe) public struct VDEVMediaEditorView : SwiftUI.View {
+  @_Concurrency.MainActor(unsafe) public init(vm: VDEVEditorFramework.VDEVMediaEditorViewModel, onPublish: (@_Concurrency.MainActor (VDEVEditorFramework.CombinerOutput) -> Swift.Void)? = nil, onClose: (@_Concurrency.MainActor () -> Swift.Void)? = nil)
+  @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s19VDEVEditorFramework19VDEVMediaEditorViewV4bodyQrvp", 0) __
+}
+public struct ReorderableForEach<Data, Content> : SwiftUI.View where Data : Swift.Hashable, Data : Swift.Identifiable, Content : SwiftUI.View {
+  public init(_ data: SwiftUI.Binding<IdentifiedCollections.IdentifiedArrayOf<Data>>, allowReordering: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder content: @escaping (Data, Swift.Bool) -> Content, completion: @escaping () -> Swift.Void)
+  @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s19VDEVEditorFramework18ReorderableForEachV4bodyQrvp", 0) __<Data, Content>
+}
+public struct VDEVMediaEditorConfig {
+  public init(security: any VDEVEditorFramework.VDEVMediaEditorSecurity, settings: any VDEVEditorFramework.VDEVMediaEditorSettings, networkService: any VDEVEditorFramework.VDEVMediaEditorSourceService, images: any VDEVEditorFramework.VDEVImageConfig, strings: any VDEVEditorFramework.VDEVMediaEditorStrings, resultSettings: any VDEVEditorFramework.VDEVMediaEditorResultSettings, logger: (any VDEVEditorFramework.VDEVLogger)? = nil, networkModulesConfig: [any VDEVEditorFramework.VDEVNetworkModuleConfig])
+}
+public protocol VDEVMediaEditorSecurity {
+  var apiKey: Swift.String { get }
+}
+public protocol VDEVImageConfig {
+  var common: any VDEVEditorFramework.VDEVMediaEditorButtonsCommonImages { get }
+  var currentItem: any VDEVEditorFramework.VDEVMediaEditorButtonsCurrentItemImages { get }
+  var textEdit: any VDEVEditorFramework.VDEVMediaEditorButtonsTextEditingImages { get }
+  var typed: any VDEVEditorFramework.VDEVMediaEditorButtonsTypedImages { get }
+  var adjustments: any VDEVEditorFramework.VDEVAdjustmentsButtonsCommonImages { get }
+}
+public protocol VDEVAdjustmentsButtonsCommonImages {
+  var blur: UIKit.UIImage { get }
+  var brightness: UIKit.UIImage { get }
+  var color: UIKit.UIImage { get }
+  var contrast: UIKit.UIImage { get }
+  var fade: UIKit.UIImage { get }
+  var highlights: UIKit.UIImage { get }
+  var magic: UIKit.UIImage { get }
+  var mask: UIKit.UIImage { get }
+  var saturation: UIKit.UIImage { get }
+  var shadows: UIKit.UIImage { get }
+  var sharpen: UIKit.UIImage { get }
+  var sliderThumb: UIKit.UIImage { get }
+  var structure: UIKit.UIImage { get }
+  var temperature: UIKit.UIImage { get }
+  var vignette: UIKit.UIImage { get }
+  var flip: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorButtonsCommonImages {
+  var add: UIKit.UIImage { get }
+  var addMediaM: UIKit.UIImage { get }
+  var backArrow: UIKit.UIImage { get }
+  var bg: UIKit.UIImage { get }
+  var close: UIKit.UIImage { get }
+  var fontBGSelect: UIKit.UIImage { get }
+  var fontSelect: UIKit.UIImage { get }
+  var photoVideoCapture: UIKit.UIImage { get }
+  var iGStories: UIKit.UIImage { get }
+  var layers: UIKit.UIImage { get }
+  var share: UIKit.UIImage { get }
+  var xmark: UIKit.UIImage { get }
+  var resultGradient: UIKit.UIImage { get }
+  var undo: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorButtonsCurrentItemImages {
+  var currentIteDublicate: UIKit.UIImage { get }
+  var currentItemAdjustments: UIKit.UIImage { get }
+  var currentItemBringToBottom: UIKit.UIImage { get }
+  var currentItemBringToTop: UIKit.UIImage { get }
+  var currentItemCrop: UIKit.UIImage { get }
+  var currentItemDown: UIKit.UIImage { get }
+  var currentItemEditText: UIKit.UIImage { get }
+  var currentItemFilter: UIKit.UIImage { get }
+  var currentItemMask: UIKit.UIImage { get }
+  var currentItemReset: UIKit.UIImage { get }
+  var currentItemRM: UIKit.UIImage { get }
+  var currentItemRMBack: UIKit.UIImage { get }
+  var currentItemTexture: UIKit.UIImage { get }
+  var currentItemUp: UIKit.UIImage { get }
+  var currentItemMerge: UIKit.UIImage { get }
+  var currentItemSoundON: UIKit.UIImage { get }
+  var currentItemSoundOFF: UIKit.UIImage { get }
+  var currentItemAIFilter: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorButtonsTextEditingImages {
+  var textEditingAlignCenter: UIKit.UIImage { get }
+  var textEditingAlignLeft: UIKit.UIImage { get }
+  var textEditingAlignRight: UIKit.UIImage { get }
+  var textEditingColorSelectIcon: UIKit.UIImage { get }
+  var textEditingRemoveText: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorButtonsTypedImages {
+  var typeCamera: UIKit.UIImage { get }
+  var typeDraw: UIKit.UIImage { get }
+  var typePaste: UIKit.UIImage { get }
+  var typePhoto: UIKit.UIImage { get }
+  var typeStickers: UIKit.UIImage { get }
+  var typeTemplate: UIKit.UIImage { get }
+  var typeText: UIKit.UIImage { get }
+  var typeVideo: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorStrings {
+  var paste: Swift.String { get }
+  var brightness: Swift.String { get }
+  var contrast: Swift.String { get }
+  var saturation: Swift.String { get }
+  var highlight: Swift.String { get }
+  var shadow: Swift.String { get }
+  var blurRadius: Swift.String { get }
+  var alpha: Swift.String { get }
+  var sharpen: Swift.String { get }
+  var `default`: Swift.String { get }
+  var mask: Swift.String { get }
+  var filter: Swift.String { get }
+  var texture: Swift.String { get }
+  var adjustments: Swift.String { get }
+  var crop: Swift.String { get }
+  var removeBack: Swift.String { get }
+  var editText: Swift.String { get }
+  var dublicate: Swift.String { get }
+  var reset: Swift.String { get }
+  var remove: Swift.String { get }
+  var up: Swift.String { get }
+  var down: Swift.String { get }
+  var bringToTop: Swift.String { get }
+  var bringToBottom: Swift.String { get }
+  var selectMedia: Swift.String { get }
+  var colorFilter: Swift.String { get }
+  var neuralFilter: Swift.String { get }
+  var close: Swift.String { get }
+  var layers: Swift.String { get }
+  var templatePack: Swift.String { get }
+  var challengeTitle: Swift.String { get }
+  var shareOrSave: Swift.String { get }
+  var template: Swift.String { get }
+  var text: Swift.String { get }
+  var stickersCustom: Swift.String { get }
+  var addMedia: Swift.String { get }
+  var addPhotoOrVideo: Swift.String { get }
+  var addPhoto: Swift.String { get }
+  var addVideo: Swift.String { get }
+  var addMusic: Swift.String { get }
+  var promptImageGenerate: Swift.String { get }
+  var camera: Swift.String { get }
+  var drawing: Swift.String { get }
+  var background: Swift.String { get }
+  var error: Swift.String { get }
+  var ok: Swift.String { get }
+  var publish: Swift.String { get }
+  var see: Swift.String { get }
+  var answers: Swift.String { get }
+  var defaultPlaceholder: Swift.String { get }
+  var delete: Swift.String { get }
+  var done: Swift.String { get }
+  var `continue`: Swift.String { get }
+  var processing: Swift.String { get }
+  var loading: Swift.String { get }
+  var applied: Swift.String { get }
+  var templates: Swift.String { get }
+  var merge: Swift.String { get }
+  var removeAllLayersTitle: Swift.String { get }
+  var removeAllLayersSubTitle: Swift.String { get }
+  var confirm: Swift.String { get }
+  var cancel: Swift.String { get }
+  var aspectRatio: Swift.String { get }
+  var resolution: Swift.String { get }
+  var settings: Swift.String { get }
+  var quality: Swift.String { get }
+  var questionQualityImage: Swift.String { get }
+  var sound: Swift.String { get }
+  var hint: Swift.String { get }
+  var submit: Swift.String { get }
+  var random: Swift.String { get }
+  var doingSomeMagic: Swift.String { get }
+  var none: Swift.String { get }
+  var temperature: Swift.String { get }
+  var vignette: Swift.String { get }
+  var radius: Swift.String { get }
+  var flip: Swift.String { get }
+  var vertical: Swift.String { get }
+  var horizontal: Swift.String { get }
+  var photos: Swift.String { get }
+  var videos: Swift.String { get }
+}
+public struct StartMetaConfig {
+  public let isAttachedTemplate: Swift.Bool
+  public let title: Swift.String
+  public let subTitle: Swift.String
+  public init(isAttachedTemplate: Swift.Bool, title: Swift.String, subTitle: Swift.String)
+}
+public protocol VDEVMediaEditorSourceService {
+  #if compiler(>=5.3) && $AsyncAwait
+  func filters(forChallenge baseChallengeId: Swift.String) async throws -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func neuralFilters(forChallenge baseChallengeId: Swift.String) async throws -> [VDEVEditorFramework.NeuralEditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func textures(forChallenge baseChallengeId: Swift.String) async throws -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func masks(forChallenge baseChallengeId: Swift.String) async throws -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func editorTemplates(forChallenge baseChallengeId: Swift.String, challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async throws -> [VDEVEditorFramework.TemplatePack]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func stickersPack(forChallenge baseChallengeId: Swift.String) async throws -> [(Swift.String, [VDEVEditorFramework.StickerItem])]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  func startMeta(forChallenge baseChallengeId: Swift.String) async -> VDEVEditorFramework.StartMetaConfig?
+  #endif
+}
+public struct UploadCareWrapper {
+}
+extension Foundation.URL {
+  public var uc: VDEVEditorFramework.UploadCareWrapper {
+    get
+  }
+  public init?(w1d1URLString: Swift.String)
+  public var w1d1exportSafeString: Swift.String {
+    get
+  }
+}
+public enum CustomizableSegmentedControlContentStyle {
+  case `default`
+  case blendMode(contentBlendMode: SwiftUI.BlendMode = .difference, firstLevelOverlayBlendMode: SwiftUI.BlendMode = .hue, highestLevelOverlayBlendMode: SwiftUI.BlendMode = .overlay)
+}
+extension SwiftUI.EnvironmentValues {
+  public var guideLinesColor: SwiftUI.Color {
+    get
+    set
+  }
+}
+public enum FlipType {
+  case vertical
+  case horizontal
+  public static func == (a: VDEVEditorFramework.FlipType, b: VDEVEditorFramework.FlipType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct FlipFilterInput {
+}
+public struct FlipFilter {
+  public init?(_ descriptor: VDEVEditorFramework.FilterDescriptor)
+}
+extension Swift.Error {
+  public var isUnauthorized: Swift.Bool {
+    get
+  }
+}
+public struct ErrorRepresentation {
+}
+public enum VDEVLogEvent : Swift.String {
+  case e
+  case i
+  case d
+  case v
+  case w
+  case s
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol VDEVLogger {
+  func e(_ message: Any)
+  func i(_ message: Any)
+  func d(_ message: Any)
+  func v(_ message: Any)
+  func w(_ message: Any)
+  func s(_ message: Any)
+}
+final public class AIFilter {
+  public init?(_ descriptor: VDEVEditorFramework.FilterDescriptor, _ networkConfigType: VDEVEditorFramework.VDEVNetworkModuleConfigType = .image2image)
+  @objc deinit
+}
+public struct NeuralConfig : Swift.Equatable, Swift.Hashable {
+  public static func == (lhs: VDEVEditorFramework.NeuralConfig, rhs: VDEVEditorFramework.NeuralConfig) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public init(stepID: Swift.String, minPixels: Swift.Int, maxPixels: Swift.Int, allowedDimensions: [VDEVEditorFramework.NeuralConfig.AllowedDimension], dimensionsMultipleOf: Swift.Int)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension VDEVEditorFramework.NeuralConfig {
+  public struct AllowedDimension {
+    public init(width: Swift.Int, height: Swift.Int)
+  }
+}
+public enum HTTPMethod : Swift.String {
+  case get
+  case post
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct StickerItem {
+  public init(url: Foundation.URL)
+}
+public struct CanvasTextStyle : Swift.CaseIterable, Swift.Equatable {
+  public init(fontFamily: Swift.String, lineHeightMultiple: CoreFoundation.CGFloat, kern: CoreFoundation.CGFloat, uppercased: Swift.Bool, shadow: VDEVEditorFramework.CanvasTextStyle.ShadowConfig? = nil)
+  public static func == (a: VDEVEditorFramework.CanvasTextStyle, b: VDEVEditorFramework.CanvasTextStyle) -> Swift.Bool
+  public typealias AllCases = [VDEVEditorFramework.CanvasTextStyle]
+}
+extension VDEVEditorFramework.CanvasTextStyle {
+  public static let `default`: VDEVEditorFramework.CanvasTextStyle
+  public static let basicText: VDEVEditorFramework.CanvasTextStyle
+  public static let boldText: VDEVEditorFramework.CanvasTextStyle
+  public static let serifText: VDEVEditorFramework.CanvasTextStyle
+  public static let mono: VDEVEditorFramework.CanvasTextStyle
+  public static let t1: VDEVEditorFramework.CanvasTextStyle
+  public static var allCases: [VDEVEditorFramework.CanvasTextStyle] {
+    get
+  }
+}
+extension VDEVEditorFramework.CanvasTextStyle {
+  public struct ShadowConfig : Swift.Equatable {
+    public init(color: UIKit.UIColor, offset: CoreFoundation.CGSize, blur: CoreFoundation.CGFloat)
+    public static let `default`: VDEVEditorFramework.CanvasTextStyle.ShadowConfig
+    public static func == (a: VDEVEditorFramework.CanvasTextStyle.ShadowConfig, b: VDEVEditorFramework.CanvasTextStyle.ShadowConfig) -> Swift.Bool
+  }
+}
+public enum VDEVNetworkModuleConfigType : Swift.String {
+  case image2image
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol VDEVNetworkModuleConfig {
+  var type: VDEVEditorFramework.VDEVNetworkModuleConfigType { get }
+  var host: Swift.String { get }
+  var path: Swift.String { get }
+  var timeOut: Foundation.TimeInterval { get }
+  var headers: [Swift.String : Swift.String]? { get }
+  var token: Swift.String? { get }
+}
+@_hasMissingDesignatedInitializers final public class VDEVNetworkConfig {
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class ImageProcessorHelper {
+  public static let shared: VDEVEditorFramework.ImageProcessorHelper
+  public static let renderingQueue: Dispatch.DispatchQueue
+  final public func extractImage(fromUrl url: Foundation.URL, storeCache: Swift.Bool = true) -> CoreImage.CIImage?
+  final public func warmup(safeURLs: [Foundation.URL])
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func generateAndSaveContent(withOverlayImage overlayImage: CoreImage.CIImage, overContentAtURL contentURL: Foundation.URL, withContentMode contentMode: UIKit.UIView.ContentMode? = nil) async throws -> Foundation.URL
+  #endif
+  @objc deinit
+}
+public struct CombinerOutput {
+  public let cover: Foundation.URL
+  public let url: Foundation.URL
+  public var featuresUsageData: VDEVEditorFramework.CombinerOutput.FeaturesUsageData?
+  public var aspect: CoreFoundation.CGFloat
+}
+extension VDEVEditorFramework.CombinerOutput {
+  public struct FeaturesUsageData {
+    public let usedMasks: Swift.Bool
+    public let usedTextures: Swift.Bool
+    public let usedFilters: Swift.Bool
+    public let usedTemplates: Swift.Bool
+    public let usedVideo: Swift.Bool
+    public let usedVideoSound: Swift.Bool
+    public let usedMusic: Swift.Bool
+    public let usedStickers: Swift.Bool
+  }
+}
+public let NeuralFilterDescriptorName: Swift.String
+public let FlipFilterDescriptorName: Swift.String
+public class FilterDescriptor : Swift.Codable, Swift.Hashable {
+  public enum Param : Swift.Codable, Swift.Hashable {
+    case number(Foundation.NSNumber)
+    case dataBase64(Foundation.NSData)
+    case dataURL(Foundation.NSData, Foundation.URL)
+    case color(CoreImage.CIColor)
+    case vector(CoreImage.CIVector)
+    case image(CoreImage.CIImage, UIKit.UIView.ContentMode?, Foundation.URL)
+    case colorSpaceString(CoreGraphics.CGColorSpace, Swift.String)
+    case neural(VDEVEditorFramework.NeuralConfig)
+    case flip(VDEVEditorFramework.FlipType)
+    case unsupported
+    public init(dataURL: Foundation.URL)
+    public init(imageURL: Foundation.URL, contentMode: UIKit.UIView.ContentMode? = nil)
+    public init(from decoder: any Swift.Decoder) throws
+    public func encode(to encoder: any Swift.Encoder) throws
+    public func hash(into hasher: inout Swift.Hasher)
+    public static func == (a: VDEVEditorFramework.FilterDescriptor.Param, b: VDEVEditorFramework.FilterDescriptor.Param) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var id: Swift.String?
+  public var name: Swift.String
+  public var params: [Swift.String : VDEVEditorFramework.FilterDescriptor.Param]?
+  public var customImageTargetKey: Swift.String?
+  public init(name: Swift.String, params: [Swift.String : VDEVEditorFramework.FilterDescriptor.Param]? = nil, id: Swift.String? = nil, customImageTargetKey: Swift.String? = nil)
+  public static func == (lhs: VDEVEditorFramework.FilterDescriptor, rhs: VDEVEditorFramework.FilterDescriptor) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+}
+extension VDEVEditorFramework.FilterDescriptor {
+  convenience public init?(step: VDEVEditorFramework.NeuralEditorFilter.Step, id: Swift.String?)
+  convenience public init?(step: VDEVEditorFramework.EditorFilter.Step, id: Swift.String?)
+}
+public struct EditorFilter : Swift.Equatable {
+  public init(id: Swift.String, name: Swift.String, cover: Foundation.URL? = nil, steps: [VDEVEditorFramework.EditorFilter.Step])
+  public static func == (lhs: VDEVEditorFramework.EditorFilter, rhs: VDEVEditorFramework.EditorFilter) -> Swift.Bool
+  public struct Step {
+    public init(type: VDEVEditorFramework.EditorFilter.Step.StepType, id: Swift.String? = nil, url: Foundation.URL? = nil, settings: VDEVEditorFramework.EditorFilter.StepSettings? = nil, neuralConfig: VDEVEditorFramework.NeuralConfig? = nil)
+    public enum StepType : Swift.String {
+      case lut
+      case mask
+      case texture
+      case neural
+      public init?(value: Swift.String)
+      public init?(rawValue: Swift.String)
+      public typealias RawValue = Swift.String
+      public var rawValue: Swift.String {
+        get
+      }
+    }
+  }
+  @dynamicMemberLookup final public class StepSettings {
+    final public var rawValue: [Swift.String : Any] {
+      get
+    }
+    public init(jsonValue value: Any)
+    final public subscript(dynamicMember member: Swift.String) -> VDEVEditorFramework.EditorFilter.StepSettings? {
+      get
+    }
+    final public subscript<T>(dynamicMember member: Swift.String) -> T? {
+      get
+    }
+    @objc deinit
+  }
+}
+extension UIKit.UIImage {
+  @nonobjc public func resized(to newSize: CoreFoundation.CGSize, scale: CoreFoundation.CGFloat = 1) -> UIKit.UIImage
+  @nonobjc public func resizeWhileMaintainingAspectRatioToSize(to size: CoreFoundation.CGSize, scale: CoreFoundation.CGFloat = 1) -> UIKit.UIImage
+  @nonobjc public func rotated(by degrees: CoreFoundation.CGFloat, keepSize: Swift.Bool = true) -> UIKit.UIImage
+}
+extension VDEVEditorFramework.BlendingMode : Swift.Equatable {}
+extension VDEVEditorFramework.BlendingMode : Swift.Hashable {}
+extension VDEVEditorFramework.BlendingMode : Swift.RawRepresentable {}
+extension VDEVEditorFramework.TemplatePack : Swift.Sendable {}
+extension VDEVEditorFramework.VDEVMediaResolution : Swift.Equatable {}
+extension VDEVEditorFramework.VDEVMediaResolution : Swift.Hashable {}
+extension VDEVEditorFramework.FlipType : Swift.Equatable {}
+extension VDEVEditorFramework.FlipType : Swift.Hashable {}
+extension VDEVEditorFramework.VDEVLogEvent : Swift.Equatable {}
+extension VDEVEditorFramework.VDEVLogEvent : Swift.Hashable {}
+extension VDEVEditorFramework.VDEVLogEvent : Swift.RawRepresentable {}
+extension VDEVEditorFramework.HTTPMethod : Swift.Equatable {}
+extension VDEVEditorFramework.HTTPMethod : Swift.Hashable {}
+extension VDEVEditorFramework.HTTPMethod : Swift.RawRepresentable {}
+extension VDEVEditorFramework.VDEVNetworkModuleConfigType : Swift.Equatable {}
+extension VDEVEditorFramework.VDEVNetworkModuleConfigType : Swift.Hashable {}
+extension VDEVEditorFramework.VDEVNetworkModuleConfigType : Swift.RawRepresentable {}
+extension VDEVEditorFramework.EditorFilter.Step.StepType : Swift.Equatable {}
+extension VDEVEditorFramework.EditorFilter.Step.StepType : Swift.Hashable {}
+extension VDEVEditorFramework.EditorFilter.Step.StepType : Swift.RawRepresentable {}
