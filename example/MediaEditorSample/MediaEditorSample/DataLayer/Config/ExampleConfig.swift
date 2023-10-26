@@ -32,7 +32,7 @@ extension VDEVMediaEditorConfig {
 
 struct Security: VDEVMediaEditorSecurity {
     var apiKey: String {
-        "71176eac-70c6-4bd3-8a93-f738506a7fd2_sample"
+        "2671176eac-0370c6-20244bd3-8a93-f738506a7fd2_sample"
     }
 }
 

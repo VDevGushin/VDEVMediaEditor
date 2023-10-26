@@ -294,7 +294,7 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		AasBl9TTiqKCAYxMJQaVyYvXw4A=
+		2hdiEnd3kZU50tn/4u6xXrbB4qg=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -310,11 +310,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		szyq1mQHchS0l8wo9jTKZp5jONc=
+		FKPOWCy+H75r5arCBHSpZDWRUzU=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		AasBl9TTiqKCAYxMJQaVyYvXw4A=
+		2hdiEnd3kZU50tn/4u6xXrbB4qg=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -330,7 +330,7 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		MaJbpZ582NVwsyZhHBQ9T6xUKVA=
+		X5Ke78jKG34yKoWNUwP5LMn2V9I=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -1120,7 +1120,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			8y8lI3ernUxx9MqiTa14j7HMEvwNMKr3CBfr8usrF4I=
+			Fbfwop/6SOmuPgAz5PYKUNGc1OFU4LKOUsQwSMQ+4oQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
@@ -1148,14 +1148,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			89uiERjAL+Qn2MsX6i7zpjxgo2iybrCJq6DWt+z0OmM=
+			s20SJKGmddfFjQqXPeMsqLoi+yGw0gJdG9t7jA10xpo=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			8y8lI3ernUxx9MqiTa14j7HMEvwNMKr3CBfr8usrF4I=
+			Fbfwop/6SOmuPgAz5PYKUNGc1OFU4LKOUsQwSMQ+4oQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
@@ -1183,7 +1183,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			h+4kn0DKoaxSKLRX8Hew5xbnwNFlawWUV8r4n0yC/Ig=
+			Es2TOHMIqwC+hOxeJeteTewJifst5NOV6CngvsfaMJw=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
