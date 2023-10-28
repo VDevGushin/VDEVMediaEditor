@@ -226,7 +226,7 @@
 		</data>
 		<key>Headers/VDEVEditorFramework-Swift.h</key>
 		<data>
-		nj+nQCLT6obW4iqmObG2s3jinqE=
+		F3CgZSwfSh5QkSFfbfIi/AZklcI=
 		</data>
 		<key>Headers/VDEVEditorFramework.h</key>
 		<data>
@@ -294,11 +294,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		2hdiEnd3kZU50tn/4u6xXrbB4qg=
+		9rKNJ0M0dkcsUX7jJEbLDbP09+U=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		PSkF5nr/FSaNZSA2I3CN81DdVqA=
+		POCPTghvVT+tGjUFnBoDDehIy9w=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -306,19 +306,19 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		PSkF5nr/FSaNZSA2I3CN81DdVqA=
+		POCPTghvVT+tGjUFnBoDDehIy9w=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		FKPOWCy+H75r5arCBHSpZDWRUzU=
+		hSmRgZjcdWK0kMDNMAynv13hk68=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		2hdiEnd3kZU50tn/4u6xXrbB4qg=
+		9rKNJ0M0dkcsUX7jJEbLDbP09+U=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		mRASanBvmI/XR680Ym1OJTFVIWw=
+		EYrMGZT06MLqA1RE6p8oSL1CotU=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -326,11 +326,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		mRASanBvmI/XR680Ym1OJTFVIWw=
+		EYrMGZT06MLqA1RE6p8oSL1CotU=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		X5Ke78jKG34yKoWNUwP5LMn2V9I=
+		J1SOf2H8R4MBadI/nxWy0Ns2eyA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -1008,7 +1008,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			d93zee+Kn5u2hHv8zTy/15dn3BdhVfKMNWHSLMZmmCE=
+			a9snnFPAuboP26gMNIkZBWkVhlW00pJzP/PCLwHhe6I=
 			</data>
 		</dict>
 		<key>Headers/VDEVEditorFramework.h</key>
@@ -1120,14 +1120,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Fbfwop/6SOmuPgAz5PYKUNGc1OFU4LKOUsQwSMQ+4oQ=
+			LuIXyt73Ai/KssLJqYflesBPek3LXZLqLs+qGQD4abo=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			eGj8MFvRV7u2SukV6TQiYDTgZ8gd3LOfrwIffeym4gA=
+			QCT+yG+1bvbbp6mDSFvGKN2iTpjE6xvcyRjP4Ji9Vxo=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
@@ -1141,28 +1141,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			eGj8MFvRV7u2SukV6TQiYDTgZ8gd3LOfrwIffeym4gA=
+			QCT+yG+1bvbbp6mDSFvGKN2iTpjE6xvcyRjP4Ji9Vxo=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			s20SJKGmddfFjQqXPeMsqLoi+yGw0gJdG9t7jA10xpo=
+			xtxHn7T9wmHff2xKTtA+1F9V3rlfJYDnglnFpBWelBE=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Fbfwop/6SOmuPgAz5PYKUNGc1OFU4LKOUsQwSMQ+4oQ=
+			LuIXyt73Ai/KssLJqYflesBPek3LXZLqLs+qGQD4abo=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			//Jbwj14vrKb14/vhssD8ZSsuxcx7SB82CRdz1fJQyY=
+			j7Drvl5n4J07JM3kY+M86U1FH+OZSi3gfur+c513fLQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -1176,14 +1176,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			//Jbwj14vrKb14/vhssD8ZSsuxcx7SB82CRdz1fJQyY=
+			j7Drvl5n4J07JM3kY+M86U1FH+OZSi3gfur+c513fLQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Es2TOHMIqwC+hOxeJeteTewJifst5NOV6CngvsfaMJw=
+			PS/a+eOO4fGumoehKR0EtCNo+mZGQqC48QNq3InKj5c=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

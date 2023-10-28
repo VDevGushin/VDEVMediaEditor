@@ -297,6 +297,25 @@ final public class ApiClientImpl : VDEVEditorFramework.ApiClient {
   @objc deinit
 }
 extension Combine.Publisher {
+  @inlinable public func sinkWithRemoveDublicates<Root, Output>(on queue: Dispatch.DispatchQueue = .main, object: Root, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output : Swift.Equatable, Output == Self.Output, Self.Failure == Swift.Never {
+        removeDuplicates()
+            .receive(on: queue)
+            .withUnretained(object)
+            .sink { root, value in
+                receiveValue(root, value)
+            }
+    }
+  @inlinable public func sinkWithRemoveDublicates<Root, Output, Failure>(on queue: Dispatch.DispatchQueue = .main, object: Root, failure: Failure, receiveCompletion: @escaping (Root, Combine.Subscribers.Completion<Failure>) -> Swift.Void, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output : Swift.Equatable, Output == Self.Output, Failure == Self.Failure {
+        removeDuplicates()
+            .receive(on: queue)
+            .withUnretained(object, failure: failure)
+            .sink { [weak object] completion in
+                guard let object = object else { return }
+                receiveCompletion(object, completion)
+            } receiveValue: { root, value in
+                receiveValue(root, value)
+            }
+    }
   @inlinable public func sink<Root, Output>(on queue: Dispatch.DispatchQueue = .main, object: Root, receiveValue: @escaping (Root, Output) -> Swift.Void) -> Combine.AnyCancellable where Root : AnyObject, Output == Self.Output, Self.Failure == Swift.Never {
         receive(on: queue)
             .withUnretained(object)
