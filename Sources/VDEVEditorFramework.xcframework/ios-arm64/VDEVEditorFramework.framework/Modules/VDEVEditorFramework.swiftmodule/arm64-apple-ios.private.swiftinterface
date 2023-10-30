@@ -237,7 +237,7 @@ public protocol VDEVMediaEditorResultSettings : AnyObject {
   var maximumVideoDuration: Swift.Double { get }
   var resolution: VDEVEditorFramework.VDEVMediaResolution { get }
 }
-public protocol VDEVMediaEdititorCanvasSettings {
+public protocol VDEVMediaEditorCanvasSettings {
   var maxBlur: CoreFoundation.CGFloat { get }
   var minBlur: CoreFoundation.CGFloat { get }
   var superMinBlur: CoreFoundation.CGFloat { get }
@@ -261,7 +261,7 @@ public protocol VDEVMediaEditorSettings {
   var canTurnOnSoundInVideos: Swift.Bool { get }
   var canAddMusic: Swift.Bool { get }
   var сanRemoveOrChangeTemplate: Swift.Bool { get }
-  var canvasSettings: any VDEVEditorFramework.VDEVMediaEdititorCanvasSettings { get }
+  var canvasSettings: any VDEVEditorFramework.VDEVMediaEditorCanvasSettings { get }
   var resourceID: Swift.String { get }
   var title: Swift.String { get }
   var subTitle: Swift.String? { get }

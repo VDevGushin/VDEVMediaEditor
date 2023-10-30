@@ -56,7 +56,7 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     var сanRemoveOrChangeTemplate: Bool { true }
     var showNeuralFilters: Bool { true }
     
-    var canvasSettings: VDEVMediaEdititorCanvasSettings = {
+    var canvasSettings: VDEVMediaEditorCanvasSettings = {
         CanvasSettings()
     }()
     
@@ -118,7 +118,7 @@ final class ResultSettings: VDEVMediaEditorResultSettings {
 }
 
 // MARK: - Canvas
-struct CanvasSettings: VDEVMediaEdititorCanvasSettings {
+struct CanvasSettings: VDEVMediaEditorCanvasSettings {
     private(set) var maxBlur: CGFloat = 0.0
     private(set) var minBlur: CGFloat = 2
     private(set) var superMinBlur: CGFloat = 20
