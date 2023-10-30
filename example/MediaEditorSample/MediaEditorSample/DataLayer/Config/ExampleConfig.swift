@@ -7,16 +7,16 @@
 
 import UIKit
 import Combine
-import VDEVMediaEditor
+import VDEVEditorFramework
 
 extension VDEVMediaEditorConfig {
     static var exampleConfig: Self {
         let source = NetworkAdapter(client: NetworkClientImpl())
-        //let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
-        // let id = "9b22fbb1-554c-4e6b-94a6-96793028c20b"
-        let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
-       // let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
-        //let id = "d32cb5c8-5810-437a-a895-1ca43983d253"
+        // let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
+       // let id = "9b22fbb1-554c-4e6b-94a6-96793028c20b"
+       // let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
+        let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
+        // let id = "4b09ff7b-8978-45fd-91f7-af10d6bcb529"
         return .init(
             security: Security(),
             settings: EditorSettings(id, sourceService: source),
@@ -29,60 +29,8 @@ extension VDEVMediaEditorConfig {
         )
     }
 }
-
-struct Security: VDEVMediaEditorSecurity {
-    var apiKey: String {
-        "2671176eac-0370c6-20244bd3-8a93-f738506a7fd2_sample"
-    }
-}
-
-struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
-    //Продакшн: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/app/image-to-image`
-    //Test: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/test/image-to-image`
-    var type: VDEVNetworkModuleConfigType = .image2image
-    var host: String = "app.w1d1.com"
-    var path: String = "/api/v2/fileProcessing/stable-diffusion/app/image-to-image"
-    var headers: [String : String]? = [
-        "id": "a3542326-e295-4ab0-acdb-596928f15015",
-        "x-w1d1-version": Bundle.main.shortVersion
-    ]
-    var timeOut: TimeInterval { 60 }
-    var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
-}
-
-final class Logger: VDEVLogger {
-    func e(_ message: Any) {
-        print("===>", message)
-    }
-    
-    func i(_ message: Any) {
-        print("===>", message)
-    }
-    
-    func d(_ message: Any) {
-        print("===>", message)
-    }
-    
-    func v(_ message: Any) {
-        print("===>", message)
-    }
-    
-    func w(_ message: Any) {
-        print("===>", message)
-    }
-    
-    func s(_ message: Any) {
-        print("===>", message)
-    }
-}
-
-final class ResultSettings: VDEVMediaEditorResultSettings {
-    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(false)
-    var resolution: VDEVMediaResolution { .fullHD }
-    var maximumVideoDuration: Double { 15.0 }
-}
-
-final class EditorSettings: VDEVMediaEditorSettings {
+         
+private final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var resourceID: String
     private(set) var title: String = ""
     private(set) var subTitle: String? = nil
@@ -103,10 +51,14 @@ final class EditorSettings: VDEVMediaEditorSettings {
     var maximumLayers: Int { 20 }
     var canRemoveAllLayers: Bool { true }
     var canMergeAllLayers: Bool { true }
-    var canShowOnboarding: Bool { false }
+    var canShowOnboarding: Bool { true }
     var canUndo: Bool { true }
     var сanRemoveOrChangeTemplate: Bool { true }
     var showNeuralFilters: Bool { true }
+    
+    var canvasSettings: VDEVMediaEdititorCanvasSettings = {
+        CanvasSettings()
+    }()
     
     init(_ resourceID: String,
          sourceService: VDEVMediaEditorSourceService) {
@@ -121,20 +73,23 @@ final class EditorSettings: VDEVMediaEditorSettings {
         isLoading.send(true)
         title = "SHARE YOUR RESULT!"
         subTitle = "+ ADD MEDIA"
-        withAttach = false
-        self.isLoading.send(false)
-//        isLoading.send(true)
-//        Task {
-//            let meta = await sourceService.startMeta(forChallenge: resourceID) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
-//
-//            await MainActor.run { [weak self] in
-//                guard let self = self else { return }
-//                self.title = meta.title
-//                self.subTitle = meta.subTitle
-//                self.withAttach = meta.isAttachedTemplate
-//                self.isLoading.send(false)
-//            }
-//        }
+        guard withAttach else {
+            self.isLoading.send(false)
+            return
+        }
+        
+        isLoading.send(true)
+        Task {
+            let meta = await sourceService.startMeta(forChallenge: resourceID) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+            
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
+                self.title = meta.title
+                self.subTitle = meta.subTitle
+                self.withAttach = meta.isAttachedTemplate
+                self.isLoading.send(false)
+            }
+        }
     }
     
     func getStartTemplate(for size: CGSize,
@@ -155,7 +110,26 @@ final class EditorSettings: VDEVMediaEditorSettings {
     }
 }
 
-struct Images: VDEVImageConfig {
+// MARK: - Result
+final class ResultSettings: VDEVMediaEditorResultSettings {
+    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(false)
+    var resolution: VDEVMediaResolution { .fullHD }
+    var maximumVideoDuration: Double { 15.0 }
+}
+
+// MARK: - Canvas
+struct CanvasSettings: VDEVMediaEdititorCanvasSettings {
+    private(set) var maxBlur: CGFloat = 0.0
+    private(set) var minBlur: CGFloat = 2
+    private(set) var superMinBlur: CGFloat = 20
+    
+    private(set) var maxOpacity: CGFloat = 1.0
+    private(set) var minOpacity: CGFloat = 0.6
+    private(set) var superMinOpacity: CGFloat = 0.2
+}
+
+// MARK: - Images
+private struct Images: VDEVImageConfig {
     let common: VDEVMediaEditorButtonsCommonImages = Common()
     
     var currentItem: VDEVMediaEditorButtonsCurrentItemImages = CurrentItem()
@@ -243,7 +217,8 @@ struct Images: VDEVImageConfig {
     }
 }
 
-struct Strings: VDEVMediaEditorStrings {
+// MARK: - Strings
+private struct Strings: VDEVMediaEditorStrings {
     let photos = "Photos"
     let videos = "Videos"
     let addPhotoOrVideo = "MEDIA"
@@ -325,4 +300,51 @@ struct Strings: VDEVMediaEditorStrings {
     let flip = "FLIP"
     let vertical = "VERTICAL"
     let horizontal = "HORIZONTAL"
+}
+
+// MARK: - Security
+private final class Security: VDEVMediaEditorSecurity {
+    var apiKey: String { "2671176eac-0370c6-20244bd3-8a93-f738506a7fd2_sample" }
+}
+
+// MARK: - Neural
+private struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
+    //Продакшн: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/app/image-to-image`
+    //Test: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/test/image-to-image`
+    var type: VDEVNetworkModuleConfigType = .image2image
+    var host: String = "app.w1d1.com"
+    var path: String = "/api/v2/fileProcessing/stable-diffusion/app/image-to-image"
+    var headers: [String : String]? = [
+        "id": "a3542326-e295-4ab0-acdb-596928f15015",
+        "x-w1d1-version": Bundle.main.shortVersion
+    ]
+    var timeOut: TimeInterval { 60 }
+    var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
+}
+
+// MARK: - Logger
+private final class Logger: VDEVLogger {
+    func e(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func i(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func d(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func v(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func w(_ message: Any) {
+        print("===>", message)
+    }
+    
+    func s(_ message: Any) {
+        print("===>", message)
+    }
 }

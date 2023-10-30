@@ -294,11 +294,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		t8loI2WWBo7aRjIbR1h6etah5zc=
+		M3y0tnvGFiDUtS5FTjWg4m8GUPk=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		POCPTghvVT+tGjUFnBoDDehIy9w=
+		/JH6yKpw453JF6A+ihPEEmlHlAg=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -306,19 +306,19 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		POCPTghvVT+tGjUFnBoDDehIy9w=
+		/JH6yKpw453JF6A+ihPEEmlHlAg=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		clkRyBzGtE7cbjtXYVFiRcE1E3o=
+		4loWRYvibQUQ0IoNk79uJsa0NJo=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		t8loI2WWBo7aRjIbR1h6etah5zc=
+		M3y0tnvGFiDUtS5FTjWg4m8GUPk=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		EYrMGZT06MLqA1RE6p8oSL1CotU=
+		ao1UqivC9zMZBJtSDuX9RzbGaO0=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -326,11 +326,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		EYrMGZT06MLqA1RE6p8oSL1CotU=
+		ao1UqivC9zMZBJtSDuX9RzbGaO0=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		/TRRvYfVV4nQD9h4QpJYyvVPeC8=
+		NHoZvpmGVozM0THxa6visKPPIuQ=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -1120,14 +1120,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Stgua2g6tFQ1I83jRmkYZtDieOIsSlDabSLegBy6rz8=
+			Mzgz2+GOKTxu8hY8sQVJTJTOnJi+hW0Zf+1Y1v219v8=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			QCT+yG+1bvbbp6mDSFvGKN2iTpjE6xvcyRjP4Ji9Vxo=
+			BAM2hu//ye3ly26aUuLsKwwK5uu4xiCKs59FrIx3lwE=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
@@ -1141,28 +1141,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			QCT+yG+1bvbbp6mDSFvGKN2iTpjE6xvcyRjP4Ji9Vxo=
+			BAM2hu//ye3ly26aUuLsKwwK5uu4xiCKs59FrIx3lwE=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			LZmKPfre6h8+aJmaQSbyyQW7YUIuJhrriONsQ940jz4=
+			N5fLakzQ1nB1TZQeHFAVYKvMmrrK2MsrFp9dVMvpAfk=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Stgua2g6tFQ1I83jRmkYZtDieOIsSlDabSLegBy6rz8=
+			Mzgz2+GOKTxu8hY8sQVJTJTOnJi+hW0Zf+1Y1v219v8=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			j7Drvl5n4J07JM3kY+M86U1FH+OZSi3gfur+c513fLQ=
+			ohuTu26P5zAi3Ix1ifQKMr7207JJhbr0mFZj0eVp7G0=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -1176,14 +1176,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			j7Drvl5n4J07JM3kY+M86U1FH+OZSi3gfur+c513fLQ=
+			ohuTu26P5zAi3Ix1ifQKMr7207JJhbr0mFZj0eVp7G0=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			q+sFgylCkoac2fkhmHlI+aP/2e36f3+XrX/GfY92IlY=
+			B+/VkvygK/tUdaoDW+UDjbPjbt+UWDjTR7Uci35NTKs=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
