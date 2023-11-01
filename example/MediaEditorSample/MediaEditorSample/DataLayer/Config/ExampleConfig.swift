@@ -19,6 +19,7 @@ extension VDEVMediaEditorConfig {
         // let id = "4b09ff7b-8978-45fd-91f7-af10d6bcb529"
         return .init(
             security: Security(),
+            subscription: Subscription(),
             settings: EditorSettings(id, sourceService: source),
             networkService: source,
             images: Images(),
@@ -29,7 +30,22 @@ extension VDEVMediaEditorConfig {
         )
     }
 }
-         
+
+// MARK: - Subscription
+private final class Subscription: VDEVMediaEditorSubscription {
+    var status: VDEVMediaEditorSubscriptionStatus
+    
+    func status(completion: (VDEVMediaEditorSubscriptionStatus) -> Void) {
+        status = .unSubscribed
+        completion(status)
+    }
+    
+    init(status: VDEVMediaEditorSubscriptionStatus = .unSubscribed) {
+        self.status = status
+    }
+}
+
+// MARK: - Editor settings
 private final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var resourceID: String
     private(set) var title: String = ""

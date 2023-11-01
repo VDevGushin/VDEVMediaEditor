@@ -38,5 +38,6 @@ public typealias VDEVMediaEditorSettings = VDEVEditorFramework.VDEVMediaEditorSe
 public typealias CombinerOutput = VDEVEditorFramework.CombinerOutput
 public typealias ImageProcessorHelper = VDEVEditorFramework.ImageProcessorHelper
 public typealias VDEVMediaEditorCanvasSettings = VDEVEditorFramework.VDEVMediaEditorCanvasSettings
+public typealias VDEVMediaEditorSubscription = VDEVEditorFramework.VDEVMediaEditorSubscription
 
 public let kPlaceholders = VDEVEditorFramework.kPlaceholders

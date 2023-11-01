@@ -248,6 +248,10 @@
 		<data>
 		HJQKymmOrzCILunlsGz7KC79jAg=
 		</data>
+		<key>LabradorCover.png</key>
+		<data>
+		gL/JdZCBMkIREQnIZFTezmbCVSg=
+		</data>
 		<key>Mabry Pro Black.otf</key>
 		<data>
 		Zj4j8o9ACnagQuwPJx2DCFUSvsI=
@@ -284,6 +288,10 @@
 		<data>
 		SRytlHSsMBRhNp2xH652R21OXGY=
 		</data>
+		<key>MaineCover.png</key>
+		<data>
+		936AagWLtUNi+WXIyc1TSeWpZfA=
+		</data>
 		<key>MaregrapheCaption-Regular.ttf</key>
 		<data>
 		9aALq91+dNMIeqQW7ByTLJzfxZ4=
@@ -294,11 +302,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		lb1GnvwJjhP2zp6CFgY/8c7ey1M=
+		fOSNaoeiwL5hrtbGyUS9gHslgko=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		2DJlwAGUijjPYZu6liwtXA4rCnI=
+		LaPvnzF+rt8lAUlLEmO96qt7pUM=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -306,19 +314,19 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		2DJlwAGUijjPYZu6liwtXA4rCnI=
+		LaPvnzF+rt8lAUlLEmO96qt7pUM=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		Z3kkqeaBZdo2WopS/AE0ipyC8RA=
+		7A8lwBk/UEJb6wLa6FZXt5V7NDk=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		lb1GnvwJjhP2zp6CFgY/8c7ey1M=
+		fOSNaoeiwL5hrtbGyUS9gHslgko=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		1+mXqfAa9yJblEZao/iGHuCK890=
+		iG1ovpIRHjqAJL627Ma8tq/Rzrk=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -326,11 +334,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		1+mXqfAa9yJblEZao/iGHuCK890=
+		iG1ovpIRHjqAJL627Ma8tq/Rzrk=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		TzmjqRbT3GthAwr51h6CNqlaUkc=
+		TbjXrRcGLG5DrJm24L/Vt41wjnk=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -340,9 +348,17 @@
 		<data>
 		1r+n0ZNlzL4a47TITPxnHZo+fTs=
 		</data>
+		<key>PersianCover.png</key>
+		<data>
+		OwqsPAomF822nBLLb2KlSxhWiDc=
+		</data>
 		<key>Poodle.png</key>
 		<data>
 		S5u3dacO5yTqwM7btKqualXXLPo=
+		</data>
+		<key>PoodleCover.png</key>
+		<data>
+		ntc7rwiE+gpAmCvbF8M/rdHLb7c=
 		</data>
 		<key>Poteha-Regular.otf</key>
 		<data>
@@ -352,9 +368,17 @@
 		<data>
 		qjrV0BN8h3QV1TurgPrV4wax/Sc=
 		</data>
+		<key>PugCover.png</key>
+		<data>
+		lM1pfiW4j9lWwUcPCBf15uwnGIE=
+		</data>
 		<key>Shorthair.png</key>
 		<data>
 		hubkQ5cJiatutfZEglYzviZUqTE=
+		</data>
+		<key>ShorthairCover.png</key>
+		<data>
+		WVsVHlzZvWwPeMi5NJ0zn9A1Rl4=
 		</data>
 		<key>ShowMaterials.jpg</key>
 		<data>
@@ -363,6 +387,10 @@
 		<key>Siamese.png</key>
 		<data>
 		HgUDD/LFh16alG1kKHnuwerSF5Y=
+		</data>
+		<key>SiameseCover.png</key>
+		<data>
+		9PVSkx7HHZTSW0LsDgXcyx8EDSQ=
 		</data>
 		<key>Stickers.jpg</key>
 		<data>
@@ -1039,6 +1067,13 @@
 			qFdTkw8wjT2J3MyGH2w8q253io9EXHaboGxDCugq2Uc=
 			</data>
 		</dict>
+		<key>LabradorCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			8XzbtWfoXU5vXVkmb1jA7yGikTLu0jWNOi0dQIHwCUs=
+			</data>
+		</dict>
 		<key>Mabry Pro Black.otf</key>
 		<dict>
 			<key>hash2</key>
@@ -1102,6 +1137,13 @@
 			KUV1woOG74COarKRHP8afE6huQd8vmMklbREaaiTg7E=
 			</data>
 		</dict>
+		<key>MaineCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			peHnYFKhwk0jZy4lb4C4zP3yYCO6XhUrLzr9pQC/BgY=
+			</data>
+		</dict>
 		<key>MaregrapheCaption-Regular.ttf</key>
 		<dict>
 			<key>hash2</key>
@@ -1120,14 +1162,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			7i6t+ezNgxCPqp5mu0pil6QGYZC8+CVAWk6tJW0K19g=
+			t8JXy3vbA1NG/14T8ExP1FuPvKmvToNTfbNl9CUmtaQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RB+VLi4zWn0jCo5r6sccK0dvOv7zUe6nR9Hp32zALwQ=
+			rTSTGRsQVx0jCc7AGVqMq3ybOmz/l6fQE4wHzX21HW4=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
@@ -1141,28 +1183,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			RB+VLi4zWn0jCo5r6sccK0dvOv7zUe6nR9Hp32zALwQ=
+			rTSTGRsQVx0jCc7AGVqMq3ybOmz/l6fQE4wHzX21HW4=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Kjocgn4aC2SrdHGHIpl/fIhtIYkgfSTVAX8zRuR72Oc=
+			UwYBwpLS3QWGEUB4oPaQAnMTJRZtTJhWKDoS/PIMqpg=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			7i6t+ezNgxCPqp5mu0pil6QGYZC8+CVAWk6tJW0K19g=
+			t8JXy3vbA1NG/14T8ExP1FuPvKmvToNTfbNl9CUmtaQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			TS0Ul69OGUSfwcKYOc+Db56V24Zmj0rUNKYhOlfGtwY=
+			A1voNGF64qA8ZsDSfV9Luivz7wFCw+tHuBhx6foPQcQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -1176,14 +1218,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			TS0Ul69OGUSfwcKYOc+Db56V24Zmj0rUNKYhOlfGtwY=
+			A1voNGF64qA8ZsDSfV9Luivz7wFCw+tHuBhx6foPQcQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			NUMm5C3IoWnWXLv5BEbU7lNxjiT5Jeq6/6AW1Ya1wWY=
+			bRM94F0OGM838aHelfxmsog/ZH2vxSi6HJ7MoRqs10s=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -1200,11 +1242,25 @@
 			gM8SyOfSb52SiVwFGoEjICgjbxX0ia/sWzsK4pOop8w=
 			</data>
 		</dict>
+		<key>PersianCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			sOUYZg/PHcZ1UBjTYFycvJfvtJRLnSIGQhSyJdIftAg=
+			</data>
+		</dict>
 		<key>Poodle.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
 			uyH6Ot3rYDiZULqHP0J3WU/43+lfFL09agJWFC139HM=
+			</data>
+		</dict>
+		<key>PoodleCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			pflbhFWQwv2JIJvyHmjjpskf/aZKgT0Bjj2scake+cQ=
 			</data>
 		</dict>
 		<key>Poteha-Regular.otf</key>
@@ -1221,11 +1277,25 @@
 			KyBtVbWoNgVTio8pvQfZGGz1sfJLPLAf8/eyQNNcFxg=
 			</data>
 		</dict>
+		<key>PugCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			0b8mNdvIH+Hl5oj4C65kGnpyg71HvFNINiOGonx6CIU=
+			</data>
+		</dict>
 		<key>Shorthair.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
 			fr8h6udBDOhxZWLdjeRtbX5etYFYXe6a3NwSmsDizdc=
+			</data>
+		</dict>
+		<key>ShorthairCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Kkk0rAnPuDQCZXTBWBlF9DKdyN2IocS8K8mZrXiKGfw=
 			</data>
 		</dict>
 		<key>ShowMaterials.jpg</key>
@@ -1240,6 +1310,13 @@
 			<key>hash2</key>
 			<data>
 			Whkq/o5WT6uGAqFKC+5eb/wghve4HJxyvCqtxH+KNqo=
+			</data>
+		</dict>
+		<key>SiameseCover.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			NR3fT0eaXl/fBqS0Q9zgPaYqwrFSyY0zyL4TbXU6TQU=
 			</data>
 		</dict>
 		<key>Stickers.jpg</key>

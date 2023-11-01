@@ -467,7 +467,7 @@ public struct ReorderableForEach<Data, Content> : SwiftUI.View where Data : Swif
   public typealias Body = @_opaqueReturnTypeOf("$s19VDEVEditorFramework18ReorderableForEachV4bodyQrvp", 0) __<Data, Content>
 }
 public struct VDEVMediaEditorConfig {
-  public init(security: any VDEVEditorFramework.VDEVMediaEditorSecurity, settings: any VDEVEditorFramework.VDEVMediaEditorSettings, networkService: any VDEVEditorFramework.VDEVMediaEditorSourceService, images: any VDEVEditorFramework.VDEVImageConfig, strings: any VDEVEditorFramework.VDEVMediaEditorStrings, resultSettings: any VDEVEditorFramework.VDEVMediaEditorResultSettings, logger: (any VDEVEditorFramework.VDEVLogger)? = nil, networkModulesConfig: [any VDEVEditorFramework.VDEVNetworkModuleConfig])
+  public init(security: any VDEVEditorFramework.VDEVMediaEditorSecurity, subscription: any VDEVEditorFramework.VDEVMediaEditorSubscription, settings: any VDEVEditorFramework.VDEVMediaEditorSettings, networkService: any VDEVEditorFramework.VDEVMediaEditorSourceService, images: any VDEVEditorFramework.VDEVImageConfig, strings: any VDEVEditorFramework.VDEVMediaEditorStrings, resultSettings: any VDEVEditorFramework.VDEVMediaEditorResultSettings, logger: (any VDEVEditorFramework.VDEVLogger)? = nil, networkModulesConfig: [any VDEVEditorFramework.VDEVNetworkModuleConfig])
 }
 public protocol VDEVMediaEditorSecurity {
   var apiKey: Swift.String { get }
@@ -725,6 +725,19 @@ public protocol VDEVLogger {
   func w(_ message: Any)
   func s(_ message: Any)
 }
+public protocol VDEVMediaEditorSubscription {
+  var status: VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus { get }
+  func status(completion: (VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus) -> Swift.Void)
+}
+public enum VDEVMediaEditorSubscriptionStatus {
+  case subscribed
+  case unSubscribed
+  public static func == (a: VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus, b: VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
 final public class AIFilter {
   public init?(_ descriptor: VDEVEditorFramework.FilterDescriptor, _ networkConfigType: VDEVEditorFramework.VDEVNetworkModuleConfigType = .image2image)
   @objc deinit
@@ -867,7 +880,7 @@ extension VDEVEditorFramework.FilterDescriptor {
   convenience public init?(step: VDEVEditorFramework.EditorFilter.Step, id: Swift.String?)
 }
 public struct EditorFilter : Swift.Equatable {
-  public init(id: Swift.String, name: Swift.String, cover: Foundation.URL? = nil, steps: [VDEVEditorFramework.EditorFilter.Step])
+  public init(id: Swift.String, name: Swift.String, cover: Foundation.URL? = nil, needSubscription: Swift.Bool = false, steps: [VDEVEditorFramework.EditorFilter.Step])
   public static func == (lhs: VDEVEditorFramework.EditorFilter, rhs: VDEVEditorFramework.EditorFilter) -> Swift.Bool
   public struct Step {
     public init(type: VDEVEditorFramework.EditorFilter.Step.StepType, id: Swift.String? = nil, url: Foundation.URL? = nil, settings: VDEVEditorFramework.EditorFilter.StepSettings? = nil, neuralConfig: VDEVEditorFramework.NeuralConfig? = nil)
@@ -914,6 +927,8 @@ extension VDEVEditorFramework.FlipType : Swift.Hashable {}
 extension VDEVEditorFramework.VDEVLogEvent : Swift.Equatable {}
 extension VDEVEditorFramework.VDEVLogEvent : Swift.Hashable {}
 extension VDEVEditorFramework.VDEVLogEvent : Swift.RawRepresentable {}
+extension VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus : Swift.Equatable {}
+extension VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus : Swift.Hashable {}
 extension VDEVEditorFramework.HTTPMethod : Swift.Equatable {}
 extension VDEVEditorFramework.HTTPMethod : Swift.Hashable {}
 extension VDEVEditorFramework.HTTPMethod : Swift.RawRepresentable {}
