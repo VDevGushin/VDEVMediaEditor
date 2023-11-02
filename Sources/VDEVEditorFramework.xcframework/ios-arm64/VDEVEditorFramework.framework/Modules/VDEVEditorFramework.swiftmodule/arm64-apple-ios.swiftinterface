@@ -879,7 +879,8 @@ extension VDEVEditorFramework.FilterDescriptor {
   convenience public init?(step: VDEVEditorFramework.NeuralEditorFilter.Step, id: Swift.String?)
   convenience public init?(step: VDEVEditorFramework.EditorFilter.Step, id: Swift.String?)
 }
-public struct EditorFilter : Swift.Equatable {
+public struct EditorFilter : Swift.Equatable, Swift.Hashable {
+  public func hash(into hasher: inout Swift.Hasher)
   public init(id: Swift.String, name: Swift.String, cover: Foundation.URL? = nil, needSubscription: Swift.Bool = false, steps: [VDEVEditorFramework.EditorFilter.Step])
   public static func == (lhs: VDEVEditorFramework.EditorFilter, rhs: VDEVEditorFramework.EditorFilter) -> Swift.Bool
   public struct Step {
@@ -909,6 +910,9 @@ public struct EditorFilter : Swift.Equatable {
       get
     }
     @objc deinit
+  }
+  public var hashValue: Swift.Int {
+    get
   }
 }
 extension UIKit.UIImage {
