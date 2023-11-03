@@ -399,9 +399,10 @@ extension Combine.Publisher {
         }
     }
 }
-public struct NeuralEditorFilter : Swift.Equatable {
+public struct NeuralEditorFilter : Swift.Equatable, Swift.Hashable {
   public init(id: Swift.String, name: Swift.String, cover: Foundation.URL?, steps: [VDEVEditorFramework.NeuralEditorFilter.Step])
   public static func == (lhs: VDEVEditorFramework.NeuralEditorFilter, rhs: VDEVEditorFramework.NeuralEditorFilter) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
   public struct Step {
     public init?(id: Swift.String?, filterID: Swift.String?, url: Foundation.URL?, settings: VDEVEditorFramework.NeuralEditorFilter.StepSettings? = nil, neuralConfig: VDEVEditorFramework.NeuralConfig?)
   }
@@ -417,6 +418,9 @@ public struct NeuralEditorFilter : Swift.Equatable {
       get
     }
     @objc deinit
+  }
+  public var hashValue: Swift.Int {
+    get
   }
 }
 public protocol BaseApiClient {
