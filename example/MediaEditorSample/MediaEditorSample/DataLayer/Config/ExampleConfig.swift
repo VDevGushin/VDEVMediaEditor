@@ -41,10 +41,7 @@ extension VDEVMediaEditorConfig {
         return .init(
             security: Security(),
             subscription: Subscription(),
-            settings: EditorSettings(
-                resourceID: id,
-                repository: repository
-            ),
+            settings: EditorSettings(repository: repository),
             repository: repository,
             images: Images(),
             strings: Strings(),
@@ -76,11 +73,10 @@ private final class Security: VDEVMediaEditorSecurity {
       
 // MARK: - Editor Settings
 private final class EditorSettings: VDEVMediaEditorSettings {
-    private(set) var resourceID: String
     private(set) var title: String = ""
     private(set) var subTitle: String? = nil
     
-    private(set) var neetToGetStartMeta: Bool = false //нужна ли загрузка стартовой меты
+    private(set) var neetToGetStartMeta: Bool = true //нужна ли загрузка стартовой меты
     
     private(set) var withAttachTemplates: Bool = false
     private(set) var withAttachStickers: Bool = false
@@ -109,12 +105,8 @@ private final class EditorSettings: VDEVMediaEditorSettings {
         CanvasSettings()
     }()
     
-    init(
-        resourceID: String,
-        repository: VDEVMediaEditorResourceRepository
-    ) {
+    init(repository: VDEVMediaEditorResourceRepository) {
         defer { getMeta() }
-        self.resourceID = resourceID
         self.repository = repository
     }
     
@@ -153,12 +145,11 @@ private final class EditorSettings: VDEVMediaEditorSettings {
         }
         
         Task(priority: .high) {
-            let templatesDataSource = await repository.editorTemplates(
+            let attached = await repository.getAttachedTemplate(
                 challengeTitle: title,
                 renderSize: size
             )
             await MainActor.run {
-                let attached = templatesDataSource.first { $0.isAttached }?.variants.first?.items
                 completion(attached)
             }
         }

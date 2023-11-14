@@ -262,7 +262,6 @@ public protocol VDEVMediaEditorSettings {
   var canAddMusic: Swift.Bool { get }
   var сanRemoveOrChangeTemplate: Swift.Bool { get }
   var canvasSettings: any VDEVEditorFramework.VDEVMediaEditorCanvasSettings { get }
-  var resourceID: Swift.String { get }
   var title: Swift.String { get }
   var subTitle: Swift.String? { get }
   var withAttachTemplates: Swift.Bool { get }
@@ -490,6 +489,9 @@ extension VDEVEditorFramework.VDEVMediaEditorResourceRepository {
   #endif
   #if compiler(>=5.3) && $AsyncAwait
   final public func editorTemplates(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func getAttachedTemplate(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack.Variant.Item]?
   #endif
 }
 extension ImageIO.CGImagePropertyOrientation {
