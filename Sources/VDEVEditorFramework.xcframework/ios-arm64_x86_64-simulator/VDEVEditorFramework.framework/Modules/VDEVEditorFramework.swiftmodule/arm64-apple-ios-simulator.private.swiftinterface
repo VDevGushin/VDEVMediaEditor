@@ -265,7 +265,9 @@ public protocol VDEVMediaEditorSettings {
   var resourceID: Swift.String { get }
   var title: Swift.String { get }
   var subTitle: Swift.String? { get }
-  var withAttach: Swift.Bool { get }
+  var withAttachTemplates: Swift.Bool { get }
+  var withAttachStickers: Swift.Bool { get }
+  var neetToGetStartMeta: Swift.Bool { get }
   var sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService { get }
   var isLoading: Combine.CurrentValueSubject<Swift.Bool, Swift.Never> { get }
   func getStartTemplate(for size: CoreFoundation.CGSize, completion: @escaping ([VDEVEditorFramework.TemplatePack.Variant.Item]?) -> Swift.Void)
@@ -481,6 +483,7 @@ public protocol VDEVImageConfig {
   var currentItem: any VDEVEditorFramework.VDEVMediaEditorButtonsCurrentItemImages { get }
   var textEdit: any VDEVEditorFramework.VDEVMediaEditorButtonsTextEditingImages { get }
   var typed: any VDEVEditorFramework.VDEVMediaEditorButtonsTypedImages { get }
+  var typedAttached: any VDEVEditorFramework.VDEVMediaEditorButtonsTypedAttachedImages { get }
   var adjustments: any VDEVEditorFramework.VDEVAdjustmentsButtonsCommonImages { get }
 }
 public protocol VDEVAdjustmentsButtonsCommonImages {
@@ -553,6 +556,10 @@ public protocol VDEVMediaEditorButtonsTypedImages {
   var typeTemplate: UIKit.UIImage { get }
   var typeText: UIKit.UIImage { get }
   var typeVideo: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorButtonsTypedAttachedImages {
+  var typeStickers: UIKit.UIImage { get }
+  var typeTemplate: UIKit.UIImage { get }
 }
 public protocol VDEVMediaEditorStrings {
   var paste: Swift.String { get }
@@ -639,9 +646,10 @@ public protocol VDEVMediaEditorStrings {
 }
 public struct StartMetaConfig {
   public let isAttachedTemplate: Swift.Bool
+  public let isAttachedStickerPacks: Swift.Bool
   public let title: Swift.String
   public let subTitle: Swift.String
-  public init(isAttachedTemplate: Swift.Bool, title: Swift.String, subTitle: Swift.String)
+  public init(isAttachedTemplate: Swift.Bool, isAttachedStickerPacks: Swift.Bool, title: Swift.String, subTitle: Swift.String)
 }
 public protocol VDEVMediaEditorSourceService {
   #if compiler(>=5.3) && $AsyncAwait
@@ -777,12 +785,6 @@ public struct CanvasTextStyle : Swift.CaseIterable, Swift.Equatable {
   public typealias AllCases = [VDEVEditorFramework.CanvasTextStyle]
 }
 extension VDEVEditorFramework.CanvasTextStyle {
-  public static let `default`: VDEVEditorFramework.CanvasTextStyle
-  public static let basicText: VDEVEditorFramework.CanvasTextStyle
-  public static let boldText: VDEVEditorFramework.CanvasTextStyle
-  public static let serifText: VDEVEditorFramework.CanvasTextStyle
-  public static let mono: VDEVEditorFramework.CanvasTextStyle
-  public static let t1: VDEVEditorFramework.CanvasTextStyle
   public static var allCases: [VDEVEditorFramework.CanvasTextStyle] {
     get
   }

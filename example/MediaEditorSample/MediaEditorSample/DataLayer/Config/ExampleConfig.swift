@@ -8,7 +8,22 @@
 import UIKit
 import Combine
 import VDEVEditorFramework
+import OSLog
 
+/*
+ - Main
+ - Subscription
+ - Security
+ - Editor Settings
+ - Canvas
+ - Images
+ - Strings
+ - Neural Config
+ - Logger
+ - Result
+ */
+
+// MARK: - Main
 extension VDEVMediaEditorConfig {
     static var exampleConfig: Self {
         let source = NetworkAdapter(client: NetworkClientImpl())
@@ -20,7 +35,10 @@ extension VDEVMediaEditorConfig {
         return .init(
             security: Security(),
             subscription: Subscription(),
-            settings: EditorSettings(id, sourceService: source),
+            settings: EditorSettings(
+                resourceID: id,
+                sourceService: source
+            ),
             networkService: source,
             images: Images(),
             strings: Strings(),
@@ -45,18 +63,27 @@ private final class Subscription: VDEVMediaEditorSubscription {
     }
 }
 
-// MARK: - Editor settings
+// MARK: - Security
+private final class Security: VDEVMediaEditorSecurity {
+    var apiKey: String { "2671176eac-0370c6-20244bd3-8a93-f738506a7fd2_sample" }
+}
+      
+// MARK: - Editor Settings
 private final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var resourceID: String
     private(set) var title: String = ""
     private(set) var subTitle: String? = nil
-    private(set) var withAttach: Bool = false
+    
+    private(set) var neetToGetStartMeta: Bool = false //нужна ли загрузка стартовой меты
+    
+    private(set) var withAttachTemplates: Bool = false
+    private(set) var withAttachStickers: Bool = false
     
     private(set) var sourceService: VDEVMediaEditorSourceService
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
-    // var aspectRatio: CGFloat? { 9/16 }
-    var aspectRatio: CGFloat? { nil }
+    var aspectRatio: CGFloat? { 9/16 }
+    // var aspectRatio: CGFloat? { nil }
     var isInternalModule: Bool { false }
     var needGuideLinesGrid: Bool { true }
     var showCommonSettings: Bool { true }
@@ -76,41 +103,53 @@ private final class EditorSettings: VDEVMediaEditorSettings {
         CanvasSettings()
     }()
     
-    init(_ resourceID: String,
-         sourceService: VDEVMediaEditorSourceService) {
-        defer {
-            getMeta()
-        }
+    init(
+        resourceID: String,
+        sourceService: VDEVMediaEditorSourceService
+    ) {
+        defer { getMeta() }
         self.resourceID = resourceID
         self.sourceService = sourceService
     }
     
     private func getMeta() {
         isLoading.send(true)
+        
         title = "SHARE YOUR RESULT!"
         subTitle = "+ ADD MEDIA"
-        guard withAttach else {
+        
+        guard neetToGetStartMeta else {
             self.isLoading.send(false)
             return
         }
         
         isLoading.send(true)
         Task {
-            let meta = await sourceService.startMeta(forChallenge: resourceID) ?? .init(isAttachedTemplate: false, title: "", subTitle: "")
+            let meta = await sourceService.startMeta(forChallenge: resourceID) ??
+                .init(
+                    isAttachedTemplate: false,
+                    isAttachedStickerPacks: false,
+                    title: "",
+                    subTitle: ""
+                )
             
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
                 self.title = meta.title
                 self.subTitle = meta.subTitle
-                self.withAttach = meta.isAttachedTemplate
+                self.withAttachTemplates = meta.isAttachedTemplate
+                self.withAttachStickers = meta.isAttachedStickerPacks
                 self.isLoading.send(false)
             }
         }
     }
     
-    func getStartTemplate(for size: CGSize,
-                          completion: @escaping ([TemplatePack.Variant.Item]?) -> Void) {
-        guard withAttach else { return completion(nil) }
+    func getStartTemplate(
+        for size: CGSize,
+        completion: @escaping ([TemplatePack.Variant.Item]?
+        ) -> Void) {
+        
+        guard withAttachTemplates else { return completion(nil) }
         
         Task {
             guard let templatesDataSource = try? await sourceService.editorTemplates(forChallenge: resourceID, challengeTitle: title, renderSize: size) else {
@@ -124,13 +163,6 @@ private final class EditorSettings: VDEVMediaEditorSettings {
             }
         }
     }
-}
-
-// MARK: - Result
-final class ResultSettings: VDEVMediaEditorResultSettings {
-    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(false)
-    var resolution: VDEVMediaResolution { .fullHD }
-    var maximumVideoDuration: Double { 15.0 }
 }
 
 // MARK: - Canvas
@@ -154,7 +186,14 @@ private struct Images: VDEVImageConfig {
     
     var typed: VDEVMediaEditorButtonsTypedImages = Typed()
     
+    var typedAttached: VDEVMediaEditorButtonsTypedAttachedImages = TypedAttached()
+    
     var adjustments: VDEVAdjustmentsButtonsCommonImages = AdjustmentsItem()
+    
+    struct TypedAttached: VDEVMediaEditorButtonsTypedAttachedImages {
+        var typeStickers: UIImage = .init(named: "TypeStickersAttached")!
+        var typeTemplate: UIImage = .init(named: "TypeTemplateAttached")!
+    }
     
     struct AdjustmentsItem: VDEVAdjustmentsButtonsCommonImages {
         var blur: UIImage = .init(named: "blur")!
@@ -250,7 +289,7 @@ private struct Strings: VDEVMediaEditorStrings {
     let mask = "MASK"
     let filter = "FILTER"
     let texture = "TEXTURE"
-    let adjustments = "ADJUSTMENTS"
+    let adjustments = "COLOR"
     let crop = "CROP"
     let removeBack = "REMOVE BG"
     let editText = "EDIT"
@@ -263,7 +302,7 @@ private struct Strings: VDEVMediaEditorStrings {
     let bringToBottom = "BOTTOM"
     let selectMedia = "SELECT MEDIA"
     let colorFilter = "COLOR FILTER"
-    let neuralFilter = "AI FILTER"
+    let neuralFilter = "NEURAL"
     let close = "CLOSE"
     let layers = "LAYERS"
     let templatePack = "TEMPLATE PACK"
@@ -318,12 +357,7 @@ private struct Strings: VDEVMediaEditorStrings {
     let horizontal = "HORIZONTAL"
 }
 
-// MARK: - Security
-private final class Security: VDEVMediaEditorSecurity {
-    var apiKey: String { "2671176eac-0370c6-20244bd3-8a93-f738506a7fd2_sample" }
-}
-
-// MARK: - Neural
+// MARK: - Neural Config
 private struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
     //Продакшн: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/app/image-to-image`
     //Test: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/test/image-to-image`
@@ -363,4 +397,11 @@ private final class Logger: VDEVLogger {
     func s(_ message: Any) {
         print("===>", message)
     }
+}
+
+// MARK: - Result
+final class ResultSettings: VDEVMediaEditorResultSettings {
+    var needAutoEnhance: CurrentValueSubject<Bool, Never> = .init(false)
+    var resolution: VDEVMediaResolution { .fullHD }
+    var maximumVideoDuration: Double { 15.0 }
 }

@@ -21,9 +21,16 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
         }
         let title = result.titleLocalized
         let subTitle = result.subtitleLocalized
+        let hasAttachedStickerPacks = result.hasAttachedStickerPacks
         let isAttachedTemplate = result.appAttachedEditorTemplate != nil
-        return .init(isAttachedTemplate: isAttachedTemplate, title: title, subTitle: subTitle)
+        return .init(
+            isAttachedTemplate: isAttachedTemplate,
+            isAttachedStickerPacks: hasAttachedStickerPacks,
+            title: title,
+            subTitle: subTitle
+        )
     }
+
 
     func editorTemplates(forChallenge baseChallengeId: String, challengeTitle: String, renderSize: CGSize) async throws -> [TemplatePack] {
         let myTemplates = await VDEVDataBuilder.templates(canvasSize: renderSize)
