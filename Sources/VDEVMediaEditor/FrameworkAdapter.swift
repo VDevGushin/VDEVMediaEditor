@@ -41,5 +41,6 @@ public typealias ImageProcessorHelper = VDEVEditorFramework.ImageProcessorHelper
 public typealias VDEVMediaEditorCanvasSettings = VDEVEditorFramework.VDEVMediaEditorCanvasSettings
 public typealias VDEVMediaEditorSubscription = VDEVEditorFramework.VDEVMediaEditorSubscription
 public typealias VDEVMediaEditorSubscriptionStatus = VDEVEditorFramework.VDEVMediaEditorSubscriptionStatus
+public typealias VDEVMediaEditorResourceRepository = VDEVEditorFramework.VDEVMediaEditorResourceRepository
 
 public let kPlaceholders = VDEVEditorFramework.kPlaceholders

@@ -26,20 +26,26 @@ import OSLog
 // MARK: - Main
 extension VDEVMediaEditorConfig {
     static var exampleConfig: Self {
-        let source = NetworkAdapter(client: NetworkClientImpl())
+        
         // let id = "f4ae6408-4dde-43fe-b52d-f9d87a0e68c4"
        // let id = "9b22fbb1-554c-4e6b-94a6-96793028c20b"
        // let id = "d8281e91-4768-4e1f-9e33-24a0ee160acc"
         let id = "df04ed9e-e768-4e3c-ba52-66773d98a4a6"
         // let id = "4b09ff7b-8978-45fd-91f7-af10d6bcb529"
+        
+        let repository = VDEVMediaEditorResourceRepository(
+            baseChallengeId: id,
+            sourceService: NetworkAdapter(client: NetworkClientImpl())
+        )
+        
         return .init(
             security: Security(),
             subscription: Subscription(),
             settings: EditorSettings(
                 resourceID: id,
-                sourceService: source
+                repository: repository
             ),
-            networkService: source,
+            repository: repository,
             images: Images(),
             strings: Strings(),
             resultSettings: ResultSettings(),
@@ -79,7 +85,7 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var withAttachTemplates: Bool = false
     private(set) var withAttachStickers: Bool = false
     
-    private(set) var sourceService: VDEVMediaEditorSourceService
+    private(set) var repository: VDEVMediaEditorResourceRepository
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
     
     var aspectRatio: CGFloat? { 9/16 }
@@ -105,33 +111,27 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     
     init(
         resourceID: String,
-        sourceService: VDEVMediaEditorSourceService
+        repository: VDEVMediaEditorResourceRepository
     ) {
         defer { getMeta() }
         self.resourceID = resourceID
-        self.sourceService = sourceService
+        self.repository = repository
     }
     
     private func getMeta() {
-        isLoading.send(true)
-        
         title = "SHARE YOUR RESULT!"
         subTitle = "+ ADD MEDIA"
         
-        guard neetToGetStartMeta else {
-            self.isLoading.send(false)
-            return
-        }
-        
-        isLoading.send(true)
-        Task {
-            let meta = await sourceService.startMeta(forChallenge: resourceID) ??
-                .init(
-                    isAttachedTemplate: false,
-                    isAttachedStickerPacks: false,
-                    title: "",
-                    subTitle: ""
-                )
+        Task(priority: .high) {
+            isLoading.send(true)
+            await repository.execute()
+            
+            guard neetToGetStartMeta else {
+                isLoading.send(false)
+                return
+            }
+            
+            let meta = await repository.meta
             
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
@@ -146,17 +146,17 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     
     func getStartTemplate(
         for size: CGSize,
-        completion: @escaping ([TemplatePack.Variant.Item]?
-        ) -> Void) {
+        completion: @escaping ([TemplatePack.Variant.Item]?) -> Void
+    ) {
+        guard withAttachTemplates else {
+            return completion(nil)
+        }
         
-        guard withAttachTemplates else { return completion(nil) }
-        
-        Task {
-            guard let templatesDataSource = try? await sourceService.editorTemplates(forChallenge: resourceID, challengeTitle: title, renderSize: size) else {
-                await MainActor.run { completion(nil) }
-                return
-            }
-            
+        Task(priority: .high) {
+            let templatesDataSource = await repository.editorTemplates(
+                challengeTitle: title,
+                renderSize: size
+            )
             await MainActor.run {
                 let attached = templatesDataSource.first { $0.isAttached }?.variants.first?.items
                 completion(attached)
