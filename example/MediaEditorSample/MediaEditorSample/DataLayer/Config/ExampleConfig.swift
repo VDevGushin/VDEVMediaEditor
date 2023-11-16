@@ -76,10 +76,14 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     private(set) var title: String = ""
     private(set) var subTitle: String? = nil
     
-    private(set) var neetToGetStartMeta: Bool = true //нужна ли загрузка стартовой меты
+    private(set) var neetToGetStartMeta: Bool = false //нужна ли загрузка стартовой меты
     
-    private(set) var withAttachTemplates: Bool = false
-    private(set) var withAttachStickers: Bool = false
+    private(set) var hasAttachedMasks: Bool = false
+    private(set) var hasAttachedFilters: Bool = false
+    private(set) var hasAttachedTextures: Bool = false
+    private(set) var hasAttachedNeuralFilters: Bool = true
+    private(set) var hasAttachedTemplates: Bool = false
+    private(set) var hasAttachedStickerPacks: Bool = false
     
     private(set) var repository: VDEVMediaEditorResourceRepository
     private(set) var isLoading = CurrentValueSubject<Bool, Never>(true)
@@ -129,8 +133,12 @@ private final class EditorSettings: VDEVMediaEditorSettings {
                 guard let self = self else { return }
                 self.title = meta.title
                 self.subTitle = meta.subTitle
-                self.withAttachTemplates = meta.isAttachedTemplate
-                self.withAttachStickers = meta.isAttachedStickerPacks
+                self.hasAttachedMasks = meta.hasAttachedMasks
+                self.hasAttachedFilters = meta.hasAttachedFilters
+                self.hasAttachedTextures = meta.hasAttachedTextures
+                self.hasAttachedTemplates = meta.hasAttachedTemplates
+                self.hasAttachedStickerPacks = meta.hasAttachedStickerPacks
+                self.hasAttachedNeuralFilters = meta.hasAttachedNeuralFilters
                 self.isLoading.send(false)
             }
         }
@@ -140,12 +148,12 @@ private final class EditorSettings: VDEVMediaEditorSettings {
         for size: CGSize,
         completion: @escaping ([TemplatePack.Variant.Item]?) -> Void
     ) {
-        guard withAttachTemplates else {
+        guard hasAttachedTemplates else {
             return completion(nil)
         }
         
         Task(priority: .high) {
-            let attached = await repository.getAttachedTemplate(
+            let attached = await repository.attachedTemplate(
                 challengeTitle: title,
                 renderSize: size
             )
@@ -173,6 +181,8 @@ private struct Images: VDEVImageConfig {
     
     var currentItem: VDEVMediaEditorButtonsCurrentItemImages = CurrentItem()
     
+    var currentItemAttached: VDEVMediaEditorButtonsCurrentItemAttachedImages = CurrentItemAttached()
+    
     var textEdit: VDEVMediaEditorButtonsTextEditingImages = TextEdit()
     
     var typed: VDEVMediaEditorButtonsTypedImages = Typed()
@@ -180,6 +190,13 @@ private struct Images: VDEVImageConfig {
     var typedAttached: VDEVMediaEditorButtonsTypedAttachedImages = TypedAttached()
     
     var adjustments: VDEVAdjustmentsButtonsCommonImages = AdjustmentsItem()
+    
+    struct CurrentItemAttached: VDEVMediaEditorButtonsCurrentItemAttachedImages {
+        var currentItemFilterAttached: UIImage = .init(named: "CurrentItemFilterAttached")!
+        var currentItemMaskAttached: UIImage = .init(named: "CurrentItemMaskAttached")!
+        var currentItemTextureAttached: UIImage = .init(named: "CurrentItemTextureAttached")!
+        var currentItemAIFilterAttached: UIImage = .init(named: "CurrentItemAIFilterAttached")!
+    }
     
     struct TypedAttached: VDEVMediaEditorButtonsTypedAttachedImages {
         var typeStickers: UIImage = .init(named: "TypeStickersAttached")!

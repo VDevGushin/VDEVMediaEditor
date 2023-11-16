@@ -2,9 +2,13 @@ query GetChallengeMeta($baseChallengeId: ID!) {
   baseChallenge(id: $baseChallengeId) {
     titleLocalized
     subtitleLocalized
-    hasAttachedStickerPacks
-    appAttachedEditorTemplate {
-      isAttached
+    editorMetadata {
+      hasAttachedMasks
+      hasAttachedFilters
+      hasAttachedTextures
+      hasAttachedTemplates
+      hasAttachedStickerPacks
+      hasAttachedNeuralFilters
     }
   }
 }

@@ -1915,10 +1915,14 @@ public final class GetChallengeMetaQuery: GraphQLQuery {
         __typename
         titleLocalized
         subtitleLocalized
-        hasAttachedStickerPacks
-        appAttachedEditorTemplate {
+        editorMetadata {
           __typename
-          isAttached
+          hasAttachedMasks
+          hasAttachedFilters
+          hasAttachedTextures
+          hasAttachedTemplates
+          hasAttachedStickerPacks
+          hasAttachedNeuralFilters
         }
       }
     }
@@ -1972,8 +1976,7 @@ public final class GetChallengeMetaQuery: GraphQLQuery {
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
           GraphQLField("titleLocalized", type: .nonNull(.scalar(String.self))),
           GraphQLField("subtitleLocalized", type: .nonNull(.scalar(String.self))),
-          GraphQLField("hasAttachedStickerPacks", type: .nonNull(.scalar(Bool.self))),
-          GraphQLField("appAttachedEditorTemplate", type: .object(AppAttachedEditorTemplate.selections)),
+          GraphQLField("editorMetadata", type: .nonNull(.object(EditorMetadatum.selections))),
         ]
       }
 
@@ -1983,8 +1986,8 @@ public final class GetChallengeMetaQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(titleLocalized: String, subtitleLocalized: String, hasAttachedStickerPacks: Bool, appAttachedEditorTemplate: AppAttachedEditorTemplate? = nil) {
-        self.init(unsafeResultMap: ["__typename": "BaseChallenge", "titleLocalized": titleLocalized, "subtitleLocalized": subtitleLocalized, "hasAttachedStickerPacks": hasAttachedStickerPacks, "appAttachedEditorTemplate": appAttachedEditorTemplate.flatMap { (value: AppAttachedEditorTemplate) -> ResultMap in value.resultMap }])
+      public init(titleLocalized: String, subtitleLocalized: String, editorMetadata: EditorMetadatum) {
+        self.init(unsafeResultMap: ["__typename": "BaseChallenge", "titleLocalized": titleLocalized, "subtitleLocalized": subtitleLocalized, "editorMetadata": editorMetadata.resultMap])
       }
 
       public var __typename: String {
@@ -2014,31 +2017,27 @@ public final class GetChallengeMetaQuery: GraphQLQuery {
         }
       }
 
-      public var hasAttachedStickerPacks: Bool {
+      public var editorMetadata: EditorMetadatum {
         get {
-          return resultMap["hasAttachedStickerPacks"]! as! Bool
+          return EditorMetadatum(unsafeResultMap: resultMap["editorMetadata"]! as! ResultMap)
         }
         set {
-          resultMap.updateValue(newValue, forKey: "hasAttachedStickerPacks")
+          resultMap.updateValue(newValue.resultMap, forKey: "editorMetadata")
         }
       }
 
-      public var appAttachedEditorTemplate: AppAttachedEditorTemplate? {
-        get {
-          return (resultMap["appAttachedEditorTemplate"] as? ResultMap).flatMap { AppAttachedEditorTemplate(unsafeResultMap: $0) }
-        }
-        set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "appAttachedEditorTemplate")
-        }
-      }
-
-      public struct AppAttachedEditorTemplate: GraphQLSelectionSet {
-        public static let possibleTypes: [String] = ["EditorTemplate"]
+      public struct EditorMetadatum: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["BaseChallengeEditorMetadata"]
 
         public static var selections: [GraphQLSelection] {
           return [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("isAttached", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("hasAttachedMasks", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("hasAttachedFilters", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("hasAttachedTextures", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("hasAttachedTemplates", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("hasAttachedStickerPacks", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("hasAttachedNeuralFilters", type: .nonNull(.scalar(Bool.self))),
           ]
         }
 
@@ -2048,8 +2047,8 @@ public final class GetChallengeMetaQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(isAttached: Bool) {
-          self.init(unsafeResultMap: ["__typename": "EditorTemplate", "isAttached": isAttached])
+        public init(hasAttachedMasks: Bool, hasAttachedFilters: Bool, hasAttachedTextures: Bool, hasAttachedTemplates: Bool, hasAttachedStickerPacks: Bool, hasAttachedNeuralFilters: Bool) {
+          self.init(unsafeResultMap: ["__typename": "BaseChallengeEditorMetadata", "hasAttachedMasks": hasAttachedMasks, "hasAttachedFilters": hasAttachedFilters, "hasAttachedTextures": hasAttachedTextures, "hasAttachedTemplates": hasAttachedTemplates, "hasAttachedStickerPacks": hasAttachedStickerPacks, "hasAttachedNeuralFilters": hasAttachedNeuralFilters])
         }
 
         public var __typename: String {
@@ -2061,12 +2060,57 @@ public final class GetChallengeMetaQuery: GraphQLQuery {
           }
         }
 
-        public var isAttached: Bool {
+        public var hasAttachedMasks: Bool {
           get {
-            return resultMap["isAttached"]! as! Bool
+            return resultMap["hasAttachedMasks"]! as! Bool
           }
           set {
-            resultMap.updateValue(newValue, forKey: "isAttached")
+            resultMap.updateValue(newValue, forKey: "hasAttachedMasks")
+          }
+        }
+
+        public var hasAttachedFilters: Bool {
+          get {
+            return resultMap["hasAttachedFilters"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "hasAttachedFilters")
+          }
+        }
+
+        public var hasAttachedTextures: Bool {
+          get {
+            return resultMap["hasAttachedTextures"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "hasAttachedTextures")
+          }
+        }
+
+        public var hasAttachedTemplates: Bool {
+          get {
+            return resultMap["hasAttachedTemplates"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "hasAttachedTemplates")
+          }
+        }
+
+        public var hasAttachedStickerPacks: Bool {
+          get {
+            return resultMap["hasAttachedStickerPacks"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "hasAttachedStickerPacks")
+          }
+        }
+
+        public var hasAttachedNeuralFilters: Bool {
+          get {
+            return resultMap["hasAttachedNeuralFilters"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "hasAttachedNeuralFilters")
           }
         }
       }

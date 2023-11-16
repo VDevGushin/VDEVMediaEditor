@@ -21,16 +21,23 @@ final class NetworkAdapter: VDEVMediaEditorSourceService {
         }
         let title = result.titleLocalized
         let subTitle = result.subtitleLocalized
-        let hasAttachedStickerPacks = result.hasAttachedStickerPacks
-        let isAttachedTemplate = result.appAttachedEditorTemplate != nil
+        let hasAttachedMasks = result.editorMetadata.hasAttachedMasks
+        let hasAttachedFilters = result.editorMetadata.hasAttachedFilters
+        let hasAttachedTextures = result.editorMetadata.hasAttachedTextures
+        let hasAttachedTemplates = result.editorMetadata.hasAttachedTemplates
+        let hasAttachedStickerPacks = result.editorMetadata.hasAttachedStickerPacks
+        let hasAttachedNeuralFilters = result.editorMetadata.hasAttachedNeuralFilters
         return .init(
-            isAttachedTemplate: isAttachedTemplate,
-            isAttachedStickerPacks: hasAttachedStickerPacks,
             title: title,
-            subTitle: subTitle
+            subTitle: subTitle,
+            hasAttachedMasks: hasAttachedMasks,
+            hasAttachedFilters: hasAttachedFilters,
+            hasAttachedTextures: hasAttachedTextures,
+            hasAttachedTemplates: hasAttachedTemplates,
+            hasAttachedStickerPacks: hasAttachedStickerPacks,
+            hasAttachedNeuralFilters: hasAttachedNeuralFilters
         )
     }
-
 
     func editorTemplates(forChallenge baseChallengeId: String, challengeTitle: String, renderSize: CGSize) async throws -> [TemplatePack] {
         let myTemplates = await VDEVDataBuilder.templates(canvasSize: renderSize)

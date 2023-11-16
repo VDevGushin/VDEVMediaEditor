@@ -264,9 +264,13 @@ public protocol VDEVMediaEditorSettings {
   var canvasSettings: any VDEVEditorFramework.VDEVMediaEditorCanvasSettings { get }
   var title: Swift.String { get }
   var subTitle: Swift.String? { get }
-  var withAttachTemplates: Swift.Bool { get }
-  var withAttachStickers: Swift.Bool { get }
   var neetToGetStartMeta: Swift.Bool { get }
+  var hasAttachedMasks: Swift.Bool { get }
+  var hasAttachedFilters: Swift.Bool { get }
+  var hasAttachedTextures: Swift.Bool { get }
+  var hasAttachedNeuralFilters: Swift.Bool { get }
+  var hasAttachedTemplates: Swift.Bool { get }
+  var hasAttachedStickerPacks: Swift.Bool { get }
   var repository: VDEVEditorFramework.VDEVMediaEditorResourceRepository { get }
   var isLoading: Combine.CurrentValueSubject<Swift.Bool, Swift.Never> { get }
   func getStartTemplate(for size: CoreFoundation.CGSize, completion: @escaping ([VDEVEditorFramework.TemplatePack.Variant.Item]?) -> Swift.Void)
@@ -480,18 +484,18 @@ final public class VDEVMediaEditorResourceRepository {
     get async
   }
   #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func templates(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func attachedTemplate(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack.Variant.Item]?
+  #endif
   public init(baseChallengeId: Swift.String, sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService)
   @objc deinit
 }
 extension VDEVEditorFramework.VDEVMediaEditorResourceRepository {
   #if compiler(>=5.3) && $AsyncAwait
   final public func execute() async
-  #endif
-  #if compiler(>=5.3) && $AsyncAwait
-  final public func editorTemplates(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack]
-  #endif
-  #if compiler(>=5.3) && $AsyncAwait
-  final public func getAttachedTemplate(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack.Variant.Item]?
   #endif
 }
 extension ImageIO.CGImagePropertyOrientation {
@@ -528,6 +532,7 @@ public protocol VDEVMediaEditorSecurity {
 public protocol VDEVImageConfig {
   var common: any VDEVEditorFramework.VDEVMediaEditorButtonsCommonImages { get }
   var currentItem: any VDEVEditorFramework.VDEVMediaEditorButtonsCurrentItemImages { get }
+  var currentItemAttached: any VDEVEditorFramework.VDEVMediaEditorButtonsCurrentItemAttachedImages { get }
   var textEdit: any VDEVEditorFramework.VDEVMediaEditorButtonsTextEditingImages { get }
   var typed: any VDEVEditorFramework.VDEVMediaEditorButtonsTypedImages { get }
   var typedAttached: any VDEVEditorFramework.VDEVMediaEditorButtonsTypedAttachedImages { get }
@@ -586,6 +591,12 @@ public protocol VDEVMediaEditorButtonsCurrentItemImages {
   var currentItemSoundON: UIKit.UIImage { get }
   var currentItemSoundOFF: UIKit.UIImage { get }
   var currentItemAIFilter: UIKit.UIImage { get }
+}
+public protocol VDEVMediaEditorButtonsCurrentItemAttachedImages {
+  var currentItemAIFilterAttached: UIKit.UIImage { get }
+  var currentItemFilterAttached: UIKit.UIImage { get }
+  var currentItemMaskAttached: UIKit.UIImage { get }
+  var currentItemTextureAttached: UIKit.UIImage { get }
 }
 public protocol VDEVMediaEditorButtonsTextEditingImages {
   var textEditingAlignCenter: UIKit.UIImage { get }
@@ -692,11 +703,15 @@ public protocol VDEVMediaEditorStrings {
   var videos: Swift.String { get }
 }
 public struct StartMetaConfig {
-  public let isAttachedTemplate: Swift.Bool
-  public let isAttachedStickerPacks: Swift.Bool
   public let title: Swift.String
   public let subTitle: Swift.String
-  public init(isAttachedTemplate: Swift.Bool, isAttachedStickerPacks: Swift.Bool, title: Swift.String, subTitle: Swift.String)
+  public let hasAttachedMasks: Swift.Bool
+  public let hasAttachedFilters: Swift.Bool
+  public let hasAttachedTextures: Swift.Bool
+  public let hasAttachedTemplates: Swift.Bool
+  public let hasAttachedStickerPacks: Swift.Bool
+  public let hasAttachedNeuralFilters: Swift.Bool
+  public init(title: Swift.String, subTitle: Swift.String, hasAttachedMasks: Swift.Bool, hasAttachedFilters: Swift.Bool, hasAttachedTextures: Swift.Bool, hasAttachedTemplates: Swift.Bool, hasAttachedStickerPacks: Swift.Bool, hasAttachedNeuralFilters: Swift.Bool)
 }
 public protocol VDEVMediaEditorSourceService {
   #if compiler(>=5.3) && $AsyncAwait
