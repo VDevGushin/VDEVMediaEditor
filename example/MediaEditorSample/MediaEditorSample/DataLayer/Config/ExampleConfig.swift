@@ -105,6 +105,9 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     var сanRemoveOrChangeTemplate: Bool { true }
     var showNeuralFilters: Bool { true }
     
+    var canLockAllEditor: Bool { true }
+    var isLocked: CurrentValueSubject<Bool, Never> = .init(false)
+    
     var canvasSettings: VDEVMediaEditorCanvasSettings = {
         CanvasSettings()
     }()

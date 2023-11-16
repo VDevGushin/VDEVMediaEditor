@@ -274,6 +274,8 @@ public protocol VDEVMediaEditorSettings {
   var repository: VDEVEditorFramework.VDEVMediaEditorResourceRepository { get }
   var isLoading: Combine.CurrentValueSubject<Swift.Bool, Swift.Never> { get }
   func getStartTemplate(for size: CoreFoundation.CGSize, completion: @escaping ([VDEVEditorFramework.TemplatePack.Variant.Item]?) -> Swift.Void)
+  var canLockAllEditor: Swift.Bool { get }
+  var isLocked: Combine.CurrentValueSubject<Swift.Bool, Swift.Never> { get }
 }
 public protocol ApiClient : VDEVEditorFramework.BaseApiClient {
   func execute<Operation>(_ operation: Operation) -> Combine.AnyPublisher<Operation.Response, any Swift.Error> where Operation : VDEVEditorFramework.ApiOperation
