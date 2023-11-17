@@ -572,9 +572,11 @@ public protocol VDEVMediaEditorButtonsCommonImages {
   var share: UIKit.UIImage { get }
   var xmark: UIKit.UIImage { get }
   var resultGradient: UIKit.UIImage { get }
+  var undoCircle: UIKit.UIImage { get }
   var undo: UIKit.UIImage { get }
 }
 public protocol VDEVMediaEditorButtonsCurrentItemImages {
+  var currentItemRemove: UIKit.UIImage { get }
   var currentIteDublicate: UIKit.UIImage { get }
   var currentItemAdjustments: UIKit.UIImage { get }
   var currentItemBringToBottom: UIKit.UIImage { get }
@@ -622,6 +624,14 @@ public protocol VDEVMediaEditorButtonsTypedAttachedImages {
   var typeTemplate: UIKit.UIImage { get }
 }
 public protocol VDEVMediaEditorStrings {
+  var cancelEditorTitle: Swift.String { get }
+  var cancelEditorMessage: Swift.String { get }
+  var cancelEditorYES: Swift.String { get }
+  var cancelEditorNO: Swift.String { get }
+  var selected: Swift.String { get }
+  var lock: Swift.String { get }
+  var unlock: Swift.String { get }
+  var undo: Swift.String { get }
   var paste: Swift.String { get }
   var brightness: Swift.String { get }
   var contrast: Swift.String { get }

@@ -226,6 +226,7 @@ private struct Images: VDEVImageConfig {
     }
     
     struct CurrentItem: VDEVMediaEditorButtonsCurrentItemImages {
+        var currentItemRemove: UIImage = .init(named: "CurrentItemRemove")!
         var currentIteDublicate: UIImage = .init(named: "CurrentIteDublicate")!
         var currentItemAdjustments: UIImage = .init(named: "CurrentItemAdjustments")!
         var currentItemBringToBottom: UIImage = .init(named: "CurrentItemBringToBottom")!
@@ -279,12 +280,21 @@ private struct Images: VDEVImageConfig {
         var share: UIImage = .init(named: "Share")!
         var xmark: UIImage = .init(named: "Xmark")!
         var resultGradient: UIImage = .init(named: "BackGradient")!
+        var undoCircle: UIImage = .init(named: "UndoCircle")!
         var undo: UIImage = .init(named: "Undo")!
     }
 }
 
 // MARK: - Strings
 private struct Strings: VDEVMediaEditorStrings {
+    let cancelEditorTitle = "Close editor"
+    let cancelEditorMessage = "Are you sure want to close the editor?"
+    let cancelEditorYES = "YES"
+    let cancelEditorNO = "NO"
+    let selected = "SELECTED"
+    let lock = "LOCK"
+    let unlock = "UNLOCK"
+    let undo = "UNDO"
     let photos = "Photos"
     let videos = "Videos"
     let addPhotoOrVideo = "MEDIA"
