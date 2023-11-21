@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Type=Filter.png",
+      "filename" : "CurrentItemFilterAttached.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Type=Filter@2x.png",
+      "filename" : "CurrentItemFilterAttached@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Type=Filter@3x.png",
+      "filename" : "CurrentItemFilterAttached@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

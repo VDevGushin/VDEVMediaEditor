@@ -267,7 +267,7 @@ private struct Images: VDEVImageConfig {
     }
     
     struct Common: VDEVMediaEditorButtonsCommonImages {
-        var add: UIImage = .init(named: "Add")!
+        var add: UIImage = .init(named: "AddButton")!
         var addMediaM: UIImage = .init(named: "AddMediaM")!
         var backArrow: UIImage = .init(named: "BackArrow")!
         var bg: UIImage = .init(named: "Bg")!
