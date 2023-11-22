@@ -306,7 +306,7 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		rd6KQRWhHasSgMBPrFIWVKYVyq8=
+		Np9pnn6+c1DM+a3Yiq4sDxPyU18=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -322,11 +322,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		xL4IXDPZo+qlZJ79zjpJZ/NMlSw=
+		FQAHzMEbcs5Bh3HQtx5zRJCmZ18=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		rd6KQRWhHasSgMBPrFIWVKYVyq8=
+		Np9pnn6+c1DM+a3Yiq4sDxPyU18=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -342,7 +342,7 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		3HWea8IgOrwcqbaWM/wHvA5sw1c=
+		i9tBhkZPokZG2SYLsvSZVltYm6s=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -1173,7 +1173,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Bj2qBxfBh0WWcUEIPHJpsu0GtiCMm2ipxHhp4vzv+xc=
+			KpRHfk5ErK87PWGNbPfcfjJjHbx4wVkrUYcfqIQGd2M=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
@@ -1201,14 +1201,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			OdgNEPEzpzSz/9cxLPBqcqy3SELOxWR0QXKXQPk6tec=
+			mWWx52hfa5WKShfWESlJsl+dgEzbmi0X/YSFXG/A1Es=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Bj2qBxfBh0WWcUEIPHJpsu0GtiCMm2ipxHhp4vzv+xc=
+			KpRHfk5ErK87PWGNbPfcfjJjHbx4wVkrUYcfqIQGd2M=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
@@ -1236,7 +1236,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			sNA6MxLaQfgkPGF7vcX8ubyG75pCT/4x1KGe1jbH4hc=
+			VeQCLoVD2oU2tFAkBQGKJLc33NrAgJcR625NwF5nTV4=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

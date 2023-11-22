@@ -33,7 +33,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/SwiftUIX/SwiftUIX",
-            from: "0.1.7"
+            from: "0.1.9"
         ),
     ],
     targets: [
