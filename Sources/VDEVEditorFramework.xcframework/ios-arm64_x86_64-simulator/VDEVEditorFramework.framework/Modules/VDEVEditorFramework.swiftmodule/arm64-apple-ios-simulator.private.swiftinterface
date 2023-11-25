@@ -198,7 +198,10 @@ public struct VDEVDataBuilder {
   public static func textures() async -> [VDEVEditorFramework.EditorFilter]
   #endif
   #if compiler(>=5.3) && $AsyncAwait
-  public static func filters() async -> [VDEVEditorFramework.EditorFilter]
+  public static func colorFilters() async -> [VDEVEditorFramework.EditorFilter]
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func extendedColorFilters() async -> [VDEVEditorFramework.EditorFilter]
   #endif
   #if compiler(>=5.3) && $AsyncAwait
   public static func templates(canvasSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack]

@@ -120,7 +120,7 @@ extension NetworkAdapter {
     func filters(forChallenge baseChallengeId: String) async throws -> [EditorFilter] {
         // OLD get from network
         // return try await client.filters(forChallenge: baseChallengeId).compactMap { filter -> EditorFilter? in
-        return await VDEVDataBuilder.filters()
+        return await (VDEVDataBuilder.colorFilters() + VDEVDataBuilder.extendedColorFilters())
     }
 }
 
