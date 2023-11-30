@@ -130,18 +130,20 @@ extension NetworkAdapter {
         return try await client
             .neuralFilters(forChallenge: baseChallengeId)
             .compactMap { filter in
-            .init(id: filter.id,
-                  name: filter.name,
-                  cover: filter.cover?.url,
-                  steps: filter.stepsFull.compactMap { step in
                     .init(
-                        id: step.id,
-                        filterID: step.filterId,
-                        url: step.url?.url,
-                        neuralConfig: .make(from: step)
+                        id: filter.id,
+                        name: filter.name,
+                        cover: filter.cover?.url,
+                        steps: filter.stepsFull.compactMap { step in
+                            NeuralEditorFilter.Step.ai(
+                                id: step.id,
+                                filterID: step.filterId,
+                                url: step.url?.url,
+                                neuralConfig: .make(from: step)
+                            )
+                        }
                     )
-            })
-        }
+            }
     }
 }
 

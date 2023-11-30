@@ -47,7 +47,7 @@ extension VDEVMediaEditorConfig {
             strings: Strings(),
             resultSettings: ResultSettings(),
             logger: Logger(),
-            networkModulesConfig: [Imge2ImageModuleConfig()]
+            networkModulesConfig: [Imge2ImageModuleConfig(), PomptImge2ImageModuleConfig()]
         )
     }
 }
@@ -104,6 +104,7 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     var canUndo: Bool { true }
     var сanRemoveOrChangeTemplate: Bool { true }
     var showNeuralFilters: Bool { true }
+    var showNeuralFiltersWithPrompt: Bool { true }
     
     var canLockAllEditor: Bool { false }
     var isLocked: CurrentValueSubject<Bool, Never> = .init(false)
@@ -287,6 +288,7 @@ private struct Images: VDEVImageConfig {
 
 // MARK: - Strings
 private struct Strings: VDEVMediaEditorStrings {
+    let imagine = "IMAGINE"
     let cancelEditorTitle = "Close editor"
     let cancelEditorMessage = "Are you sure want to close the editor?"
     let cancelEditorYES = "YES"
@@ -390,6 +392,21 @@ private struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
         "x-w1d1-version": Bundle.main.shortVersion
     ]
     var timeOut: TimeInterval { 60 }
+    var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
+}
+
+// MARK: - Neural Config
+private struct PomptImge2ImageModuleConfig: VDEVNetworkModuleConfig {
+    // production: /api/v2/fileProcessing/stable-diffusion/custom/app/image-to-image`
+    // testing: /api/v2/fileProcessing/stable-diffusion/custom/test/image-to-image`
+    var type: VDEVNetworkModuleConfigType = .image2imagePrompt
+    var host: String = "app.w1d1.com"
+    var path: String = "/api/v2/fileProcessing/stable-diffusion/custom/app/image-to-image"
+    var headers: [String : String]? = [
+        "id": "a3542326-e295-4ab0-acdb-596928f15015",
+        "x-w1d1-version": Bundle.main.shortVersion
+    ]
+    var timeOut: TimeInterval { 180 }
     var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
 }
 

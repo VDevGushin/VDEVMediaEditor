@@ -30,6 +30,10 @@ import _Concurrency
 import _PhotosUI_SwiftUI
 import _StringProcessing
 import _SwiftConcurrencyShims
+final public class AIFilterWithPrompt {
+  public init?(_ descriptor: VDEVEditorFramework.FilterDescriptor, _ networkConfigType: VDEVEditorFramework.VDEVNetworkModuleConfigType = .image2imagePrompt)
+  @objc deinit
+}
 public enum BlendingMode : Swift.String {
   case addition
   case color
@@ -249,6 +253,7 @@ public protocol VDEVMediaEditorCanvasSettings {
   var superMinOpacity: CoreFoundation.CGFloat { get }
 }
 public protocol VDEVMediaEditorSettings {
+  var showNeuralFiltersWithPrompt: Swift.Bool { get }
   var showNeuralFilters: Swift.Bool { get }
   var canUndo: Swift.Bool { get }
   var canShowOnboarding: Swift.Bool { get }
@@ -410,11 +415,21 @@ extension Combine.Publisher {
     }
 }
 public struct NeuralEditorFilter : Swift.Equatable, Swift.Hashable {
-  public init(id: Swift.String, name: Swift.String, cover: Foundation.URL?, steps: [VDEVEditorFramework.NeuralEditorFilter.Step])
+  public init(id: Swift.String, name: Swift.String, cover: Foundation.URL?, steps: [VDEVEditorFramework.NeuralEditorFilter.Step], promptInfo: VDEVEditorFramework.NeuralEditorFilter.PromptInfo? = nil)
   public static func == (lhs: VDEVEditorFramework.NeuralEditorFilter, rhs: VDEVEditorFramework.NeuralEditorFilter) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public struct Step {
-    public init?(id: Swift.String?, filterID: Swift.String?, url: Foundation.URL?, settings: VDEVEditorFramework.NeuralEditorFilter.StepSettings? = nil, neuralConfig: VDEVEditorFramework.NeuralConfig?)
+    public enum StepType {
+      case AI
+      case promptAI
+      public static func == (a: VDEVEditorFramework.NeuralEditorFilter.Step.StepType, b: VDEVEditorFramework.NeuralEditorFilter.Step.StepType) -> Swift.Bool
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+    }
+    public static func ai(id: Swift.String?, filterID: Swift.String?, url: Foundation.URL?, settings: VDEVEditorFramework.NeuralEditorFilter.StepSettings? = nil, neuralConfig: VDEVEditorFramework.NeuralConfig?) -> VDEVEditorFramework.NeuralEditorFilter.Step?
+    public static func promptAI(id: Swift.String?, filterID: Swift.String?, url: Foundation.URL?, settings: VDEVEditorFramework.NeuralEditorFilter.StepSettings? = nil, prompt: Swift.String?) -> VDEVEditorFramework.NeuralEditorFilter.Step?
   }
   @dynamicMemberLookup final public class StepSettings {
     final public var rawValue: [Swift.String : Any] {
@@ -428,6 +443,8 @@ public struct NeuralEditorFilter : Swift.Equatable, Swift.Hashable {
       get
     }
     @objc deinit
+  }
+  public struct PromptInfo {
   }
   public var hashValue: Swift.Int {
     get
@@ -627,6 +644,7 @@ public protocol VDEVMediaEditorButtonsTypedAttachedImages {
   var typeTemplate: UIKit.UIImage { get }
 }
 public protocol VDEVMediaEditorStrings {
+  var imagine: Swift.String { get }
   var cancelEditorTitle: Swift.String { get }
   var cancelEditorMessage: Swift.String { get }
   var cancelEditorYES: Swift.String { get }
@@ -875,6 +893,7 @@ extension VDEVEditorFramework.CanvasTextStyle {
 }
 public enum VDEVNetworkModuleConfigType : Swift.String {
   case image2image
+  case image2imagePrompt
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -920,8 +939,6 @@ extension VDEVEditorFramework.CombinerOutput {
     public let usedStickers: Swift.Bool
   }
 }
-public let NeuralFilterDescriptorName: Swift.String
-public let FlipFilterDescriptorName: Swift.String
 public class FilterDescriptor : Swift.Codable, Swift.Hashable {
   public enum Param : Swift.Codable, Swift.Hashable {
     case number(Foundation.NSNumber)
@@ -932,6 +949,7 @@ public class FilterDescriptor : Swift.Codable, Swift.Hashable {
     case image(CoreImage.CIImage, UIKit.UIView.ContentMode?, Foundation.URL)
     case colorSpaceString(CoreGraphics.CGColorSpace, Swift.String)
     case neural(VDEVEditorFramework.NeuralConfig)
+    case prompt(Swift.String, VDEVEditorFramework.NeuralConfig)
     case flip(VDEVEditorFramework.FlipType)
     case unsupported
     public init(dataURL: Foundation.URL)
@@ -1007,6 +1025,8 @@ extension VDEVEditorFramework.BlendingMode : Swift.Equatable {}
 extension VDEVEditorFramework.BlendingMode : Swift.Hashable {}
 extension VDEVEditorFramework.BlendingMode : Swift.RawRepresentable {}
 extension VDEVEditorFramework.TemplatePack : Swift.Sendable {}
+extension VDEVEditorFramework.NeuralEditorFilter.Step.StepType : Swift.Equatable {}
+extension VDEVEditorFramework.NeuralEditorFilter.Step.StepType : Swift.Hashable {}
 extension VDEVEditorFramework.VDEVMediaResolution : Swift.Equatable {}
 extension VDEVEditorFramework.VDEVMediaResolution : Swift.Hashable {}
 extension VDEVEditorFramework.FlipType : Swift.Equatable {}
