@@ -35,7 +35,8 @@ extension VDEVMediaEditorConfig {
         
         let repository = VDEVMediaEditorResourceRepository(
             baseChallengeId: id,
-            sourceService: NetworkAdapter(client: NetworkClientImpl())
+            sourceService: NetworkAdapter(client: NetworkClientImpl()),
+            module: NeuralFilterModuleConfig()
         )
         
         return .init(
@@ -380,7 +381,17 @@ private struct Strings: VDEVMediaEditorStrings {
     let horizontal = "HORIZONTAL"
 }
 
-// MARK: - Neural Config
+// MARK: - Neural Config for Image2Image
+private struct NeuralFilterModuleConfig: VDEVNetworkModuleConfig {
+    var type: VDEVNetworkModuleConfigType = .neuralFilterConfig
+    var host: String = "app.w1d1.com"
+    var path: String = "/api/v2/fileProcessing/stable-diffusion/app/neural-filter-config"
+    var headers: [String : String]? = [:]
+    var timeOut: TimeInterval { 60 }
+    var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
+}
+
+// MARK: - Neural Config image2image
 private struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
     //Продакшн: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/app/image-to-image`
     //Test: https://app.w1d1.com/api/v2/fileProcessing/stable-diffusion/test/image-to-image`
@@ -395,7 +406,7 @@ private struct Imge2ImageModuleConfig: VDEVNetworkModuleConfig {
     var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
 }
 
-// MARK: - Neural Config
+// MARK: - Neural Config image2image woth prompt
 private struct PomptImge2ImageModuleConfig: VDEVNetworkModuleConfig {
     // production: /api/v2/fileProcessing/stable-diffusion/custom/app/image-to-image`
     // testing: /api/v2/fileProcessing/stable-diffusion/custom/test/image-to-image`

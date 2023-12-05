@@ -506,13 +506,16 @@ final public class VDEVMediaEditorResourceRepository {
     get async
   }
   #endif
+  final public var neuralFiltersConfig: VDEVEditorFramework.NeuralFilterConfig {
+    get
+  }
   #if compiler(>=5.3) && $AsyncAwait
   final public func templates(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack]
   #endif
   #if compiler(>=5.3) && $AsyncAwait
   final public func attachedTemplate(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack.Variant.Item]?
   #endif
-  public init(baseChallengeId: Swift.String, sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService)
+  public init(baseChallengeId: Swift.String, sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService, module: any VDEVEditorFramework.VDEVNetworkModuleConfig)
   @objc deinit
 }
 extension VDEVEditorFramework.VDEVMediaEditorResourceRepository {
@@ -862,6 +865,9 @@ extension VDEVEditorFramework.NeuralConfig {
     public init(width: Swift.Int, height: Swift.Int)
   }
 }
+public struct NeuralFilterConfig : Swift.Decodable {
+  public init(from decoder: any Swift.Decoder) throws
+}
 public enum HTTPMethod : Swift.String {
   case get
   case post
@@ -894,6 +900,7 @@ extension VDEVEditorFramework.CanvasTextStyle {
 public enum VDEVNetworkModuleConfigType : Swift.String {
   case image2image
   case image2imagePrompt
+  case neuralFilterConfig
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -909,6 +916,7 @@ public protocol VDEVNetworkModuleConfig {
   var token: Swift.String? { get }
 }
 @_hasMissingDesignatedInitializers final public class VDEVNetworkConfig {
+  public static func make(networkModulesConfig: [any VDEVEditorFramework.VDEVNetworkModuleConfig]) -> VDEVEditorFramework.VDEVNetworkConfig
   @objc deinit
 }
 @_hasMissingDesignatedInitializers final public class ImageProcessorHelper {
