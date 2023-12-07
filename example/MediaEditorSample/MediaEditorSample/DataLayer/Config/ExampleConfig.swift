@@ -36,7 +36,12 @@ extension VDEVMediaEditorConfig {
         let repository = VDEVMediaEditorResourceRepository(
             baseChallengeId: id,
             sourceService: NetworkAdapter(client: NetworkClientImpl()),
-            module: NeuralFilterModuleConfig()
+            networkModulesConfig: [
+                Imge2ImageModuleConfig(),
+                PomptImge2ImageModuleConfig(),
+                NeuralFilterModuleConfig(),
+                RemoveBGModuleConfig()
+            ]
         )
         
         return .init(
@@ -47,8 +52,7 @@ extension VDEVMediaEditorConfig {
             images: Images(),
             strings: Strings(),
             resultSettings: ResultSettings(),
-            logger: Logger(),
-            networkModulesConfig: [Imge2ImageModuleConfig(), PomptImge2ImageModuleConfig()]
+            logger: Logger()
         )
     }
 }
@@ -381,7 +385,7 @@ private struct Strings: VDEVMediaEditorStrings {
     let horizontal = "HORIZONTAL"
 }
 
-// MARK: - Neural Config for Image2Image
+// MARK: - Neural Config for Image
 private struct NeuralFilterModuleConfig: VDEVNetworkModuleConfig {
     var type: VDEVNetworkModuleConfigType = .neuralFilterConfig
     var host: String = "app.w1d1.com"
@@ -413,6 +417,19 @@ private struct PomptImge2ImageModuleConfig: VDEVNetworkModuleConfig {
     var type: VDEVNetworkModuleConfigType = .image2imagePrompt
     var host: String = "app.w1d1.com"
     var path: String = "/api/v2/fileProcessing/stable-diffusion/custom/app/image-to-image"
+    var headers: [String : String]? = [
+        "id": "a3542326-e295-4ab0-acdb-596928f15015",
+        "x-w1d1-version": Bundle.main.shortVersion
+    ]
+    var timeOut: TimeInterval { 180 }
+    var token: String? = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzU0MjMyNi1lMjk1LTRhYjAtYWNkYi01OTY5MjhmMTUwMTUifQ.IpBFC6qaEXFaRs6cFk30nzBkjr2f54ipb6Ch7azXTCs"
+}
+
+// MARK: - Remove bg
+private struct RemoveBGModuleConfig: VDEVNetworkModuleConfig {
+    var type: VDEVNetworkModuleConfigType = .removeBG
+    var host: String = "app.w1d1.com"
+    var path: String = "/api/v2/fileProcessing/removeBackground"
     var headers: [String : String]? = [
         "id": "a3542326-e295-4ab0-acdb-596928f15015",
         "x-w1d1-version": Bundle.main.shortVersion

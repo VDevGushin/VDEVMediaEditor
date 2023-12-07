@@ -515,7 +515,7 @@ final public class VDEVMediaEditorResourceRepository {
   #if compiler(>=5.3) && $AsyncAwait
   final public func attachedTemplate(challengeTitle: Swift.String, renderSize: CoreFoundation.CGSize) async -> [VDEVEditorFramework.TemplatePack.Variant.Item]?
   #endif
-  public init(baseChallengeId: Swift.String, sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService, module: any VDEVEditorFramework.VDEVNetworkModuleConfig)
+  public init(baseChallengeId: Swift.String, sourceService: any VDEVEditorFramework.VDEVMediaEditorSourceService, networkModulesConfig: [any VDEVEditorFramework.VDEVNetworkModuleConfig])
   @objc deinit
 }
 extension VDEVEditorFramework.VDEVMediaEditorResourceRepository {
@@ -549,7 +549,7 @@ public struct ReorderableForEach<Data, Content> : SwiftUI.View where Data : Swif
   public typealias Body = @_opaqueReturnTypeOf("$s19VDEVEditorFramework18ReorderableForEachV4bodyQrvp", 0) __<Data, Content>
 }
 public struct VDEVMediaEditorConfig {
-  public init(security: any VDEVEditorFramework.VDEVMediaEditorSecurity, subscription: any VDEVEditorFramework.VDEVMediaEditorSubscription, settings: any VDEVEditorFramework.VDEVMediaEditorSettings, repository: VDEVEditorFramework.VDEVMediaEditorResourceRepository, images: any VDEVEditorFramework.VDEVImageConfig, strings: any VDEVEditorFramework.VDEVMediaEditorStrings, resultSettings: any VDEVEditorFramework.VDEVMediaEditorResultSettings, logger: (any VDEVEditorFramework.VDEVLogger)? = nil, networkModulesConfig: [any VDEVEditorFramework.VDEVNetworkModuleConfig])
+  public init(security: any VDEVEditorFramework.VDEVMediaEditorSecurity, subscription: any VDEVEditorFramework.VDEVMediaEditorSubscription, settings: any VDEVEditorFramework.VDEVMediaEditorSettings, repository: VDEVEditorFramework.VDEVMediaEditorResourceRepository, images: any VDEVEditorFramework.VDEVImageConfig, strings: any VDEVEditorFramework.VDEVMediaEditorStrings, resultSettings: any VDEVEditorFramework.VDEVMediaEditorResultSettings, logger: (any VDEVEditorFramework.VDEVLogger)? = nil)
 }
 public protocol VDEVMediaEditorSecurity {
   var apiKey: Swift.String { get }
@@ -901,6 +901,7 @@ public enum VDEVNetworkModuleConfigType : Swift.String {
   case image2image
   case image2imagePrompt
   case neuralFilterConfig
+  case removeBG
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
