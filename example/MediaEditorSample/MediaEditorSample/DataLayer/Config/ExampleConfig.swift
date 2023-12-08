@@ -331,6 +331,7 @@ private struct Strings: VDEVMediaEditorStrings {
     let selectMedia = "SELECT MEDIA"
     let colorFilter = "COLOR FILTER"
     let neuralFilter = "NEURAL"
+    let neuralFilterTitle = "Neural filters"
     let close = "CLOSE"
     let layers = "LAYERS"
     let templatePack = "TEMPLATE PACK"

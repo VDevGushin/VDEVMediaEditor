@@ -683,6 +683,7 @@ public protocol VDEVMediaEditorStrings {
   var selectMedia: Swift.String { get }
   var colorFilter: Swift.String { get }
   var neuralFilter: Swift.String { get }
+  var neuralFilterTitle: Swift.String { get }
   var close: Swift.String { get }
   var layers: Swift.String { get }
   var templatePack: Swift.String { get }

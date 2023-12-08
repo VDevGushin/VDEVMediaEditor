@@ -52,6 +52,7 @@
 		<string>WilliamTextStd-Orna.otf</string>
 		<string>ElmaTrio-Regular.ttf</string>
 		<string>ElmaTrio-RegularItalic.ttf</string>
+		<string>BagossCondensed-Regular.otf</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
