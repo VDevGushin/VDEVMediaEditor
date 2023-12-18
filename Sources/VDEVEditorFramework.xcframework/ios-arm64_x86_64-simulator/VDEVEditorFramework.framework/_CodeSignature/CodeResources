@@ -310,7 +310,7 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		g0GZzSQisd7goewMY4njQ1U+tXA=
+		EXTG6rKJVbCpbUa9RNA0U+9Y6s0=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -326,11 +326,11 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		Bo3ObGWhXmD6NHUbpTJOa9ODBPw=
+		oSLwyOjAtF57qByA7qWofaUavNk=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		g0GZzSQisd7goewMY4njQ1U+tXA=
+		EXTG6rKJVbCpbUa9RNA0U+9Y6s0=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -346,7 +346,7 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		VwaWB1Pm8LKMEZLj6c75t+G+KMQ=
+		k00TlP3E8FwzNeGjYy1X9NY04mQ=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -415,6 +415,10 @@
 		<key>StyreneBLCApp-Regular.ttf</key>
 		<data>
 		07ltoII+THbhTj6nAckWWJTyZPs=
+		</data>
+		<key>TODOFile.rtf</key>
+		<data>
+		wJJt6Pg1hxAq61WpkgnSmm1pcZo=
 		</data>
 		<key>Templates.jpg</key>
 		<data>
@@ -1184,7 +1188,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			eN4MgK0akiiSkcODu0XKNcCHI7pCFJLY8E8Fvhe3nUM=
+			nCK4XbhCWLUUDbYxQtbGobrChguABOjiOcwgQvMkX4E=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
@@ -1212,14 +1216,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ezK3Tge9QG4fJ2TjfqhmRlFztNaXMdgdgHk1WU/a2RY=
+			QUjuYARuWj1xCdsj3me9BMBy2dsub01dF3vfuaAgkuQ=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			eN4MgK0akiiSkcODu0XKNcCHI7pCFJLY8E8Fvhe3nUM=
+			nCK4XbhCWLUUDbYxQtbGobrChguABOjiOcwgQvMkX4E=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
@@ -1247,7 +1251,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Hz3BcViI/PGv/60kO+C3iBE5XdFM+56qH6pGTwCE6S0=
+			/zeK31R4bepF0jF2VBn+q3VfTFHwPFPHKmhBhWzuMUU=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -1367,6 +1371,13 @@
 			<key>hash2</key>
 			<data>
 			CyNmhGa8BzYvJ3mG2KjBpYRDY0+54N2JzzL4/HttbwQ=
+			</data>
+		</dict>
+		<key>TODOFile.rtf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			uEFWuUF2wGOiwiftEeyY2Q8l9+xcQ94UMyXDaSx0IJA=
 			</data>
 		</dict>
 		<key>Templates.jpg</key>
