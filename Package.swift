@@ -17,23 +17,23 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/onevcat/Kingfisher.git",
-            from: "7.9.1"
+            exact: "7.10.1"
         ),
         .package(
             url: "https://github.com/guoyingtao/Mantis.git",
-            from: "2.14.1"
+            exact: "2.17.1"
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-identified-collections.git",
-            from: "1.0.0"
+            exact: "1.0.0"
         ),
         .package(
             url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git",
-            from: "0.2.0"
+            exact: "0.2.0"
         ),
         .package(
             url: "https://github.com/SwiftUIX/SwiftUIX",
-            from: "0.1.9"
+            exact: "0.1.9"
         ),
     ],
     targets: [

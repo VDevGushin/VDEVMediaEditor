@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher.git",
       "state" : {
-        "revision" : "277f1ab2c6664b19b4a412e32b094b201e2d5757",
-        "version" : "7.10.0"
+        "revision" : "add0a87ec4e31e2ca2a0b2085f0559201e4f5918",
+        "version" : "7.10.1"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/guoyingtao/Mantis.git",
       "state" : {
-        "revision" : "1c41e9d698fe0d9197c93bd4ce237a1b474f6751",
-        "version" : "2.17.0"
+        "revision" : "853862492c72f0f9feacf16d902fcf4e2f5846d3",
+        "version" : "2.17.1"
       }
     },
     {
