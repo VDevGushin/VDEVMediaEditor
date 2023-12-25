@@ -869,6 +869,19 @@ extension VDEVEditorFramework.NeuralConfig {
 public struct NeuralFilterConfig : Swift.Decodable {
   public init(from decoder: any Swift.Decoder) throws
 }
+final public class Atomic<T> : Foundation.ObservableObject {
+  final public var onChange: Combine.AnyPublisher<Swift.Void, Swift.Never> {
+    get
+  }
+  public init(_ value: T)
+  final public func read() -> T
+  final public func read(_ closure: (_ value: T) throws -> Swift.Void) rethrows
+  final public func read<U>(_ closure: (_ value: T) throws -> U) rethrows -> U
+  final public func write(_ newValue: T)
+  final public func write(_ closure: (_ value: inout T) throws -> Swift.Void) rethrows
+  @objc deinit
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+}
 public enum HTTPMethod : Swift.String {
   case get
   case post
