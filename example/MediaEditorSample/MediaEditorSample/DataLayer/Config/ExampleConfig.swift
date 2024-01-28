@@ -110,6 +110,7 @@ private final class EditorSettings: VDEVMediaEditorSettings {
     var сanRemoveOrChangeTemplate: Bool { true }
     var showNeuralFilters: Bool { true }
     var showNeuralFiltersWithPrompt: Bool { true }
+    var showNeuralFiltersPromptTips: Bool { true }
     
     var canLockAllEditor: Bool { false }
     var isLocked: CurrentValueSubject<Bool, Never> = .init(false)

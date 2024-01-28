@@ -253,6 +253,7 @@ public protocol VDEVMediaEditorCanvasSettings {
   var superMinOpacity: CoreFoundation.CGFloat { get }
 }
 public protocol VDEVMediaEditorSettings {
+  var showNeuralFiltersPromptTips: Swift.Bool { get }
   var showNeuralFiltersWithPrompt: Swift.Bool { get }
   var showNeuralFilters: Swift.Bool { get }
   var canUndo: Swift.Bool { get }
