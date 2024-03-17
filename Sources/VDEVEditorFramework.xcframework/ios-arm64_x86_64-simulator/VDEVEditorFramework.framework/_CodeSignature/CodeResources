@@ -242,7 +242,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		gg7Uu/raLvT7LJu6fuiUQs0mTXc=
+		ni4JiLkurAAKd/pt66lVSi/YmbY=
 		</data>
 		<key>InnerPhone.jpg</key>
 		<data>
@@ -314,19 +314,19 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		shP0NZMcb0XO2k46/7pfLmRMY7s=
+		sL+IZhhvj0YxZ8JVn5dwcpNl4Co=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		WT6friY85tbbl7sm/NqN8Rye2cY=
+		amVOinfDmrgN5udwkCGyfaZzX0A=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		shP0NZMcb0XO2k46/7pfLmRMY7s=
+		sL+IZhhvj0YxZ8JVn5dwcpNl4Co=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		YzTcv7jsh2eU6/HwdP6Uza/RVSo=
+		s2go3ScgM0BvFIaoHW73yvq/Yv4=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -334,19 +334,19 @@
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		yrrhj3RhcdPuK64O7Js60Hkem0M=
+		Y4TZIa0Cnb/eYPUO1kNv2Xe5xb0=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		CDo6Sul+6j/26xOAk2sSkzsZcRU=
+		U+/dXoNBExJWtIZ2ulhzEHClh/A=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		yrrhj3RhcdPuK64O7Js60Hkem0M=
+		Y4TZIa0Cnb/eYPUO1kNv2Xe5xb0=
 		</data>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		IJEszx3dAEd4zRxQLmPtMZqePx8=
+		4+yVutuNxhwMWrMgxs4mn1Jm0PM=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -418,7 +418,7 @@
 		</data>
 		<key>TODOFile.rtf</key>
 		<data>
-		KrUSt5QXvJW66WgXdvNwWdMSvNk=
+		yYMVsQ8WKwrYsUD//7cR4zLUzOM=
 		</data>
 		<key>Templates.jpg</key>
 		<data>
@@ -1195,28 +1195,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			uBeeh1Z6PXMdVx6I7yTpIADAgHmHYewBD5IX6yBC2PI=
+			fLADj1Hbz7fqbA8iUXIgBpjQBf3Z2io168x19L2keFw=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			DAuykbkI5vdDV8m3IkUJY9zdJRb2uzxNY8fH5s6CuYM=
+			+RK0iw0xkhkBA2LBn6w1bHdBPCJ0W04NB3v6NR44HsE=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			uBeeh1Z6PXMdVx6I7yTpIADAgHmHYewBD5IX6yBC2PI=
+			fLADj1Hbz7fqbA8iUXIgBpjQBf3Z2io168x19L2keFw=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			+z1zwiqYWVINg4RdyCtNFK1R/L/Q7NEeJcpIhWU3ces=
+			RZ286BJraFBdF+UkyFOSNN+A8K8ew7K2ilIDgVxyhh4=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
@@ -1230,28 +1230,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			dEUEIz5drqn0gRk8w6/54zdUwotA5tkL1GX7BoRZUqU=
+			Ni8SCvPOCOZJ9XLYRfTGs+XTz85X/SlwjcDt9HsP/C0=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			4LK03+cnvYXSU61Ef1nSDhDw4fp0exfJtE8/b22/WNM=
+			N6Tg0K0XBvOc91r0BUDxc5PuVbICG8y7hPQQ7ce7mSU=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			dEUEIz5drqn0gRk8w6/54zdUwotA5tkL1GX7BoRZUqU=
+			Ni8SCvPOCOZJ9XLYRfTGs+XTz85X/SlwjcDt9HsP/C0=
 			</data>
 		</dict>
 		<key>Modules/VDEVEditorFramework.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			3ozzn9ocpWG39HOEKELROya76xQPl4WwzabdEafRsEo=
+			7mCUBIWJhD0zO41J0Pyvf0480tAhFttSNKFHfdGLEXA=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -1377,7 +1377,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			4O7VMEtP8j7Yw5bP5FNLBn4SbcTrt9zwB0pK7IoeOH4=
+			mdTxdJFpqcPc1aN7XAr0IqCAzvzCCceujuCXmbTuHtY=
 			</data>
 		</dict>
 		<key>Templates.jpg</key>
